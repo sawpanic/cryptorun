@@ -1,7 +1,6 @@
 module github.com/cryptoedge/cryptoedge
 
-// Use the local internal folder within this repo
-replace github.com/cryptoedge/internal => ./internal
+replace github.com/cryptoedge/internal => ../internal
 
 go 1.21
 

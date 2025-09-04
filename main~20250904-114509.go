@@ -21,8 +21,7 @@ import (
 	"fmt"
 	"log"
 	"math"
-    "os"
-    "path/filepath"
+	"os"
 	"os/signal"
 	"sort"
 	"strconv"
@@ -45,20 +44,6 @@ func getBuildTime() string {
 		return time.Now().UTC().Format("2006-01-02 15:04") + " UTC"
 	}
 	return time.Now().In(location).Format("2006-01-02 15:04") + " Jerusalem"
-}
-
-// logChange appends a timestamped entry to changelog.log in the repo root.
-func logChange(format string, args ...interface{}) {
-    defer func() { recover() }()
-    msg := fmt.Sprintf(format, args...)
-    ts := time.Now().UTC().Format("2006-01-02 15:04:05 UTC")
-    line := fmt.Sprintf("[%s] %s\n", ts, msg)
-    // Resolve log path relative to current working directory
-    logPath := filepath.Join("changelog.log")
-    f, err := os.OpenFile(logPath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
-    if err != nil { return }
-    defer f.Close()
-    _, _ = f.WriteString(line)
 }
 
 // Config holds application configuration
@@ -260,46 +245,32 @@ func main() {
 		
 		ui.SafePrintln("7. 📈 Analysis & Tools (Backtesting, Paper Trading, Algorithm Analyst, Market Analyst)")
 		ui.SafePrintln("8. 🌐 Web Dashboard (Browser Interface)")
-		ui.SafePrintln("9. ?? Balanced Scanner (Momentum 40 / MeanRev 30 / Quality 30)")
-		ui.SafePrintln("10. ?? Acceleration Scanner (Momentum of Momentum)")
 		ui.SafePrintln("0. Exit")
 		
 		// Flush buffer before user input
 		ui.FlushOutput()
 		
-		choice := getUserInput("\nSelect option (0-10): ")
+		choice := getUserInput("\nSelect option (0-8): ")
 		
 		switch choice {
-        case "1":
-            logChange("Menu selection: Ultra-Alpha Orthogonal")
-            runAlgorithmWithModeChoice("Ultra-Alpha Orthogonal", runOrthogonalUltraAlpha, performanceIntegration)
-        case "2":
-            logChange("Menu selection: Balanced Orthogonal")
-            runAlgorithmWithModeChoice("Balanced Orthogonal", runOrthogonalBalanced, performanceIntegration)
-        case "3":
-            logChange("Menu selection: Sweet Spot Orthogonal")
-            runAlgorithmWithModeChoice("Sweet Spot Orthogonal", runOrthogonalSweetSpot, performanceIntegration)
-        case "4":
-            logChange("Menu selection: Social Orthogonal")
-            runAlgorithmWithModeChoice("Social Orthogonal", runOrthogonalSocialWeighted, performanceIntegration)
+		case "1":
+			runAlgorithmWithModeChoice("Ultra-Alpha Orthogonal", runOrthogonalUltraAlpha, performanceIntegration)
+		case "2":
+			runAlgorithmWithModeChoice("Balanced Orthogonal", runOrthogonalBalanced, performanceIntegration)
+		case "3":
+			runAlgorithmWithModeChoice("Sweet Spot Orthogonal", runOrthogonalSweetSpot, performanceIntegration)
+		case "4":
+			runAlgorithmWithModeChoice("Social Orthogonal", runOrthogonalSocialWeighted, performanceIntegration)
 		case "5":
 			ui.SafePrintln("❌ Complete Factors DEPRECATED: 124.8% weight sum mathematical error")
 			waitForUserInput()
 		case "6":
 			ui.SafePrintln("❌ Enhanced Matrix DEPRECATED: Factor double counting eliminated")
 			waitForUserInput()
-        case "7":
-            logChange("Menu selection: Analysis & Tools")
-            runAnalysisToolsSubmenu(performanceIntegration)
-        case "8":
-            logChange("Menu selection: Web Dashboard")
-            runWebDashboard()
-        case "9":
-            logChange("Menu selection: Balanced Scanner (40/30/30)")
-            runBalancedVariedConditions(performanceIntegration)
-        case "10":
-            logChange("Menu selection: Acceleration Scanner")
-            runAccelerationScanner(performanceIntegration)
+		case "7":
+			runAnalysisToolsSubmenu(performanceIntegration)
+		case "8":
+			runWebDashboard()
 		case "0":
 			ui.SafePrintln("Goodbye!")
 			ui.FlushOutput()
@@ -3839,16 +3810,16 @@ func runAnalysisToolsSubmenu(performance *unified.PerformanceIntegration) {
 func runOrthogonalUltraAlpha(performance *unified.PerformanceIntegration) {
 	ui.SafePrintln("\n🔬 ULTRA-ALPHA ORTHOGONAL SCANNER")
 	ui.SafePrintln("=====================================")
-ui.SafePrintln("✅ 35% Technical Residual (Breakouts/acceleration focus)")
-ui.SafePrintln("✅ 20% Social Residual (Viral momentum capture)")
-ui.SafePrintln("✅ 20% Volume+Liquidity Fused (Confirmation + execution quality)")
-ui.SafePrintln("✅ 15% Quality Residual (Reduced major bias)")
-ui.SafePrintln("✅ 10% OnChain Residual (Flow validation)")
+	ui.SafePrintln("✅ 35% Quality Residual (Technical contamination removed)")
+	ui.SafePrintln("✅ 26% Volume+Liquidity Fused (No double counting)")
+	ui.SafePrintln("✅ 18% Technical Residual (Quality overlap removed)")
+	ui.SafePrintln("✅ 12% OnChain Residual (All overlaps removed)")
+	ui.SafePrintln("✅ 9% Social Residual (Heavily decontaminated)")
 	ui.SafePrintln("📊 Projected Sharpe: 1.45 | Weight Sum: 100.000%")
 	ui.FlushOutput()
 	
-    // Get momentum-oriented orthogonal weights and gates
-    weights := models.GetMomentumOrthogonalWeights()
+	// Get orthogonal weights and gates
+	weights := models.GetCleanOrthogonalWeights5Factor()
 	gates := models.GetDefaultGates()
 	
 	// Validate weights before proceeding
@@ -3873,18 +3844,8 @@ ui.SafePrintln("✅ 10% OnChain Residual (Flow validation)")
 	// Apply orthogonal scoring to results
 	processedResults := applyOrthogonalScoring(results, weights, gates, "ULTRA-ALPHA")
 	
-    // Display results with Ultra-Alpha focus
-    displayOrthogonalResults(processedResults, "Ultra-Alpha", weights)
-    // Momentum breakout table (factor contributions)
-    renderMomentumBreakouts(processedResults, weights)
-    // Reversal candidates table (oversold bounce setups)
-    renderReversalCandidates(processedResults, weights)
-    // Exit signals (positions/proxies)
-    renderExitSignals(processedResults, weights)
-    // Scoring legend / gates summary
-    renderScoringLegend()
-    // Momentum Signals per PRD
-    renderMomentumSignals(processedResults)
+	// Display results with Ultra-Alpha focus
+	displayOrthogonalResults(processedResults, "Ultra-Alpha", weights)
 }
 
 // runOrthogonalBalanced implements Balanced Orthogonal scanner (1.42 Sharpe)  
@@ -3971,185 +3932,6 @@ func runOrthogonalSweetSpot(performance *unified.PerformanceIntegration) {
 	
 	// Display results with Sweet Spot focus
 	displayOrthogonalResults(processedResults, "Sweet Spot", chopWeights)
-}
-
-// runBalancedVariedConditions implements the requested Balanced scanner:
-// Momentum (40%) + Mean Reversion (30%) + Quality (30%) with hard guardrails.
-func runBalancedVariedConditions(performance *unified.PerformanceIntegration) {
-    ui.SafePrintln("\n🎯 BALANCED SCANNER (Momentum 40 / MeanRev 30 / Quality 30)")
-    ui.SafePrintln("=========================================================")
-    ui.SafePrintln("• Use Case: Unclear regime, risk‑adjusted picks")
-    ui.SafePrintln("• Guardrails: Moderate sizing, diverse factor validation")
-    ui.FlushOutput()
-
-    scanner := comprehensive.NewComprehensiveScanner()
-    results, err := scanner.ScanComprehensive()
-    if err != nil {
-        ui.PrintError(fmt.Sprintf("Balanced (varied conditions) scan failed: %v", err))
-        return
-    }
-
-    processed := applyBalancedVariedRescore(results)
-
-    // Display top opportunities
-    ui.SafePrintln(fmt.Sprintf("\n✅ BALANCED RESULTS - %d opportunities (post-gates)", len(processed.TopOpportunities)))
-    ui.SafePrintf("%-4s %-12s %-10s %-8s %-8s %-8s %-9s %-12s\n", "#", "SYMBOL", "TYPE", "CHANGE", "TECH", "VOL", "COMPOSITE", "REASON")
-    ui.SafePrintln("--   ------       ----       ------   ----     ---   ---------  ------")
-
-    displayCount := len(processed.TopOpportunities)
-    if displayCount > 12 { displayCount = 12 }
-    for i := 0; i < displayCount; i++ {
-        opp := processed.TopOpportunities[i]
-        volUSDFloat, _ := opp.VolumeUSD.Float64()
-        ui.SafePrintf("%-4d %-12s %-10s %+7.1f%% %-8.1f %-8s %-9.1f %s\n",
-            i+1,
-            opp.Symbol,
-            classifyOpportunityType(opp.Change24h, opp.TechnicalScore),
-            opp.Change24h,
-            opp.TechnicalScore,
-            formatActualVolume(volUSDFloat),
-            opp.CompositeScore,
-            "QUALIFIED",
-        )
-    }
-    // Alert-style sections
-    renderAlertSections(processed)
-    waitForUserInput()
-}
-
-// runAccelerationScanner implements the Acceleration Scanner (second derivative of momentum)
-func runAccelerationScanner(performance *unified.PerformanceIntegration) {
-    ui.SafePrintln("\n⚡ ACCELERATION SCANNER (Momentum of momentum)")
-    ui.SafePrintln("=============================================")
-    ui.SafePrintln("• Mission: Early breakouts before obvious momentum")
-    ui.SafePrintln("• Guardrails: Volume confirmation, micro‑timeframe validation")
-    ui.FlushOutput()
-
-    scanner := comprehensive.NewComprehensiveScanner()
-    results, err := scanner.ScanComprehensive()
-    if err != nil {
-        ui.PrintError(fmt.Sprintf("Acceleration scan failed: %v", err))
-        return
-    }
-
-    processed := applyAccelerationRescore(results)
-
-    ui.SafePrintln(fmt.Sprintf("\n✅ ACCELERATION RESULTS - %d opportunities (post-gates)", len(processed.TopOpportunities)))
-    ui.SafePrintf("%-4s %-12s %-10s %-8s %-8s %-8s %-9s %-12s\n", "#", "SYMBOL", "TYPE", "CHANGE", "TECH", "VOL", "COMPOSITE", "REASON")
-    ui.SafePrintln("--   ------       ----       ------   ----     ---   ---------  ------")
-
-    displayCount := len(processed.TopOpportunities)
-    if displayCount > 12 { displayCount = 12 }
-    for i := 0; i < displayCount; i++ {
-        opp := processed.TopOpportunities[i]
-        volUSDFloat, _ := opp.VolumeUSD.Float64()
-        ui.SafePrintf("%-4d %-12s %-10s %+7.1f%% %-8.1f %-8s %-9.1f %s\n",
-            i+1,
-            opp.Symbol,
-            classifyOpportunityType(opp.Change24h, opp.TechnicalScore),
-            opp.Change24h,
-            opp.TechnicalScore,
-            formatActualVolume(volUSDFloat),
-            opp.CompositeScore,
-            "QUALIFIED",
-        )
-    }
-    // Alert-style sections
-    renderAlertSections(processed)
-    waitForUserInput()
-}
-
-// applyBalancedVariedRescore applies momentum/mean‑reversion/quality composite with hard gates
-func applyBalancedVariedRescore(results *models.ComprehensiveScanResult) *models.ComprehensiveScanResult {
-    filtered := []models.ComprehensiveOpportunity{}
-    for _, opp := range results.TopOpportunities {
-        if !models.PassesHardGates(opp) { continue }
-        momentum := models.ComputeMomentumCore(opp)
-        meanRev := models.ComputeMeanReversionScore(opp)
-        quality := opp.QualityScore
-        composite := 0.40*momentum + 0.30*meanRev + 0.30*quality
-        opp.CompositeScore = composite
-        filtered = append(filtered, opp)
-    }
-    sort.Slice(filtered, func(i, j int) bool { return filtered[i].CompositeScore > filtered[j].CompositeScore })
-    results.TopOpportunities = filtered
-    return results
-}
-
-// applyAccelerationRescore focuses on acceleration with volume/micro‑timeframe validation
-func applyAccelerationRescore(results *models.ComprehensiveScanResult) *models.ComprehensiveScanResult {
-    out := []models.ComprehensiveOpportunity{}
-    for _, opp := range results.TopOpportunities {
-        // Volume confirmation and micro‑timeframe proxy (trend strength)
-        volOK := opp.VolumeScore >= 60
-        microOK := opp.TechnicalAnalysis.TrendStrength >= 65 || opp.TechnicalAnalysis.PatternQuality >= 65
-        volUSD, _ := opp.VolumeUSD.Float64()
-        if volUSD < 500000 || !volOK || !microOK { continue }
-
-        accel := models.ComputeAccelerationScore(opp)
-        momentum := models.ComputeMomentumCore(opp)
-        composite := 0.60*accel + 0.20*momentum + 0.20*opp.VolumeScore
-        opp.CompositeScore = composite
-        out = append(out, opp)
-    }
-    sort.Slice(out, func(i, j int) bool { return out[i].CompositeScore > out[j].CompositeScore })
-    results.TopOpportunities = out
-    return results
-}
-
-// renderAlertSections prints trader-focused alerts per spec using available fields
-func renderAlertSections(results *models.ComprehensiveScanResult) {
-    fmt.Println()
-    // Breakout Alerts
-    type row struct{ Symbol string; Change float64; VolMult string; Signal string; Tag string }
-    breakout := []row{}
-    for _, opp := range results.TopOpportunities {
-        if !models.PassesHardGates(opp) { continue }
-        mom := models.ComputeMomentumCore(opp)
-        if opp.Change24h >= 5.0 || mom >= 70 {
-            // Volume multiple
-            volMult := "—"
-            if opp.Volume1hUSD > 0 && opp.AvgVolume7dUSD > 0 {
-                perHour := opp.AvgVolume7dUSD / (24.0*7.0)
-                if perHour > 0 { volMult = fmt.Sprintf("%.1fx", opp.Volume1hUSD/perHour) }
-            }
-            sig := "BREAKOUT"; tag := "[CONFIRMED]"
-            if mom >= 80 && opp.Change24h >= 10 { sig = "STRONG BUY"; tag = "[ENTER NOW]" }
-            if mom >= 65 && opp.Change24h >= 3 && opp.Change24h < 10 { sig = "ACCUMULATE"; tag = "[BUILDING]" }
-            breakout = append(breakout, row{opp.Symbol, opp.Change24h, volMult, sig, tag})
-        }
-    }
-    if len(breakout) > 0 {
-        fmt.Println("BREAKOUT ALERTS (Last 15 mins)")
-        fmt.Println("---------------------------------")
-        max := len(breakout); if max > 6 { max = 6 }
-        for i := 0; i < max; i++ {
-            r := breakout[i]
-            fmt.Printf("%d. %-6s %+5.1f%%  Volume: %-5s  Signal: %-12s %s\n", i+1, r.Symbol, r.Change, r.VolMult, r.Signal, r.Tag)
-        }
-        fmt.Println()
-    }
-
-    // Reversal Watch
-    rev := []struct{ Symbol string; Change float64; RSI float64; Signal string; Tag string }{}
-    for _, opp := range results.TopOpportunities {
-        rsi := opp.TechnicalAnalysis.RSI
-        if opp.Change24h <= -3.0 && rsi > 0 && rsi <= 35 {
-            sig := "BOUNCE SETUP"; tag := "[WAIT FOR TURN]"
-            if rsi <= 25 { sig = "ACCUMULATE"; tag = "[SCALING IN]" }
-            rev = append(rev, struct{ Symbol string; Change float64; RSI float64; Signal string; Tag string }{opp.Symbol, opp.Change24h, rsi, sig, tag})
-        }
-    }
-    if len(rev) > 0 {
-        fmt.Println("REVERSAL WATCH (Oversold Bounces)")
-        fmt.Println("---------------------------------")
-        max := len(rev); if max > 6 { max = 6 }
-        for i := 0; i < max; i++ {
-            r := rev[i]
-            fmt.Printf("%d. %-6s %+5.1f%%   RSI: %-3.0f     Signal: %-12s %s\n", i+1, r.Symbol, r.Change, r.RSI, r.Signal, r.Tag)
-        }
-        fmt.Println()
-    }
 }
 
 // applyOrthogonalScoring applies clean orthogonal scoring to scan results
@@ -4251,447 +4033,6 @@ func displayOrthogonalResults(results *models.ComprehensiveScanResult, scannerNa
 	ui.SafePrintln("   ✅ Regime-aware weight selection (not additive)")
 	
 	waitForUserInput()
-}
-
-// renderMomentumBreakouts prints a factor-contribution table for momentum breakouts
-func renderMomentumBreakouts(results *models.ComprehensiveScanResult, weights models.AlphaWeights) {
-    if len(results.TopOpportunities) == 0 { return }
-    fmt.Println()
-    fmt.Println("MOMENTUM BREAKOUTS")
-    fmt.Println("Rank  Symbol  Score | Momentum  Technical  Volume  Quality  Social | Change %          Vol")
-    fmt.Println("                    |   Core    Residual   Liq     Resid    Resid  | 1h/4h/12h/24h    Surge")
-    fmt.Println("────────────────────────────────────────────────────────────────────────────────────────")
-
-    // Select top 8 that pass momentum gate
-    type row struct {
-        Sym   string
-        Score float64
-        // raw factor scores 0-100
-        M     float64
-        T     float64
-        V     float64
-        Q     float64
-        S     float64
-        R1    string
-        R4    string
-        R12   string
-        R24   string
-        VolX  string
-        StarsM string
-        StarsT string
-        StarsV string
-        StarsQ string
-        StarsS string
-        Signal string
-    }
-    rows := []row{}
-    for _, opp := range results.TopOpportunities {
-        if !models.PassesHardGates(opp) { continue }
-        bd := models.ComputeMomentumBreakdown(opp, weights)
-        // Returns
-        r1 := "—"; r4 := "—"; r12 := "—"; r24 := "—"
-        if opp.Return1h != 0 { r1 = fmt.Sprintf("%+.1f%%", opp.Return1h*100) }
-        if opp.Return4h != 0 { r4 = fmt.Sprintf("%+.1f%%", opp.Return4h*100) }
-        if opp.Return12h != 0 { r12 = fmt.Sprintf("%+.1f%%", opp.Return12h*100) }
-        if opp.Return24h != 0 { r24 = fmt.Sprintf("%+.1f%%", opp.Return24h*100) } else { r24 = fmt.Sprintf("%+.1f%%", opp.Change24h) }
-        // Volume surge multiple
-        volX := "—"
-        if opp.Volume1hUSD > 0 && opp.AvgVolume7dUSD > 0 {
-            perHour := opp.AvgVolume7dUSD / (24.0*7.0)
-            if perHour > 0 { volX = fmt.Sprintf("%.1fx", opp.Volume1hUSD/perHour) }
-        }
-        // Stars and signal based on raw factor strengths and composite
-        toStars := func(v float64) string {
-            switch {
-            case v >= 85: return "★★★★★"
-            case v >= 70: return "★★★★"
-            case v >= 55: return "★★★"
-            case v >= 40: return "★★"
-            case v > 0:  return "★"
-            default:     return "—"
-            }
-        }
-        signal := "ACCUMULATE"
-        if bd.Composite >= 90 { signal = "STRONG BUY" } else if bd.Composite >= 85 { signal = "BUY" }
-
-        rows = append(rows, row{
-            Sym: opp.Symbol,
-            Score: bd.Composite,
-            M: bd.RawMomentumCore, T: bd.RawTechnicalResidual, V: bd.RawVolumeLiquidity, Q: bd.RawQualityResidual, S: bd.RawSocialResidual,
-            R1: r1, R4: r4, R12: r12, R24: r24, VolX: volX,
-            StarsM: toStars(bd.RawMomentumCore),
-            StarsT: toStars(bd.RawTechnicalResidual),
-            StarsV: toStars(bd.RawVolumeLiquidity),
-            StarsQ: toStars(bd.RawQualityResidual),
-            StarsS: toStars(bd.RawSocialResidual),
-            Signal: signal,
-        })
-        if len(rows) >= 8 { break }
-    }
-    for i, r := range rows {
-        // First line (numerical breakdown). Join timeframe changes with slashes.
-        changeStr := fmt.Sprintf("%s/%s/%s/%s", r.R1, r.R4, r.R12, r.R24)
-        fmt.Printf("%-4d  %-6s  %5.1f  |  %6.1f   %7.1f   %6.1f   %6.1f   %6.1f  | %-20s  %-5s\n",
-            i+1, r.Sym, r.Score, r.M, r.T, r.V, r.Q, r.S, changeStr, r.VolX,
-        )
-        // Second line (stars + signal)
-        fmt.Printf("%s\n", "                    |   " + r.StarsM + "    " + r.StarsT + "      " + r.StarsV + "   " + r.StarsQ + "     " + r.StarsS + "  | " + r.Signal)
-    }
-}
-
-// renderReversalCandidates prints oversold bounce candidates with factor breakdown
-func renderReversalCandidates(results *models.ComprehensiveScanResult, weights models.AlphaWeights) {
-    if len(results.TopOpportunities) == 0 { return }
-    fmt.Println()
-    fmt.Println("REVERSAL CANDIDATES")
-    fmt.Println("Rank  Symbol  Score | Momentum  Technical  Volume  Quality  Social | Change %          RSI")
-    fmt.Println("                    |   Core    Residual   Liq     Resid    Resid  | 1h/4h/12h/24h    4h")
-    fmt.Println("────────────────────────────────────────────────────────────────────────────────────────")
-
-    type row struct {
-        Sym   string
-        Score float64
-        M     float64
-        T     float64
-        V     float64
-        Q     float64
-        S     float64
-        R1    string
-        R4    string
-        R12   string
-        R24   string
-        RSI4h string
-        StarsM string
-        StarsT string
-        StarsV string
-        StarsQ string
-        StarsS string
-        Signal string
-    }
-    rows := []row{}
-    for _, opp := range results.TopOpportunities {
-        // Select oversold with negative move
-        rsi := opp.TechnicalAnalysis.RSI
-        if !(opp.Change24h <= -3.0 && rsi > 0 && rsi <= 35.0) { continue }
-
-        bd := models.ComputeMomentumBreakdown(opp, weights)
-        // Returns
-        r1 := "—"; r4 := "—"; r12 := "—"; r24 := "—"
-        if opp.Return1h != 0 { r1 = fmt.Sprintf("%+.1f%%", opp.Return1h*100) }
-        if opp.Return4h != 0 { r4 = fmt.Sprintf("%+.1f%%", opp.Return4h*100) }
-        if opp.Return12h != 0 { r12 = fmt.Sprintf("%+.1f%%", opp.Return12h*100) }
-        if opp.Return24h != 0 { r24 = fmt.Sprintf("%+.1f%%", opp.Return24h*100) } else { r24 = fmt.Sprintf("%+.1f%%", opp.Change24h) }
-
-        toStars := func(v float64) string {
-            switch {
-            case v >= 85: return "★★★★★"
-            case v >= 70: return "★★★★"
-            case v >= 55: return "★★★"
-            case v >= 40: return "★★"
-            case v > 0:  return "★"
-            default:     return "—"
-            }
-        }
-        signal := "REVERSAL SETUP"
-        if rsi <= 25 { signal = "ACCUMULATE DIP" }
-
-        rows = append(rows, row{
-            Sym: opp.Symbol,
-            Score: bd.Composite,
-            M: bd.RawMomentumCore, T: bd.RawTechnicalResidual, V: bd.RawVolumeLiquidity, Q: bd.RawQualityResidual, S: bd.RawSocialResidual,
-            R1: r1, R4: r4, R12: r12, R24: r24, RSI4h: fmt.Sprintf("%.0f", rsi),
-            StarsM: toStars(bd.RawMomentumCore),
-            StarsT: toStars(bd.RawTechnicalResidual),
-            StarsV: toStars(bd.RawVolumeLiquidity),
-            StarsQ: toStars(bd.RawQualityResidual),
-            StarsS: toStars(bd.RawSocialResidual),
-            Signal: signal,
-        })
-        if len(rows) >= 8 { break }
-    }
-    for i, r := range rows {
-        changeStr := fmt.Sprintf("%s/%s/%s/%s", r.R1, r.R4, r.R12, r.R24)
-        fmt.Printf("%-4d  %-6s  %5.1f  |  %6.1f   %7.1f   %6.1f   %6.1f   %6.1f  | %-20s  %-4s\n",
-            i+1, r.Sym, r.Score, r.M, r.T, r.V, r.Q, r.S, changeStr, r.RSI4h,
-        )
-        fmt.Printf("%s\n", "                    |   " + r.StarsM + "    " + r.StarsT + "      " + r.StarsV + "   " + r.StarsQ + "     " + r.StarsS + "  | " + r.Signal)
-    }
-}
-
-// renderExitSignals prints exit guidance using available fields and exit hierarchy proxies
-func renderExitSignals(results *models.ComprehensiveScanResult, weights models.AlphaWeights) {
-    if len(results.TopOpportunities) == 0 { return }
-    fmt.Println()
-    fmt.Println("⚠️ EXIT SIGNALS")
-    fmt.Println("Symbol  Entry  Score | Momentum  Technical  Volume  Quality  Social | Held   P&L%  Signal")
-    fmt.Println("                     |   Core    Residual   Liq     Resid    Resid  | Hours")
-    fmt.Println("────────────────────────────────────────────────────────────────────────────────────────")
-
-    // Helper to compute PnL if entry is available; fallback to 24h change
-    calcPnL := func(opp models.ComprehensiveOpportunity) float64 {
-        if !opp.EntryPrice.IsZero() && !opp.Price.IsZero() {
-            entry, _ := opp.EntryPrice.Float64()
-            price, _ := opp.Price.Float64()
-            if entry > 0 { return (price-entry)/entry }
-        }
-        return opp.Change24h / 100.0
-    }
-
-    // Determine exit signal per hierarchy; returns (cause, action)
-    classifyExit := func(opp models.ComprehensiveOpportunity, pnl float64, prevScore, nowScore float64) (string, string) {
-        // HARD_STOP: if loss exceeds 1.5*ATR (proxy with ATR24h if provided)
-        if opp.ATR24h > 0 && pnl <= -(1.5*opp.ATR24h) {
-            return "RISK_STOP", "EXIT ALL"
-        }
-        // MOMENTUM_DEAD: 1h and 4h momentum negative
-        if opp.Return1h < 0 && opp.Return4h < 0 {
-            return "MOMENTUM_DEAD", "EXIT ALL"
-        }
-        // ACCELERATION_REVERSAL: acceleration proxy turning down (1h negative vs 4h positive)
-        if opp.Return4h > 0 && opp.Return1h < 0 {
-            return "MOMENTUM_FADE", "SCALE OUT 50%"
-        }
-        // Composite deterioration
-        if prevScore > 0 && nowScore+20 < prevScore {
-            return "MOMENTUM_FADE", "SCALE OUT 50%"
-        }
-        // PROFIT TAKING
-        if pnl >= 0.15 {
-            return "TAKE_PROFIT", "SCALE OUT 50%"
-        }
-        if pnl >= 0.08 {
-            return "TAKE_PROFIT", "TAKE PROFIT 25%"
-        }
-        return "HOLD", "HOLD"
-    }
-
-    // Build rows for candidates that have entry price or notable PnL
-    count := 0
-    for _, opp := range results.TopOpportunities {
-        pnl := calcPnL(opp)
-        // Show if we can compute an exit-relevant state (non-trivial pnl or momentum dead)
-        show := (!opp.EntryPrice.IsZero()) || math.Abs(pnl) >= 0.05 || (opp.Return1h < 0 && opp.Return4h < 0)
-        if !show { continue }
-        bd := models.ComputeMomentumBreakdown(opp, weights)
-        prevScore := models.ComputePrevComposite(opp, weights)
-        // Entry display
-        entryStr := "—"
-        if !opp.EntryPrice.IsZero() { entryStr = opp.EntryPrice.StringFixed(4) }
-        // Held hours proxy (not tracked here)
-        heldStr := "—"
-        // Cause and action
-        cause, action := classifyExit(opp, pnl, prevScore, bd.Composite)
-        // Score display with arrow if previous available
-        scoreStr := fmt.Sprintf("%5.1f", bd.Composite)
-        if prevScore > 0 {
-            scoreStr = fmt.Sprintf("%2.0f→%2.0f", prevScore, bd.Composite)
-        }
-        // Print first line with compact change grouping
-        fmt.Printf("%-6s  %-6s %-7s |  %6.1f   %7.1f   %6.1f   %6.1f   %6.1f | %-4s  %6.1f  %-14s\n",
-            opp.Symbol, entryStr, scoreStr,
-            bd.RawMomentumCore, bd.RawTechnicalResidual, bd.RawVolumeLiquidity, bd.RawQualityResidual, bd.RawSocialResidual,
-            heldStr, pnl*100.0, cause,
-        )
-        // Second line (stars)
-        toStars := func(v float64) string {
-            switch {
-            case v >= 85: return "★★★★★"
-            case v >= 70: return "★★★★"
-            case v >= 55: return "★★★"
-            case v >= 40: return "★★"
-            case v > 0:  return "★"
-            default:     return "—"
-            }
-        }
-        fmt.Printf("%s\n", "                     |   " + toStars(bd.RawMomentumCore) + "    " + toStars(bd.RawTechnicalResidual) + "      " + toStars(bd.RawVolumeLiquidity) + "   " + toStars(bd.RawQualityResidual) + "     " + toStars(bd.RawSocialResidual) + "  | → " + action)
-        count++
-        if count >= 8 { break }
-    }
-}
-
-// renderScoringLegend prints static legend, star mapping, and gates summary
-func renderScoringLegend() {
-    fmt.Println()
-    fmt.Println(" SCORING LEGEND")
-    fmt.Println("85-100: STRONG BUY | 70-84: BUY | 60-69: ACCUMULATE | 50-59: WATCH | <50: EXIT ZONE")
-    fmt.Println()
-    fmt.Println("Factor Stars: ★★★★★ (80-100) | ★★★★ (60-79) | ★★★ (40-59) | ★★ (20-39) | ★ (0-19)")
-    fmt.Println()
-    fmt.Println("Active Weights: Momentum(40%) Technical(25%) Volume(20%) Quality(10%) Social(5%)")
-    fmt.Println("Gates Applied: Movement >2.5% | Volume >1.75x | Liquidity >$500k | ADX >25")
-}
-
-// renderMomentumSignals prints PRD-format momentum signals including Catalyst and VADR
-func renderMomentumSignals(results *models.ComprehensiveScanResult) {
-    if len(results.TopOpportunities) == 0 { return }
-    fmt.Println()
-    fmt.Println("MOMENTUM SIGNALS (6-48h opportunities)")
-    fmt.Println("Rank | Symbol | Score | Momentum | Catalyst | Volume | Change%              | Action")
-    fmt.Println("     |        | 0-100 | Core     | Heat     | VADR   | 1h/4h/12h/24h/7d*    |")
-    fmt.Println("───────────────────────────────────────────────────────────────────────────────────────────")
-
-    rank := 1
-    regime := detectCurrentRegime()
-    // Map to PRD regimes
-    if regime == "BULL" { regime = "TRENDING_BULL" }
-    rendered := 0
-    for _, opp := range results.TopOpportunities {
-        if !models.PassesHardGatesForRegime(opp, regime) { continue }
-        mom := models.ComputeMomentumCoreRegime(opp, regime)
-        cat := models.ComputeCatalystHeatScore(opp)
-        vadrMult, _ := models.ComputeVADR(opp)
-        tech := opp.TechnicalScore
-        volScore := math.Min(100, (vadrMult-1.0)*50)
-        quality := opp.QualityScore
-        // Regime-adaptive weights per PRD (sums to 1.0)
-        var wm, wc, wt, wv, wq float64
-        switch regime {
-        case "TRENDING_BULL":
-            wm, wc, wt, wv, wq = 0.40, 0.15, 0.20, 0.20, 0.05
-        case "CHOPPY":
-            wm, wc, wt, wv, wq = 0.25, 0.20, 0.25, 0.20, 0.10
-        case "HIGH_VOLATILITY", "TRENDING_BEAR":
-            wm, wc, wt, wv, wq = 0.30, 0.00, 0.25, 0.10, 0.35
-        default:
-            wm, wc, wt, wv, wq = 0.40, 0.15, 0.25, 0.20, 0.00
-        }
-        composite := wm*mom + wc*cat + wt*tech + wv*volScore + wq*quality
-        // Brand power cap contribution (+0..+10)
-        composite += models.ComputeBrandResidualPoints(opp)
-        if composite > 100 { composite = 100 }
-        // Action mapping
-        action := "WATCH"
-        switch {
-        case composite >= 85:
-            action = "STRONG BUY"
-        case composite >= 70:
-            action = "BUY"
-        case composite >= 60:
-            action = "ACCUMULATE"
-        case composite < 50:
-            action = "EXIT/AVOID"
-        }
-        r1 := "-"; r4 := "-"; r12 := "-"; r24 := "-"; r7 := "-"
-        if opp.Return1h != 0 { r1 = fmt.Sprintf("%+.1f%%", opp.Return1h*100) }
-        if opp.Return4h != 0 { r4 = fmt.Sprintf("%+.1f%%", opp.Return4h*100) }
-        if opp.Return12h != 0 { r12 = fmt.Sprintf("%+.1f%%", opp.Return12h*100) }
-        if opp.Return24h != 0 { r24 = fmt.Sprintf("%+.1f%%", opp.Return24h*100) } else { r24 = fmt.Sprintf("%+.1f%%", opp.Change24h) }
-        if opp.Return7d != 0 { r7 = fmt.Sprintf("%+.1f%%", opp.Return7d*100) }
-        changeStr := fmt.Sprintf("%s/%s/%s/%s/%s", r1, r4, r12, r24, r7)
-        // Helpers: star mappers
-        stars100 := func(v float64) string {
-            switch {
-            case v >= 80: return "★★★★★"
-            case v >= 60: return "★★★★"
-            case v >= 40: return "★★★"
-            case v >= 20: return "★★"
-            case v > 0:  return "★"
-            default:     return "—"
-            }
-        }
-        stars10 := func(v float64) string {
-            switch {
-            case v >= 8: return "★★★★★"
-            case v >= 6: return "★★★★"
-            case v >= 4: return "★★★"
-            case v >= 2: return "★★"
-            case v > 0:  return "★"
-            default:     return "—"
-            }
-        }
-        // Size-cap tag if depth insufficient for full position
-        sizeCap := ""
-        depthOK := true
-        if opp.Depth2PctUSD > 0 && opp.Depth2PctUSD < 100000 {
-            sizeCap = " (SIZE-CAP)"
-            depthOK = false
-        }
-        // Print primary row with stars on momentum and catalyst
-        cat10 := cat / 10.0
-        fmt.Printf("%-4d | %-6s | %5.1f | %5.1f %s | %4.1f %s | %5.2fx | %-20s | %s\n",
-            rank, opp.Symbol, composite, mom, stars100(mom), cat10, stars10(cat10), vadrMult, changeStr, action)
-        // Badges row
-        // Freshness indicator
-        fresh := "—"
-        if opp.SignalAgeBars1h == 0 || opp.SignalAgeBars4h == 0 {
-            fresh = "[Fresh ●]"
-        } else if opp.SignalAgeBars1h <= 2 || opp.SignalAgeBars4h <= 2 {
-            fresh = "[Fresh ◐]"
-        } else {
-            fresh = "[Fresh ○]"
-        }
-        depthBadge := "[Depth ✓]"
-        if !depthOK { depthBadge = "[Depth ✗]" }
-        // Data sources indicator (approximate based on available signals)
-        sources := 1
-        if len(opp.CatalystEvents) > 0 { sources++ }
-        if opp.BrandPowerScore > 0 { sources++ }
-        if opp.SentimentScore > 0 { sources++ }
-        srcBadge := fmt.Sprintf("[Sources: %d]", sources)
-        // Venue and latency badges (optional)
-        venue := opp.Venue
-        if venue == "" { venue = "—" } else if len(venue) > 3 { venue = strings.ToUpper(venue)[0:3] }
-        venueBadge := fmt.Sprintf("[Venue: %s]", venue)
-        lat := opp.APILatencyMs
-        latBadge := "[Latency: —]"
-        if lat > 0 { latBadge = fmt.Sprintf("[Latency: %dms]", lat) }
-        fmt.Printf("     |        |       | %s %s %s %s %s       |\n", fresh, depthBadge, venueBadge, srcBadge, latBadge)
-        rank++
-        rendered++
-        if rank > 10 { break }
-    }
-    logChange("Render Momentum Signals: %d rows, regime=%s", rendered, regime)
-    // Footnote for 7d column visibility
-    fmt.Println()
-    fmt.Println("*7d shown in Trending Bull only")
-    // Calibration & transparency note
-    renderCalibrationNotes()
-    // API Health dashboard (static snapshot for now)
-    renderAPIHealthDashboard()
-}
-
-// renderCalibrationNotes prints score calibration and transparency legends
-func renderCalibrationNotes() {
-    fmt.Println()
-    fmt.Println("Score Calibration & Interpretation")
-    fmt.Println("- 85-100: STRONG BUY - Immediate full position")
-    fmt.Println("- 70-84: BUY - Standard entry with normal size")
-    fmt.Println("- 60-69: ACCUMULATE - Scale in 50% position")
-    fmt.Println("- 50-59: WATCH - Monitor only, no entry")
-    fmt.Println("- <50: EXIT/AVOID - Reduce or avoid entirely")
-    fmt.Println()
-    fmt.Println("Quantile Calibration")
-    fmt.Println("- Monthly recalibration to stabilize score meanings")
-    fmt.Println("- Publish decile lift reports (12-24h forward returns)")
-    fmt.Println()
-    fmt.Println("Signal Transparency Indicators")
-    fmt.Println("- Freshness: ≤60s (●) | ≤180s (◐) | >180s (○)")
-    fmt.Println("- Data Quality: ✓ if ≥2 sources agree")
-    fmt.Println("- Venue Health: Exchange status indicator")
-    fmt.Println("- Skip Reasons: No impulse | Fatigue risk | Low depth | Late bar")
-}
-
-// renderAPIHealthDashboard prints provider usage and health rows
-func renderAPIHealthDashboard() {
-    ts := time.Now().UTC().Format("2006-01-02 15:04:05 UTC")
-    fmt.Println()
-    fmt.Printf("API USAGE & HEALTH (%s)\n", ts)
-    fmt.Println("═══════════════════════════════════════════════════════════════════════════════")
-    fmt.Println("Provider     | Today    | Month Used | Limit    | Health | Latency | Cost")
-    fmt.Println("─────────────────────────────────────────────────────────────────────────────")
-    rows := []struct{ P, Today, Month, Limit, Health, Latency, Cost string }{
-        {"DEXScreener",  "43,200",  "N/A",       "60/min*",  "99%",  "89ms",  "$0"},
-        {"Binance",      "89.3k W", "N/A",       "Weight",   "99%",  "42ms",  "$0"},
-        {"CoinGecko",    "312",     "8,234",     "10,000",   "98%",  "234ms", "$0"},
-        {"Moralis",      "12k CU",  "N/A",       "40k/day",  "97%",  "156ms", "$0"},
-        {"CoinMarketCap","89",      "3,421",     "10,000",   "94%",  "412ms", "$0"},
-        {"CoinPaprika",  "234",     "N/A",       "1k/day",   "96%",  "203ms", "$0"},
-    }
-    for _, r := range rows {
-        fmt.Printf("%-12s | %-8s | %-10s | %-8s | %5s | %-6s | %s\n", r.P, r.Today, r.Month, r.Limit, r.Health, r.Latency, r.Cost)
-    }
-    fmt.Println("─────────────────────────────────────────────────────────────────────────────")
-    logChange("Render API Health Dashboard snapshot")
 }
 
 // runOrthogonalSocialWeighted implements Social Orthogonal scanner (50% social)

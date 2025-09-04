@@ -590,9 +590,9 @@ type ComprehensiveOpportunity struct {
 	Price        decimal.Decimal `json:"price"`
 	MarketCap    decimal.Decimal `json:"market_cap"`
 	VolumeUSD    decimal.Decimal `json:"volume_usd"`
-    Change24h    float64         `json:"change_24h"`
-    Change7d     float64         `json:"change_7d"`
-    OpportunityType string       `json:"opportunity_type"` // "DIP", "MOMENTUM", "BREAKOUT", "REVERSAL"
+	Change24h    float64         `json:"change_24h"`
+	Change7d     float64         `json:"change_7d"`
+	OpportunityType string       `json:"opportunity_type"` // "DIP", "MOMENTUM", "BREAKOUT", "REVERSAL"
 	
 	// Multi-Dimensional Scores (0-100)
 	RegimeScore      float64 `json:"regime_score"`
@@ -602,7 +602,7 @@ type ComprehensiveOpportunity struct {
 	TechnicalScore   float64 `json:"technical_score"`
 	VolumeScore      float64 `json:"volume_score"`
 	LiquidityScore   float64 `json:"liquidity_score"`
-    SentimentScore   float64 `json:"sentiment_score"`   // Multi-platform sentiment analysis score (0-100)
+	SentimentScore   float64 `json:"sentiment_score"`   // Multi-platform sentiment analysis score (0-100)
 	
 	// Hybrid Factor System Scores (from FactorWeights research)
 	QualityScore             float64 `json:"quality_score"`              // Proven 0.847 correlation factor
@@ -611,10 +611,10 @@ type ComprehensiveOpportunity struct {
 	SetupScore               float64 `json:"setup_score"`                // 28.2% correlation composite
 	MarketCapTier            string  `json:"market_cap_tier"`            // "LARGE", "MID", "SMALL", "MICRO", "NANO"
 	
-    // Composite Scores
-    CompositeScore   float64 `json:"composite_score"`    // Weighted combination of all scores
-    ConfidenceLevel  float64 `json:"confidence_level"`   // Statistical confidence (0-1)
-    RiskScore        float64 `json:"risk_score"`         // Overall risk assessment (0-100)
+	// Composite Scores
+	CompositeScore   float64 `json:"composite_score"`    // Weighted combination of all scores
+	ConfidenceLevel  float64 `json:"confidence_level"`   // Statistical confidence (0-1)
+	RiskScore        float64 `json:"risk_score"`         // Overall risk assessment (0-100)
 	
 	// Detailed Analysis Components
 	RegimeAnalysis      RegimeAnalysis      `json:"regime_analysis"`
@@ -635,47 +635,8 @@ type ComprehensiveOpportunity struct {
 	Strengths        []string  `json:"strengths"`
 	Weaknesses       []string  `json:"weaknesses"`
 	CatalystEvents   []string  `json:"catalyst_events"`
-    RiskFactors      []string  `json:"risk_factors"`
-    Timestamp        time.Time `json:"timestamp"`
-
-    // Multi-timeframe returns (optional; % returns as 0-100 scaled or raw %)
-    Return1h         float64 `json:"return_1h"`
-    Return4h         float64 `json:"return_4h"`
-    PrevReturn4h     float64 `json:"prev_return_4h"`
-    Return12h        float64 `json:"return_12h"`
-    Return24h        float64 `json:"return_24h"`
-    Return7d         float64 `json:"return_7d"`
-
-    // Volatility and microstructure (optional)
-    ATR24h           float64 `json:"atr_24h"`
-    ATR1h            float64 `json:"atr_1h"`
-    ADX4h            float64 `json:"adx_4h"`
-    Hurst            float64 `json:"hurst"`
-    BidAskSpreadPct  float64 `json:"bid_ask_spread_pct"`
-    Depth2PctUSD     float64 `json:"depth_2pct_usd"`
-    Volume1hUSD      float64 `json:"volume_1h_usd"`
-    AvgVolume7dUSD   float64 `json:"avg_volume_7d_usd"`
-
-    // Entry freshness controls
-    EntryTriggerPrice float64   `json:"entry_trigger_price"`
-    SignalAgeBars1h   int       `json:"signal_age_bars_1h"`
-    SignalAgeBars4h   int       `json:"signal_age_bars_4h"`
-    LastExitTime      time.Time `json:"last_exit_time"`
-
-    // Catalyst & Brand Power
-    CatalystEvents   []CatalystEvent `json:"catalyst_events"`
-    BrandPowerScore  float64         `json:"brand_power_score"` // 0-10 narrative strength
-
-    // Venue and telemetry (optional, for UI transparency)
-    Venue           string  `json:"venue"`             // Primary execution venue code (e.g., BIN, CB, OKX)
-    APILatencyMs    int     `json:"api_latency_ms"`    // End-to-end processing latency in ms
-}
-
-// CatalystEvent represents a known upcoming/ongoing catalyst
-type CatalystEvent struct {
-    Type       string    `json:"type"`        // listing, unlock, upgrade, partnership, governance
-    Timestamp  time.Time `json:"timestamp"`   // event time
-    Confidence float64   `json:"confidence"`  // 0-1 confidence of event
+	RiskFactors      []string  `json:"risk_factors"`
+	Timestamp        time.Time `json:"timestamp"`
 }
 
 // TechnicalAnalysis represents comprehensive technical analysis

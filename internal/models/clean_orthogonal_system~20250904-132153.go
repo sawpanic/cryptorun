@@ -470,30 +470,6 @@ func computeMomentumCore(opp ComprehensiveOpportunity) float64 {
     return max(0.0, min(100.0, core))
 }
 
-// ComputeMomentumCoreRegime adjusts momentum weighting per regime and includes weekly carry when provided
-func ComputeMomentumCoreRegime(opp ComprehensiveOpportunity, regime string) float64 {
-    r1h, r4h, r12h, r24h, r7d := opp.Return1h, opp.Return4h, opp.Return12h, opp.Return24h, opp.Return7d
-    atr := opp.ATR24h
-    // Default weights
-    w1, w4, w12, w24, w7 := 0.20, 0.35, 0.30, 0.15, 0.00
-    switch regime {
-    case "TRENDING_BULL":
-        w7 = 0.08; w24 = 0.12
-    case "CHOPPY":
-        w7 = 0.02; w24 = 0.08
-    case "HIGH_VOLATILITY", "TRENDING_BEAR":
-        w7 = 0.00; w24 = 0.10
-    }
-    if (r1h != 0 || r4h != 0 || r12h != 0 || r24h != 0 || r7d != 0) && atr > 0 {
-        base := (w1*r1h + w4*r4h + w12*r12h + w24*r24h + w7*r7d) / math.Sqrt(atr)
-        accel := (r4h - opp.PrevReturn4h) * 2.0
-        core := base + 0.25*accel
-        scaled := 50.0 + core*10.0
-        return max(0.0, min(100.0, scaled))
-    }
-    return computeMomentumCore(opp)
-}
-
 // ComputeMomentumCore returns the protected momentum base vector (0-100).
 func ComputeMomentumCore(opp ComprehensiveOpportunity) float64 { return computeMomentumCore(opp) }
 
@@ -588,13 +564,6 @@ func ComputeVADR(opp ComprehensiveOpportunity) (multiple float64, score float64)
     return 1.0, 50.0
 }
 
-// ComputeBrandResidualPoints caps brand power contribution to +10 points, residualized after momentum/volume
-func ComputeBrandResidualPoints(opp ComprehensiveOpportunity) float64 {
-    if opp.BrandPowerScore <= 0 { return 0 }
-    if opp.BrandPowerScore > 10 { return 10 }
-    return opp.BrandPowerScore
-}
-
 // PassesHardGates applies approximate mandatory gates using available fields.
 func PassesHardGates(opp ComprehensiveOpportunity) bool {
     // Movement requirement: prefer 4h if available, else 24h proxy
@@ -662,26 +631,6 @@ func PassesHardGatesForRegime(opp ComprehensiveOpportunity, regime string) bool 
     move := opp.Return4h
     if move == 0 { move = opp.Change24h / 100.0 }
     if math.Abs(move) < thr { return false }
-
-    // Fatigue guard: block when 24h > +12% and RSI > 70 unless renewed acceleration
-    if opp.Change24h > 12.0 && opp.TechnicalAnalysis.RSI > 70 {
-        accel := opp.Return4h - opp.PrevReturn4h
-        if accel <= 0 {
-            return false
-        }
-    }
-
-    // Freshness window: within 2 bars of trigger on 1h or 4h
-    if opp.SignalAgeBars1h > 2 && opp.SignalAgeBars4h > 2 {
-        return false
-    }
-    // Price proximity: within 1.2x ATR(1h) of trigger when available
-    if opp.EntryTriggerPrice > 0 && opp.ATR1h > 0 && opp.Price.IsPositive() {
-        cur, _ := opp.Price.Float64()
-        if math.Abs(cur-opp.EntryTriggerPrice) > 1.2*opp.ATR1h {
-            return false
-        }
-    }
 
     return PassesHardGates(opp)
 }

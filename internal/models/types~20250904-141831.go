@@ -665,10 +665,6 @@ type ComprehensiveOpportunity struct {
     // Catalyst & Brand Power
     CatalystEvents   []CatalystEvent `json:"catalyst_events"`
     BrandPowerScore  float64         `json:"brand_power_score"` // 0-10 narrative strength
-
-    // Venue and telemetry (optional, for UI transparency)
-    Venue           string  `json:"venue"`             // Primary execution venue code (e.g., BIN, CB, OKX)
-    APILatencyMs    int     `json:"api_latency_ms"`    // End-to-end processing latency in ms
 }
 
 // CatalystEvent represents a known upcoming/ongoing catalyst

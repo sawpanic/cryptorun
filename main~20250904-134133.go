@@ -270,36 +270,28 @@ func main() {
 		choice := getUserInput("\nSelect option (0-10): ")
 		
 		switch choice {
-        case "1":
-            logChange("Menu selection: Ultra-Alpha Orthogonal")
-            runAlgorithmWithModeChoice("Ultra-Alpha Orthogonal", runOrthogonalUltraAlpha, performanceIntegration)
-        case "2":
-            logChange("Menu selection: Balanced Orthogonal")
-            runAlgorithmWithModeChoice("Balanced Orthogonal", runOrthogonalBalanced, performanceIntegration)
-        case "3":
-            logChange("Menu selection: Sweet Spot Orthogonal")
-            runAlgorithmWithModeChoice("Sweet Spot Orthogonal", runOrthogonalSweetSpot, performanceIntegration)
-        case "4":
-            logChange("Menu selection: Social Orthogonal")
-            runAlgorithmWithModeChoice("Social Orthogonal", runOrthogonalSocialWeighted, performanceIntegration)
+		case "1":
+			runAlgorithmWithModeChoice("Ultra-Alpha Orthogonal", runOrthogonalUltraAlpha, performanceIntegration)
+		case "2":
+			runAlgorithmWithModeChoice("Balanced Orthogonal", runOrthogonalBalanced, performanceIntegration)
+		case "3":
+			runAlgorithmWithModeChoice("Sweet Spot Orthogonal", runOrthogonalSweetSpot, performanceIntegration)
+		case "4":
+			runAlgorithmWithModeChoice("Social Orthogonal", runOrthogonalSocialWeighted, performanceIntegration)
 		case "5":
 			ui.SafePrintln("❌ Complete Factors DEPRECATED: 124.8% weight sum mathematical error")
 			waitForUserInput()
 		case "6":
 			ui.SafePrintln("❌ Enhanced Matrix DEPRECATED: Factor double counting eliminated")
 			waitForUserInput()
-        case "7":
-            logChange("Menu selection: Analysis & Tools")
-            runAnalysisToolsSubmenu(performanceIntegration)
-        case "8":
-            logChange("Menu selection: Web Dashboard")
-            runWebDashboard()
-        case "9":
-            logChange("Menu selection: Balanced Scanner (40/30/30)")
-            runBalancedVariedConditions(performanceIntegration)
-        case "10":
-            logChange("Menu selection: Acceleration Scanner")
-            runAccelerationScanner(performanceIntegration)
+		case "7":
+			runAnalysisToolsSubmenu(performanceIntegration)
+		case "8":
+			runWebDashboard()
+		case "9":
+			runBalancedVariedConditions(performanceIntegration)
+		case "10":
+			runAccelerationScanner(performanceIntegration)
 		case "0":
 			ui.SafePrintln("Goodbye!")
 			ui.FlushOutput()
@@ -4526,15 +4518,14 @@ func renderMomentumSignals(results *models.ComprehensiveScanResult) {
     if len(results.TopOpportunities) == 0 { return }
     fmt.Println()
     fmt.Println("MOMENTUM SIGNALS (6-48h opportunities)")
-    fmt.Println("Rank | Symbol | Score | Momentum | Catalyst | Volume | Change%              | Action")
-    fmt.Println("     |        | 0-100 | Core     | Heat     | VADR   | 1h/4h/12h/24h/7d*    |")
-    fmt.Println("───────────────────────────────────────────────────────────────────────────────────────────")
+    fmt.Println("Rank | Symbol | Score | Momentum | Catalyst | Volume | Change%         | Action")
+    fmt.Println("     |        | 0-100 | Core     | Heat     | VADR   | 1h/4h/12h/24h/7d* |")
+    fmt.Println("────────────────────────────────────────────────────────────────────────")
 
     rank := 1
     regime := detectCurrentRegime()
     // Map to PRD regimes
     if regime == "BULL" { regime = "TRENDING_BULL" }
-    rendered := 0
     for _, opp := range results.TopOpportunities {
         if !models.PassesHardGatesForRegime(opp, regime) { continue }
         mom := models.ComputeMomentumCoreRegime(opp, regime)
@@ -4627,27 +4618,16 @@ func renderMomentumSignals(results *models.ComprehensiveScanResult) {
         if len(opp.CatalystEvents) > 0 { sources++ }
         if opp.BrandPowerScore > 0 { sources++ }
         if opp.SentimentScore > 0 { sources++ }
-        srcBadge := fmt.Sprintf("[Sources: %d]", sources)
-        // Venue and latency badges (optional)
-        venue := opp.Venue
-        if venue == "" { venue = "—" } else if len(venue) > 3 { venue = strings.ToUpper(venue)[0:3] }
-        venueBadge := fmt.Sprintf("[Venue: %s]", venue)
-        lat := opp.APILatencyMs
-        latBadge := "[Latency: —]"
-        if lat > 0 { latBadge = fmt.Sprintf("[Latency: %dms]", lat) }
-        fmt.Printf("     |        |       | %s %s %s %s %s       |\n", fresh, depthBadge, venueBadge, srcBadge, latBadge)
+        srcBadge := fmt.Sprintf("[%d Sources]", sources)
+        fmt.Printf("     |        |       | %s %s %s                      |\n", fresh, depthBadge, srcBadge)
         rank++
-        rendered++
         if rank > 10 { break }
     }
-    logChange("Render Momentum Signals: %d rows, regime=%s", rendered, regime)
     // Footnote for 7d column visibility
     fmt.Println()
     fmt.Println("*7d shown in Trending Bull only")
     // Calibration & transparency note
     renderCalibrationNotes()
-    // API Health dashboard (static snapshot for now)
-    renderAPIHealthDashboard()
 }
 
 // renderCalibrationNotes prints score calibration and transparency legends
@@ -4669,29 +4649,6 @@ func renderCalibrationNotes() {
     fmt.Println("- Data Quality: ✓ if ≥2 sources agree")
     fmt.Println("- Venue Health: Exchange status indicator")
     fmt.Println("- Skip Reasons: No impulse | Fatigue risk | Low depth | Late bar")
-}
-
-// renderAPIHealthDashboard prints provider usage and health rows
-func renderAPIHealthDashboard() {
-    ts := time.Now().UTC().Format("2006-01-02 15:04:05 UTC")
-    fmt.Println()
-    fmt.Printf("API USAGE & HEALTH (%s)\n", ts)
-    fmt.Println("═══════════════════════════════════════════════════════════════════════════════")
-    fmt.Println("Provider     | Today    | Month Used | Limit    | Health | Latency | Cost")
-    fmt.Println("─────────────────────────────────────────────────────────────────────────────")
-    rows := []struct{ P, Today, Month, Limit, Health, Latency, Cost string }{
-        {"DEXScreener",  "43,200",  "N/A",       "60/min*",  "99%",  "89ms",  "$0"},
-        {"Binance",      "89.3k W", "N/A",       "Weight",   "99%",  "42ms",  "$0"},
-        {"CoinGecko",    "312",     "8,234",     "10,000",   "98%",  "234ms", "$0"},
-        {"Moralis",      "12k CU",  "N/A",       "40k/day",  "97%",  "156ms", "$0"},
-        {"CoinMarketCap","89",      "3,421",     "10,000",   "94%",  "412ms", "$0"},
-        {"CoinPaprika",  "234",     "N/A",       "1k/day",   "96%",  "203ms", "$0"},
-    }
-    for _, r := range rows {
-        fmt.Printf("%-12s | %-8s | %-10s | %-8s | %5s | %-6s | %s\n", r.P, r.Today, r.Month, r.Limit, r.Health, r.Latency, r.Cost)
-    }
-    fmt.Println("─────────────────────────────────────────────────────────────────────────────")
-    logChange("Render API Health Dashboard snapshot")
 }
 
 // runOrthogonalSocialWeighted implements Social Orthogonal scanner (50% social)

@@ -3,7 +3,6 @@ package models
 import (
     "fmt"
     "math"
-    "time"
 )
 
 // CleanOrthogonalSystem separates alpha factors from gates/constraints
@@ -110,73 +109,6 @@ func GetMomentumOrthogonalWeights() AlphaWeights {
         SocialResidual:        0.20, // 20%  - Capture social/viral surges
         DerivativesOrthogonal: 0.00, // 0%   - Not used in this 5-factor profile
     }
-}
-
-// MomentumBreakdown represents weighted contributions to the composite score
-type MomentumBreakdown struct {
-    // Raw factor scores (0-100)
-    RawMomentumCore      float64
-    RawTechnicalResidual float64
-    RawVolumeLiquidity   float64
-    RawQualityResidual   float64
-    RawSocialResidual    float64
-
-    // Weighted contributions (sum to Composite)
-    MomentumCore       float64
-    TechnicalResidual  float64
-    VolumeLiquidity    float64
-    QualityResidual    float64
-    SocialResidual     float64
-    Composite          float64
-}
-
-// ComputeMomentumBreakdown computes weighted contributions that sum to composite
-// using the momentum-protected scoring mechanics.
-func ComputeMomentumBreakdown(opp ComprehensiveOpportunity, weights AlphaWeights) MomentumBreakdown {
-    momentumCore := computeMomentumCore(opp)
-    qualityResidual := extractQualityWithoutTechnical(opp)
-    volLiq := extractVolumeLiquidityFusedResidual(opp, momentumCore)
-    techResidual := extractTechnicalWithoutQualityAndMomentum(opp, qualityResidual, momentumCore)
-    // combined technical channel contains momentum and technical residual
-    combinedTech := max(0.0, min(100.0, 0.6*momentumCore + 0.4*techResidual))
-    socialResidual := extractSocialResidual(opp, qualityResidual, volLiq, techResidual)
-
-    // Weighted contributions
-    // Split the Technical weight proportionally between momentum core (60%) and technical residual (40%)
-    mContrib := (0.6 * momentumCore) * weights.TechnicalResidual
-    tContrib := (0.4 * techResidual) * weights.TechnicalResidual
-    vContrib := volLiq * weights.VolumeLiquidityFused
-    qContrib := qualityResidual * weights.QualityResidual
-    sContrib := socialResidual * weights.SocialResidual
-
-    composite := mContrib + tContrib + vContrib + qContrib + sContrib
-    return MomentumBreakdown{
-        RawMomentumCore:      momentumCore,
-        RawTechnicalResidual: techResidual,
-        RawVolumeLiquidity:   volLiq,
-        RawQualityResidual:   qualityResidual,
-        RawSocialResidual:    socialResidual,
-
-        MomentumCore:      mContrib,
-        TechnicalResidual: tContrib,
-        VolumeLiquidity:   vContrib,
-        QualityResidual:   qContrib,
-        SocialResidual:    sContrib,
-        Composite:         composite,
-    }
-}
-
-// ComputePrevComposite estimates a previous composite score by substituting
-// PrevReturn4h for Return4h in the momentum core calculation.
-func ComputePrevComposite(opp ComprehensiveOpportunity, weights AlphaWeights) float64 {
-    // If no previous 4h return, return 0 to indicate N/A
-    if opp.PrevReturn4h == 0 {
-        return 0
-    }
-    o2 := opp
-    o2.Return4h = opp.PrevReturn4h
-    bdPrev := ComputeMomentumBreakdown(o2, weights)
-    return bdPrev.Composite
 }
 
 // GetSocialWeightedOrthogonalWeights - Social-dominant orthogonal system (100% sum)
@@ -431,67 +363,29 @@ func extractDerivativesOrthogonal(opp ComprehensiveOpportunity) float64 {
 // computeMomentumCore builds a volatility-aware, volume-confirmed momentum core (0-100)
 // using available opportunity fields (no 1h/4h history in this environment).
 func computeMomentumCore(opp ComprehensiveOpportunity) float64 {
-    // If multi-timeframe returns and ATR are available, use them per spec
-    r1h, r4h, r12h := opp.Return1h, opp.Return4h, opp.Return12h
-    r24h := opp.Return24h
-    atr := opp.ATR24h
-
-    if (r1h != 0 || r4h != 0 || r12h != 0 || r24h != 0) && atr > 0 {
-        base := (0.20*r1h + 0.35*r4h + 0.30*r12h + 0.15*r24h) / math.Sqrt(atr)
-        accel := (r4h - opp.PrevReturn4h) * 2.0
-        // Volume confirmation if 1h vs 7d available
-        volConf := 0.0
-        if opp.Volume1hUSD > 0 && opp.AvgVolume7dUSD > 0 {
-            perHour := opp.AvgVolume7dUSD / (24.0 * 7.0)
-            if perHour > 0 {
-                ratio := opp.Volume1hUSD / perHour
-                volConf = math.Log(math.Max(1e-6, ratio))
-            }
-        }
-        core := base + 0.25*accel + 0.1*volConf
-        // Map to 0-100 softly
-        scaled := 50.0 + core*10.0
-        return max(0.0, min(100.0, scaled))
-    }
-
-    // Fallback: use existing technical/24h/volume/liquidity proxies
+    // Price change mapped to 0-100 around 50 baseline (-20%->0, 0%->50, +20%->100)
     priceScore := 50.0 + opp.Change24h*2.5
     priceScore = max(0, min(100, priceScore))
+
+    // Technical momentum (already 0-100 scale)
     tech := opp.TechnicalScore
+
+    // Volume confirmation (0-100)
     vol := opp.VolumeScore
+
+    // Liquidity moderation: scale momentum up slightly when liquidity is decent
     liq := opp.LiquidityScore
-    liqFactor := 0.9 + (liq/100.0)*0.2 // 0.9-1.1
+    liqFactor := 0.9 + (liq/100.0)*0.2 // 0.9-1.1 multiplier
+
+    // Acceleration proxy: trend strength above neutral contributes
     accelProxy := 0.0
     if opp.TechnicalAnalysis.TrendStrength > 50 {
-        accelProxy = (opp.TechnicalAnalysis.TrendStrength - 50) * 0.4
+        accelProxy = (opp.TechnicalAnalysis.TrendStrength - 50) * 0.4 // up to +20
     }
+
     base := 0.5*tech + 0.3*priceScore + 0.2*vol
     core := (base + accelProxy) * liqFactor
     return max(0.0, min(100.0, core))
-}
-
-// ComputeMomentumCoreRegime adjusts momentum weighting per regime and includes weekly carry when provided
-func ComputeMomentumCoreRegime(opp ComprehensiveOpportunity, regime string) float64 {
-    r1h, r4h, r12h, r24h, r7d := opp.Return1h, opp.Return4h, opp.Return12h, opp.Return24h, opp.Return7d
-    atr := opp.ATR24h
-    // Default weights
-    w1, w4, w12, w24, w7 := 0.20, 0.35, 0.30, 0.15, 0.00
-    switch regime {
-    case "TRENDING_BULL":
-        w7 = 0.08; w24 = 0.12
-    case "CHOPPY":
-        w7 = 0.02; w24 = 0.08
-    case "HIGH_VOLATILITY", "TRENDING_BEAR":
-        w7 = 0.00; w24 = 0.10
-    }
-    if (r1h != 0 || r4h != 0 || r12h != 0 || r24h != 0 || r7d != 0) && atr > 0 {
-        base := (w1*r1h + w4*r4h + w12*r12h + w24*r24h + w7*r7d) / math.Sqrt(atr)
-        accel := (r4h - opp.PrevReturn4h) * 2.0
-        core := base + 0.25*accel
-        scaled := 50.0 + core*10.0
-        return max(0.0, min(100.0, scaled))
-    }
-    return computeMomentumCore(opp)
 }
 
 // ComputeMomentumCore returns the protected momentum base vector (0-100).
@@ -543,147 +437,35 @@ func ComputeAccelerationScore(opp ComprehensiveOpportunity) float64 {
     return max(0.0, min(100.0, accel))
 }
 
-// ComputeCatalystHeatScore applies time-decay multipliers per PRD
-// Imminent (0-4w):1.2x, Near(4-8w):1.0x, Medium(8-16w):0.8x, Distant(16+w):0.6x
-func ComputeCatalystHeatScore(opp ComprehensiveOpportunity) float64 {
-    if len(opp.CatalystEvents) == 0 {
-        return 50.0
-    }
-    now := time.Now()
-    total := 0.0
-    count := 0.0
-    for _, ev := range opp.CatalystEvents {
-        weeks := math.Abs(now.Sub(ev.Timestamp).Hours()) / (24 * 7)
-        mult := 1.0
-        switch {
-        case weeks <= 4:
-            mult = 1.2
-        case weeks <= 8:
-            mult = 1.0
-        case weeks <= 16:
-            mult = 0.8
-        default:
-            mult = 0.6
-        }
-        base := 60.0
-        if ev.Type == "listing" || ev.Type == "upgrade" { base = 70.0 }
-        if ev.Type == "unlock" { base = 55.0 }
-        score := base * mult * math.Max(0.5, ev.Confidence)
-        total += score
-        count += 1
-    }
-    avg := total / math.Max(1.0, count)
-    return math.Max(0, math.Min(100, avg))
-}
-
-// ComputeVADR returns the volume surge multiple and a 0-100 score
-func ComputeVADR(opp ComprehensiveOpportunity) (multiple float64, score float64) {
-    if opp.Volume1hUSD > 0 && opp.AvgVolume7dUSD > 0 {
-        perHour := opp.AvgVolume7dUSD / (24.0*7.0)
-        if perHour > 0 {
-            mult := opp.Volume1hUSD / perHour
-            return mult, math.Max(0, math.Min(100, (mult-1.0)*50)) // 1.0x→0, 3.0x→100
-        }
-    }
-    return 1.0, 50.0
-}
-
-// ComputeBrandResidualPoints caps brand power contribution to +10 points, residualized after momentum/volume
-func ComputeBrandResidualPoints(opp ComprehensiveOpportunity) float64 {
-    if opp.BrandPowerScore <= 0 { return 0 }
-    if opp.BrandPowerScore > 10 { return 10 }
-    return opp.BrandPowerScore
-}
-
 // PassesHardGates applies approximate mandatory gates using available fields.
 func PassesHardGates(opp ComprehensiveOpportunity) bool {
-    // Movement requirement: prefer 4h if available, else 24h proxy
-    move := opp.Return4h
-    if move == 0 { move = opp.Change24h / 100.0 }
-    if math.Abs(move) < 0.025 { // 2.5%
-        return false
-    }
+    // Momentum threshold (proxy: 24h change)
+    if math.Abs(opp.Change24h) < 3.0 { return false }
 
     // Liquidity requirements
     volUSD, _ := opp.VolumeUSD.Float64()
     if volUSD < 500000 { return false }
 
-    // Volume surge (if 1h vs 7d available)
-    if opp.Volume1hUSD > 0 && opp.AvgVolume7dUSD > 0 {
-        perHour := opp.AvgVolume7dUSD / (24.0*7.0)
-        if perHour > 0 {
-            ratio := opp.Volume1hUSD / perHour
-            if ratio < 1.75 { return false }
-        }
-    }
-
     // Market cap
     mcap, _ := opp.MarketCap.Float64()
     if mcap > 0 && mcap < 10000000 { return false }
 
-    // Venue depth and spread if provided
-    if opp.BidAskSpreadPct > 0 && opp.BidAskSpreadPct > 0.5 { // >50 bps
-        return false
-    }
-    if opp.Depth2PctUSD > 0 && opp.Depth2PctUSD < 50000 {
-        return false
-    }
-    // Liquidity score proxy
+    // Venue depth (use liquidity score and inferred spread)
     if opp.LiquidityScore < 60 {
         return false
     }
 
-    // Anti-manipulation proxies
+    // Anti-manipulation proxies (on-chain/network activity if available)
     hasActivity := false
     if opp.WhaleAnalysis.ActivityScore > 0 { hasActivity = true }
     if opp.OnChainAnalysis.NetworkMetrics > 30 { hasActivity = true }
     if !hasActivity { return false }
 
-    // Trend quality: prefer ADX/Hurst if available, else fall back to TrendStrength/PatternQuality
-    if (opp.ADX4h >= 25 || opp.Hurst >= 0.55) == false {
-        if !(opp.TechnicalAnalysis.TrendStrength >= 55 || opp.TechnicalAnalysis.PatternQuality >= 60) {
-            return false
-        }
-    }
-    return true
-}
-
-// PassesHardGatesForRegime applies movement threshold per regime: TRENDING_BULL=2.5%, CHOPPY=3.0%, HIGH_VOLATILITY/TRENDING_BEAR=4.0%
-func PassesHardGatesForRegime(opp ComprehensiveOpportunity, regime string) bool {
-    thr := 0.025
-    switch regime {
-    case "TRENDING_BULL":
-        thr = 0.025
-    case "CHOPPY":
-        thr = 0.030
-    case "HIGH_VOLATILITY", "TRENDING_BEAR":
-        thr = 0.040
-    }
-    move := opp.Return4h
-    if move == 0 { move = opp.Change24h / 100.0 }
-    if math.Abs(move) < thr { return false }
-
-    // Fatigue guard: block when 24h > +12% and RSI > 70 unless renewed acceleration
-    if opp.Change24h > 12.0 && opp.TechnicalAnalysis.RSI > 70 {
-        accel := opp.Return4h - opp.PrevReturn4h
-        if accel <= 0 {
-            return false
-        }
-    }
-
-    // Freshness window: within 2 bars of trigger on 1h or 4h
-    if opp.SignalAgeBars1h > 2 && opp.SignalAgeBars4h > 2 {
+    // Trend quality (not choppy): use TrendStrength or PatternQuality
+    if !(opp.TechnicalAnalysis.TrendStrength >= 55 || opp.TechnicalAnalysis.PatternQuality >= 60) {
         return false
     }
-    // Price proximity: within 1.2x ATR(1h) of trigger when available
-    if opp.EntryTriggerPrice > 0 && opp.ATR1h > 0 && opp.Price.IsPositive() {
-        cur, _ := opp.Price.Float64()
-        if math.Abs(cur-opp.EntryTriggerPrice) > 1.2*opp.ATR1h {
-            return false
-        }
-    }
-
-    return PassesHardGates(opp)
+    return true
 }
 
 func calculateLiquidityGate(opp ComprehensiveOpportunity, config LiquidityGateConfig) float64 {
