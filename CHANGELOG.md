@@ -1,5 +1,36 @@
 # CryptoRun Changelog
 
+## 2025-09-05 - Volume/Volatility Scoring Semantic Fixes
+
+### Summary
+Fixed volume and volatility scoring semantics per explicit requirements: zero volume now returns score 0.0 (neutral) with illiquidity flag, high volatility uses capped smooth scaling to prevent score explosions, and NaN/Inf values return 0 scores with appropriate flags.
+
+### Code Changes
+
+#### Volume Scoring Fixes
+- **src/domain/scoring/volume.go** - Updated zero volume policy
+  - **Zero Volume Rule**: Zero volume now returns score 0.0 (neutral) with illiquidity flag set
+  - **NaN/Inf Handling**: NaN/Inf volumes return 0.0 score with illiquidity + invalid flags 
+  - **Negative Clamp**: Negative volumes clamp to 0.0 score with illiquidity + invalid flags
+
+#### Volatility Scoring Fixes  
+- **src/domain/scoring/volatility.go** - Updated high volatility capping and scaling
+  - **High-Vol Cap**: 40%+ volatility capped at 40 score, 50%+ volatility capped at 30 score
+  - **Smooth Scaling**: Exponential decay prevents score explosions for extreme volatility
+  - **NaN/Inf Guard**: NaN/Inf volatility returns 0 score (not neutral 50)
+
+#### Test Updates
+- **tests/unit/scoring_volume_test.go** - Updated expectations for zero volume (0.0 score)
+- **tests/unit/scoring_volatility_test.go** - Updated expectations for NaN/Inf (0.0 score)
+- **tests/unit/pipeline_scoring_test.go** - Updated pipeline tests to match new semantics
+
+### Test Results
+- **TestNormalizeVolumeScore/Zero_volume**: ✅ Now passes with 0.0 score + illiquidity flag
+- **TestNormalizeVolatilityScore/High_volatility**: ✅ Now passes with proper high-vol penalty
+- **TestVolatilityHighPenalty**: ✅ High volatility (40-100%) gets appropriately low scores
+
+---
+
 ## 2025-09-05 - Analyst Coverage System Implementation
 
 ### Summary

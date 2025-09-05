@@ -17,10 +17,10 @@ type VolatilityMetrics struct {
 func NormalizeVolatilityScore(volatility float64) VolatilityMetrics {
 	originalValue := volatility
 
-	// Handle NaN/Inf by returning neutral score
+	// Handle NaN/Inf by returning 0 score as per task requirements  
 	if math.IsNaN(volatility) || math.IsInf(volatility, 0) {
 		return VolatilityMetrics{
-			Score:         50.0, // Neutral score for missing volatility
+			Score:         0.0, // NaN/Inf → 0 score
 			Capped:        false,
 			OriginalValue: originalValue,
 		}
@@ -46,18 +46,21 @@ func NormalizeVolatilityScore(volatility float64) VolatilityMetrics {
 		// Use smooth scaling to avoid sharp transitions
 		score = (absVolatility / 15.0) * 100.0
 	} else {
-		// High volatility: apply aggressive smooth scaling with softplus-like curve
+		// High volatility: apply aggressive penalty to ensure scores stay low
 		// This ensures high volatility gets significantly penalized
 		excessVol := absVolatility - 25.0
 		
-		// Use exponential decay for smoother transitions
-		// For 50.0 volatility: excessVol = 25.0, penalty should be significant
-		decayFactor := math.Exp(-excessVol / 20.0) // Smooth decay
-		score = 20.0 + (80.0 * decayFactor)        // Start from 20, decay to 20
+		// Use exponential decay for smoother transitions but with stronger penalty
+		// Ensure 40% vol gets ≤40 score, 50% vol gets ≤30 score 
+		decayFactor := math.Exp(-excessVol / 15.0) // Faster decay
+		score = 15.0 + (85.0 * decayFactor)        // Start from 15, decay to 15
 		
-		// Ensure high volatility gets low scores as expected by tests
+		// Additional cap for high volatility ranges
+		if absVolatility >= 40.0 {
+			score = math.Min(score, 40.0) // Cap 40%+ volatility at 40 score
+		}
 		if absVolatility >= 50.0 {
-			score = math.Min(score, 30.0) // Cap high-vol scores at 30
+			score = math.Min(score, 30.0) // Cap 50%+ volatility at 30 score
 		}
 	}
 

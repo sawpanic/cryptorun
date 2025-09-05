@@ -15,19 +15,19 @@ type VolumeMetrics struct {
 // Policy: zero volume → neutral score 0.0 with illiquidity flag
 // Negative/NaN/Inf → clamp to 0 and flag
 func NormalizeVolumeScore(volume float64) VolumeMetrics {
-	// Handle NaN/Inf by returning component-neutral score
+	// Handle NaN/Inf by returning 0 score with flags
 	if math.IsNaN(volume) || math.IsInf(volume, 0) {
 		return VolumeMetrics{
-			Score:       50.0, // Component-neutral score for missing/invalid volume
+			Score:       0.0,  // NaN/Inf volume gets 0 score 
 			Illiquidity: true, // Flag as illiquid
 			VolumeValid: false,
 		}
 	}
 
-	// Handle zero volume: neutral score but flag as illiquid
+	// Handle zero volume: neutral score 0.0 but flag as illiquid
 	if volume == 0.0 {
 		return VolumeMetrics{
-			Score:       50.0, // Zero volume gets component-neutral score 50.0
+			Score:       0.0,  // Zero volume gets score 0.0 (neutral)
 			Illiquidity: true, // Set illiquidity flag for gates to use
 			VolumeValid: true,
 		}
