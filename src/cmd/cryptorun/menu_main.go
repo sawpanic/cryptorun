@@ -66,12 +66,18 @@ func NewMenuUI() *MenuUI {
 		},
 		{
 			Number:      5,
+			Title:       "Resilience Self-Test",
+			Description: "Run precision semantics and network resilience test suite",
+			Handler:     ui.handleResilientSelfTest,
+		},
+		{
+			Number:      6,
 			Title:       "Settings",
 			Description: "Configure regime, thresholds, and other settings",
 			Handler:     ui.handleSettings,
 		},
 		{
-			Number:      6,
+			Number:      7,
 			Title:       "Exit",
 			Description: "Exit CryptoRun",
 			Handler:     ui.handleExit,
@@ -90,7 +96,7 @@ func (ui *MenuUI) Run() error {
 	for {
 		ui.printMenu()
 		
-		fmt.Print("Choose an option (1-6): ")
+		fmt.Print("Choose an option (1-7): ")
 		if !ui.scanner.Scan() {
 			break
 		}
@@ -102,12 +108,12 @@ func (ui *MenuUI) Run() error {
 		
 		choice, err := strconv.Atoi(input)
 		if err != nil {
-			fmt.Printf("Invalid input: %s. Please enter a number between 1-6.\n\n", input)
+			fmt.Printf("Invalid input: %s. Please enter a number between 1-7.\n\n", input)
 			continue
 		}
 		
 		if choice < 1 || choice > len(ui.options) {
-			fmt.Printf("Invalid choice: %d. Please enter a number between 1-6.\n\n", choice)
+			fmt.Printf("Invalid choice: %d. Please enter a number between 1-7.\n\n", choice)
 			continue
 		}
 		
@@ -120,7 +126,7 @@ func (ui *MenuUI) Run() error {
 		}
 		
 		// Exit if user chose exit option
-		if choice == 6 {
+		if choice == 7 {
 			break
 		}
 		

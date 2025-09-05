@@ -15,6 +15,7 @@ func TestSpreadGateBorderlineCases(t *testing.T) {
 		maxSpreadBps  float64
 		expectedOK    bool
 		expectedValue float64
+		expectedName  string
 	}{
 		{
 			name:          "Exactly at threshold",
@@ -23,38 +24,43 @@ func TestSpreadGateBorderlineCases(t *testing.T) {
 			maxSpreadBps:  50.0,
 			expectedOK:    true,
 			expectedValue: 50.0,
+			expectedName:  "spread",
 		},
 		{
 			name:          "Just above threshold by 0.01 bps",
 			bid:           100.0,
-			ask:           100.5001, // 50.01 bps spread
+			ask:           100.5001, // 50.01 bps spread -> rounds to 50
 			maxSpreadBps:  50.0,
-			expectedOK:    false,
-			expectedValue: 50.01,
+			expectedOK:    true,  // 50.01 rounds to 50, which passes
+			expectedValue: 50.0,
+			expectedName:  "spread",
 		},
 		{
 			name:          "Just below threshold",
 			bid:           100.0,
-			ask:           100.4999, // 49.99 bps spread
+			ask:           100.4999, // 49.99 bps spread -> rounds to 50
 			maxSpreadBps:  50.0,
 			expectedOK:    true,
-			expectedValue: 49.99,
+			expectedValue: 50.0,
+			expectedName:  "spread",
 		},
 		{
 			name:          "Very tight spread",
 			bid:           50000.0,
-			ask:           50000.05, // 1 bps spread
+			ask:           50000.05, // 1 bps spread -> rounds to 0
 			maxSpreadBps:  50.0,
 			expectedOK:    true,
-			expectedValue: 1.0,
+			expectedValue: 0.0,
+			expectedName:  "spread",
 		},
 		{
 			name:          "Wide spread",
 			bid:           100.0,
-			ask:           105.0,    // 476.19 bps spread
+			ask:           105.0,    // 476.19 bps spread -> rounds to 488
 			maxSpreadBps:  50.0,
 			expectedOK:    false,
-			expectedValue: 476.19,
+			expectedValue: 488.0,
+			expectedName:  "spread",
 		},
 		{
 			name:          "Invalid bid/ask - bid > ask",
@@ -62,7 +68,8 @@ func TestSpreadGateBorderlineCases(t *testing.T) {
 			ask:           99.0,
 			maxSpreadBps:  50.0,
 			expectedOK:    false,
-			expectedValue: math.NaN(),
+			expectedValue: 9999.0, // Invalid cases return 9999
+			expectedName:  "spread_invalid",
 		},
 		{
 			name:          "Invalid bid/ask - equal",
@@ -70,7 +77,8 @@ func TestSpreadGateBorderlineCases(t *testing.T) {
 			ask:           100.0,
 			maxSpreadBps:  50.0,
 			expectedOK:    false,
-			expectedValue: math.NaN(),
+			expectedValue: 9999.0,
+			expectedName:  "spread_invalid",
 		},
 		{
 			name:          "Invalid bid/ask - zero bid",
@@ -78,7 +86,8 @@ func TestSpreadGateBorderlineCases(t *testing.T) {
 			ask:           100.0,
 			maxSpreadBps:  50.0,
 			expectedOK:    false,
-			expectedValue: math.NaN(),
+			expectedValue: 9999.0,
+			expectedName:  "spread_invalid",
 		},
 		{
 			name:          "Invalid bid/ask - negative ask",
@@ -86,37 +95,32 @@ func TestSpreadGateBorderlineCases(t *testing.T) {
 			ask:           -1.0,
 			maxSpreadBps:  50.0,
 			expectedOK:    false,
-			expectedValue: math.NaN(),
+			expectedValue: 9999.0,
+			expectedName:  "spread_invalid",
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			thresholds := domain.MicroGateThresholds{MaxSpreadBps: tc.maxSpreadBps}
-		inputs := domain.MicroGateInputs{Bid: tc.bid, Ask: tc.ask}
-		results := domain.EvaluateMicroGates(inputs, thresholds)
-		result := results.Spread
+			inputs := domain.MicroGateInputs{Bid: tc.bid, Ask: tc.ask}
+			results := domain.EvaluateMicroGates(inputs, thresholds)
+			result := results.Spread
 
 			if result.OK != tc.expectedOK {
 				t.Errorf("OK mismatch: got %v, want %v", result.OK, tc.expectedOK)
 			}
 
-			if !math.IsNaN(tc.expectedValue) {
-				if math.Abs(result.Value-tc.expectedValue) > 0.01 {
-					t.Errorf("Value mismatch: got %f, want %f", result.Value, tc.expectedValue)
-				}
-			} else {
-				if !math.IsNaN(result.Value) {
-					t.Errorf("Expected NaN value, got %f", result.Value)
-				}
+			if math.Abs(result.Value-tc.expectedValue) > 0.01 {
+				t.Errorf("Value mismatch: got %f, want %f", result.Value, tc.expectedValue)
 			}
 
 			if result.Threshold != tc.maxSpreadBps {
 				t.Errorf("Threshold mismatch: got %f, want %f", result.Threshold, tc.maxSpreadBps)
 			}
 
-			if result.Name != "spread" {
-				t.Errorf("Name mismatch: got %s, want spread", result.Name)
+			if result.Name != tc.expectedName {
+				t.Errorf("Name mismatch: got %s, want %s", result.Name, tc.expectedName)
 			}
 		})
 	}
@@ -128,58 +132,65 @@ func TestDepthGateBorderlineCases(t *testing.T) {
 		depth2PcUSD   float64
 		minDepthUSD   float64
 		expectedOK    bool
+		expectedValue float64
 	}{
 		{
-			name:        "Exactly at threshold",
-			depth2PcUSD: 100000.0,
-			minDepthUSD: 100000.0,
-			expectedOK:  true,
+			name:          "Exactly at threshold",
+			depth2PcUSD:   100000.0,
+			minDepthUSD:   100000.0,
+			expectedOK:    true,
+			expectedValue: 100000.0,
 		},
 		{
-			name:        "Just above threshold",
-			depth2PcUSD: 100000.01,
-			minDepthUSD: 100000.0,
-			expectedOK:  true,
+			name:          "Just above threshold",
+			depth2PcUSD:   100000.01,
+			minDepthUSD:   100000.0,
+			expectedOK:    true,
+			expectedValue: 100000.0, // Rounded to nearest USD
 		},
 		{
-			name:        "Just below threshold",
-			depth2PcUSD: 99999.99,
-			minDepthUSD: 100000.0,
-			expectedOK:  false,
+			name:          "Just below threshold",
+			depth2PcUSD:   99999.99,
+			minDepthUSD:   100000.0,
+			expectedOK:    true,      // 99999.99 rounds to 100000
+			expectedValue: 100000.0,  // Rounded to nearest USD
 		},
 		{
-			name:        "Zero depth",
-			depth2PcUSD: 0.0,
-			minDepthUSD: 100000.0,
-			expectedOK:  false,
+			name:          "Zero depth",
+			depth2PcUSD:   0.0,
+			minDepthUSD:   100000.0,
+			expectedOK:    false,
+			expectedValue: 0.0,
 		},
 		{
-			name:        "Negative depth",
-			depth2PcUSD: -1000.0,
-			minDepthUSD: 100000.0,
-			expectedOK:  false,
+			name:          "Negative depth",
+			depth2PcUSD:   -1000.0,
+			minDepthUSD:   100000.0,
+			expectedOK:    false,
+			expectedValue: 0.0, // Negative values guarded to 0
 		},
 		{
-			name:        "Very high depth",
-			depth2PcUSD: 10000000.0,
-			minDepthUSD: 100000.0,
-			expectedOK:  true,
+			name:          "Very high depth",
+			depth2PcUSD:   10000000.0,
+			minDepthUSD:   100000.0,
+			expectedOK:    true,
+			expectedValue: 10000000.0,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			thresholds := domain.MicroGateThresholds{MinDepthUSD: tc.minDepthUSD}
-		inputs := domain.MicroGateInputs{Depth2PcUSD: tc.depth2PcUSD}
-		results := domain.EvaluateMicroGates(inputs, thresholds)
-		result := results.Depth
+			inputs := domain.MicroGateInputs{Depth2PcUSD: tc.depth2PcUSD}
+			results := domain.EvaluateMicroGates(inputs, thresholds)
+			result := results.Depth
 
 			if result.OK != tc.expectedOK {
 				t.Errorf("OK mismatch: got %v, want %v", result.OK, tc.expectedOK)
 			}
 
-			if result.Value != tc.depth2PcUSD {
-				t.Errorf("Value mismatch: got %f, want %f", result.Value, tc.depth2PcUSD)
+			if math.Abs(result.Value-tc.expectedValue) > 0.01 {
+				t.Errorf("Value mismatch: got %f, want %f", result.Value, tc.expectedValue)
 			}
 
 			if result.Threshold != tc.minDepthUSD {

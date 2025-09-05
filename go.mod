@@ -6,6 +6,7 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/redis/go-redis/v9 v9.13.0
 	github.com/rs/zerolog v1.34.0
+	github.com/sawpanic/CProtocol v0.0.0-20250905143344-09e96b18c072
 	github.com/sony/gobreaker v1.0.0
 	github.com/spf13/cobra v1.10.1
 )

@@ -5,6 +5,7 @@ import (
 	"sort"
 	"time"
 
+	"cryptorun/domain/scoring"
 	"github.com/rs/zerolog/log"
 )
 
@@ -184,25 +185,9 @@ func (s *Scorer) normalizeMomentumScore(momentum float64) float64 {
 
 // normalizeVolumeScore converts volume factor to 0-100 scoring range  
 func (s *Scorer) normalizeVolumeScore(volume float64) float64 {
-	if math.IsNaN(volume) || math.IsInf(volume, 0) {
-		return 50.0 // Neutral score for missing volume
-	}
-
-	// Volume scoring: higher volume gets higher scores
-	// Assume volume factor is already normalized (e.g., vs average volume)
-	
-	if volume <= 0 {
-		return 0.0
-	}
-
-	// Log scale for volume (handles wide range)
-	logVolume := math.Log10(volume)
-	
-	// Transform to 0-100 scale
-	// 1x volume = 50, 10x volume = 100, 0.1x volume = 0
-	score := 50.0 + (logVolume * 25.0)
-	
-	return math.Max(0.0, math.Min(100.0, score))
+	volumeMetrics := scoring.NormalizeVolumeScore(volume)
+	// TODO: Store illiquidity flag in factor set meta for gate usage
+	return volumeMetrics.Score
 }
 
 // normalizeSocialScore converts social factor to 0-100 scoring range
@@ -224,28 +209,9 @@ func (s *Scorer) normalizeSocialScore(social float64) float64 {
 
 // normalizeVolatilityScore converts volatility factor to 0-100 scoring range
 func (s *Scorer) normalizeVolatilityScore(volatility float64) float64 {
-	if math.IsNaN(volatility) || math.IsInf(volatility, 0) {
-		return 50.0 // Neutral score for missing volatility
-	}
-
-	// Volatility scoring: moderate volatility is preferred (inverted U-shape)
-	// Too low = no movement opportunity
-	// Too high = too risky
-	
-	absVolatility := math.Abs(volatility)
-	
-	// Optimal volatility around 15-25% (gets highest scores)
-	if absVolatility >= 15.0 && absVolatility <= 25.0 {
-		return 100.0
-	} else if absVolatility < 15.0 {
-		// Low volatility: score decreases as volatility approaches 0
-		return (absVolatility / 15.0) * 100.0
-	} else {
-		// High volatility: score decreases as volatility increases beyond 25%
-		excessVol := absVolatility - 25.0
-		penalty := math.Min(excessVol * 2.0, 80.0) // Max penalty of 80 points
-		return math.Max(20.0, 100.0 - penalty)
-	}
+	volatilityMetrics := scoring.NormalizeVolatilityScore(volatility)
+	// TODO: Store capping flag in factor set meta for analysis
+	return volatilityMetrics.Score
 }
 
 // applyRegimeAdjustments applies regime-specific scoring adjustments

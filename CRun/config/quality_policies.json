@@ -1,0 +1,8 @@
+{
+  "bad_miss_rate_thresholds": {
+    "1h": 0.35,
+    "24h": 0.40,
+    "7d": 0.40
+  },
+  "description": "Maximum acceptable bad miss rates per timeframe. Exceeding these thresholds will cause the analyst run to fail with non-zero exit code."
+}

@@ -1,0 +1,7 @@
+2025/09/03 21:21:42 Orthogonal rescoring AVAX: 64.2 → 45.4 (Δ-18.7)
+2025/09/03 21:21:42 Orthogonal rescoring okb: 48.2 → 25.9 (Δ-22.3)
+2025/09/03 21:21:42 Orthogonal rescoring cro: 48.0 → 23.6 (Δ-24.4)
+2025/09/03 21:21:42 Orthogonal rescoring ena: 48.0 → 23.8 (Δ-24.2)
+2025/09/03 21:21:42 Orthogonal rescoring hype: 46.9 → 26.5 (Δ-20.4)
+2025/09/03 21:21:42 Orthogonal rescoring avax: 46.4 → 23.3 (Δ-23.1)
+2025/09/03 21:21:42 Orthogonal rescoring ETH: 44.4 → 24.2 (Δ-20.2)

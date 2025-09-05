@@ -42,13 +42,13 @@ func EvaluateMicroGates(inputs MicroGateInputs, thresholds MicroGateThresholds) 
 	reason := ""
 	if !allPass {
 		if !spread.OK {
-			reason = fmt.Sprintf("spread %.2f bps > %.2f bps", spread.Value, spread.Threshold)
+			reason = fmt.Sprintf("spread %.0f bps > %.0f bps threshold", spread.Value, spread.Threshold)
 		} else if !depth.OK {
-			reason = fmt.Sprintf("depth $%.0f < $%.0f", depth.Value, depth.Threshold)
+			reason = fmt.Sprintf("depth $%.0f < $%.0f threshold", depth.Value, depth.Threshold)
 		} else if !vadr.OK {
-			reason = fmt.Sprintf("VADR %.3f < %.3f", vadr.Value, vadr.Threshold)
+			reason = fmt.Sprintf("VADR %.3f < %.3f threshold", vadr.Value, vadr.Threshold)
 		} else if !adv.OK {
-			reason = fmt.Sprintf("ADV $%.0f < $%.0f", adv.Value, adv.Threshold)
+			reason = fmt.Sprintf("ADV $%.0f < $%.0f threshold", adv.Value, adv.Threshold)
 		}
 	}
 
@@ -80,40 +80,55 @@ func DefaultMicroGateThresholds() MicroGateThresholds {
 }
 
 func evaluateSpreadGate(bid, ask, maxSpreadBps float64) GateEvidence {
-	if bid <= 0 || ask <= 0 || bid >= ask {
+	// Use precision helper for consistent calculation
+	spreadBpsInt := ComputeSpreadBps(bid, ask)
+	spreadBps := float64(spreadBpsInt)
+	
+	// Handle pathological cases (ComputeSpreadBps returns 9999 for invalid inputs)
+	if spreadBpsInt == 9999 {
 		return GateEvidence{
 			OK:        false,
-			Value:     math.NaN(),
+			Value:     spreadBps,
 			Threshold: maxSpreadBps,
-			Name:      "spread",
+			Name:      "spread_invalid",
 		}
 	}
 
-	mid := (bid + ask) / 2.0
-	spread := ask - bid
-	spreadBps := (spread / mid) * 10000.0
-
+	// Inclusive threshold check: spread_bps <= threshold_bps
 	return GateEvidence{
 		OK:        spreadBps <= maxSpreadBps,
-		Value:     roundToDecimals(spreadBps, 2),
+		Value:     spreadBps,
 		Threshold: maxSpreadBps,
 		Name:      "spread",
 	}
 }
 
 func evaluateDepthGate(depth2PcUSD, minDepthUSD float64) GateEvidence {
+	// Guard against NaN/Inf inputs and negative values
+	guardedDepth := GuardFinite(depth2PcUSD, 0.0)
+	if guardedDepth < 0 {
+		guardedDepth = 0.0
+	}
+	
+	// Round to nearest USD as per spec before comparison
+	roundedDepth := math.Round(guardedDepth)
+	
+	// Inclusive threshold check: depth2pc_usd >= threshold_usd
 	return GateEvidence{
-		OK:        depth2PcUSD >= minDepthUSD,
-		Value:     roundToDecimals(depth2PcUSD, 0),
+		OK:        roundedDepth >= minDepthUSD,
+		Value:     roundedDepth,
 		Threshold: minDepthUSD,
 		Name:      "depth",
 	}
 }
 
 func evaluateVADRGate(vadr, minVADR float64) GateEvidence {
+	// Guard against NaN/Inf inputs - fail safe
+	guardedVADR := GuardFinite(vadr, 0.0)
+	
 	return GateEvidence{
-		OK:        vadr >= minVADR,
-		Value:     roundToDecimals(vadr, 3),
+		OK:        guardedVADR >= minVADR,
+		Value:     roundToDecimals(guardedVADR, 3),
 		Threshold: minVADR,
 		Name:      "vadr",
 	}
