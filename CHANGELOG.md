@@ -1,5 +1,72 @@
 # CryptoRun Changelog
 
+## 2025-09-05 - Pairs Sync Hardening with Symbol Validation
+
+### Summary
+Hardened pairs sync system for pristine config/universe.json with strict Kraken USD spot pairs enforcement, regex-based symbol validation, ADV filtering, atomic writes with metadata, and comprehensive symbol audit capability. Added Symbol Audit command for detecting offenders and verifying config integrity.
+
+### Rationale
+Universe config is critical foundation data - malformed symbols or non-USD pairs compromise the entire scanning pipeline. Strict validation ensures only legitimate Kraken USD cash spot pairs with adequate liquidity enter the system. Hash-based integrity checking prevents config corruption, while atomic writes ensure consistency under failure conditions.
+
+### Code Changes
+
+#### Symbol Validation & Auditing
+- **src/application/pairs_audit.go** (348 lines) - Complete symbol validation and audit system
+  - **PairsAuditor**: Validates symbols against ^[A-Z0-9]+USD$ regex pattern
+  - **Symbol Validation**: Rejects malformed tickers, test/dark/perp patterns, minimum length enforcement
+  - **Config Integrity**: Validates metadata (_synced_at, _source, _criteria, _hash) and calculates expected hash
+  - **Comprehensive Audit**: Returns detailed violation lists, warnings, and integrity check results
+  - **Atomic Reporting**: tmp→rename pattern for audit.json output
+
+#### Enhanced Pairs Sync
+- **src/application/pairs_sync.go** (Modified) - Hardened with strict validation
+  - **Kraken USD Enforcement**: Only USD cash spot pairs, rejects perp/fut/dark derivatives
+  - **Symbol Normalization**: XBT→BTC normalization with deterministic ordering
+  - **Regex Validation**: validateNormalizedPairs() applies ^[A-Z0-9]+USD$ filtering
+  - **Hash Calculation**: SHA256 hash of config content (excluding _hash field) for integrity
+  - **Atomic Writes**: tmp→rename for universe.json with deterministic pair sorting
+  - **Enhanced Filtering**: Rejects test patterns, length validation, derivative exclusion
+
+#### Menu Integration
+- **src/cmd/cryptorun/menu_main.go** (Modified) - Added Symbol Audit command
+  - **Menu Option 3**: "Symbol Audit - Validate symbol format and config integrity"
+  - **Comprehensive Audit**: Runs validation checks and prints summary with offender details
+  - **Report Generation**: Creates detailed audit.json report with all findings
+  - **Menu Reordering**: Updated all option numbers (Exit now option 8)
+
+#### Enhanced Test Coverage
+- **tests/unit/pairs_sync_test.go** (Modified) - Added validation and integrity tests
+  - **Extended Filtering Tests**: Perp, dark pool, length validation edge cases
+  - **Hash Calculation Tests**: Verifies deterministic hash generation and timestamp changes
+  - **Atomic Write Tests**: Confirms tmp files cleaned up after successful writes
+  - **Symbol Validation Tests**: Tests regex filtering with mix of valid/invalid patterns
+
+### Features
+- **Strict USD-Only Policy**: Rejects all non-USD pairs at source (EUR, BTC, etc.)
+- **Derivative Exclusion**: Blocks perpetuals, futures, dark pools, test pairs
+- **Regex Enforcement**: ^[A-Z0-9]+USD$ pattern strictly enforced
+- **XBT→BTC Normalization**: Automatic Bitcoin symbol standardization
+- **Hash Integrity**: SHA256-based config integrity verification
+- **Atomic Operations**: All writes use tmp→rename for crash safety
+- **Deterministic Sorting**: Stable alphabetical ordering for reproducible configs
+- **Comprehensive Auditing**: Full validation with detailed violation reporting
+- **ADV Filtering**: Configurable minimum Average Daily Volume thresholds
+- **Metadata Tracking**: _synced_at, _source, _criteria, _hash fields
+
+### Configuration Updates
+- **UniverseConfig**: Added _hash field for integrity verification
+- **PairsSync**: Enhanced with symbolRegex field for validation
+- **Atomic Writes**: All universe.json writes now use tmp→rename pattern
+- **Deterministic Hashing**: Content-based hash excludes timestamp for stability
+
+### Test Results
+- **TestSymbolValidation**: ✅ Validates regex filtering removes invalid symbols
+- **TestHashCalculation**: ✅ Deterministic hash generation with timestamp variation
+- **TestAtomicWrites**: ✅ Confirms tmp files cleaned up after writes
+- **Extended Filtering Tests**: ✅ All derivative and edge case patterns rejected
+
+---
+
 ## 2025-09-05 - Volume/Volatility Scoring Semantic Fixes
 
 ### Summary

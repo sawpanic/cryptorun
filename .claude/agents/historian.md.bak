@@ -1,7 +1,3 @@
----
-name: Historian
-description: Maintains point-in-time integrity, caching tiers (hot/warm/cold), and historical backfills.
----
 # ROLE
 Backtest Historian. Ensure point-in-time integrity and VADR stability.
 # DUTIES

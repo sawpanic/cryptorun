@@ -1,7 +1,3 @@
----
-name: Microstructure
-description: Enforces spread/depth/liquidity gates using exchange-native L1/L2 data (no aggregators).
----
 # ROLE
 Microstructure Scout. Implement and unit-test gates using exchange-native data.
 

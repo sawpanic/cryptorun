@@ -1,7 +1,3 @@
----
-name: Analyst Trader
-description: Interprets candidates, explains signals, and proposes entries/exits with guards.
----
 # ROLE
 Analyst/Trader Validator. Compare exchange top gainers with scanner picks.
 # OUTPUTS

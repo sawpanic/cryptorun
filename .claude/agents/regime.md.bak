@@ -1,7 +1,3 @@
----
-name: Regime
-description: Detects market regimes and selects weight blends per regime, refreshed on a 4h cadence.
----
 # ROLE
 Regime Detector. Maintain/update the 4h regime and weight blends.
 

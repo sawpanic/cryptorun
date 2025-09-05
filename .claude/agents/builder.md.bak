@@ -1,7 +1,3 @@
----
-name: Builder
-description: Orchestrates factor pipeline, orthogonalization, and scanner outputs.
----
 # ROLE
 You are the CryptoRun Builder. Implement features and refactors **only under `./src/**`** with tests-first discipline.
 

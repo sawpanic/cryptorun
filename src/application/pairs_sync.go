@@ -2,11 +2,14 @@ package application
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -26,6 +29,7 @@ type UniverseConfig struct {
 	Source    string    `json:"_source"`
 	Note      string    `json:"_note"`
 	Criteria  Criteria  `json:"_criteria"`
+	Hash      string    `json:"_hash"`
 }
 
 type Criteria struct {
@@ -86,14 +90,19 @@ type KrakenTickerInfo struct {
 }
 
 type PairsSync struct {
-	client *http.Client
-	config PairsSyncConfig
+	client      *http.Client
+	config      PairsSyncConfig
+	symbolRegex *regexp.Regexp
 }
 
 func NewPairsSync(config PairsSyncConfig) *PairsSync {
+	// Regex for valid USD symbols: uppercase letters/numbers + USD suffix
+	symbolRegex := regexp.MustCompile(`^[A-Z0-9]+USD$`)
+	
 	return &PairsSync{
-		client: &http.Client{Timeout: 30 * time.Second},
-		config: config,
+		client:      &http.Client{Timeout: 30 * time.Second},
+		config:      config,
+		symbolRegex: symbolRegex,
 	}
 }
 
@@ -117,7 +126,10 @@ func (ps *PairsSync) SyncPairs(ctx context.Context) (*SyncReport, error) {
 		return nil, fmt.Errorf("failed to normalize pairs: %w", err)
 	}
 
-	advResults := ps.calculateADVs(tickers, normalizedPairs)
+	// Validate normalized pairs using strict criteria
+	validatedPairs := ps.validateNormalizedPairs(normalizedPairs)
+
+	advResults := ps.calculateADVs(tickers, validatedPairs)
 	
 	validPairs := ps.FilterByADV(advResults, ps.config.MinADV)
 	
@@ -183,21 +195,33 @@ func (ps *PairsSync) fetchKrakenUSDPairs(ctx context.Context) ([]string, error) 
 }
 
 func (ps *PairsSync) isValidUSDPair(pair KrakenTradablePair) bool {
+	// Enforce Kraken USD cash spot pairs only
 	if pair.Quote != "ZUSD" && pair.Quote != "USD" {
 		return false
 	}
 
+	// Only online pairs
 	if pair.Status != "online" {
 		return false
 	}
 
-	if strings.Contains(strings.ToLower(pair.Altname), "test") ||
-	   strings.Contains(strings.ToLower(pair.Altname), ".d") ||
-	   strings.Contains(strings.ToLower(pair.Altname), "dark") {
+	// Reject test, dark pool, or derivative patterns
+	lowerAltname := strings.ToLower(pair.Altname)
+	if strings.Contains(lowerAltname, "test") ||
+	   strings.Contains(lowerAltname, ".d") ||
+	   strings.Contains(lowerAltname, "dark") ||
+	   strings.Contains(lowerAltname, "perp") ||
+	   strings.Contains(lowerAltname, "fut") {
 		return false
 	}
 
+	// Only currency asset classes (no derivatives)
 	if pair.AssetClassBase != "currency" || pair.AssetClassQuote != "currency" {
+		return false
+	}
+
+	// Reject pairs that don't fit standard naming
+	if len(pair.Altname) < 3 || len(pair.Altname) > 12 {
 		return false
 	}
 
@@ -252,12 +276,14 @@ func (ps *PairsSync) normalizePairs(pairs []string) (map[string]string, error) {
 	for _, pair := range pairs {
 		baseCurrency := ps.extractBaseCurrency(pair)
 		
-		if mappedBase, exists := symbolsMap["kraken"][baseCurrency]; exists {
-			normalized[pair] = mappedBase + "USD"
-		} else if baseCurrency == "XBT" {
+		// Apply XBT→BTC normalization first
+		if baseCurrency == "XBT" {
 			symbolsMap["kraken"]["XBT"] = "BTC"
 			normalized[pair] = "BTCUSD"
+		} else if mappedBase, exists := symbolsMap["kraken"][baseCurrency]; exists {
+			normalized[pair] = mappedBase + "USD"
 		} else {
+			// Default: use base currency as-is
 			normalized[pair] = baseCurrency + "USD"
 		}
 	}
@@ -268,6 +294,44 @@ func (ps *PairsSync) normalizePairs(pairs []string) (map[string]string, error) {
 	}
 
 	return normalized, nil
+}
+
+// validateNormalizedPairs applies strict validation to normalized pairs
+func (ps *PairsSync) validateNormalizedPairs(normalizedPairs map[string]string) map[string]string {
+	validated := make(map[string]string)
+	
+	for krakenPair, normalizedSymbol := range normalizedPairs {
+		// Apply regex validation: must match ^[A-Z0-9]+USD$
+		if !ps.symbolRegex.MatchString(normalizedSymbol) {
+			continue // Skip malformed tickers
+		}
+		
+		// Additional validation checks
+		if ps.isValidNormalizedSymbol(normalizedSymbol) {
+			validated[krakenPair] = normalizedSymbol
+		}
+	}
+	
+	return validated
+}
+
+// isValidNormalizedSymbol performs additional symbol validation
+func (ps *PairsSync) isValidNormalizedSymbol(symbol string) bool {
+	// Check minimum length (at least 4 chars: X + USD)
+	if len(symbol) < 4 {
+		return false
+	}
+	
+	// Check for prohibited patterns
+	lowerSymbol := strings.ToLower(symbol)
+	prohibited := []string{"test", ".d", "dark", "perp", "fut"}
+	for _, pattern := range prohibited {
+		if strings.Contains(lowerSymbol, pattern) {
+			return false
+		}
+	}
+	
+	return true
 }
 
 func (ps *PairsSync) extractBaseCurrency(pair string) string {
@@ -363,9 +427,14 @@ func (ps *PairsSync) FilterByADV(advResults []ADVResult, minADV int64) []string 
 }
 
 func (ps *PairsSync) WriteUniverseConfig(pairs []string) error {
+	// Sort pairs deterministically
+	sortedPairs := make([]string, len(pairs))
+	copy(sortedPairs, pairs)
+	sort.Strings(sortedPairs)
+	
 	config := UniverseConfig{
 		Venue:      "KRAKEN",
-		USDPairs:   pairs,
+		USDPairs:   sortedPairs,
 		DoNotTrade: []string{},
 		SyncedAt:   time.Now().UTC().Format(time.RFC3339),
 		Source:     "kraken",
@@ -375,18 +444,52 @@ func (ps *PairsSync) WriteUniverseConfig(pairs []string) error {
 			MinADVUSD: ps.config.MinADV,
 		},
 	}
+	
+	// Calculate hash of content (excluding _hash field)
+	config.Hash = ps.calculateConfigHash(config)
 
 	data, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
 		return err
 	}
 
+	// Atomic write: tmp → rename
 	tmpFile := "config/universe.json.tmp"
 	if err := os.WriteFile(tmpFile, data, 0644); err != nil {
 		return err
 	}
 
 	return os.Rename(tmpFile, "config/universe.json")
+}
+
+// calculateConfigHash computes SHA256 hash of config content
+func (ps *PairsSync) calculateConfigHash(config UniverseConfig) string {
+	// Create struct for hashing (exclude _hash field)
+	hashConfig := struct {
+		Venue      string    `json:"venue"`
+		USDPairs   []string  `json:"usd_pairs"`
+		DoNotTrade []string  `json:"do_not_trade"`
+		SyncedAt   string    `json:"_synced_at"`
+		Source     string    `json:"_source"`
+		Note       string    `json:"_note"`
+		Criteria   Criteria  `json:"_criteria"`
+	}{
+		Venue:      config.Venue,
+		USDPairs:   config.USDPairs,
+		DoNotTrade: config.DoNotTrade,
+		SyncedAt:   config.SyncedAt,
+		Source:     config.Source,
+		Note:       config.Note,
+		Criteria:   config.Criteria,
+	}
+	
+	data, err := json.Marshal(hashConfig)
+	if err != nil {
+		return ""
+	}
+	
+	hash := sha256.Sum256(data)
+	return hex.EncodeToString(hash[:])
 }
 
 func (ps *PairsSync) writeReport(report *SyncReport) error {

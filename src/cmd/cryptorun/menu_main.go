@@ -54,30 +54,36 @@ func NewMenuUI() *MenuUI {
 		},
 		{
 			Number:      3,
+			Title:       "Symbol Audit",
+			Description: "Validate symbol format and config integrity",
+			Handler:     ui.handleSymbolAudit,
+		},
+		{
+			Number:      4,
 			Title:       "Analyst & Coverage",
 			Description: "View scanning metrics and coverage analysis",
 			Handler:     ui.handleAnalystCoverage,
 		},
 		{
-			Number:      4,
+			Number:      5,
 			Title:       "Dry-run",
 			Description: "Test scanning pipeline with mock data (no real trades)",
 			Handler:     ui.handleDryRun,
 		},
 		{
-			Number:      5,
+			Number:      6,
 			Title:       "Resilience Self-Test",
 			Description: "Run precision semantics and network resilience test suite",
 			Handler:     ui.handleResilientSelfTest,
 		},
 		{
-			Number:      6,
+			Number:      7,
 			Title:       "Settings",
 			Description: "Configure regime, thresholds, and other settings",
 			Handler:     ui.handleSettings,
 		},
 		{
-			Number:      7,
+			Number:      8,
 			Title:       "Exit",
 			Description: "Exit CryptoRun",
 			Handler:     ui.handleExit,
@@ -96,7 +102,7 @@ func (ui *MenuUI) Run() error {
 	for {
 		ui.printMenu()
 		
-		fmt.Print("Choose an option (1-7): ")
+		fmt.Print("Choose an option (1-8): ")
 		if !ui.scanner.Scan() {
 			break
 		}
@@ -108,12 +114,12 @@ func (ui *MenuUI) Run() error {
 		
 		choice, err := strconv.Atoi(input)
 		if err != nil {
-			fmt.Printf("Invalid input: %s. Please enter a number between 1-7.\n\n", input)
+			fmt.Printf("Invalid input: %s. Please enter a number between 1-8.\n\n", input)
 			continue
 		}
 		
 		if choice < 1 || choice > len(ui.options) {
-			fmt.Printf("Invalid choice: %d. Please enter a number between 1-7.\n\n", choice)
+			fmt.Printf("Invalid choice: %d. Please enter a number between 1-8.\n\n", choice)
 			continue
 		}
 		
@@ -126,7 +132,7 @@ func (ui *MenuUI) Run() error {
 		}
 		
 		// Exit if user chose exit option
-		if choice == 7 {
+		if choice == 8 {
 			break
 		}
 		
@@ -375,6 +381,37 @@ func (ui *MenuUI) handleAnalystCoverage(ctx context.Context) error {
 	return nil
 }
 
+
+// handleSymbolAudit runs symbol validation and config integrity checks
+func (ui *MenuUI) handleSymbolAudit(ctx context.Context) error {
+	fmt.Println("🔍 Symbol Audit - Validating universe.json integrity")
+	fmt.Println("• Checking symbol format compliance (^[A-Z0-9]+USD$)")
+	fmt.Println("• Validating Kraken USD spot pairs only")
+	fmt.Println("• Verifying config metadata and hash")
+	fmt.Println("• Identifying offenders and warnings")
+	fmt.Println()
+	
+	// Create auditor with current ADV threshold
+	auditor := application.NewPairsAuditor(1000000) // $1M ADV threshold
+	
+	// Perform comprehensive audit
+	result, err := auditor.AuditUniverseConfig()
+	if err != nil {
+		return fmt.Errorf("audit failed: %w", err)
+	}
+	
+	// Write detailed report to file
+	if err := auditor.WriteAuditReport(result); err != nil {
+		fmt.Printf("Warning: Failed to write audit report: %v\n", err)
+	}
+	
+	// Print summary to console
+	auditor.PrintAuditSummary(result)
+	
+	fmt.Printf("\n📄 Detailed report saved to: out/universe/audit.json\n")
+	
+	return nil
+}
 
 // handleExit gracefully exits the application
 func (ui *MenuUI) handleExit(ctx context.Context) error {

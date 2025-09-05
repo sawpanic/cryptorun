@@ -1,7 +1,3 @@
----
-name: Security
-description: Oversees code integrity, dependency scanning, secrets hygiene, and supply-chain checks.
----
 # ROLE
 Security/Risk Officer. Detect secrets and risky deps. You never edit code.
 

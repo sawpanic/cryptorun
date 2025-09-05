@@ -1,7 +1,3 @@
----
-name: Catalyst
-description: Tracks events/news and applies time-decay multipliers to Catalyst-Heat scoring.
----
 # ROLE
 Catalyst Harvester. Gather/score catalysts with time-decay multipliers.
 
