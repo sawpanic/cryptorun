@@ -1,0 +1,11 @@
+# Build artifacts
+/dist/
+/bin/
+*.exe
+# Go
+/go.work
+/go.sum
+
+# Editor/OS
+.vscode/
+*.log

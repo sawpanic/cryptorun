@@ -1,0 +1,71 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(./**/*)",
+      "Glob(*)",
+      "Grep(*)",
+      "Bash(go build:*)",
+      "Bash(go test:*)",
+      "Bash(pwsh -NoProfile -File ./.claude/hooks/*.ps1:*)",
+      "Edit(./src/**)",
+      "Write(./src/**)"
+    ],
+    "ask": [
+      "Edit(./tests/**)",
+      "Write(./tests/**)"
+    ],
+    "deny": [
+      "Read(./secrets/**)",
+      "Read(./.env*)",
+      "WebFetch",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(git push:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [{
+          "type": "command",
+          "command": "pwsh -NoProfile -File ./.claude/hooks/check-tests.ps1",
+          "timeout": 180
+        }]
+      },
+      {
+        "matcher": "WebFetch",
+        "hooks": [{
+          "type": "command",
+          "command": "pwsh -NoProfile -File ./.claude/hooks/webfetch-allow.ps1",
+          "timeout": 20
+        }]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [{
+          "type": "command",
+          "command": "pwsh -NoProfile -File ./.claude/hooks/check-tests.ps1",
+          "timeout": 180
+        }]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [{
+          "type": "command",
+          "command": "pwsh -NoProfile -File ./.claude/hooks/prompt-guard.ps1",
+          "timeout": 5
+        }]
+      }
+    ]
+  },
+  "env": {
+    "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "4096",
+    "BASH_MAX_OUTPUT_LENGTH": "100000"
+  },
+  "defaultMode": "acceptEdits",
+  "disableBypassPermissionsMode": "disable"
+}
