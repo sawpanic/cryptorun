@@ -1,0 +1,21 @@
+{
+  "total_symbols": 39,
+  "valid_symbols": 39,
+  "invalid_symbols": 0,
+  "offenders": [],
+  "warnings": [
+    {
+      "symbol": "XDGUSD",
+      "warning": "possible Kraken legacy format, verify normalization"
+    }
+  ],
+  "config_integrity": {
+    "has_metadata": true,
+    "valid_source": true,
+    "valid_criteria": true,
+    "valid_timestamp": true,
+    "valid_hash": true,
+    "expected_hash": "f7ca392adc19583ad90dc0239308e9944b307a0900022145f16e216c2870691e",
+    "actual_hash": "f7ca392adc19583ad90dc0239308e9944b307a0900022145f16e216c2870691e"
+  }
+}
