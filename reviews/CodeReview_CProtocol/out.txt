@@ -1,0 +1,129 @@
+┌───────────────────────────────────────────────────┐
+│                   🚀 CProtocol                   │
+└───────────────────────────────────────────────────┘
+
+=== CPROTOCOL OPTIMIZED TRADING SYSTEM v1.0.4 (2025-09-03 21:21 Jerusalem) ===
+🎯 DATA-DRIVEN CONFIGURATIONS (Based on 3,490+ backtested trades):
+
+1. 🔬 ULTRA-ALPHA ORTHOGONAL (1.45 Sharpe | No Double Counting | 35% Quality + 26% Volume)
+2. ⚖️ BALANCED ORTHOGONAL (1.42 Sharpe | De-correlated Factors | Risk-Adjusted)
+3. 🎯 SWEET SPOT ORTHOGONAL (1.40 Sharpe | Range Optimized | Technical Overweight)
+4. 📱 SOCIAL ORTHOGONAL (1.35 Sharpe | 50% Social + 18% Quality + 15% OnChain)
+5. ❌ COMPLETE FACTORS (DEPRECATED | 124.8% weight sum error)
+6. ❌ ENHANCED MATRIX (DEPRECATED | Factor double counting)
+7. 📈 Analysis & Tools (Backtesting, Paper Trading, Algorithm Analyst, Market Analyst)
+8. 🌐 Web Dashboard (Browser Interface)
+0. Exit
+
+Select option (0-8): 
+
+=== ULTRA-ALPHA ORTHOGONAL MODE SELECTION ===
+1. 🔍 Single Scan (Run once)
+2. 🔄 Non-Stop Mode (Continuous scanning)
+0. Back to Main Menu
+
+Select mode (0-2): 
+EOF detected, executing single scan for monitoring...
+
+🔬 ULTRA-ALPHA ORTHOGONAL SCANNER
+=====================================
+✅ 35% Quality Residual (Technical contamination removed)
+✅ 26% Volume+Liquidity Fused (No double counting)
+✅ 18% Technical Residual (Quality overlap removed)
+✅ 12% OnChain Residual (All overlaps removed)
+✅ 9% Social Residual (Heavily decontaminated)
+📊 Projected Sharpe: 1.45 | Weight Sum: 100.000%
+
+🔄 Scanning with orthogonal factors...
+🔄 FRESH SCAN INITIATED: scan_1756923697_900 (No cache, no pooled data)
+⚡ Progress: 0% complete | Runtime: 0.0s
+🔄 Step 1: Initializing multi-dimensional analysis engine (0.0s)
+🔍 Fetching Kraken trading pairs with HIGH-PRIORITY filtering...
+📊 HIGH-PRIORITY Kraken Pair Filtering Results:
+  Total pairs: 1197
+  Filtered out (stablecoins): 0
+  Filtered out (invalid quotes): 1197
+  Filtered out (dark pools): 0
+  Filtered out (low-priority): 0
+  HIGH-PRIORITY momentum pairs: 0
+  Filtering efficiency: 0.0% (reduced from 982+ to ~50-100 top-tier)
+📊 Including 0 priority pairs + 0 regular pairs = 0 total pairs (shuffled by timestamp 1756923700003899700)
+🔴 FETCHING LIVE CMC TOP GAINERS DATA
+❌ CRITICAL: CMC top gainers fetch failed: API returned status 401: {
+    "status": {
+        "timestamp": "2025-09-03T18:21:40.167Z",
+        "error_code": 1001,
+        "error_message": "This API Key is invalid.",
+        "elapsed": 0,
+        "credit_count": 0
+    }
+}
+📡 FALLBACK: Trying CoinGecko with aggressive retry...
+✅ Retrieved 50 LIVE CMC top gainers
+🌟 [CMC LIVE] Added hype: +5.36% gain, $314697875 volume
+🌟 [CMC LIVE] Added avax: +6.56% gain, $795034220 volume
+🌟 [CMC LIVE] Added cro: +9.99% gain, $444730832 volume
+🌟 [CMC LIVE] Added ena: +8.24% gain, $735333008 volume
+🌟 [CMC LIVE] Added okb: +8.06% gain, $262675341 volume
+📈 LIVE CMC DATA: 5 opportunities from today's top gainers
+⚡ Progress: 56% complete | Runtime: 4.0s
+🧹 UNIVERSE HYGIENE: 0 assets filtered, 8 remaining
+🔄 MOMENTUM FILTER: SOL (0.5% - insufficient movement for trading)
+⚡ MOMENTUM FILTER: 1 flat assets excluded, 7 moving assets remain
+⚡ Progress: 100% complete | Runtime: 4.3s
+🎉 Analysis Complete! Total time: 4.3s
+
+🔍 LIVE DATA VALIDATION REPORT
+================================
+🕒 Validation Time: 2025-09-03 21:21:42
+🔗 Scan Hash: 82bab9c3e9e8fd4f
+📊 Freshness Score: 100.0/100
+
+🧮 Applying orthogonal scoring (ULTRA-ALPHA mode)...
+✅ Orthogonal scoring applied and results re-ranked
+
+📊 ULTRA-ALPHA ORTHOGONAL RESULTS - 7 opportunities
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#    SYMBOL       TYPE       CHANGE   TECH     VOL(USD) RISK     COMPOSITE STATUS       REASON      
+--   ------       ----       ------   ----     -------  ----     ---------  ------       ------
+1    AVAX         NEUTRAL       +3.4% 40.0     2.72M    50.0     45.4      ❌ REJECTED   LOW_SCORE
+2    hype         MOMENTUM      +5.4% 52.0     315M     50.0     26.5      ❌ REJECTED   LOW_SCORE
+3    okb          BREAKOUT      +8.1% 60.0     263M     50.0     25.9      ❌ REJECTED   LOW_SCORE
+4    ETH          MOMENTUM      +3.2% 52.0     184M     50.0     24.2      ❌ REJECTED   LOW_SCORE
+5    ena          BREAKOUT      +8.2% 60.0     735M     50.0     23.8      ❌ REJECTED   LOW_SCORE
+6    cro          BREAKOUT     +10.0% 60.0     445M     50.0     23.6      ❌ REJECTED   LOW_SCORE
+7    avax         MOMENTUM      +6.6% 52.0     795M     50.0     23.3      ❌ REJECTED   LOW_SCORE
+────────────────────────────────────────────────────────────────────────────────
+
+🧮 ULTRA-ALPHA ORTHOGONAL FACTOR WEIGHTS:
+   📊 Quality Residual: 35.0% (Technical contamination removed)
+   📈 Volume+Liquidity: 26.0% (Fused composite, no double counting)
+   ⚡ Technical Residual: 18.0% (Quality overlap eliminated)
+   🔗 OnChain Residual: 12.0% (All overlaps removed)
+   📱 Social Residual: 9.0% (Heavily decontaminated)
+   ✅ TOTAL: 100.000% (Perfect 100% sum)
+
+🎯 ORTHOGONAL SYSTEM ADVANTAGES:
+   ✅ Zero factor collinearity (Gram-Schmidt residualization)
+   ✅ Perfect weight normalization (no 123.9% errors)
+   ✅ Gates separated from alpha (multiplicative 0-1)
+   ✅ Regime-aware weight selection (not additive)
+
+📋 Press Enter to continue...
+
+=== CPROTOCOL OPTIMIZED TRADING SYSTEM v1.0.4 (2025-09-03 21:21 Jerusalem) ===
+🎯 DATA-DRIVEN CONFIGURATIONS (Based on 3,490+ backtested trades):
+
+1. 🔬 ULTRA-ALPHA ORTHOGONAL (1.45 Sharpe | No Double Counting | 35% Quality + 26% Volume)
+2. ⚖️ BALANCED ORTHOGONAL (1.42 Sharpe | De-correlated Factors | Risk-Adjusted)
+3. 🎯 SWEET SPOT ORTHOGONAL (1.40 Sharpe | Range Optimized | Technical Overweight)
+4. 📱 SOCIAL ORTHOGONAL (1.35 Sharpe | 50% Social + 18% Quality + 15% OnChain)
+5. ❌ COMPLETE FACTORS (DEPRECATED | 124.8% weight sum error)
+6. ❌ ENHANCED MATRIX (DEPRECATED | Factor double counting)
+7. 📈 Analysis & Tools (Backtesting, Paper Trading, Algorithm Analyst, Market Analyst)
+8. 🌐 Web Dashboard (Browser Interface)
+0. Exit
+
+Select option (0-8): 
+
+Exiting...

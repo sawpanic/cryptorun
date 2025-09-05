@@ -1,0 +1,27 @@
+		ui.SafePrintln("🎯 DATA-DRIVEN CONFIGURATIONS (Based on 3,490+ backtested trades):")
+		ui.SafePrintln()
+		ui.SafePrintln("1. 🔬 ULTRA-ALPHA ORTHOGONAL (1.45 Sharpe | No Double Counting | 35% Quality + 26% Volume)")
+		
+		ui.SafePrintln("2. ⚖️ BALANCED ORTHOGONAL (1.42 Sharpe | De-correlated Factors | Risk-Adjusted)")
+		
+		ui.SafePrintln("3. 🎯 SWEET SPOT ORTHOGONAL (1.40 Sharpe | Range Optimized | Technical Overweight)")
+		
+		ui.SafePrintln("4. 📱 SOCIAL ORTHOGONAL (1.35 Sharpe | 50% Social + 18% Quality + 15% OnChain)")
+		
+		ui.SafePrintln("5. ❌ COMPLETE FACTORS (DEPRECATED | 124.8% weight sum error)")
+		
+		ui.SafePrintln("6. ❌ ENHANCED MATRIX (DEPRECATED | Factor double counting)")
+		
+		ui.SafePrintln("7. 📈 Analysis & Tools (Backtesting, Paper Trading, Algorithm Analyst, Market Analyst)")
+		ui.SafePrintln("8. 🌐 Web Dashboard (Browser Interface)")
+		ui.SafePrintln("0. Exit")
+		
+		// Flush buffer before user input
+		ui.FlushOutput()
+		
+		choice := getUserInput("\nSelect option (0-8): ")
+		
+		switch choice {
+		case "1":
+			runAlgorithmWithModeChoice("Ultra-Alpha Orthogonal", runOrthogonalUltraAlpha, performanceIntegration)
+		case "2":
