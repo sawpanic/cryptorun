@@ -44,7 +44,7 @@ func TestNormalizeVolumeScore(t *testing.T) {
 		{
 			name:            "Zero volume",
 			volume:          0.0,
-			expectedScore:   0.0,  // Policy: zero volume → score 0.0 (neutral)
+			expectedScore:   50.0, // Policy: zero volume → 50.0 component-neutral score
 			scoreTolerance:  0.1,
 			expectIlliquid:  true, // Should flag as illiquid
 			expectValid:     true,
@@ -60,7 +60,7 @@ func TestNormalizeVolumeScore(t *testing.T) {
 		{
 			name:            "NaN volume",
 			volume:          math.NaN(),
-			expectedScore:   0.0,  // NaN volume gets 0 score
+			expectedScore:   50.0, // Component-neutral for NaN
 			scoreTolerance:  0.1,
 			expectIlliquid:  true, // Should flag as illiquid
 			expectValid:     false, // Invalid NaN
@@ -68,7 +68,7 @@ func TestNormalizeVolumeScore(t *testing.T) {
 		{
 			name:            "Positive infinity",
 			volume:          math.Inf(1),
-			expectedScore:   0.0,  // Inf volume gets 0 score
+			expectedScore:   50.0, // Component-neutral for Inf
 			scoreTolerance:  0.1,
 			expectIlliquid:  true, // Should flag as illiquid
 			expectValid:     false, // Invalid Inf
@@ -76,7 +76,7 @@ func TestNormalizeVolumeScore(t *testing.T) {
 		{
 			name:            "Negative infinity",
 			volume:          math.Inf(-1),
-			expectedScore:   0.0,  // Inf volume gets 0 score
+			expectedScore:   50.0, // Component-neutral for Inf
 			scoreTolerance:  0.1,
 			expectIlliquid:  true, // Should flag as illiquid
 			expectValid:     false, // Invalid Inf

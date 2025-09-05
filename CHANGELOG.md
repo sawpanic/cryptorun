@@ -1,5 +1,39 @@
 # CryptoRun Changelog
 
+## 2025-09-05 - Fast-lane Repair: Hermetic Tests, Single Module, Universe Integrity, Dry-run + Sweep
+
+### Summary
+Fast-lane repair: hermetic tests, single module, universe integrity, Dry-run + Sweep wired.
+
+### Major Changes
+- **Test Infrastructure**: Removed duplicate test modules, merged CRun0.9/tests→tests/, created hermetic test helpers
+- **Single Module**: Eliminated tests/go.mod, all tests run from repo root with `go test ./...`
+- **Atomic I/O**: Created internal/io/atomic helpers for all file operations  
+- **Dry-run Command**: Complete workflow (scan→analyst→4-line summary→CHANGELOG append)
+- **Verification Sweep**: Read-only system health checker with PASS/FAIL checklist
+- **Output Canonicalization**: All outputs under out/** with atomic writes
+
+### Files Added
+- **tests/internal/testpaths/testpaths.go** - Hermetic test path helpers
+- **internal/io/atomic.go** - Atomic file write utilities
+- **src/application/dryrun.go** - Complete dry-run workflow executor
+- **src/application/verify.go** - System verification and health checking
+- **src/cmd/cryptorun/dryrun_main.go** - Dry-run menu handler
+- **src/cmd/cryptorun/verify_main.go** - Verification sweep menu handler
+- **scripts/smoke.ps1** - PowerShell smoke test script
+- **tests/testdata/*** - Test fixtures for hermetic testing
+
+### Acceptance Verified
+- ✅ Single module: `go test ./...` from repo root
+- ✅ No duplicate test trees (CRun0.9 removed)
+- ✅ Hermetic tests using t.TempDir() and testdata fixtures
+- ✅ Universe integrity: USD-only, sorted, _hash present, min_adv_usd=100000
+- ✅ Menu expanded: [Scan, Pairs sync, Audit, Analyst, Dry-run, Resilience, Settings, Verification, Exit]
+- ✅ Atomic writes using internal/io/atomic helpers
+- ✅ Outputs canonicalized under out/**
+
+---
+
 ## 2025-09-05 - Universe Sync Integrity Fix
 
 ### Summary

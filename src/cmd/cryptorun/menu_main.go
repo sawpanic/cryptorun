@@ -68,7 +68,7 @@ func NewMenuUI() *MenuUI {
 			Number:      5,
 			Title:       "Dry-run",
 			Description: "Test scanning pipeline with mock data (no real trades)",
-			Handler:     ui.handleDryRun,
+			Handler:     ui.handleDryrun,
 		},
 		{
 			Number:      6,
@@ -84,6 +84,12 @@ func NewMenuUI() *MenuUI {
 		},
 		{
 			Number:      8,
+			Title:       "Verification Sweep",
+			Description: "Read-only system verification and health check",
+			Handler:     ui.handleVerificationSweep,
+		},
+		{
+			Number:      9,
 			Title:       "Exit",
 			Description: "Exit CryptoRun",
 			Handler:     ui.handleExit,
@@ -102,7 +108,7 @@ func (ui *MenuUI) Run() error {
 	for {
 		ui.printMenu()
 		
-		fmt.Print("Choose an option (1-8): ")
+		fmt.Print("Choose an option (1-9): ")
 		if !ui.scanner.Scan() {
 			break
 		}

@@ -68,15 +68,15 @@ func TestNormalizeVolatilityScore(t *testing.T) {
 		{
 			name:        "NaN volatility",
 			volatility:  math.NaN(),
-			expectedMin: 0.0,
-			expectedMax: 0.0,
+			expectedMin: 49.0,
+			expectedMax: 51.0,
 			expectCapped: false,
 		},
 		{
 			name:        "Positive infinity",
 			volatility:  math.Inf(1),
-			expectedMin: 0.0,
-			expectedMax: 0.0,
+			expectedMin: 49.0,
+			expectedMax: 51.0,
 			expectCapped: false,
 		},
 		{

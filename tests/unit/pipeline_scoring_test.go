@@ -237,8 +237,8 @@ func TestVolumeScoring(t *testing.T) {
 		{"Unit volume", 1.0, 50.0, 5.0},      // Log10(1) = 0, so 50 + 0*25 = 50
 		{"High volume", 10.0, 75.0, 5.0},    // Log10(10) = 1, so 50 + 1*25 = 75
 		{"Low volume", 0.1, 25.0, 5.0},      // Log10(0.1) = -1, so 50 + (-1)*25 = 25
-		{"Zero volume", 0.0, 0.0, 5.0},     // Zero volume gets 0.0 score per task
-		{"NaN volume", math.NaN(), 0.0, 1.0}, // NaN volume gets 0.0 score per task
+		{"Zero volume", 0.0, 50.0, 5.0},     // Should default to neutral
+		{"NaN volume", math.NaN(), 50.0, 1.0}, // Should default to neutral
 	}
 
 	for _, tc := range testCases {

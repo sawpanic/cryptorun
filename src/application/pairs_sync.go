@@ -13,6 +13,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	atomicio "cryptorun/internal/io"
 )
 
 type PairsSyncConfig struct {
@@ -434,18 +436,8 @@ func (ps *PairsSync) WriteUniverseConfig(pairs []string) error {
 	// Calculate hash of content (excluding _hash field)
 	config.Hash = ps.calculateConfigHash(config)
 
-	data, err := json.MarshalIndent(config, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	// Atomic write: tmp → rename
-	tmpFile := "config/universe.json.tmp"
-	if err := os.WriteFile(tmpFile, data, 0644); err != nil {
-		return err
-	}
-
-	return os.Rename(tmpFile, "config/universe.json")
+	// Use atomic write helper
+	return atomicio.WriteJSONAtomic("config/universe.json", config)
 }
 
 // calculateConfigHash computes SHA256 hash of config content (symbols + criteria only)

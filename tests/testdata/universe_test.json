@@ -1,0 +1,18 @@
+{
+  "venue": "KRAKEN",
+  "usd_pairs": [
+    "BTCUSD",
+    "ETHUSD", 
+    "ADAUSD",
+    "SOLUSD"
+  ],
+  "do_not_trade": [],
+  "_synced_at": "2025-09-05T12:00:00Z",
+  "_source": "kraken",
+  "_note": "test fixture",
+  "_criteria": {
+    "quote": "USD",
+    "min_adv_usd": 100000
+  },
+  "_hash": "test_hash"
+}

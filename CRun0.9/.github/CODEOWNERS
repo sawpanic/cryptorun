@@ -1,4 +1,0 @@
-# Require review on core logic and thresholds
-/src/**            @sawpanic
-/config/**         @sawpanic
-/tests/**          @sawpanic
