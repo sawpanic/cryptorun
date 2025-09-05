@@ -1,10 +1,13 @@
 package unit
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"regexp"
+	"strings"
 	"testing"
 	"time"
 
@@ -424,9 +427,16 @@ func TestUniverseConfigGeneration(t *testing.T) {
 		t.Errorf("Invalid timestamp format: %s", universeConfig.SyncedAt)
 	}
 
-	// Verify hash is present and non-empty
+	// Verify hash is present and non-empty (64 hex chars)
 	if universeConfig.Hash == "" {
 		t.Error("Expected hash to be present in config")
+	}
+	if len(universeConfig.Hash) != 64 {
+		t.Errorf("Expected hash to be 64 hex characters, got %d", len(universeConfig.Hash))
+	}
+	// Verify hash is valid hex
+	if _, err := hex.DecodeString(universeConfig.Hash); err != nil {
+		t.Errorf("Expected hash to be valid hex string, got error: %v", err)
 	}
 
 	// Verify pairs are sorted deterministically
@@ -434,6 +444,26 @@ func TestUniverseConfigGeneration(t *testing.T) {
 		if universeConfig.USDPairs[i-1] > universeConfig.USDPairs[i] {
 			t.Error("USD pairs should be sorted alphabetically")
 			break
+		}
+	}
+
+	// Test that no XBT variants are present
+	hasXBT := false
+	for _, symbol := range universeConfig.USDPairs {
+		if strings.Contains(symbol, "XBT") {
+			hasXBT = true
+			break
+		}
+	}
+	if hasXBT {
+		t.Error("Universe config should not contain any XBT variants after normalization")
+	}
+
+	// Test all symbols match ^[A-Z0-9]+USD$ pattern
+	symbolRegex := regexp.MustCompile(`^[A-Z0-9]+USD$`)
+	for _, symbol := range universeConfig.USDPairs {
+		if !symbolRegex.MatchString(symbol) {
+			t.Errorf("Symbol %s does not match required pattern ^[A-Z0-9]+USD$", symbol)
 		}
 	}
 
@@ -449,7 +479,7 @@ func TestSymbolValidation(t *testing.T) {
 		MinADV: 100000,
 	}
 
-	syncInstance := application.NewPairsSync(config)
+	_ = application.NewPairsSync(config)
 
 	// Create test data with mix of valid and invalid normalized pairs
 	normalizedPairs := map[string]string{

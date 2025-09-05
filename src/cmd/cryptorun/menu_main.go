@@ -241,7 +241,7 @@ func (ui *MenuUI) handlePairsSync(ctx context.Context) error {
 	config := application.PairsSyncConfig{
 		Venue:  "kraken",
 		Quote:  "USD",
-		MinADV: 1000000, // $1M minimum ADV
+		MinADV: 100000, // $100k minimum ADV
 	}
 	
 	pairsSync := application.NewPairsSync(config)

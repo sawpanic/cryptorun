@@ -276,21 +276,13 @@ func (ps *PairsSync) normalizePairs(pairs []string) (map[string]string, error) {
 	for _, pair := range pairs {
 		baseCurrency := ps.extractBaseCurrency(pair)
 		
-		// Apply XBT→BTC normalization first
-		if baseCurrency == "XBT" {
-			symbolsMap["kraken"]["XBT"] = "BTC"
-			normalized[pair] = "BTCUSD"
-		} else if mappedBase, exists := symbolsMap["kraken"][baseCurrency]; exists {
+		// Apply symbol normalization via symbol_map.json
+		if mappedBase, exists := symbolsMap[baseCurrency]; exists {
 			normalized[pair] = mappedBase + "USD"
 		} else {
 			// Default: use base currency as-is
 			normalized[pair] = baseCurrency + "USD"
 		}
-	}
-
-	err = ps.saveSymbolsMap(symbolsMap)
-	if err != nil {
-		return nil, err
 	}
 
 	return normalized, nil
@@ -335,46 +327,40 @@ func (ps *PairsSync) isValidNormalizedSymbol(symbol string) bool {
 }
 
 func (ps *PairsSync) extractBaseCurrency(pair string) string {
-	if strings.HasSuffix(pair, "USD") {
-		return strings.TrimSuffix(pair, "USD")
-	}
+	// Handle Kraken's internal format first
 	if strings.HasSuffix(pair, "ZUSD") {
 		return strings.TrimSuffix(pair, "ZUSD")
 	}
-	return pair
+	if strings.HasSuffix(pair, "USD") {
+		return strings.TrimSuffix(pair, "USD")
+	}
+	
+	// For pairs like XXBTZUSD, XETHZUSD, handle the Z prefix
+	basePart := pair
+	if strings.Contains(pair, "Z") {
+		parts := strings.Split(pair, "Z")
+		if len(parts) >= 2 {
+			basePart = parts[0]  // Take everything before the first Z
+		}
+	}
+	
+	return basePart
 }
 
-func (ps *PairsSync) loadSymbolsMap() (map[string]map[string]string, error) {
-	data, err := os.ReadFile("config/symbols_map.json")
+func (ps *PairsSync) loadSymbolsMap() (map[string]string, error) {
+	data, err := os.ReadFile("config/symbol_map.json")
 	if err != nil {
 		return nil, err
 	}
 
-	var symbolsMap map[string]map[string]string
+	var symbolsMap map[string]string
 	if err := json.Unmarshal(data, &symbolsMap); err != nil {
 		return nil, err
-	}
-
-	if symbolsMap["kraken"] == nil {
-		symbolsMap["kraken"] = make(map[string]string)
 	}
 
 	return symbolsMap, nil
 }
 
-func (ps *PairsSync) saveSymbolsMap(symbolsMap map[string]map[string]string) error {
-	data, err := json.MarshalIndent(symbolsMap, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	tmpFile := "config/symbols_map.json.tmp"
-	if err := os.WriteFile(tmpFile, data, 0644); err != nil {
-		return err
-	}
-
-	return os.Rename(tmpFile, "config/symbols_map.json")
-}
 
 func (ps *PairsSync) calculateADVs(tickers map[string]KrakenTickerInfo, normalizedPairs map[string]string) []ADVResult {
 	var results []ADVResult
@@ -462,25 +448,15 @@ func (ps *PairsSync) WriteUniverseConfig(pairs []string) error {
 	return os.Rename(tmpFile, "config/universe.json")
 }
 
-// calculateConfigHash computes SHA256 hash of config content
+// calculateConfigHash computes SHA256 hash of config content (symbols + criteria only)
 func (ps *PairsSync) calculateConfigHash(config UniverseConfig) string {
-	// Create struct for hashing (exclude _hash field)
+	// Create struct for hashing (only symbols and criteria)
 	hashConfig := struct {
-		Venue      string    `json:"venue"`
-		USDPairs   []string  `json:"usd_pairs"`
-		DoNotTrade []string  `json:"do_not_trade"`
-		SyncedAt   string    `json:"_synced_at"`
-		Source     string    `json:"_source"`
-		Note       string    `json:"_note"`
-		Criteria   Criteria  `json:"_criteria"`
+		Symbols  []string `json:"symbols"`
+		Criteria Criteria `json:"criteria"`
 	}{
-		Venue:      config.Venue,
-		USDPairs:   config.USDPairs,
-		DoNotTrade: config.DoNotTrade,
-		SyncedAt:   config.SyncedAt,
-		Source:     config.Source,
-		Note:       config.Note,
-		Criteria:   config.Criteria,
+		Symbols:  config.USDPairs,
+		Criteria: config.Criteria,
 	}
 	
 	data, err := json.Marshal(hashConfig)

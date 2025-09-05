@@ -1,5 +1,19 @@
 # CryptoRun Changelog
 
+## 2025-09-05 - Universe Sync Integrity Fix
+
+### Summary
+Fixed universe.json integrity issues: proper _hash calculation based on symbols+criteria, min_adv_usd=100000 enforcement, XBT→BTC normalization, USD-only symbol validation, deterministic sorting, and atomic writes.
+
+### Code Changes
+- **config/symbol_map.json** (NEW) - Symbol normalization mapping with XBT→BTC and other Kraken legacy formats
+- **src/application/pairs_sync.go** - Updated normalization logic to use symbol_map.json, fixed hash calculation to be based on symbols+criteria only
+- **src/application/pairs_audit.go** - Enhanced validation to reject XBT variants and enforce min_adv_usd=100000
+- **src/cmd/cryptorun/menu_main.go** - Changed MinADV from 1M to 100k for correct threshold
+- **tests/unit/pairs_sync_test.go** - Added tests for XBT normalization, regex validation, and 64-char hex hash
+
+---
+
 ## 2025-09-05 - Pairs Sync Hardening with Symbol Validation
 
 ### Summary

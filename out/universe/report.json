@@ -1,13 +1,13 @@
 {
   "found": 492,
-  "kept": 39,
-  "dropped": 453,
-  "min_adv_usd": 1000000,
+  "kept": 135,
+  "dropped": 357,
+  "min_adv_usd": 100000,
   "sample": [
     "AAVEUSD",
-    "ADAUSDUSD",
+    "ADAUSD",
     "AEROUSD",
-    "ARBUSD",
-    "AVAXUSDUSD"
+    "AKEUSD",
+    "ALGOUSD"
   ]
 }

@@ -1,11 +1,31 @@
 {
-  "total_symbols": 39,
-  "valid_symbols": 39,
+  "total_symbols": 135,
+  "valid_symbols": 135,
   "invalid_symbols": 0,
   "offenders": [],
   "warnings": [
     {
+      "symbol": "XCNUSD",
+      "warning": "possible Kraken legacy format, verify normalization"
+    },
+    {
+      "symbol": "XDCUSD",
+      "warning": "possible Kraken legacy format, verify normalization"
+    },
+    {
       "symbol": "XDGUSD",
+      "warning": "possible Kraken legacy format, verify normalization"
+    },
+    {
+      "symbol": "XLMUSD",
+      "warning": "possible Kraken legacy format, verify normalization"
+    },
+    {
+      "symbol": "XNYUSD",
+      "warning": "possible Kraken legacy format, verify normalization"
+    },
+    {
+      "symbol": "XRPUSD",
       "warning": "possible Kraken legacy format, verify normalization"
     }
   ],
@@ -15,7 +35,7 @@
     "valid_criteria": true,
     "valid_timestamp": true,
     "valid_hash": true,
-    "expected_hash": "f7ca392adc19583ad90dc0239308e9944b307a0900022145f16e216c2870691e",
-    "actual_hash": "f7ca392adc19583ad90dc0239308e9944b307a0900022145f16e216c2870691e"
+    "expected_hash": "0b9029fae088b3874381a9bd1dd670105274ca5bb4ac1c441a534364d22c2576",
+    "actual_hash": "0b9029fae088b3874381a9bd1dd670105274ca5bb4ac1c441a534364d22c2576"
   }
 }

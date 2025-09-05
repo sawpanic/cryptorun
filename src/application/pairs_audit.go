@@ -71,6 +71,11 @@ func (pa *PairsAuditor) ValidateSymbol(symbol string) []string {
 		violations = append(violations, "malformed ticker (must match ^[A-Z0-9]+USD$)")
 	}
 	
+	// Check for XBT variants that should be normalized to BTC
+	if strings.Contains(symbol, "XBT") {
+		violations = append(violations, "contains XBT variant (should be normalized to BTC)")
+	}
+	
 	// Check for prohibited patterns
 	lowerSymbol := strings.ToLower(symbol)
 	if strings.Contains(lowerSymbol, "test") {
@@ -189,7 +194,7 @@ func (pa *PairsAuditor) auditConfigIntegrity(config UniverseConfig, rawData []by
 	integrity := ConfigIntegrityCheck{
 		HasMetadata:   true,
 		ValidSource:   config.Source == "kraken",
-		ValidCriteria: config.Criteria.Quote == "USD" && config.Criteria.MinADVUSD > 0,
+		ValidCriteria: config.Criteria.Quote == "USD" && config.Criteria.MinADVUSD == 100000,
 	}
 	
 	// Validate timestamp
