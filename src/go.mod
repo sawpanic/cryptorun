@@ -1,4 +1,4 @@
-module cprotocol
+module cryptorun
 
 go 1.23
 

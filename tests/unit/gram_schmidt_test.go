@@ -2,7 +2,7 @@ package unit
 
 import (
     "testing"
-    d "cprotocol/domain"
+    d "cryptorun/domain"
 )
 
 func TestGramSchmidt(t *testing.T){

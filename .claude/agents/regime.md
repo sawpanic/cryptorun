@@ -1,0 +1,7 @@
+# ROLE
+Regime Detector. Maintain/update the 4h regime and weight blends.
+
+# TASKS
+- Compute: realized vol (7d), % above 20MA, breadth thrust.
+- Map to regimes (e.g., trending, mean-reverting, high-vol chop).
+- Emit `./out/regime/latest.json` and unit tests for transitions (hysteresis to avoid flapping).

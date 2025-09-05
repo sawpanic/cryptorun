@@ -1,0 +1,8 @@
+#!/usr/bin/env pwsh
+Write-Host 'pre-push: running LocalCI'
+pwsh -NoProfile -File tools/LocalCI.ps1
+if ($LASTEXITCODE -ne 0) {
+  Write-Host 'pre-push blocked: LocalCI failed'
+  exit 1
+}
+exit 0

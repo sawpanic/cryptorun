@@ -1,0 +1,6 @@
+#!/usr/bin/env pwsh
+Write-Host 'pre-commit: quick checks'
+if (Get-Command golangci-lint -ErrorAction SilentlyContinue){
+  golangci-lint run --timeout 3m || exit 1
+}
+exit 0

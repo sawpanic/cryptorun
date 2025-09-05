@@ -5,7 +5,7 @@ import (
     "time"
 
     "github.com/rs/zerolog/log"
-    appuni "cprotocol/application/universe"
+    appuni "cryptorun/application/universe"
 )
 
 type Config struct {
