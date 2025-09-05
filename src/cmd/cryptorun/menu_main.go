@@ -359,6 +359,23 @@ func (ui *MenuUI) handleRegimeSettings() error {
 	return nil
 }
 
+// handleAnalystCoverage runs coverage analysis on scanning performance
+func (ui *MenuUI) handleAnalystCoverage(ctx context.Context) error {
+	fmt.Println("📊 Analyst Coverage Analysis")
+	fmt.Println("• Fetching top winners from Kraken ticker")
+	fmt.Println("• Comparing against latest candidates")
+	fmt.Println("• Analyzing reason codes from gate traces")
+	fmt.Println("• Calculating coverage metrics")
+	fmt.Println("• Generating comprehensive report")
+	fmt.Println()
+	
+	// Call the analyst coverage function
+	runAnalystCoverage()
+	
+	return nil
+}
+
+
 // handleExit gracefully exits the application
 func (ui *MenuUI) handleExit(ctx context.Context) error {
 	fmt.Println("👋 Thank you for using CryptoRun!")

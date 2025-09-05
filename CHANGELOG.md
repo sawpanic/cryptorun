@@ -1,5 +1,86 @@
 # CryptoRun Changelog
 
+## 2025-09-05 - Analyst Coverage System Implementation
+
+### Summary
+Implemented comprehensive Analyst/Trader coverage system to analyze how well the scanner catches market winners. System fetches top performers from Kraken ticker API, compares against candidates, extracts reason codes from gate traces, calculates coverage metrics, and enforces quality policies with exit codes. Includes fixture-based testing, atomic file operations, and menu integration.
+
+### Rationale
+Coverage analysis is critical for measuring scanner effectiveness in identifying actual market winners. By comparing real performance data against scanner predictions, we can identify blind spots, tune detection parameters, and ensure the system captures genuine opportunities. Quality policy enforcement prevents degraded performance from going unnoticed in production.
+
+### Code Changes
+
+#### Core Analyst System
+- **src/application/analyst/types.go** (140 lines) - Complete type definitions for coverage analysis
+  - **WinnerCandidate**: Market winners with performance, volume, price, ranking data
+  - **CandidateMiss**: Missed opportunities with reason codes from gate traces  
+  - **CoverageMetrics**: Recall@20, good filter rate, bad miss rate, stale data rate per timeframe
+  - **CoverageReport**: Comprehensive analysis with policy violations and top reasons
+  - **Reason Constants**: Standardized codes (SPREAD_WIDE, DATA_STALE, NOT_CANDIDATE, etc.)
+
+- **src/application/analyst/kraken_winners.go** (334 lines) - Winners fetching with live/fixture modes
+  - **Live Kraken Integration**: Fetches ticker data from Kraken public API with rate limiting
+  - **Performance Calculation**: Approximated 1h/24h/7d performance from ticker data
+  - **Deterministic Sorting**: Stable tie-breaks by symbol name for reproducible results
+  - **Symbol Mapping**: Converts Kraken format (XXBTZUSD) to standard format (BTCUSD)
+  - **Fixture Fallback**: Deterministic test data for offline development
+  
+- **src/application/analyst/run.go** (586 lines) - Main orchestration with atomic operations
+  - **Coverage Analysis**: Compares winners vs candidates, extracts gate failure reasons
+  - **Metrics Calculation**: Recall@20, filter rates, miss rates across all timeframes
+  - **Atomic File Writing**: tmp→rename pattern for winners.json, misses.jsonl, coverage.json, report.json, report.md
+  - **Policy Enforcement**: Loads thresholds, checks violations, exits with code 1 on breach
+  - **Reason Code Extraction**: Analyzes gate traces to categorize failure types
+
+#### Menu & Command Integration  
+- **src/cmd/cryptorun/analyst_main.go** (52 lines) - Standalone analyst execution
+  - **Auto-Detection**: Uses fixtures if candidates file missing, live data if present
+  - **Output Management**: Creates timestamped directories under data/analyst/
+  - **User Feedback**: Displays generated files and suggests reviewing report.md
+
+- **src/cmd/cryptorun/menu_main.go** (Modified) - Added "Analyst & Coverage" menu option
+  - **Menu Integration**: Option 3 runs coverage analysis with detailed progress indicators
+  - **Resilience Handler**: Added missing handleResilientSelfTest function stub
+
+#### Configuration & Policies
+- **config/quality_policies.json** (8 lines) - Quality threshold enforcement
+  - **Bad Miss Rate Thresholds**: 1h: 35%, 24h: 40%, 7d: 40% maximum acceptable rates
+  - **Policy Description**: Documents threshold meanings and failure behavior
+
+#### Comprehensive Test Suite
+- **tests/unit/analyst/analyst_run_test.go** (277 lines) - Full coverage testing
+  - **Fixture Integration**: Tests complete analyst run with deterministic fixture data
+  - **File Atomicity**: Verifies no .tmp files remain after completion
+  - **Quality Policies**: Tests policy loading, threshold checking, exit code behavior
+  - **Deterministic Ordering**: Ensures reproducible winner rankings across runs
+  - **Edge Cases**: Empty candidates, missing files, invalid data handling
+
+### Features
+- **Multi-Timeframe Analysis**: Separate coverage metrics for 1h, 24h, 7d windows
+- **Reason Code Analysis**: Extracts failure reasons directly from gate evaluation traces
+- **Quality Policy Enforcement**: Configurable thresholds with non-zero exit codes on breach  
+- **Atomic Operations**: All file writes use tmp→rename for crash safety
+- **Fixture Testing**: Complete offline development capability without network dependencies
+- **Deterministic Results**: Stable sorting with symbol-based tie-breaks for reproducibility
+- **Comprehensive Metrics**: Recall@20, good filter rate, bad miss rate, stale data rate
+- **Rich Output Formats**: JSON for automation, JSONL for analysis, Markdown for humans
+
+### Test Results
+- **TestAnalystRunner_WithFixtures**: ✅ Generates all 5 output files correctly
+- **TestWinnersFetcher_Fixtures**: ✅ Deterministic fixture data across timeframes  
+- **TestAnalystRunner_FileAtomicity**: ✅ No temporary files remain after completion
+- **TestWinnersFetcher_DeterministicOrdering**: ✅ Consistent ranking across multiple runs
+- **TestAnalystRunner_QualityPolicyCheck**: ✅ Policy loading and threshold validation
+
+### Deployment Notes
+- **Menu Access**: Run cryptorun → select "3. Analyst & Coverage" 
+- **Output Location**: Results saved to data/analyst/YYYY-MM-DD_HH-MM-SS/
+- **Quality Monitoring**: System exits with code 1 if bad miss rates exceed thresholds
+- **Fixture Mode**: Automatically enabled when data/scan/latest_candidates.jsonl missing
+- **Live Mode**: Requires network access to api.kraken.com for ticker data
+
+---
+
 ## 2025-09-05 - Scoring Behavior Standardization & NaN/Inf Guardrails
 
 ### Summary
