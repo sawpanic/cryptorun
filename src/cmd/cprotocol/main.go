@@ -11,9 +11,10 @@ import (
     "github.com/rs/zerolog"
     "github.com/rs/zerolog/log"
 
-    domainPairs "github.com/cryptoedge/cryptoedge/src/domain/pairs"
-    "github.com/cryptoedge/cryptoedge/src/application/universe"
-    "github.com/cryptoedge/cryptoedge/src/infrastructure/apis/kraken"
+    domainPairs "cprotocol/domain/pairs"
+    "cprotocol/application/universe"
+    "cprotocol/infrastructure/apis/kraken"
+    httpiface "cprotocol/interfaces/http"
 )
 
 const (
@@ -52,7 +53,10 @@ func main() {
     case "backtest":
         log.Info().Str("app", appName).Str("version", version).Msg("backtest stub — use internal backtest tooling")
     case "monitor":
-        log.Info().Str("app", appName).Str("version", version).Msg("monitor stub — API health dashboard coming online")
+        addr := ":8088"
+        if v := os.Getenv("METRICS_ADDR"); v != "" { addr = v }
+        log.Info().Str("addr", addr).Msg("starting monitor server")
+        if err := httpiface.RunUntilSignal(addr); err != nil { log.Warn().Err(err).Msg("monitor shutdown") }
     case "health":
         log.Info().Str("exchange", *exchange).Msg("OK — Kraken primary configured")
     default:
@@ -106,12 +110,17 @@ func runScan(exchange, pairsFilter string, dryRun bool, regimeOverride, blacklis
     }
 
     log.Info().Int("count", len(symbols)).Msg("universe ready (USD pairs on Kraken)")
-    for i := range symbols {
-        if i >= 10 { // limit console noise
-            break
-        }
-        log.Debug().Str("pair", symbols[i]).Msg("candidate")
+    if len(symbols)==0 { log.Info().Msg("Top 10: none (universe empty)"); return }
+    // Print a simple Top 10 table (unscored stub)
+    topN := 10
+    if len(symbols) < topN { topN = len(symbols) }
+    fmt.Println("\nTop 10 (unscored)")
+    fmt.Println("#   SYMBOL")
+    for i := 0; i < topN; i++ {
+        fmt.Printf("%2d  %s\n", i+1, symbols[i])
+    }
+    if topN == 0 {
+        fmt.Println("(none)")
     }
     log.Info().Msg("Scan stub complete — scoring engine wiring pending.")
 }
-

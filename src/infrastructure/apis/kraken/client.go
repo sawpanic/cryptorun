@@ -5,7 +5,7 @@ import (
     "time"
 
     "github.com/rs/zerolog/log"
-    appuni "github.com/cryptoedge/cryptoedge/src/application/universe"
+    appuni "cprotocol/application/universe"
 )
 
 type Config struct {
@@ -59,4 +59,3 @@ func (c *Client) RunWebSocket(ctx context.Context) {
         }
     }
 }
-

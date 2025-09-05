@@ -9,7 +9,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"cprotocol/src/cmd/cprotocol"
+    "cprotocol/cmd/cprotocol"
 )
 
 func main() {
