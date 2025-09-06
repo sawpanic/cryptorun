@@ -1,11 +1,37 @@
 #!/usr/bin/env pwsh
 # CryptoRun Pre-Commit Hook
-# Validates documentation UX requirements and brand consistency
+# Runs preflight and postflight checks plus existing guards
 
 $ErrorActionPreference = "Stop"
 
 Write-Host "🔍 Running CryptoRun pre-commit checks..." -ForegroundColor Cyan
 
+# Change to repository root first
+$RepoRoot = git rev-parse --show-toplevel
+if (-not $RepoRoot) {
+    Write-Error "Not in a git repository"
+    exit 1
+}
+
+Set-Location $RepoRoot
+
+# Run preflight checks first
+Write-Host "`n🚀 Running preflight checks..." -ForegroundColor Cyan
+& "$RepoRoot\tools\preflight.ps1"
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "❌ Preflight checks failed" -ForegroundColor Red
+    exit 1
+}
+
+# Run postflight checks
+Write-Host "`n🔍 Running postflight checks..." -ForegroundColor Cyan
+& "$RepoRoot\tools\postflight.ps1"
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "❌ Postflight checks failed" -ForegroundColor Red
+    exit 1
+}
+
+# Continue with existing documentation and branding checks
 $ExitCode = 0
 $ChecksPassed = 0
 $ChecksFailed = 0
@@ -38,15 +64,6 @@ function Invoke-Check {
         $script:ExitCode = 1
     }
 }
-
-# Change to repository root
-$RepoRoot = git rev-parse --show-toplevel
-if (-not $RepoRoot) {
-    Write-Error "Not in a git repository"
-    exit 1
-}
-
-Set-Location $RepoRoot
 
 # Check 1: Documentation UX Guard
 Invoke-Check "Documentation UX Guard" {

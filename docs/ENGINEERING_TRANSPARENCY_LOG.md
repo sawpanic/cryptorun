@@ -150,3 +150,15 @@ Behavior: fail‑fast cascade, 429‑aware backoff, trimmed‑median reconciliat
 ---
 
 Questions/approvals: Want me to wire the menu and add the alert‑style output next, or prioritize ATR sizing + regime switching first?
+
+## 2025-09-06: Added Preflight/Postflight QA Macros (SPEED.PACK.05)
+
+**Context:** Implemented automated preflight (go fmt/vet/lint/test) and postflight (scope enforcement) checks.
+
+**Changes:**
+- Created `tools/preflight.ps1`: Runs go fmt, go vet, optional golangci-lint, and go test -short
+- Created `tools/postflight.ps1`: Validates staged files against WRITE-SCOPE declarations in commit messages
+- Updated `.githooks/pre-commit.ps1`: Now calls preflight/postflight before existing UX/branding checks
+- Added scope enforcement: When commit messages contain WRITE-SCOPE blocks, validates all staged files are within declared paths
+
+**Impact:** Every commit now runs the same quality checks (fmt/vet/lint/tests) plus enforces file ownership boundaries when scope is declared. This standardizes the quality gate across all changes.

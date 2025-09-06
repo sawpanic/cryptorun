@@ -1,5 +1,27 @@
 # CryptoRun Changelog
 
+## 2025-09-06 - PREFLIGHT_POSTFLIGHT_MACROS
+
+PROMPT_ID=SPEED.PACK.05.PREFLIGHT-POSTFLIGHT: Added preflight/postflight QA macros ensuring consistent quality checks (go fmt/vet/lint/test) and scope enforcement for every commit. Features optional golangci-lint integration and WRITE-SCOPE validation against staged files.
+
+### Added
+- **Preflight Script**: `tools/preflight.ps1` running go fmt, go vet, optional golangci-lint, and go test -short
+- **Postflight Script**: `tools/postflight.ps1` validating staged files against WRITE-SCOPE declarations in commit messages  
+- **Enhanced Pre-commit Hook**: Updated `.githooks/pre-commit.ps1` to call preflight/postflight before existing guards
+- **Scope Enforcement**: Automatic validation that staged files are within declared WRITE-SCOPE paths
+
+### Core Features
+- **Consistent Quality Gates**: Every change runs the same fmt/vet/lint/test sequence
+- **File Ownership Boundaries**: WRITE-SCOPE blocks in commit messages enforce touched file inclusion
+- **Optional Tool Integration**: Graceful handling when golangci-lint is not installed
+- **Quality Standardization**: Unified quality checks across all commits and contributors
+
+### Technical Architecture
+- **PowerShell Integration**: Cross-platform PowerShell scripts with proper error handling
+- **Git Integration**: Staged file analysis and commit message parsing for scope validation
+- **Incremental Checks**: Short test runs for faster feedback during development
+- **Guard Chain**: Preflight/postflight run before existing UX and branding checks
+
 ## 2025-09-06 - CI_GUARD_IMPLEMENTATION
 
 PROMPT_ID=SPEED.PACK.06.CI-GUARD: Implemented CI guard policy requiring PRs to increase at least one of: progress percent, test count, or docs/CHANGELOG diff. Features cross-platform PowerShell test counting and GitHub Actions workflow with clear failure messaging for quality gate enforcement.
