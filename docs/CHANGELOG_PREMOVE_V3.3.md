@@ -15,6 +15,12 @@
 ### Fixed
 - Freshness **hard_fail_s** corrected to **90s** (worst‑feed precedence)
 
+### Config
+- Added **portfolio** config block with correlation limits, sector caps, beta budget, and position sizing
+- Added **alerts** config block with rate limiting, high volatility allowances, and manual override
+- Added **execution_quality** config block with slippage thresholds and recovery criteria  
+- Added **learning** config block with pattern exhaustion monitoring
+
 ### Docs
 - `docs/PREMOVE.md` (feature spec), `docs/MENUS_PREMOVE_SECTION.md`, `docs/DATA_SOURCES_PREMOVE_SECTION.md`
 - `config/premove.yaml` created and version‑locked

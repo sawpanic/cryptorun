@@ -162,17 +162,48 @@ Prometheus metrics exposed at `/metrics`:
 
 Key configuration parameters in `config/premove.yaml`:
 
+### Portfolio Risk Management
 ```yaml
-version: 3.3
-weights: { structural: 45, behavioral: 30, catalyst: 25 }
-gates: { two_of_three: true }
+portfolio:
+  pairwise_corr_max: 0.65              # Maximum correlation between positions  
+  sector_caps: { L1: 2, DeFi: 2 }      # Position limits per sector
+  beta_budget_to_btc: 2.0              # Beta exposure budget
+  max_single_position_pct: 5           # Maximum single position size
+  max_total_exposure_pct: 20           # Maximum total exposure
+  apply_stage: post_gates_pre_alerts   # When pruning occurs in pipeline
+```
+
+### Alert Governance
+```yaml
+alerts:
+  per_hour: 3                          # Standard hourly rate limit
+  per_day: 10                          # Daily rate limit
+  high_vol_per_hour: 6                 # Increased limit during volatility
+  manual_override:                     # Emergency override settings
+    condition: "score>90 && gates<2"   # Override trigger condition
+    mode: alert_only                   # Override behavior mode
+```
+
+### Execution Quality
+```yaml
+execution_quality:
+  slippage_bps_tighten_threshold: 30   # Tighten at 30 bps slippage
+  recovery:                            # Quality recovery criteria
+    good_trades: 20                    # Good trades needed for recovery
+    hours: 48                          # OR time-based recovery
+```
+
+### Learning System
+```yaml
+learning:
+  pattern_exhaustion:                  # Pattern degradation monitoring
+    degrade_confidence_when_7d_lt_0_7_of_30d: true  # Confidence degradation rule
+```
+
+### Data Freshness
+```yaml
 decay: 
   freshness: { soft_start_s: 8, tau_s: 30, hard_fail_s: 90 }
-portfolio:
-  pairwise_corr_max: 0.65
-  beta_budget_to_btc: 2.0
-alerts: { per_hour: 3, per_day: 10 }
-execution_quality: { slippage_bps_tighten_threshold: 30 }
 ```
 
 ---

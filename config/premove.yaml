@@ -40,61 +40,42 @@ gates:
 
 # Portfolio construction and risk management
 portfolio:
-  max_correlation: 0.65    # Maximum correlation between positions
-  max_per_sector: 2        # Maximum positions per sector
-  beta_budget: 15.0        # Total beta budget limit
+  pairwise_corr_max: 0.65    # Maximum pairwise correlation between positions
+  sector_caps:               # Sector position limits
+    L1: 2
+    DeFi: 2
+    Infrastructure: 2
+    Gaming: 2
+  beta_budget_to_btc: 2.0    # Total beta budget relative to BTC
+  max_single_position_pct: 5 # Maximum single position size (%)
+  max_total_exposure_pct: 20 # Maximum total exposure (%)
+  apply_stage: post_gates_pre_alerts # When portfolio pruning is applied
   
   # Correlation matrix settings
   lookback_1h: 168         # 1-hour correlation lookback (7 days)
   lookback_4h: 168         # 4-hour correlation lookback (28 days)
   min_observations: 50     # Minimum observations for correlation
-  
-  # Sector classification
-  sectors:
-    - "DeFi"
-    - "Layer1"
-    - "Layer2"
-    - "Gaming"
-    - "AI/ML"
-    - "Infrastructure"
-    - "Payments"
-    - "Privacy"
-    - "Meme"
-    - "Other"
 
 # Alert system configuration
 alerts:
-  rate_limits:
-    per_hour: 3           # Maximum 3 alerts per hour
-    per_day: 10           # Maximum 10 alerts per day
-    volatility_allowance: 2  # Extra alerts during high volatility
-  
-  # Manual override settings
-  manual_override:
-    alert_only_mode: true  # Manual override only shows alerts, no auto-execution
-    override_duration_s: 3600  # Override lasts 1 hour
-    max_overrides_per_day: 5   # Maximum manual overrides per day
+  per_hour: 3             # Maximum 3 alerts per hour
+  per_day: 10             # Maximum 10 alerts per day
+  high_vol_per_hour: 6    # Increased limit during high volatility
+  manual_override:        # Manual override settings
+    condition: "score>90 && gates<2"  # Override condition
+    mode: alert_only      # Manual override mode
 
 # Execution quality monitoring
 execution_quality:
-  slippage_tracking: true
-  target_fill_time_ms: 5000   # Target fill time 5 seconds
-  max_acceptable_slippage_bps: 25  # 25 basis points max slippage
-  
-  # Recovery settings after poor execution
-  recovery_cooldown_s: 300    # 5-minute cooldown after poor execution
-  max_consecutive_fails: 3    # Max consecutive execution failures
+  slippage_bps_tighten_threshold: 30  # Tighten requirements at 30 bps slippage
+  recovery:                           # Recovery settings
+    good_trades: 20                   # 20 good trades for recovery
+    hours: 48                         # OR 48-hour reset
 
 # Learning and backtesting system
 learning:
-  enable_pit_replay: true     # Enable point-in-time replay
-  hit_rate_tracking: true     # Track hit rates by setup type
-  isotonic_calibration: true  # Enable probability calibration
-  
-  # Backtest settings
-  lookback_days: 90          # 90-day backtest window
-  min_samples_per_bin: 10    # Minimum samples for calibration bins
-  rebalance_frequency_h: 24  # Rebalance frequency (daily)
+  pattern_exhaustion:         # Pattern exhaustion monitoring
+    degrade_confidence_when_7d_lt_0_7_of_30d: true  # Degrade confidence when 7d performance < 70% of 30d
 
 # Data sources and feeds
 data_sources:
