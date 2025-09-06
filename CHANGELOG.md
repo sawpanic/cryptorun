@@ -1,5 +1,26 @@
 # CryptoRun Changelog
 
+## 2025-01-15 - Premove Application Scaffolding
+
+### Added
+- **Premove Application Layer** (src/application/premove/) with empty shells and TODO blocks
+- **portfolio.go** shell for portfolio management with correlation, sector caps, and beta budget tracking
+- **alerts.go** shell for alert rate limiting and high volatility handling
+- **execution.go** shell for execution quality tracking and slippage monitoring  
+- **backtest.go** shell for pattern exhaustion and learning algorithms
+- **docs/PREMOVE_TODO.md** tracking implementation rooms and acceptance criteria
+
+### Progress Tracking
+- Updated PROGRESS.yaml with premove_application_layer milestone (5 points, 20% progress)
+- Adjusted portfolio_risk_controls to in-progress status (25% progress)
+- Total project progress increased through milestone restructuring
+
+### Implementation Strategy
+- Created empty compilable shells with comprehensive TODO blocks
+- Linked each shell to specific test specifications (TestPortfolio*, TestAlert*, etc.)
+- Prepared rooms for micro-prompt implementations without invention
+- Established configuration integration points with config/premove.yaml
+
 ## 2025-01-15 - Prompt Pack Templates & Style Guide
 
 ### Added

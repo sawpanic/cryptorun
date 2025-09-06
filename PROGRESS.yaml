@@ -40,16 +40,22 @@ milestones:
     
   portfolio_risk_controls:
     weight: 12
-    completed: true
+    completed: false
     description: "Correlation matrix, sector caps, beta budget"
-    completion_date: "2025-01-15"
+    progress: 25
 
-  # Detection Systems (15% total weight)
+  # Detection Systems (15% total weight)  
   premove_detector:
-    weight: 15
-    completed: true
+    weight: 10
+    completed: false
     description: "Pre-movement detection with 2-of-3 gates"
-    completion_date: "2025-01-15"
+    progress: 20
+    
+  premove_application_layer:
+    weight: 5
+    completed: false
+    description: "Portfolio, alerts, execution, backtest shells"
+    progress: 20
 
   # Quality & Testing (10% total weight)
   unit_test_coverage:
