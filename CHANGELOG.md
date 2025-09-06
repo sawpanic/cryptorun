@@ -1,5 +1,39 @@
 # CryptoRun Changelog
 
+## 2025-09-06 - ARTIFACT_LEDGER
+
+PROMPT_ID=SPEED.PACK.11.ARTIFACT-LEDGER: Implemented minimal point-in-time artifact writer for CSV/JSON output with UTC timestamps, stable schemas, and ledger documentation. Provides standardized data export capabilities for all CryptoRun components.
+
+### Added
+- **Artifact Writer Package**: `src/internal/artifacts/writer.go` with WriteJSON and WriteCSV functions
+- **Point-in-Time Naming**: UTC timestamp prefixes (YYYYMMDD-HHMMSS-{name}) for chronological ordering
+- **Ledger Directory**: `artifacts/ledger/` with .gitkeep for version control
+- **Schema Documentation**: `docs/ARTIFACTS.md` with naming conventions and integration guidelines
+- **Stable Schemas**: Standard field definitions for JSON metadata and CSV column formats
+
+### Core Features
+- **WriteJSON Function**: Automatic timestamp prefixing and directory creation for JSON artifacts
+- **WriteCSV Function**: CSV writer with header support and proper file handling
+- **Standard Library Only**: No external dependencies, uses encoding/json and encoding/csv
+- **Error Handling**: Comprehensive error reporting for directory, file, and format issues
+
+### Schema Discipline
+- **JSON Standard Fields**: timestamp, component, version for all artifacts
+- **CSV Standard Columns**: timestamp column required for time series data
+- **Consistent Naming**: Descriptive component names (scan-results, regime-weights, gate-violations)
+- **ISO 8601 Dates**: Standardized datetime format across all outputs
+
+### Integration Points
+- **Scanner Integration**: Ready for scan results and candidate list exports
+- **Regime System**: Prepared for regime detection and weight change logging
+- **Gates System**: Ready for entry/exit decision and violation tracking
+- **Backtest Integration**: Prepared for performance metrics and trade log exports
+
+### File Management
+- **Retention Policy**: 7-day hot storage in artifacts/ledger/ with manual cleanup
+- **Directory Auto-Creation**: Automatic artifacts/ledger directory creation if missing
+- **Atomic Operations**: File write operations with proper error handling and cleanup
+
 ## 2025-09-06 - WRITE_LOCKS_CODEOWNERS
 
 PROMPT_ID=SPEED.PACK.09.WRITE-LOCKS: Implemented repository write lock system with CODEOWNERS integration and pre-commit enforcement. Enables controlled development phases where only docs or only code can be modified, preventing accidental changes during focused work periods.
