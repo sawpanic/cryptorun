@@ -1,5 +1,9 @@
 # CryptoRun
 
+## UX MUST — Live Progress & Explainability
+
+Real-time gate evaluation with comprehensive reporting: depth within ±2%, spread caps by tier, VADR precedence, and venue health monitoring with live progress indicators and full explainability.
+
 ## 🏃‍♂️ Real-time Cryptocurrency Momentum Scanner
 
 **CryptoRun** is a real-time **6–48h cryptocurrency momentum scanner** powered by free, keyless exchange-native APIs. Designed to deliver **explainable trading signals** with strong safeguards: freshness, fatigue, and late-fill guards, microstructure validation, regime awareness, and strict conformance tests.

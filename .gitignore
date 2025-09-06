@@ -1,14 +1,77 @@
-# Build artifacts
+# OS / Editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Go Build artifacts
 /dist/
 /bin/
+/build/
+coverage.out
+*.test
 *.exe
-# Go
+*.dll
+*.so
+*.dylib
 /go.work
-/go.sum
+/go.work.sum
 
-# Editor/OS
-.vscode/
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.env
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Node.js tooling
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.pnpm-debug.log*
+
+# Project specific
+artifacts/
+out/
+tmp/
+.crun_write_lock
+.env
+.env.*
 *.log
+
+# Data/Research
+data/*.parquet
+data/*.feather
+*.ipynb_checkpoints
+*.ipynb
+research/
+backtest_results/
+
+# Benchmarks
+benchmarks/
+*.bench
 
 # Code review snapshots
 _codereview/
+
+# Large binaries (handled by LFS if needed)
+*.pdf
+*.zip
+*.tar.gz
+*.tgz
+
+# Cache directories
+cache/
+.cache/
+redis-data/

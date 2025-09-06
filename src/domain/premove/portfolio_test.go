@@ -40,7 +40,7 @@ func TestPortfolioPruner_BasicFunctionality(t *testing.T) {
 
 		totalProcessed := result.Metrics.TotalKept + result.Metrics.TotalPruned
 		if totalProcessed != result.Metrics.TotalInput {
-			t.Errorf("Kept (%d) + Pruned (%d) != Total (%d)", 
+			t.Errorf("Kept (%d) + Pruned (%d) != Total (%d)",
 				result.Metrics.TotalKept, result.Metrics.TotalPruned, result.Metrics.TotalInput)
 		}
 	})

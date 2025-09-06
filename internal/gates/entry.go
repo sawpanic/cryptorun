@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/cryptorun/internal/data/derivs"
-	"github.com/cryptorun/internal/microstructure"
+	"cryptorun/internal/data/derivs"
+	"cryptorun/internal/microstructure"
 )
 
 // EntryGateEvaluator enforces hard entry requirements

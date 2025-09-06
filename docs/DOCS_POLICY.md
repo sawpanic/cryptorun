@@ -20,8 +20,20 @@ If you modify any files under `src/**`, you must also update at least one of:
 ## Enforcement
 
 The documentation guard runs automatically during:
-- Pre-push git hooks
+- Pre-push git hooks  
 - CI/CD pipeline checks
+
+### Branch-Based Policy
+
+**Main/Release Branches**: Strict enforcement
+- All code changes require accompanying documentation updates
+- No exceptions - maintains production quality standards
+
+**Feature Branches**: Auto-stub with reminder
+- Code-only changes trigger automatic CHANGELOG.md stub generation
+- Stub format: `- chore(wip): auto-stub for commit <short-sha> (to be edited before PR)`
+- Modified CHANGELOG.md is automatically staged
+- Developer reminded to edit stub before creating PR
 
 ## Emergency Override
 
@@ -50,6 +62,7 @@ This policy ensures:
 
 ### ✅ Acceptable Changes
 
+**On any branch:**
 ```
 Modified files:
 - src/domain/score/composite.go
@@ -62,12 +75,20 @@ Modified files:
 - CHANGELOG.md
 ```
 
-### ❌ Blocked Changes
-
+**On feature branches (auto-stubbed):**
 ```
 Modified files:
 - src/domain/score/composite.go
-(No documentation changes)
+(CHANGELOG.md automatically updated with stub entry)
+```
+
+### ❌ Blocked Changes
+
+**On main/release branches only:**
+```
+Modified files:
+- src/domain/score/composite.go
+(No documentation changes - BLOCKED)
 ```
 
 ## UX MUST — Live Progress & Explainability

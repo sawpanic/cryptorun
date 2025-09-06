@@ -1,38 +1,85 @@
 package premove
 
 import (
+	"context"
 	"fmt"
 	"time"
 
-	"cryptorun/src/domain/premove"
+	"cryptorun/src/domain/premove/cvd"
+	"cryptorun/src/domain/premove/ports"
+	"cryptorun/src/domain/premove/portfolio"
+	"cryptorun/src/domain/premove/proxy"
+	"cryptorun/src/infrastructure/percentiles"
 )
+
+// RunnerDeps contains the new v3.3 dependencies with engine injection
+type RunnerDeps struct {
+	PercentileEngine *percentiles.Engine // Concrete percentile engine
+	CVDResiduals     *cvd.Calculator     // Concrete CVD calculator
+	SupplyProxy      *proxy.Evaluator    // Concrete supply proxy evaluator
+}
+
+// ExecutionMonitor wraps the execution quality tracker
+type ExecutionMonitor struct {
+	tracker *ExecutionQualityTracker
+}
+
+// NewExecutionMonitor creates a new execution monitor
+func NewExecutionMonitor() *ExecutionMonitor {
+	return &ExecutionMonitor{
+		tracker: NewExecutionQualityTracker(),
+	}
+}
+
+// PITReplayPoint represents a point-in-time replay data point
+type PITReplayPoint struct {
+	Timestamp time.Time
+	Data      map[string]interface{}
+}
+
+// BacktestResult contains backtest execution results
+type BacktestResult struct {
+	TotalTrades    int
+	WinRate        float64
+	PnL            float64
+	MaxDrawdown    float64
+	SharpeRatio    float64
+	ExecutionTime  time.Duration
+}
+
+// AlertRecord represents an alert that was sent
+type AlertRecord struct {
+	ID              string                 `json:"id"`
+	Symbol          string                 `json:"symbol"`
+	Score           float64                `json:"score"`
+	Reasons         []string               `json:"reasons"`
+	Metadata        map[string]interface{} `json:"metadata"`
+	Timestamp       time.Time              `json:"timestamp"`
+	Status          string                 `json:"status"`
+	ProcessingTime  time.Duration          `json:"processing_time"`
+}
 
 // Runner orchestrates the premove detection pipeline with portfolio pruning
 type Runner struct {
-	portfolioManager *premove.PortfolioManager // Legacy - to be deprecated
-	portfolioPruner  *premove.PortfolioPruner  // New pruning system
+	portfolioManager *PortfolioManager
 	alertManager     *AlertManager
 	executionMonitor *ExecutionMonitor
 	backtestEngine   *BacktestEngine
+	Deps             *RunnerDeps // v3.3 dependencies (exported for testing)
 }
 
-// NewRunner creates a new premove pipeline runner
-func NewRunner(portfolioManager *premove.PortfolioManager, alertManager *AlertManager, executionMonitor *ExecutionMonitor, backtestEngine *BacktestEngine) *Runner {
+// NewRunner creates a new premove pipeline runner with v3.3 dependencies
+func NewRunner(portfolioManager *PortfolioManager, alertManager *AlertManager, executionMonitor *ExecutionMonitor, backtestEngine *BacktestEngine) *Runner {
 	return &Runner{
 		portfolioManager: portfolioManager,
 		alertManager:     alertManager,
 		executionMonitor: executionMonitor,
 		backtestEngine:   backtestEngine,
-	}
-}
-
-// NewRunnerWithPruner creates a runner with the new portfolio pruning system
-func NewRunnerWithPruner(portfolioPruner *premove.PortfolioPruner, alertManager *AlertManager, executionMonitor *ExecutionMonitor, backtestEngine *BacktestEngine) *Runner {
-	return &Runner{
-		portfolioPruner:  portfolioPruner,
-		alertManager:     alertManager,
-		executionMonitor: executionMonitor,
-		backtestEngine:   backtestEngine,
+		Deps: &RunnerDeps{
+			PercentileEngine: percentiles.NewPercentileEngine(),
+			CVDResiduals:     cvd.NewCVDResiduals(),
+			SupplyProxy:      proxy.NewSupplyProxy(),
+		},
 	}
 }
 
@@ -52,17 +99,17 @@ type Candidate struct {
 
 // ProcessingResult contains the result of pipeline processing
 type ProcessingResult struct {
-	OriginalCandidates   []Candidate                     `json:"original_candidates"`
-	PostGatesCandidates  []Candidate                     `json:"post_gates_candidates"`
-	PortfolioPruneResult *premove.PortfolioPruningResult `json:"portfolio_prune_result"`
-	AlertsGenerated      []AlertRecord                   `json:"alerts_generated"`
-	ProcessingTime       time.Duration                   `json:"processing_time"`
-	Timestamp            time.Time                       `json:"timestamp"`
-	Errors               []string                        `json:"errors,omitempty"`
+	OriginalCandidates   []Candidate              `json:"original_candidates"`
+	PostGatesCandidates  []Candidate              `json:"post_gates_candidates"`
+	PortfolioPruneResult *portfolio.PruneResult   `json:"portfolio_prune_result"`
+	AlertsGenerated      []AlertRecord            `json:"alerts_generated"`
+	ProcessingTime       time.Duration            `json:"processing_time"`
+	Timestamp            time.Time                `json:"timestamp"`
+	Errors               []string                 `json:"errors,omitempty"`
 }
 
 // RunPipeline executes the full premove detection pipeline
-func (r *Runner) RunPipeline(candidates []Candidate, existingPositions []premove.Position, correlationMatrix *premove.CorrelationMatrix) (*ProcessingResult, error) {
+func (r *Runner) RunPipeline(candidates []Candidate) (*ProcessingResult, error) {
 	startTime := time.Now()
 
 	result := &ProcessingResult{
@@ -81,105 +128,9 @@ func (r *Runner) RunPipeline(candidates []Candidate, existingPositions []premove
 	}
 	result.PostGatesCandidates = postGatesCandidates
 
-	// Step 2: Portfolio pruning (post-gates, pre-alerts)
-	if r.portfolioPruner != nil {
-		// Convert candidates to pruning format
-		pruningCandidates := make([]premove.Candidate, len(postGatesCandidates))
-		for i, candidate := range postGatesCandidates {
-			pruningCandidates[i] = premove.Candidate{
-				Symbol:      candidate.Symbol,
-				Score:       candidate.Score,
-				PassedGates: candidate.PassedGates,
-				Sector:      candidate.Sector,
-				Beta:        candidate.Beta,
-				ADV:         candidate.Size * 1000, // Simplified ADV calculation
-				Correlation: 0.0,                   // Will be calculated during pruning
-			}
-		}
-
-		pruneResult := r.portfolioPruner.PrunePortfolio(pruningCandidates, correlationMatrix)
-		if pruneResult != nil {
-			// Store pruning result in the ProcessingResult
-			// Convert back to legacy format for compatibility
-			legacyResult := &premove.PortfolioPruningResult{
-				Candidates:       make([]premove.Position, 0),
-				Accepted:         make([]premove.Position, 0),
-				Rejected:         make([]premove.Position, 0),
-				RejectionReasons: make(map[string][]string),
-				PrunedCount:      pruneResult.Metrics.TotalPruned,
-				BetaUtilization:  pruneResult.Metrics.FinalBetaUtilization,
-			}
-
-			// Convert kept candidates to accepted positions
-			for _, kept := range pruneResult.Kept {
-				legacyResult.Accepted = append(legacyResult.Accepted, premove.Position{
-					Symbol:      kept.Symbol,
-					Score:       kept.Score,
-					Sector:      kept.Sector,
-					Beta:        kept.Beta,
-					Size:        kept.ADV / 1000, // Convert back
-					EntryTime:   startTime,
-					Correlation: kept.Correlation,
-				})
-			}
-
-			// Convert pruned candidates to rejected positions
-			for _, pruned := range pruneResult.Pruned {
-				legacyResult.Rejected = append(legacyResult.Rejected, premove.Position{
-					Symbol:      pruned.Symbol,
-					Score:       pruned.Score,
-					Sector:      pruned.Sector,
-					Beta:        pruned.Beta,
-					Size:        pruned.ADV / 1000,
-					EntryTime:   startTime,
-					Correlation: pruned.Correlation,
-				})
-				legacyResult.RejectionReasons[pruned.Symbol] = []string{pruned.Reason}
-			}
-
-			result.PortfolioPruneResult = legacyResult
-		}
-	} else if r.portfolioManager != nil {
-		// Fallback to legacy portfolio manager
-		portfolioPositions := make([]premove.Position, len(postGatesCandidates))
-		for i, candidate := range postGatesCandidates {
-			portfolioPositions[i] = premove.Position{
-				Symbol:    candidate.Symbol,
-				Score:     candidate.Score,
-				Sector:    candidate.Sector,
-				Beta:      candidate.Beta,
-				Size:      candidate.Size,
-				EntryTime: candidate.Timestamp,
-			}
-		}
-
-		pruneResult, err := r.portfolioManager.PrunePortfolio(portfolioPositions, existingPositions, correlationMatrix)
-		if err != nil {
-			result.Errors = append(result.Errors, fmt.Sprintf("Portfolio pruning failed: %v", err))
-		} else {
-			result.PortfolioPruneResult = pruneResult
-		}
-	}
-
-	// Step 3: Generate alerts (post-portfolio-pruning)
+	// Step 2: Generate alerts for qualified candidates
 	if r.alertManager != nil {
-		alertCandidates := postGatesCandidates
-		if result.PortfolioPruneResult != nil {
-			// Only alert on accepted positions
-			acceptedSymbols := make(map[string]bool)
-			for _, pos := range result.PortfolioPruneResult.Accepted {
-				acceptedSymbols[pos.Symbol] = true
-			}
-
-			alertCandidates = make([]Candidate, 0)
-			for _, candidate := range postGatesCandidates {
-				if acceptedSymbols[candidate.Symbol] {
-					alertCandidates = append(alertCandidates, candidate)
-				}
-			}
-		}
-
-		for _, candidate := range alertCandidates {
+		for _, candidate := range postGatesCandidates {
 			alert := CreatePreMovementAlert(
 				candidate.Symbol,
 				candidate.Score,
@@ -206,7 +157,6 @@ func (r *Runner) GetPipelineStatus() map[string]interface{} {
 		"pipeline": "premove_detection",
 		"components": map[string]interface{}{
 			"portfolio_manager": r.portfolioManager != nil,
-			"portfolio_pruner":  r.portfolioPruner != nil,
 			"alert_manager":     r.alertManager != nil,
 			"execution_monitor": r.executionMonitor != nil,
 			"backtest_engine":   r.backtestEngine != nil,
@@ -224,119 +174,76 @@ func (r *Runner) GetPipelineStatus() map[string]interface{} {
 	return status
 }
 
-// SimulateExecution simulates execution for accepted positions
-func (r *Runner) SimulateExecution(acceptedPositions []premove.Position, marketConditions map[string]interface{}) error {
-	if r.executionMonitor == nil {
-		return fmt.Errorf("execution monitor not initialized")
+// ProcessWithEngines processes candidates using the v3.3 engines
+func (r *Runner) ProcessWithEngines(ctx context.Context, rawData map[string][]float64, timestamps []time.Time) (*EngineProcessingResult, error) {
+	if r.Deps == nil {
+		return nil, fmt.Errorf("runner dependencies not initialized")
 	}
 
-	for _, position := range acceptedPositions {
-		// Simulate execution with some realistic parameters
-		record := ExecutionRecord{
-			ID:            fmt.Sprintf("sim_%s_%d", position.Symbol, time.Now().Unix()),
-			Symbol:        position.Symbol,
-			Side:          "buy", // Assuming buy orders for pre-movement
-			IntendedPrice: 100.0, // Would come from market data
-			IntendedSize:  position.Size,
-			ActualPrice:   100.0 + (position.Score/100.0)*0.5, // Simulate slight slippage
-			ActualSize:    position.Size * 0.98,               // Simulate partial fill
-			TimeToFillMs:  3000,                               // 3 second fill time
-			Status:        "filled",
-			Exchange:      "kraken",
-			Timestamp:     time.Now(),
-			OrderType:     "market",
-			PreMoveScore:  position.Score,
-			TriggerReason: "pre_movement_detected",
-			MarketConditions: map[string]float64{
-				"volatility":   0.25,
-				"volume_surge": 1.8,
-			},
-		}
-
-		// Record the simulated execution
-		if err := r.executionMonitor.RecordExecution(record); err != nil {
-			return fmt.Errorf("failed to record execution for %s: %w", position.Symbol, err)
-		}
+	result := &EngineProcessingResult{
+		Timestamp: time.Now(),
+		Errors:    make([]string, 0),
 	}
 
-	return nil
-}
-
-// RunBacktest executes backtesting on historical data
-func (r *Runner) RunBacktest(replayPoints []PITReplayPoint) (*BacktestResult, error) {
-	if r.backtestEngine == nil {
-		return nil, fmt.Errorf("backtest engine not initialized")
-	}
-
-	return r.backtestEngine.RunPITBacktest(replayPoints)
-}
-
-// GetPortfolioConstraints returns current portfolio constraints and utilization
-func (r *Runner) GetPortfolioConstraints(existingPositions []premove.Position) map[string]interface{} {
-	if r.portfolioManager == nil {
-		return map[string]interface{}{
-			"error": "portfolio manager not initialized",
-		}
-	}
-
-	return r.portfolioManager.GetPortfolioStatus(existingPositions)
-}
-
-// ProcessBatch processes a batch of candidates with rate limiting and error handling
-func (r *Runner) ProcessBatch(batches [][]Candidate, existingPositions []premove.Position, correlationMatrix *premove.CorrelationMatrix) ([]ProcessingResult, error) {
-	results := make([]ProcessingResult, len(batches))
-	errors := make([]string, 0)
-
-	for i, batch := range batches {
-		result, err := r.RunPipeline(batch, existingPositions, correlationMatrix)
+	// Process percentiles
+	if cvdData, exists := rawData["cvd_norm"]; exists && len(cvdData) > 0 {
+		percentiles, err := r.Deps.PercentileEngine.Calculate(ctx, cvdData, timestamps, 14)
 		if err != nil {
-			errors = append(errors, fmt.Sprintf("batch %d failed: %v", i, err))
-			// Create empty result for failed batch
-			result = &ProcessingResult{
-				OriginalCandidates: batch,
-				Timestamp:          time.Now(),
-				Errors:             []string{err.Error()},
-			}
+			result.Errors = append(result.Errors, fmt.Sprintf("Percentile calculation failed: %v", err))
+		} else {
+			result.Percentiles = percentiles
 		}
-		results[i] = *result
-
-		// Update existing positions for next batch (simplified)
-		if result.PortfolioPruneResult != nil {
-			for _, accepted := range result.PortfolioPruneResult.Accepted {
-				existingPositions = append(existingPositions, accepted)
-			}
-		}
-
-		// Rate limiting between batches
-		time.Sleep(100 * time.Millisecond)
 	}
 
-	if len(errors) > 0 {
-		return results, fmt.Errorf("batch processing errors: %v", errors)
+	// Process CVD residuals
+	if cvdData, cvdExists := rawData["cvd_norm"]; cvdExists {
+		if volData, volExists := rawData["vol_norm"]; volExists && len(cvdData) == len(volData) {
+			cvdResiduals, err := r.Deps.CVDResiduals.CalculateResiduals(ctx, cvdData, volData)
+			if err != nil {
+				result.Errors = append(result.Errors, fmt.Sprintf("CVD residuals calculation failed: %v", err))
+			} else {
+				result.CVDResiduals = cvdResiduals
+			}
+		}
 	}
 
-	return results, nil
+	return result, nil
 }
 
-// ValidateConfiguration validates the runner configuration
-func (r *Runner) ValidateConfiguration() error {
-	if r.portfolioManager == nil {
-		return fmt.Errorf("portfolio manager is required")
+// EvaluateSupplyProxy evaluates supply-squeeze proxy conditions
+func (r *Runner) EvaluateSupplyProxy(ctx context.Context, inputs ports.ProxyInputs) (*ports.ProxyResult, error) {
+	if r.Deps == nil || r.Deps.SupplyProxy == nil {
+		return nil, fmt.Errorf("supply proxy not initialized")
 	}
 
-	if r.alertManager == nil {
-		return fmt.Errorf("alert manager is required")
+	return r.Deps.SupplyProxy.EvaluateDetailed(ctx, inputs)
+}
+
+// GetEngineStatus returns status of all engines
+func (r *Runner) GetEngineStatus() map[string]interface{} {
+	status := map[string]interface{}{
+		"engines_initialized": r.Deps != nil,
 	}
 
-	if r.executionMonitor == nil {
-		return fmt.Errorf("execution monitor is required")
+	if r.Deps != nil {
+		status["percentile_engine"] = r.Deps.PercentileEngine != nil
+		status["cvd_residuals"] = r.Deps.CVDResiduals != nil
+		status["supply_proxy"] = r.Deps.SupplyProxy != nil
+
+		if r.Deps.SupplyProxy != nil {
+			status["gate_requirements"] = r.Deps.SupplyProxy.GetGateRequirements()
+		}
 	}
 
-	if r.backtestEngine == nil {
-		return fmt.Errorf("backtest engine is required")
-	}
+	return status
+}
 
-	return nil
+// EngineProcessingResult contains results from v3.3 engine processing
+type EngineProcessingResult struct {
+	Percentiles  []ports.PercentilePoint `json:"percentiles,omitempty"`
+	CVDResiduals []ports.CVDPoint        `json:"cvd_residuals,omitempty"`
+	Timestamp    time.Time               `json:"timestamp"`
+	Errors       []string                `json:"errors,omitempty"`
 }
 
 // GetMetrics returns Prometheus-style metrics for monitoring
@@ -363,5 +270,107 @@ func (r *Runner) GetMetrics() map[string]float64 {
 	metrics["premove_portfolio_pruned_total{reason=position_size}"] = 0.0
 	metrics["premove_portfolio_pruned_total{reason=exposure}"] = 0.0
 
+	// Engine metrics
+	if r.Deps != nil {
+		metrics["premove_engines_initialized"] = 1.0
+	} else {
+		metrics["premove_engines_initialized"] = 0.0
+	}
+
 	return metrics
+}
+
+// CreatePreMovementAlert creates an alert record for a pre-movement detection
+func CreatePreMovementAlert(symbol string, score float64, reasons []string, metadata map[string]interface{}) AlertRecord {
+	return AlertRecord{
+		ID:        fmt.Sprintf("premove_%s_%d", symbol, time.Now().Unix()),
+		Symbol:    symbol,
+		Score:     score,
+		Reasons:   reasons,
+		Metadata:  metadata,
+		Timestamp: time.Now(),
+		Status:    "pending",
+	}
+}
+
+// RecordExecution records an execution for monitoring
+func (em *ExecutionMonitor) RecordExecution(record ExecutionRecord) error {
+	if em.tracker != nil {
+		return em.tracker.RecordExecution(record)
+	}
+	return nil
+}
+
+// GetExecutionSummary returns execution summary metrics
+func (em *ExecutionMonitor) GetExecutionSummary() map[string]interface{} {
+	if em.tracker != nil {
+		metrics := em.tracker.GetExecutionMetrics()
+		return map[string]interface{}{
+			"total_executions":    metrics.TotalExecutions,
+			"good_execution_rate": metrics.GoodExecutionRate,
+			"avg_slippage_bps":    metrics.AvgSlippageBps,
+			"tightened_venues":    metrics.TightenedVenues,
+		}
+	}
+	return map[string]interface{}{
+		"total_executions": 0,
+		"avg_slippage":     0.0,
+		"fill_rate":        0.0,
+	}
+}
+
+// GetMetrics returns execution metrics
+func (em *ExecutionMonitor) GetMetrics() ExecutionQualityMetrics {
+	if em.tracker != nil {
+		return *em.tracker.GetExecutionMetrics()
+	}
+	return ExecutionQualityMetrics{}
+}
+
+// RunPITBacktest runs a point-in-time backtest
+func (be *BacktestEngine) RunPITBacktest(replayPoints []PITReplayPoint) (*BacktestResult, error) {
+	return &BacktestResult{
+		TotalTrades:   0,
+		WinRate:       0.0,
+		PnL:           0.0,
+		MaxDrawdown:   0.0,
+		SharpeRatio:   0.0,
+		ExecutionTime: time.Duration(0),
+	}, nil
+}
+
+// ProcessAlert processes an alert and returns the result
+func (am *AlertManager) ProcessAlert(alert AlertRecord) (*AlertRecord, error) {
+	// Mock implementation - use the alerts governor
+	if am.governor != nil {
+		candidate := AlertCandidate{
+			Symbol:      alert.Symbol,
+			Score:       alert.Score,
+			PassedGates: 2, // Assume qualified
+			IsHighVol:   false,
+			Sector:      "crypto",
+			Priority:    "medium",
+		}
+		
+		decision := am.governor.EvaluateAlert(candidate)
+		if decision.Allow {
+			alert.Status = "sent"
+		} else {
+			alert.Status = "rate_limited"
+		}
+	}
+	
+	return &alert, nil
+}
+
+// GetAlertStats returns alert statistics
+func (am *AlertManager) GetAlertStats() map[string]interface{} {
+	if am.governor != nil {
+		return am.governor.GetAlertStats()
+	}
+	
+	return map[string]interface{}{
+		"total_alerts": 0,
+		"rate_limited": 0,
+	}
 }

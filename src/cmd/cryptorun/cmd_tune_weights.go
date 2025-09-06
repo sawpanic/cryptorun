@@ -11,10 +11,10 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	"github.com/cryptorun/internal/tune/data"
-	"github.com/cryptorun/internal/tune/opt"
-	"github.com/cryptorun/internal/tune/report"
-	"github.com/cryptorun/internal/tune/weights"
+	"cryptorun/internal/tune/data"
+	"cryptorun/internal/tune/opt"
+	"cryptorun/internal/tune/report"
+	"cryptorun/internal/tune/weights"
 )
 
 // tuneCmd represents the tune command

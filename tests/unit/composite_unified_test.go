@@ -8,11 +8,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/cryptorun/internal/config/regime"
-	"github.com/cryptorun/internal/data/derivs"
-	"github.com/cryptorun/internal/explain"
-	"github.com/cryptorun/internal/gates"
-	"github.com/cryptorun/internal/score/composite"
+	"cryptorun/internal/config/regime"
+	"cryptorun/internal/data/derivs"
+	"cryptorun/internal/explain"
+	"cryptorun/internal/gates"
+	"cryptorun/internal/score/composite"
 )
 
 func TestCompositeUnifiedSystem(t *testing.T) {

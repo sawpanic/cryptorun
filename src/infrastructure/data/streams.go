@@ -10,22 +10,22 @@ import (
 
 // MockStream implements Stream interface for testing
 type MockStream struct {
-	exchange     string
-	subscribers  map[string]bool
-	tradesCh     chan Trade
-	booksCh      chan BookSnapshot
-	barsCh       chan Bar
-	health       StreamHealth
-	mu           sync.RWMutex
-	ctx          context.Context
-	cancel       context.CancelFunc
-	closed       bool
+	exchange    string
+	subscribers map[string]bool
+	tradesCh    chan Trade
+	booksCh     chan BookSnapshot
+	barsCh      chan Bar
+	health      StreamHealth
+	mu          sync.RWMutex
+	ctx         context.Context
+	cancel      context.CancelFunc
+	closed      bool
 }
 
 // NewMockStream creates a new mock stream for testing
 func NewMockStream(exchange string) *MockStream {
 	ctx, cancel := context.WithCancel(context.Background())
-	
+
 	stream := &MockStream{
 		exchange:    exchange,
 		subscribers: make(map[string]bool),
@@ -43,10 +43,10 @@ func NewMockStream(exchange string) *MockStream {
 			LatencyMs:    1.5,
 		},
 	}
-	
+
 	// Start mock data generation
 	go stream.generateMockData()
-	
+
 	return stream
 }
 
@@ -54,19 +54,19 @@ func NewMockStream(exchange string) *MockStream {
 func (m *MockStream) Subscribe(symbols []string, dataTypes []string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	if m.closed {
 		return fmt.Errorf("stream is closed")
 	}
-	
+
 	for _, symbol := range symbols {
 		m.subscribers[symbol] = true
 	}
-	
+
 	// Simulate subscription success
 	m.health.MessageCount++
 	m.health.LastMessage = time.Now()
-	
+
 	return nil
 }
 
@@ -74,11 +74,11 @@ func (m *MockStream) Subscribe(symbols []string, dataTypes []string) error {
 func (m *MockStream) Unsubscribe(symbols []string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	for _, symbol := range symbols {
 		delete(m.subscribers, symbol)
 	}
-	
+
 	return nil
 }
 
@@ -108,19 +108,19 @@ func (m *MockStream) Health() StreamHealth {
 func (m *MockStream) Close() error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	if m.closed {
 		return nil
 	}
-	
+
 	m.closed = true
 	m.cancel()
 	close(m.tradesCh)
 	close(m.booksCh)
 	close(m.barsCh)
-	
+
 	m.health.Connected = false
-	
+
 	return nil
 }
 
@@ -128,7 +128,7 @@ func (m *MockStream) Close() error {
 func (m *MockStream) generateMockData() {
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
-	
+
 	for {
 		select {
 		case <-m.ctx.Done():
@@ -148,11 +148,11 @@ func (m *MockStream) generateMockTrade() {
 		symbols = append(symbols, symbol)
 	}
 	m.mu.RUnlock()
-	
+
 	if len(symbols) == 0 {
 		return
 	}
-	
+
 	// Generate mock trade for first subscribed symbol
 	symbol := symbols[0]
 	trade := Trade{
@@ -163,7 +163,7 @@ func (m *MockStream) generateMockTrade() {
 		Side:      "buy",
 		Source:    m.exchange,
 	}
-	
+
 	select {
 	case m.tradesCh <- trade:
 		m.health.MessageCount++
@@ -180,11 +180,11 @@ func (m *MockStream) generateMockBook() {
 		symbols = append(symbols, symbol)
 	}
 	m.mu.RUnlock()
-	
+
 	if len(symbols) == 0 {
 		return
 	}
-	
+
 	symbol := symbols[0]
 	book := BookSnapshot{
 		Symbol:    symbol,
@@ -199,7 +199,7 @@ func (m *MockStream) generateMockBook() {
 		},
 		Source: m.exchange,
 	}
-	
+
 	select {
 	case m.booksCh <- book:
 		m.health.MessageCount++
@@ -216,11 +216,11 @@ func (m *MockStream) generateMockBar() {
 		symbols = append(symbols, symbol)
 	}
 	m.mu.RUnlock()
-	
+
 	if len(symbols) == 0 {
 		return
 	}
-	
+
 	symbol := symbols[0]
 	basePrice := 45000.0
 	bar := Bar{
@@ -233,7 +233,7 @@ func (m *MockStream) generateMockBar() {
 		Volume:    1000.0,
 		Source:    m.exchange,
 	}
-	
+
 	select {
 	case m.barsCh <- bar:
 		m.health.MessageCount++
@@ -245,21 +245,21 @@ func (m *MockStream) generateMockBar() {
 
 // MultiplexedStream combines multiple exchange streams
 type MultiplexedStream struct {
-	streams   map[string]Stream
-	symbols   []string
-	tradesCh  chan Trade
-	booksCh   chan BookSnapshot
-	barsCh    chan Bar
-	ctx       context.Context
-	cancel    context.CancelFunc
-	closed    bool
-	mu        sync.RWMutex
+	streams  map[string]Stream
+	symbols  []string
+	tradesCh chan Trade
+	booksCh  chan BookSnapshot
+	barsCh   chan Bar
+	ctx      context.Context
+	cancel   context.CancelFunc
+	closed   bool
+	mu       sync.RWMutex
 }
 
 // NewMultiplexedStream creates a multiplexed stream
 func NewMultiplexedStream(streams map[string]Stream, symbols []string) *MultiplexedStream {
 	ctx, cancel := context.WithCancel(context.Background())
-	
+
 	ms := &MultiplexedStream{
 		streams:  streams,
 		symbols:  symbols,
@@ -269,17 +269,17 @@ func NewMultiplexedStream(streams map[string]Stream, symbols []string) *Multiple
 		ctx:      ctx,
 		cancel:   cancel,
 	}
-	
+
 	// Start multiplexing
 	go ms.multiplex()
-	
+
 	return ms
 }
 
 // multiplex forwards data from all streams to output channels
 func (ms *MultiplexedStream) multiplex() {
 	var wg sync.WaitGroup
-	
+
 	for exchange, stream := range ms.streams {
 		wg.Add(1)
 		go func(ex string, s Stream) {
@@ -287,7 +287,7 @@ func (ms *MultiplexedStream) multiplex() {
 			ms.multiplexStream(ex, s)
 		}(exchange, stream)
 	}
-	
+
 	wg.Wait()
 }
 
@@ -362,7 +362,7 @@ func (ms *MultiplexedStream) Bars() <-chan Bar {
 func (ms *MultiplexedStream) Health() StreamHealth {
 	ms.mu.RLock()
 	defer ms.mu.RUnlock()
-	
+
 	health := StreamHealth{
 		Exchange:     "multiplexed",
 		Connected:    true,
@@ -370,7 +370,7 @@ func (ms *MultiplexedStream) Health() StreamHealth {
 		MessageCount: 0,
 		Reconnects:   0,
 	}
-	
+
 	// Aggregate health from all streams
 	for _, stream := range ms.streams {
 		streamHealth := stream.Health()
@@ -380,12 +380,12 @@ func (ms *MultiplexedStream) Health() StreamHealth {
 		health.MessageCount += streamHealth.MessageCount
 		health.Reconnects += streamHealth.Reconnects
 		health.ErrorCount += streamHealth.ErrorCount
-		
+
 		if streamHealth.LastMessage.After(health.LastMessage) {
 			health.LastMessage = streamHealth.LastMessage
 		}
 	}
-	
+
 	// Calculate average latency
 	if len(ms.streams) > 0 {
 		totalLatency := 0.0
@@ -394,7 +394,7 @@ func (ms *MultiplexedStream) Health() StreamHealth {
 		}
 		health.LatencyMs = totalLatency / float64(len(ms.streams))
 	}
-	
+
 	return health
 }
 
@@ -402,17 +402,17 @@ func (ms *MultiplexedStream) Health() StreamHealth {
 func (ms *MultiplexedStream) Close() error {
 	ms.mu.Lock()
 	defer ms.mu.Unlock()
-	
+
 	if ms.closed {
 		return nil
 	}
-	
+
 	ms.closed = true
 	ms.cancel()
-	
+
 	close(ms.tradesCh)
 	close(ms.booksCh)
 	close(ms.barsCh)
-	
+
 	return nil
 }

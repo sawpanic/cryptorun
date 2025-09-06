@@ -7,11 +7,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cryptorun/internal/config/regime"
-	"github.com/cryptorun/internal/data/derivs"
-	"github.com/cryptorun/internal/gates"
-	"github.com/cryptorun/internal/microstructure"
-	"github.com/cryptorun/internal/score/composite"
+	"cryptorun/internal/config/regime"
+	"cryptorun/internal/data/derivs"
+	"cryptorun/internal/gates"
+	"cryptorun/internal/microstructure"
+	"cryptorun/internal/score/composite"
 )
 
 // Explainer provides human-readable explanations for scoring decisions

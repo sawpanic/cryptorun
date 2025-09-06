@@ -9,38 +9,38 @@ import (
 
 // PortfolioPruner handles portfolio construction and risk management
 type PortfolioPruner struct {
-	pairwiseCorrMax       float64
-	sectorCaps            map[string]int
-	betaBudgetToBTC       float64
-	maxSinglePositionPct  float64
-	maxTotalExposurePct   float64
+	pairwiseCorrMax      float64
+	sectorCaps           map[string]int
+	betaBudgetToBTC      float64
+	maxSinglePositionPct float64
+	maxTotalExposurePct  float64
 }
 
 // PortfolioConstraints defines portfolio pruning parameters
 type PortfolioConstraints struct {
-	PairwiseCorrMax      float64            `yaml:"pairwise_corr_max"`
-	SectorCaps           map[string]int     `yaml:"sector_caps"`
-	BetaBudgetToBTC      float64            `yaml:"beta_budget_to_btc"`
-	MaxSinglePositionPct float64            `yaml:"max_single_position_pct"`
-	MaxTotalExposurePct  float64            `yaml:"max_total_exposure_pct"`
+	PairwiseCorrMax      float64        `yaml:"pairwise_corr_max"`
+	SectorCaps           map[string]int `yaml:"sector_caps"`
+	BetaBudgetToBTC      float64        `yaml:"beta_budget_to_btc"`
+	MaxSinglePositionPct float64        `yaml:"max_single_position_pct"`
+	MaxTotalExposurePct  float64        `yaml:"max_total_exposure_pct"`
 }
 
 // Candidate represents a pre-movement candidate for portfolio pruning
 type Candidate struct {
-	Symbol       string  `json:"symbol"`
-	Score        float64 `json:"score"`
-	PassedGates  int     `json:"passed_gates"`
-	Sector       string  `json:"sector"`
-	Beta         float64 `json:"beta"`         // Beta to BTC
-	ADV          float64 `json:"adv"`          // Average daily volume
-	Correlation  float64 `json:"correlation"`  // Correlation to portfolio
+	Symbol      string  `json:"symbol"`
+	Score       float64 `json:"score"`
+	PassedGates int     `json:"passed_gates"`
+	Sector      string  `json:"sector"`
+	Beta        float64 `json:"beta"`        // Beta to BTC
+	ADV         float64 `json:"adv"`         // Average daily volume
+	Correlation float64 `json:"correlation"` // Correlation to portfolio
 }
 
 // PruningResult contains the results of portfolio pruning
 type PruningResult struct {
-	Kept     []Candidate          `json:"kept"`
-	Pruned   []PrunedCandidate    `json:"pruned"`
-	Metrics  PruningMetrics       `json:"metrics"`
+	Kept    []Candidate       `json:"kept"`
+	Pruned  []PrunedCandidate `json:"pruned"`
+	Metrics PruningMetrics    `json:"metrics"`
 }
 
 // PrunedCandidate represents a candidate that was pruned with reason
@@ -51,16 +51,16 @@ type PrunedCandidate struct {
 
 // PruningMetrics provides statistics about the pruning operation
 type PruningMetrics struct {
-	TotalInput          int     `json:"total_input"`
-	TotalKept           int     `json:"total_kept"`
-	TotalPruned         int     `json:"total_pruned"`
-	PrunedByCorrelation int     `json:"pruned_by_correlation"`
-	PrunedBySector      int     `json:"pruned_by_sector"`
-	PrunedByBeta        int     `json:"pruned_by_beta"`
-	PrunedByPosition    int     `json:"pruned_by_position"`
-	PrunedByExposure    int     `json:"pruned_by_exposure"`
+	TotalInput           int     `json:"total_input"`
+	TotalKept            int     `json:"total_kept"`
+	TotalPruned          int     `json:"total_pruned"`
+	PrunedByCorrelation  int     `json:"pruned_by_correlation"`
+	PrunedBySector       int     `json:"pruned_by_sector"`
+	PrunedByBeta         int     `json:"pruned_by_beta"`
+	PrunedByPosition     int     `json:"pruned_by_position"`
+	PrunedByExposure     int     `json:"pruned_by_exposure"`
 	FinalBetaUtilization float64 `json:"final_beta_utilization"`
-	FinalExposure       float64 `json:"final_exposure"`
+	FinalExposure        float64 `json:"final_exposure"`
 }
 
 // PortfolioManager handles correlation analysis and position sizing constraints (legacy)
@@ -104,11 +104,11 @@ type Position struct {
 // NewPortfolioPruner creates a portfolio pruner with specified constraints
 func NewPortfolioPruner(constraints PortfolioConstraints) *PortfolioPruner {
 	return &PortfolioPruner{
-		pairwiseCorrMax:       constraints.PairwiseCorrMax,
-		sectorCaps:            constraints.SectorCaps,
-		betaBudgetToBTC:       constraints.BetaBudgetToBTC,
-		maxSinglePositionPct:  constraints.MaxSinglePositionPct,
-		maxTotalExposurePct:   constraints.MaxTotalExposurePct,
+		pairwiseCorrMax:      constraints.PairwiseCorrMax,
+		sectorCaps:           constraints.SectorCaps,
+		betaBudgetToBTC:      constraints.BetaBudgetToBTC,
+		maxSinglePositionPct: constraints.MaxSinglePositionPct,
+		maxTotalExposurePct:  constraints.MaxTotalExposurePct,
 	}
 }
 
@@ -153,7 +153,7 @@ func (p *PortfolioPruner) PrunePortfolio(candidates []Candidate, correlationMatr
 		// Check beta budget constraint
 		candidateBeta := math.Abs(candidate.Beta)
 		if betaUsed+candidateBeta > p.betaBudgetToBTC {
-			reasons = append(reasons, fmt.Sprintf("beta budget exceeded (%.2f + %.2f > %.2f)", 
+			reasons = append(reasons, fmt.Sprintf("beta budget exceeded (%.2f + %.2f > %.2f)",
 				betaUsed, candidateBeta, p.betaBudgetToBTC))
 			result.Metrics.PrunedByBeta++
 			pruned = true
@@ -162,7 +162,7 @@ func (p *PortfolioPruner) PrunePortfolio(candidates []Candidate, correlationMatr
 		// Check single position size constraint (assume 1% for now, could be dynamic)
 		positionSize := 1.0 // Simplified - in practice would calculate based on score/volatility
 		if positionSize > p.maxSinglePositionPct {
-			reasons = append(reasons, fmt.Sprintf("position size %.1f%% > %.1f%% limit", 
+			reasons = append(reasons, fmt.Sprintf("position size %.1f%% > %.1f%% limit",
 				positionSize, p.maxSinglePositionPct))
 			result.Metrics.PrunedByPosition++
 			pruned = true
@@ -170,7 +170,7 @@ func (p *PortfolioPruner) PrunePortfolio(candidates []Candidate, correlationMatr
 
 		// Check total exposure constraint
 		if totalExposure+positionSize > p.maxTotalExposurePct {
-			reasons = append(reasons, fmt.Sprintf("total exposure %.1f%% + %.1f%% > %.1f%% limit", 
+			reasons = append(reasons, fmt.Sprintf("total exposure %.1f%% + %.1f%% > %.1f%% limit",
 				totalExposure, positionSize, p.maxTotalExposurePct))
 			result.Metrics.PrunedByExposure++
 			pruned = true

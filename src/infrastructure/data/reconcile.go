@@ -12,34 +12,34 @@ import (
 type Reconciler interface {
 	// ReconcileBars reconciles OHLCV bars from multiple sources
 	ReconcileBars(sources map[string][]Bar) ([]Bar, error)
-	
+
 	// ReconcilePrices reconciles single price points
 	ReconcilePrices(sources map[string]float64, symbol string) (ReconciledPrice, error)
-	
+
 	// GetConfig returns current reconciliation configuration
 	GetConfig() ReconciliationConfig
 }
 
 // ReconciledPrice represents a reconciled price with attribution
 type ReconciledPrice struct {
-	Symbol          string            `json:"symbol"`
-	Price           float64           `json:"price"`
-	Timestamp       time.Time         `json:"timestamp"`
-	Method          string            `json:"method"`          // "trimmed_median", "mean", etc.
-	SourceCount     int               `json:"source_count"`    // Number of sources used
-	DroppedSources  []string          `json:"dropped_sources"` // Sources excluded as outliers
-	SourcePrices    map[string]float64 `json:"source_prices"`   // All source prices for transparency
-	Confidence      float64           `json:"confidence"`      // 0-1 confidence score
-	Deviation       float64           `json:"deviation"`       // Standard deviation
-	Attribution     string            `json:"attribution"`     // Source attribution
+	Symbol         string             `json:"symbol"`
+	Price          float64            `json:"price"`
+	Timestamp      time.Time          `json:"timestamp"`
+	Method         string             `json:"method"`          // "trimmed_median", "mean", etc.
+	SourceCount    int                `json:"source_count"`    // Number of sources used
+	DroppedSources []string           `json:"dropped_sources"` // Sources excluded as outliers
+	SourcePrices   map[string]float64 `json:"source_prices"`   // All source prices for transparency
+	Confidence     float64            `json:"confidence"`      // 0-1 confidence score
+	Deviation      float64            `json:"deviation"`       // Standard deviation
+	Attribution    string             `json:"attribution"`     // Source attribution
 }
 
 // ReconciliationConfig holds reconciliation parameters
 type ReconciliationConfig struct {
-	MaxDeviation    float64 `json:"max_deviation"`     // 1% = 0.01
-	MinSources      int     `json:"min_sources"`       // Minimum sources required
-	UseTrimmedMean  bool    `json:"use_trimmed_mean"`  // Use trimmed mean instead of median
-	TrimPercent     float64 `json:"trim_percent"`      // Percentage to trim (0.1 = 10%)
+	MaxDeviation        float64 `json:"max_deviation"`        // 1% = 0.01
+	MinSources          int     `json:"min_sources"`          // Minimum sources required
+	UseTrimmedMean      bool    `json:"use_trimmed_mean"`     // Use trimmed mean instead of median
+	TrimPercent         float64 `json:"trim_percent"`         // Percentage to trim (0.1 = 10%)
 	ConfidenceThreshold float64 `json:"confidence_threshold"` // Minimum confidence to accept
 }
 
@@ -63,7 +63,7 @@ func NewReconciler(config ReconciliationConfig) *ReconcilerImpl {
 	if config.ConfidenceThreshold == 0 {
 		config.ConfidenceThreshold = 0.7 // 70%
 	}
-	
+
 	return &ReconcilerImpl{
 		config: config,
 	}
@@ -74,15 +74,15 @@ func (r *ReconcilerImpl) ReconcileBars(sources map[string][]Bar) ([]Bar, error) 
 	if len(sources) < r.config.MinSources {
 		return nil, fmt.Errorf("insufficient sources: got %d, need %d", len(sources), r.config.MinSources)
 	}
-	
+
 	// Find common time periods across all sources
 	timeIndex := r.buildTimeIndex(sources)
 	if len(timeIndex) == 0 {
 		return nil, fmt.Errorf("no common time periods found across sources")
 	}
-	
+
 	var reconciledBars []Bar
-	
+
 	// Reconcile each time period
 	for _, timestamp := range timeIndex {
 		bar, err := r.reconcileSingleBar(sources, timestamp)
@@ -91,11 +91,11 @@ func (r *ReconcilerImpl) ReconcileBars(sources map[string][]Bar) ([]Bar, error) 
 		}
 		reconciledBars = append(reconciledBars, bar)
 	}
-	
+
 	if len(reconciledBars) == 0 {
 		return nil, fmt.Errorf("no bars could be reconciled")
 	}
-	
+
 	return reconciledBars, nil
 }
 
@@ -103,13 +103,13 @@ func (r *ReconcilerImpl) ReconcileBars(sources map[string][]Bar) ([]Bar, error) 
 func (r *ReconcilerImpl) buildTimeIndex(sources map[string][]Bar) []time.Time {
 	// Count occurrences of each timestamp
 	timeCount := make(map[time.Time]int)
-	
+
 	for _, bars := range sources {
 		for _, bar := range bars {
 			timeCount[bar.Timestamp]++
 		}
 	}
-	
+
 	// Keep timestamps that appear in at least MinSources
 	var times []time.Time
 	for timestamp, count := range timeCount {
@@ -117,12 +117,12 @@ func (r *ReconcilerImpl) buildTimeIndex(sources map[string][]Bar) []time.Time {
 			times = append(times, timestamp)
 		}
 	}
-	
+
 	// Sort chronologically
 	sort.Slice(times, func(i, j int) bool {
 		return times[i].Before(times[j])
 	})
-	
+
 	return times
 }
 
@@ -130,7 +130,7 @@ func (r *ReconcilerImpl) buildTimeIndex(sources map[string][]Bar) []time.Time {
 func (r *ReconcilerImpl) reconcileSingleBar(sources map[string][]Bar, timestamp time.Time) (Bar, error) {
 	// Collect bars for this timestamp from each source
 	bars := make(map[string]Bar)
-	
+
 	for source, sourceBars := range sources {
 		for _, bar := range sourceBars {
 			if bar.Timestamp.Equal(timestamp) {
@@ -139,18 +139,18 @@ func (r *ReconcilerImpl) reconcileSingleBar(sources map[string][]Bar, timestamp 
 			}
 		}
 	}
-	
+
 	if len(bars) < r.config.MinSources {
 		return Bar{}, fmt.Errorf("insufficient data for timestamp %v", timestamp)
 	}
-	
+
 	// Extract price data for reconciliation
 	opens := make(map[string]float64)
 	highs := make(map[string]float64)
 	lows := make(map[string]float64)
 	closes := make(map[string]float64)
 	volumes := make(map[string]float64)
-	
+
 	var symbol string
 	for source, bar := range bars {
 		symbol = bar.Symbol // Assume all bars are for the same symbol
@@ -160,33 +160,33 @@ func (r *ReconcilerImpl) reconcileSingleBar(sources map[string][]Bar, timestamp 
 		closes[source] = bar.Close
 		volumes[source] = bar.Volume
 	}
-	
+
 	// Reconcile each OHLCV component
 	reconciledOpen, err := r.ReconcilePrices(opens, symbol)
 	if err != nil {
 		return Bar{}, fmt.Errorf("failed to reconcile open prices: %w", err)
 	}
-	
+
 	reconciledHigh, err := r.ReconcilePrices(highs, symbol)
 	if err != nil {
 		return Bar{}, fmt.Errorf("failed to reconcile high prices: %w", err)
 	}
-	
+
 	reconciledLow, err := r.ReconcilePrices(lows, symbol)
 	if err != nil {
 		return Bar{}, fmt.Errorf("failed to reconcile low prices: %w", err)
 	}
-	
+
 	reconciledClose, err := r.ReconcilePrices(closes, symbol)
 	if err != nil {
 		return Bar{}, fmt.Errorf("failed to reconcile close prices: %w", err)
 	}
-	
+
 	reconciledVolume, err := r.ReconcilePrices(volumes, symbol)
 	if err != nil {
 		return Bar{}, fmt.Errorf("failed to reconcile volumes: %w", err)
 	}
-	
+
 	// Create reconciled bar
 	return Bar{
 		Symbol:    symbol,
@@ -205,12 +205,12 @@ func (r *ReconcilerImpl) ReconcilePrices(sources map[string]float64, symbol stri
 	if len(sources) < r.config.MinSources {
 		return ReconciledPrice{}, fmt.Errorf("insufficient sources: got %d, need %d", len(sources), r.config.MinSources)
 	}
-	
+
 	// Convert to slice for processing
 	prices := make([]float64, 0, len(sources))
 	sourceNames := make([]string, 0, len(sources))
 	sourcePrices := make(map[string]float64)
-	
+
 	for source, price := range sources {
 		if price > 0 && !math.IsNaN(price) && !math.IsInf(price, 0) {
 			prices = append(prices, price)
@@ -218,22 +218,22 @@ func (r *ReconcilerImpl) ReconcilePrices(sources map[string]float64, symbol stri
 			sourcePrices[source] = price
 		}
 	}
-	
+
 	if len(prices) < r.config.MinSources {
 		return ReconciledPrice{}, fmt.Errorf("insufficient valid prices after filtering")
 	}
-	
+
 	// Detect and remove outliers
 	filteredPrices, droppedSources := r.filterOutliers(prices, sourceNames)
-	
+
 	if len(filteredPrices) < r.config.MinSources {
 		return ReconciledPrice{}, fmt.Errorf("too many outliers removed, insufficient data remains")
 	}
-	
+
 	// Calculate reconciled price
 	var reconciledPrice float64
 	var method string
-	
+
 	if r.config.UseTrimmedMean {
 		reconciledPrice = r.trimmedMean(filteredPrices)
 		method = "trimmed_mean"
@@ -241,16 +241,16 @@ func (r *ReconcilerImpl) ReconcilePrices(sources map[string]float64, symbol stri
 		reconciledPrice = r.median(filteredPrices)
 		method = "median"
 	}
-	
+
 	// Calculate confidence and deviation
 	deviation := r.standardDeviation(filteredPrices)
 	confidence := r.calculateConfidence(filteredPrices, reconciledPrice, deviation)
-	
+
 	// Check confidence threshold
 	if confidence < r.config.ConfidenceThreshold {
 		return ReconciledPrice{}, fmt.Errorf("reconciled price confidence %.2f below threshold %.2f", confidence, r.config.ConfidenceThreshold)
 	}
-	
+
 	return ReconciledPrice{
 		Symbol:         symbol,
 		Price:          reconciledPrice,
@@ -270,16 +270,16 @@ func (r *ReconcilerImpl) filterOutliers(prices []float64, sourceNames []string) 
 	if len(prices) <= 2 {
 		return prices, nil // Can't filter with too few data points
 	}
-	
+
 	// Calculate initial median
 	sortedPrices := make([]float64, len(prices))
 	copy(sortedPrices, prices)
 	medianPrice := r.median(sortedPrices)
-	
+
 	// Filter outliers
 	var filteredPrices []float64
 	var droppedSources []string
-	
+
 	for i, price := range prices {
 		deviation := math.Abs(price-medianPrice) / medianPrice
 		if deviation <= r.config.MaxDeviation {
@@ -290,7 +290,7 @@ func (r *ReconcilerImpl) filterOutliers(prices []float64, sourceNames []string) 
 			}
 		}
 	}
-	
+
 	return filteredPrices, droppedSources
 }
 
@@ -299,12 +299,12 @@ func (r *ReconcilerImpl) median(prices []float64) float64 {
 	if len(prices) == 0 {
 		return 0
 	}
-	
+
 	// Sort the prices
 	sorted := make([]float64, len(prices))
 	copy(sorted, prices)
 	sort.Float64s(sorted)
-	
+
 	n := len(sorted)
 	if n%2 == 0 {
 		// Even number of elements - average of two middle values
@@ -319,12 +319,12 @@ func (r *ReconcilerImpl) trimmedMean(prices []float64) float64 {
 	if len(prices) == 0 {
 		return 0
 	}
-	
+
 	// Sort the prices
 	sorted := make([]float64, len(prices))
 	copy(sorted, prices)
 	sort.Float64s(sorted)
-	
+
 	// Calculate how many to trim from each end
 	trimCount := int(float64(len(sorted)) * r.config.TrimPercent / 2)
 	if trimCount >= len(sorted)/2 {
@@ -333,7 +333,7 @@ func (r *ReconcilerImpl) trimmedMean(prices []float64) float64 {
 	if trimCount < 0 {
 		trimCount = 0
 	}
-	
+
 	// Extract middle portion
 	start := trimCount
 	end := len(sorted) - trimCount
@@ -341,7 +341,7 @@ func (r *ReconcilerImpl) trimmedMean(prices []float64) float64 {
 		// Fall back to simple mean if trimming would remove everything
 		return r.mean(prices)
 	}
-	
+
 	// Calculate mean of trimmed data
 	sum := 0.0
 	count := 0
@@ -349,11 +349,11 @@ func (r *ReconcilerImpl) trimmedMean(prices []float64) float64 {
 		sum += sorted[i]
 		count++
 	}
-	
+
 	if count == 0 {
 		return r.mean(prices)
 	}
-	
+
 	return sum / float64(count)
 }
 
@@ -362,7 +362,7 @@ func (r *ReconcilerImpl) mean(prices []float64) float64 {
 	if len(prices) == 0 {
 		return 0
 	}
-	
+
 	sum := 0.0
 	for _, price := range prices {
 		sum += price
@@ -375,15 +375,15 @@ func (r *ReconcilerImpl) standardDeviation(prices []float64) float64 {
 	if len(prices) <= 1 {
 		return 0
 	}
-	
+
 	mean := r.mean(prices)
 	sumSquaredDiffs := 0.0
-	
+
 	for _, price := range prices {
 		diff := price - mean
 		sumSquaredDiffs += diff * diff
 	}
-	
+
 	variance := sumSquaredDiffs / float64(len(prices)-1)
 	return math.Sqrt(variance)
 }
@@ -393,14 +393,14 @@ func (r *ReconcilerImpl) calculateConfidence(prices []float64, reconciledPrice, 
 	if len(prices) == 0 || reconciledPrice == 0 {
 		return 0
 	}
-	
+
 	// Base confidence on relative deviation
 	relativeDeviation := deviation / reconciledPrice
 	deviationScore := math.Max(0, 1.0-relativeDeviation/r.config.MaxDeviation)
-	
+
 	// Bonus for more sources
 	sourceBonus := math.Min(0.2, float64(len(prices)-r.config.MinSources)*0.05)
-	
+
 	// Ensure 0-1 range
 	confidence := math.Min(1.0, deviationScore+sourceBonus)
 	return math.Max(0.0, confidence)

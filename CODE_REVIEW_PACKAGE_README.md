@@ -141,7 +141,7 @@ func extractSocialResidual(opp, quality, volume, tech) float64
 
 ### **Build Verification:**
 ```bash
-go build -o CryptoEdge.exe main.go  # ✅ PASSES (archived in _codereview/)
+go build -o CryptoRun.exe main.go  # ✅ PASSES (archived in _codereview/)
 ```
 
 ### **Weight Sum Tests:**
