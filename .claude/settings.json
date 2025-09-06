@@ -17,20 +17,62 @@
   },
   "hooks": {
     "UserPromptSubmit": [
-      { "hooks": [ 
-        { "type": "command", "command": "pwsh -NoProfile -File .claude/hooks/prompt-fastlane.ps1", "timeout": 5 },
-        { "type": "command", "command": "pwsh -NoProfile -File .claude/hooks/prompt-guard.ps1", "timeout": 3 },
-        { "type": "command", "command": "pwsh -NoProfile -File .claude/hooks/spec-guard.ps1", "timeout": 3 },
-        { "type": "command", "command": "pwsh -NoProfile -File .claude/hooks/path-guard.ps1", "timeout": 3 },
-        { "type": "command", "command": "pwsh -NoProfile -File .claude/hooks/change-budget.ps1", "timeout": 3 },
-        { "type": "command", "command": "pwsh -NoProfile -File .claude/hooks/diff-plan.ps1", "timeout": 3 }
-      ] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -File .claude/hooks/prompt-fastlane.ps1",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -File .claude/hooks/prompt-guard.ps1",
+            "timeout": 3
+          },
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -File .claude/hooks/spec-guard.ps1",
+            "timeout": 3
+          },
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -File .claude/hooks/path-guard.ps1",
+            "timeout": 3
+          },
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -File .claude/hooks/change-budget.ps1",
+            "timeout": 3
+          },
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -File .claude/hooks/diff-plan.ps1",
+            "timeout": 3
+          }
+        ]
+      }
     ],
     "PreToolUse": [
-      { "hooks": [ { "type": "command", "command": "pwsh -NoProfile -File .claude/hooks/webfetch-allow.ps1", "timeout": 3 } ] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -File .claude/hooks/webfetch-allow.ps1",
+            "timeout": 3
+          }
+        ]
+      }
     ],
     "PostToolUse": [
-      { "hooks": [ { "type": "command", "command": "pwsh -NoProfile -File .claude/hooks/check-tests.ps1", "timeout": 10 } ] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -File .claude/hooks/check-tests.ps1",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   },
   "env": {
