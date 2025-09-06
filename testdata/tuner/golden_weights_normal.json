@@ -1,0 +1,19 @@
+{
+  "regime": "normal",
+  "seed": 42,
+  "initial_weights": {
+    "momentum_core": 0.42,
+    "technical_residual": 0.20,
+    "volume_residual": 0.25,
+    "quality_residual": 0.13
+  },
+  "expected_final_weights": {
+    "momentum_core": 0.427,
+    "technical_residual": 0.195,
+    "volume_residual": 0.248,
+    "quality_residual": 0.130
+  },
+  "expected_objective_improvement": 0.0085,
+  "max_evaluations": 50,
+  "tolerance": 0.001
+}

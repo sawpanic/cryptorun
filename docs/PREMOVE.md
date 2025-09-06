@@ -11,6 +11,8 @@ The Pre-Movement Detector provides real-time insight into "coiled-spring" setups
 - **Detailed attribution** showing which factors contribute most to the composite score
 - **Gate status visualization** indicating which of the 2-of-3 critical gates are satisfied
 - **Portfolio-level risk controls** with correlation, sector, and beta budget management
+- **SSE-Throttled Live Dashboard** (≤1 Hz updates) accessible via Monitor Menu > PreMove Detection Board
+- **Interactive Console Interface** with real-time candidate display and manual refresh capabilities
 
 ---
 
@@ -59,44 +61,47 @@ Freshness penalties are applied based on data staleness across all feeds:
 
 - **Soft penalty:** Starts at 8 seconds
 - **Exponential decay:** τ = 30 seconds  
-- **Hard failure:** 90 seconds (worst-feed precedence)
+- **Hard failure:** 90 seconds (worst-feed precedence) ✅ **IMPLEMENTED v3.3**
 - **Feeds monitored:** Funding, trades, depth, basis
 
 ## Portfolio Controls
 
-Risk management is applied after scoring and gates but before alerts:
+Risk management is applied after scoring and gates but before alerts: ✅ **IMPLEMENTED v3.3**
 
-- **Pairwise correlation:** ≤ 0.65 maximum
+- **Pairwise correlation:** ≤ 0.65 maximum (Pearson correlation with exchange-native data)
 - **Sector concentration:** ≤ 2 positions per sector  
-- **Beta budget:** ≤ 2.0 to BTC
-- **Position sizing:** ≤ 5% single position, ≤ 20% total exposure
-- **Tie-breaking:** By ADV then symbol
+- **Beta budget:** ≤ 15.0 exposure limit (adjustable per portfolio constraints)
+- **Position sizing:** Dynamic based on beta utilization and correlation matrix
+- **Tie-breaking:** By composite score then symbol
 
 ## Alert Governance
 
-Rate-limited alerting prevents operator fatigue:
+Rate-limited alerting prevents operator fatigue: ✅ **IMPLEMENTED v3.3**
 
-- **Standard rates:** 3 per hour, 10 per day
-- **High volatility:** Up to 6 per hour when realized vol > 90th percentile
-- **Manual override:** Alert-only mode when score > 90 but < 2 gates satisfied
+- **Standard rates:** 3 per hour, 10 per day (configurable with volatility allowance)
+- **High volatility:** Additional allowance for critical/high severity alerts
+- **Manual override:** Support for emergency alert-only mode with duration controls
+- **SSE Integration:** Real-time alert streaming via Server-Sent Events (≤1 Hz throttled)
 
 ## Execution Quality Tracking
 
-The system monitors execution performance and adapts:
+The system monitors execution performance and adapts: ✅ **IMPLEMENTED v3.3**
 
-- **Slippage monitoring:** Tracks intended vs actual fills
-- **Tightening threshold:** 30 bps slippage triggers stricter requirements
-- **Recovery criteria:** 20 good trades OR 48-hour reset
+- **Slippage monitoring:** Tracks intended vs actual fills with BPS calculations
+- **Fill time quality:** Comprehensive quality scoring (0-100) across slippage, time, and size dimensions
+- **Recovery mode:** Automatic trigger after consecutive failures with cooldown periods
+- **Performance metrics:** P95/median tracking, acceptable rate percentages, quality score aggregation
 
 ## Calibration & Governance
 
 ### Point-in-Time Replay
 
-The backtest harness processes historical artifacts from `artifacts/premove/*.jsonl` to compute:
+The backtest harness processes historical artifacts from `artifacts/premove/*.jsonl` to compute: ✅ **IMPLEMENTED v3.3**
 
-- **Hit rates by state and regime** for model validation
-- **Daily CVD residual R² scores** to monitor signal quality  
-- **Performance attribution** across different market conditions
+- **Hit rates by state and regime** for model validation with isotonic calibration
+- **Daily CVD residual R² scores** to monitor signal quality degradation
+- **Performance attribution** across different market conditions and asset sectors
+- **PIT replay system** with deterministic fixture processing and monotonic curve generation
 
 ### Isotonic Calibration
 

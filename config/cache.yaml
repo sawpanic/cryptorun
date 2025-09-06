@@ -2,7 +2,43 @@ redis:
   addr: localhost:6379
   db: 0
   tls: false
-  default_ttl_seconds: 300
-  hot_ttl_seconds: 120
-  warm_ttl_seconds: 900
-  cold_ttl_seconds: 3600
+  password: ""
+  pool_size: 10
+  min_idle_conns: 2
+  max_retries: 3
+
+# TTL settings by data type and tier
+ttls:
+  prices_hot: 5          # Hot price data - 5 seconds
+  prices_warm: 30        # Warm price data - 30 seconds  
+  volumes_vadr: 120      # Volume and VADR - 2 minutes
+  depth_spread: 15       # Order book depth/spread - 15 seconds
+  trades: 10             # Recent trades - 10 seconds
+  funding_rates: 300     # Funding rates - 5 minutes
+  open_interest: 300     # Open interest - 5 minutes
+  social_metrics: 1800   # Social metrics - 30 minutes
+  catalyst_events: 3600  # Catalyst events - 1 hour
+  
+# PIT snapshot settings
+pit_snapshots:
+  enabled: true
+  retention_hours: 24    # Keep PIT snapshots for 24 hours
+  ref_retention_hours: 168  # Keep reference index for 7 days
+
+# Cache warming and prefetch
+warming:
+  enabled: true
+  hot_set_size: 50       # Number of symbols in hot set
+  prefetch_intervals:
+    prices: 4            # Prefetch prices every 4 seconds
+    volumes: 30          # Prefetch volumes every 30 seconds
+    
+# Memory management
+memory:
+  max_memory_mb: 512     # Maximum memory usage
+  eviction_policy: "allkeys-lru"  # LRU eviction
+  
+# Health monitoring
+monitoring:
+  health_check_interval: 30  # Health check every 30 seconds
+  max_connection_errors: 5   # Max errors before marking unhealthy

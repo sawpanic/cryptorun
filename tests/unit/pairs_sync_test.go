@@ -1,19 +1,14 @@
 package unit
 
 import (
-	"encoding/hex"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"path/filepath"
-	"regexp"
-	"strings"
 	"testing"
 	"time"
 
-	"github.com/sawpanic/CryptoRun/src/application"
-	"github.com/sawpanic/CryptoRun/tests/internal/testpaths"
+	"cryptorun/internal/application"
 )
 
 var mockKrakenAssetPairsResponse = `{
@@ -113,19 +108,19 @@ var mockKrakenTickerResponse = `{
 
 func setupMockKrakenServer() *httptest.Server {
 	mux := http.NewServeMux()
-	
+
 	mux.HandleFunc("/0/public/AssetPairs", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(mockKrakenAssetPairsResponse))
 	})
-	
+
 	mux.HandleFunc("/0/public/Ticker", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(mockKrakenTickerResponse))
 	})
-	
+
 	return httptest.NewServer(mux)
 }
 
@@ -255,7 +250,7 @@ func TestNormalizePairs(t *testing.T) {
 
 	// Test XBT -> BTC normalization - this would be tested through integration
 	testPairs := []string{"XBTUSD", "ETHUSD", "ADAUSD"}
-	
+
 	// This would normally be tested through the public interface
 	// Since normalizePairs is private, we test the end-to-end behavior
 	t.Log("Testing normalization through integration - XBT should become BTC")
@@ -266,27 +261,27 @@ func TestADVCalculation(t *testing.T) {
 	testTickers := []application.TickerData{
 		{
 			Symbol:        "BTCUSD",
-			Volume24hBase: 200.5,     // 200.5 BTC
-			LastPrice:     50000.0,   // $50,000 per BTC
+			Volume24hBase: 200.5,   // 200.5 BTC
+			LastPrice:     50000.0, // $50,000 per BTC
 			QuoteCurrency: "USD",
 		},
 		{
-			Symbol:        "ETHUSD", 
-			Volume24hBase: 1200.0,    // 1200 ETH
-			LastPrice:     3000.0,    // $3,000 per ETH
+			Symbol:        "ETHUSD",
+			Volume24hBase: 1200.0, // 1200 ETH
+			LastPrice:     3000.0, // $3,000 per ETH
 			QuoteCurrency: "USD",
 		},
 		{
 			Symbol:        "ADAUSD",
-			Volume24hBase: 60000.0,   // 60,000 ADA
-			LastPrice:     0.50,      // $0.50 per ADA
+			Volume24hBase: 60000.0, // 60,000 ADA
+			LastPrice:     0.50,    // $0.50 per ADA
 			QuoteCurrency: "USD",
 		},
 	}
 
 	expectedADVs := []int64{
 		10025000, // 200.5 * 50000 = $10,025,000
-		3600000,  // 1200 * 3000 = $3,600,000  
+		3600000,  // 1200 * 3000 = $3,600,000
 		30000,    // 60000 * 0.50 = $30,000
 	}
 
@@ -311,7 +306,7 @@ func TestADVThresholding(t *testing.T) {
 	}
 
 	config := application.PairsSyncConfig{
-		Venue:  "kraken", 
+		Venue:  "kraken",
 		Quote:  "USD",
 		MinADV: 100000,
 	}
@@ -320,7 +315,7 @@ func TestADVThresholding(t *testing.T) {
 
 	// Test filtering by ADV threshold
 	filtered := syncInstance.FilterByADV(advResults, config.MinADV)
-	
+
 	expected := []string{"BTCUSD", "ETHUSD"}
 	if len(filtered) != len(expected) {
 		t.Errorf("Expected %d pairs above threshold, got %d", len(expected), len(filtered))
@@ -338,7 +333,7 @@ func TestUniverseConfigGeneration(t *testing.T) {
 
 	config := application.PairsSyncConfig{
 		Venue:  "kraken",
-		Quote:  "USD", 
+		Quote:  "USD",
 		MinADV: 100000,
 	}
 
@@ -348,7 +343,7 @@ func TestUniverseConfigGeneration(t *testing.T) {
 	tempDir := t.TempDir()
 	oldPwd, _ := os.Getwd()
 	defer os.Chdir(oldPwd)
-	
+
 	os.Chdir(tempDir)
 	os.MkdirAll("config", 0755)
 

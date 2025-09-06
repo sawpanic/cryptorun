@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"cryptorun/application/pipeline"
+	"cryptorun/internal/application/pipeline"
 )
 
 func TestComputeScores(t *testing.T) {
@@ -78,9 +78,9 @@ func TestNormalizeMomentumScore(t *testing.T) {
 	scorer := pipeline.NewScorer()
 
 	testCases := []struct {
-		name     string
-		momentum float64
-		expected float64 // Approximate expected score
+		name      string
+		momentum  float64
+		expected  float64 // Approximate expected score
 		tolerance float64
 	}{
 		{"Zero momentum", 0.0, 50.0, 5.0},
@@ -181,7 +181,7 @@ func TestRegimeAdjustments(t *testing.T) {
 
 	factorSet := pipeline.FactorSet{
 		Symbol:       "TEST",
-		MomentumCore: 15.0, // High momentum 
+		MomentumCore: 15.0, // High momentum
 		Volume:       2.5,  // High volume
 		Social:       0.0,
 		Volatility:   35.0, // High volatility
@@ -192,8 +192,8 @@ func TestRegimeAdjustments(t *testing.T) {
 		expectBoost   bool
 		expectPenalty bool
 	}{
-		{"bull", true, false},    // Should boost high momentum
-		{"choppy", false, true},  // Should penalize high volatility
+		{"bull", true, false},      // Should boost high momentum
+		{"choppy", false, true},    // Should penalize high volatility
 		{"high_vol", false, false}, // Mixed effects
 	}
 
@@ -229,15 +229,15 @@ func TestVolumeScoring(t *testing.T) {
 	scorer := pipeline.NewScorer()
 
 	testCases := []struct {
-		name     string
-		volume   float64
-		expected float64 // Approximate expected score
+		name      string
+		volume    float64
+		expected  float64 // Approximate expected score
 		tolerance float64
 	}{
-		{"Unit volume", 1.0, 50.0, 5.0},      // Log10(1) = 0, so 50 + 0*25 = 50
-		{"High volume", 10.0, 75.0, 5.0},    // Log10(10) = 1, so 50 + 1*25 = 75
-		{"Low volume", 0.1, 25.0, 5.0},      // Log10(0.1) = -1, so 50 + (-1)*25 = 25
-		{"Zero volume", 0.0, 50.0, 5.0},     // Should default to neutral
+		{"Unit volume", 1.0, 50.0, 5.0},       // Log10(1) = 0, so 50 + 0*25 = 50
+		{"High volume", 10.0, 75.0, 5.0},      // Log10(10) = 1, so 50 + 1*25 = 75
+		{"Low volume", 0.1, 25.0, 5.0},        // Log10(0.1) = -1, so 50 + (-1)*25 = 25
+		{"Zero volume", 0.0, 50.0, 5.0},       // Should default to neutral
 		{"NaN volume", math.NaN(), 50.0, 1.0}, // Should default to neutral
 	}
 
@@ -247,7 +247,7 @@ func TestVolumeScoring(t *testing.T) {
 				Symbol:       "TEST",
 				MomentumCore: 0.0, // Neutral momentum
 				Volume:       tc.volume,
-				Social:       0.0, // Neutral social
+				Social:       0.0,  // Neutral social
 				Volatility:   15.0, // Optimal volatility
 			}
 
@@ -269,9 +269,9 @@ func TestSocialScoring(t *testing.T) {
 	scorer := pipeline.NewScorer()
 
 	testCases := []struct {
-		name     string
-		social   float64
-		expected float64
+		name      string
+		social    float64
+		expected  float64
 		tolerance float64
 	}{
 		{"Neutral social", 0.0, 50.0, 1.0},
@@ -310,16 +310,16 @@ func TestVolatilityScoring(t *testing.T) {
 	scorer := pipeline.NewScorer()
 
 	testCases := []struct {
-		name        string
-		volatility  float64
-		expectHigh  bool // Should get high score (near 100)
-		expectLow   bool // Should get low score (well below 50)
+		name       string
+		volatility float64
+		expectHigh bool // Should get high score (near 100)
+		expectLow  bool // Should get low score (well below 50)
 	}{
-		{"Optimal volatility", 20.0, true, false},   // In 15-25 range
-		{"Low volatility", 5.0, false, false},       // Below optimal but not terrible
-		{"High volatility", 50.0, false, true},      // Too high, should be penalized
+		{"Optimal volatility", 20.0, true, false},    // In 15-25 range
+		{"Low volatility", 5.0, false, false},        // Below optimal but not terrible
+		{"High volatility", 50.0, false, true},       // Too high, should be penalized
 		{"Very high volatility", 100.0, false, true}, // Very high, heavy penalty
-		{"Zero volatility", 0.0, false, true},       // No movement, poor
+		{"Zero volatility", 0.0, false, true},        // No movement, poor
 		{"NaN volatility", math.NaN(), false, false}, // Neutral default
 	}
 

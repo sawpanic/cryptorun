@@ -1,0 +1,518 @@
+{
+  "timestamp": "2025-09-06T09:30:58.4918354Z",
+  "root": ".",
+  "hits": [
+    {
+      "file": "cmd\\cryptorun\\main.go",
+      "line": 151,
+      "excerpt": "qaCmd.Flags().Bool(\"fail-on-stubs\", true, \"Fail early if stubs/scaffolds found in non-test code\")",
+      "pattern": "STUB"
+    },
+    {
+      "file": "cmd\\cryptorun\\menu_main.go",
+      "line": 3,
+      "excerpt": "// MenuUI stub for build compatibility",
+      "pattern": "STUB"
+    },
+    {
+      "file": "cmd\\cryptorun\\qa_main.go",
+      "line": 23,
+      "excerpt": "failOnStubs, _ := cmd.Flags().GetBool(\"fail-on-stubs\")",
+      "pattern": "STUB"
+    },
+    {
+      "file": "cmd\\cryptorun\\qa_main.go",
+      "line": 55,
+      "excerpt": "FailOnStubs:   failOnStubs,",
+      "pattern": "STUB"
+    },
+    {
+      "file": "cmd\\cryptorun\\qa_main.go",
+      "line": 65,
+      "excerpt": "Bool(\"fail_on_stubs\", failOnStubs).",
+      "pattern": "STUB"
+    },
+    {
+      "file": "cmd\\cryptorun\\ship_main.go",
+      "line": 3,
+      "excerpt": "// Ship main stub for build compatibility",
+      "pattern": "STUB"
+    },
+    {
+      "file": "cmd\\cryptorun\\stubs.go",
+      "line": 9,
+      "excerpt": "// Missing type and function stubs for build compatibility",
+      "pattern": "STUB"
+    },
+    {
+      "file": "exchanges\\coinbase\\book_stub.go",
+      "line": 8,
+      "excerpt": "// TODO: Implement Coinbase WS orderbook provider",
+      "pattern": "TODO"
+    },
+    {
+      "file": "exchanges\\okx\\book_stub.go",
+      "line": 8,
+      "excerpt": "// TODO: Implement OKX WS orderbook provider",
+      "pattern": "TODO"
+    },
+    {
+      "file": "internal\\api\\api.go",
+      "line": 3,
+      "excerpt": "// Minimal API client stubs for live scanning pipeline.",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\application\\pipeline\\scoring.go",
+      "line": 189,
+      "excerpt": "// TODO: Store illiquidity flag in factor set meta for gate usage",
+      "pattern": "TODO"
+    },
+    {
+      "file": "internal\\application\\pipeline\\scoring.go",
+      "line": 213,
+      "excerpt": "// TODO: Store capping flag in factor set meta for analysis",
+      "pattern": "TODO"
+    },
+    {
+      "file": "internal\\application\\scan.go",
+      "line": 21,
+      "excerpt": "// Stub types for compilation",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\application\\scan.go",
+      "line": 28,
+      "excerpt": "// Domain stub types for compilation",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\domain\\fatigue.go",
+      "line": 67,
+      "excerpt": "// TODO(QA): confirm exact fields vs COMPREHENSIVE_SCANNER_FACTOR_BREAKDOWN.md",
+      "pattern": "TODO"
+    },
+    {
+      "file": "internal\\domain\\micro.go",
+      "line": 3,
+      "excerpt": "// Microstructure stub types for build compatibility",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\domain\\regime.go",
+      "line": 3,
+      "excerpt": "// Regime stub functions for build compatibility",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\domain\\regime.go",
+      "line": 28,
+      "excerpt": "return \"bull\" // stub",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 16,
+      "excerpt": "// Hit represents a stub detection hit",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 24,
+      "excerpt": "// NostubScanResult contains the full scan results",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 25,
+      "excerpt": "type NostubScanResult struct {",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 33,
+      "excerpt": "var stubPatterns = []*regexp.Regexp{",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 35,
+      "excerpt": "regexp.MustCompile(`(?i)TODO`),",
+      "pattern": "TODO"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 36,
+      "excerpt": "regexp.MustCompile(`(?i)FIXME`),",
+      "pattern": "FIXME"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 37,
+      "excerpt": "regexp.MustCompile(`(?i)STUB`),",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 38,
+      "excerpt": "regexp.MustCompile(`(?i)NotImplemented`),",
+      "pattern": "NotImplemented"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 39,
+      "excerpt": "regexp.MustCompile(`(?i)dummy implementation`),",
+      "pattern": "dummy_implementation"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 40,
+      "excerpt": "regexp.MustCompile(`(?i)return nil\\s*//\\s*TODO`),",
+      "pattern": "TODO"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 45,
+      "excerpt": "\"TODO\",",
+      "pattern": "TODO"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 46,
+      "excerpt": "\"FIXME\",",
+      "pattern": "FIXME"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 47,
+      "excerpt": "\"STUB\",",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 48,
+      "excerpt": "\"NotImplemented\",",
+      "pattern": "NotImplemented"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 50,
+      "excerpt": "\"return_nil_todo\",",
+      "pattern": "TODO"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 53,
+      "excerpt": "// NostubScan scans a directory tree for stub patterns in Go source files",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 54,
+      "excerpt": "func NostubScan(root string, excludes []string) ([]Hit, error) {",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 112,
+      "excerpt": "result := NostubScanResult{",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 120,
+      "excerpt": "if err := writeNostubResults(result); err != nil {",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 127,
+      "excerpt": "// scanFile scans a single file for stub patterns",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 143,
+      "excerpt": "for i, pattern := range stubPatterns {",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 162,
+      "excerpt": "// writeNostubResults writes the scan results to out/audit/nostub_hits.json",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 163,
+      "excerpt": "func writeNostubResults(result NostubScanResult) error {",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 177,
+      "excerpt": "outputPath := filepath.Join(auditDir, \"nostub_hits.json\")",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 185,
+      "excerpt": "// ValidateNoStubs performs the no-stub gate check and returns an error if stubs are found",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 186,
+      "excerpt": "func ValidateNoStubs(root string, excludes []string) error {",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 187,
+      "excerpt": "hits, err := NostubScan(root, excludes)",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 189,
+      "excerpt": "return fmt.Errorf(\"nostub scan failed: %w\", err)",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 193,
+      "excerpt": "return fmt.Errorf(\"found %d stub patterns in code - acceptance gate failed\", len(hits))",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 199,
+      "excerpt": "// NoStubGate provides the interface expected by tests",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 200,
+      "excerpt": "type NoStubGate struct {",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 212,
+      "excerpt": "// NewNoStubGate creates a new no-stub gate scanner",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 213,
+      "excerpt": "func NewNoStubGate(auditDir string) *NoStubGate {",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 214,
+      "excerpt": "return \u0026NoStubGate{auditDir: auditDir}",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 217,
+      "excerpt": "// Scan performs the stub detection scan",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 218,
+      "excerpt": "func (g *NoStubGate) Scan() (*ScanReport, error) {",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 219,
+      "excerpt": "hits, err := NostubScan(\".\", []string{})",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 266,
+      "excerpt": "// RunGate runs the gate check and returns error if stubs found",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 267,
+      "excerpt": "func (g *NoStubGate) RunGate() error {",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\nostub_gate.go",
+      "line": 268,
+      "excerpt": "return ValidateNoStubs(\".\", []string{})",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\runner.go",
+      "line": 23,
+      "excerpt": "FailOnStubs   bool",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\runner.go",
+      "line": 102,
+      "excerpt": "// Phase -1: No-Stub Gate (if enabled)",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\runner.go",
+      "line": 103,
+      "excerpt": "if r.config.FailOnStubs {",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\runner.go",
+      "line": 104,
+      "excerpt": "if err := r.executeNoStubGate(result); err != nil {",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\runner.go",
+      "line": 235,
+      "excerpt": "func (r *Runner) executeNoStubGate(result *RunResult) error {",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\runner.go",
+      "line": 238,
+      "excerpt": "log.Info().Msg(\"Running Phase -1: No-Stub Gate\")",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\runner.go",
+      "line": 240,
+      "excerpt": "err := ValidateNoStubs(\".\", []string{})",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\runner.go",
+      "line": 245,
+      "excerpt": "// No-stub gate failed - this is a hard fail before any network work",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\runner.go",
+      "line": 248,
+      "excerpt": "result.Hint = \"Remove TODO/STUB/not-implemented patterns from non-test Go files before QA execution\"",
+      "pattern": "TODO"
+    },
+    {
+      "file": "internal\\qa\\runner.go",
+      "line": 248,
+      "excerpt": "result.Hint = \"Remove TODO/STUB/not-implemented patterns from non-test Go files before QA execution\"",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\runner.go",
+      "line": 251,
+      "excerpt": "fmt.Printf(\"❌ FAIL SCAFFOLDS_FOUND +hint: remove TODO/STUB/not-implemented\\n\")",
+      "pattern": "TODO"
+    },
+    {
+      "file": "internal\\qa\\runner.go",
+      "line": 251,
+      "excerpt": "fmt.Printf(\"❌ FAIL SCAFFOLDS_FOUND +hint: remove TODO/STUB/not-implemented\\n\")",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\qa\\runner.go",
+      "line": 256,
+      "excerpt": "log.Info().Dur(\"duration\", duration).Msg(\"Phase -1: No-Stub Gate passed\")",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\spec\\factors.go",
+      "line": 33,
+      "excerpt": "// TODO(QA): real factor graph per mission.md (Momentum protected)",
+      "pattern": "TODO"
+    },
+    {
+      "file": "internal\\spec\\factors.go",
+      "line": 40,
+      "excerpt": "ready:       true, // Stub passes for build",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\spec\\microstructure.go",
+      "line": 5,
+      "excerpt": "// TODO(QA): enforce venue-native L1/L2 (Kraken/OKX/Coinbase)",
+      "pattern": "TODO"
+    },
+    {
+      "file": "internal\\spec\\microstructure.go",
+      "line": 12,
+      "excerpt": "ready:       true, // Stub passes for build",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\spec\\social_cap.go",
+      "line": 5,
+      "excerpt": "// TODO(QA): cap brand/social ≤ +10 pts AFTER residuals",
+      "pattern": "TODO"
+    },
+    {
+      "file": "internal\\spec\\social_cap.go",
+      "line": 12,
+      "excerpt": "ready:       true, // Stub passes for build",
+      "pattern": "STUB"
+    },
+    {
+      "file": "internal\\ui\\ui.go",
+      "line": 8,
+      "excerpt": "// Minimal console UI stubs to satisfy dependencies and keep output readable.",
+      "pattern": "STUB"
+    },
+    {
+      "file": "signals\\entry.go",
+      "line": 30,
+      "excerpt": "// Trend quality: stub accept",
+      "pattern": "STUB"
+    },
+    {
+      "file": "src\\cmd\\cryptorun\\cmd_optimize.go",
+      "line": 3,
+      "excerpt": "// TODO: add optimize command when rootCmd is available",
+      "pattern": "TODO"
+    },
+    {
+      "file": "tmp_nostub_scanner.go",
+      "line": 13,
+      "excerpt": "// Create the no-stub gate",
+      "pattern": "STUB"
+    },
+    {
+      "file": "tmp_nostub_scanner.go",
+      "line": 14,
+      "excerpt": "gate := qa.NewNoStubGate(\"out/qa\")",
+      "pattern": "STUB"
+    },
+    {
+      "file": "tmp_nostub_scanner.go",
+      "line": 22,
+      "excerpt": "// Write results to out/qa/nostub_scan.json",
+      "pattern": "STUB"
+    },
+    {
+      "file": "tmp_nostub_scanner.go",
+      "line": 43,
+      "excerpt": "err = os.WriteFile(\"out/qa/nostub_scan.json\", data, 0644)",
+      "pattern": "STUB"
+    },
+    {
+      "file": "tmp_nostub_scanner.go",
+      "line": 49,
+      "excerpt": "fmt.Printf(\"No-Stub Gate Scan Results:\\n\")",
+      "pattern": "STUB"
+    }
+  ],
+  "total": 85,
+  "files_scanned": 139
+}

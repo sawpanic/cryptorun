@@ -1,0 +1,193 @@
+{
+  "timestamp": "2025-09-06T13:35:00+03:00",
+  "methodology": "Comprehensive gate and guard failure analysis",
+  "total_misses": 4,
+  "guard_failures": {
+    "freshness_guard": {
+      "count": 1,
+      "percentage": 25.0,
+      "description": "Signal data too stale (>2 bars age)",
+      "threshold": "2 bars",
+      "failed_cases": [
+        {
+          "symbol": "ADA",
+          "window": "1h",
+          "actual_age": "3 bars",
+          "threshold_violation": "50% over limit",
+          "impact": "Missed 13.4% gain"
+        }
+      ],
+      "config_path": "momentum_config.Freshness.MaxBarsAge",
+      "suggested_fix": "Increase MaxBarsAge from 2 to 3"
+    },
+    "fatigue_guard": {
+      "count": 1,
+      "percentage": 25.0,
+      "description": "Overextended position (24h return >12%, RSI >70)",
+      "thresholds": {
+        "return_24h": "12%",
+        "rsi_4h": "70.0"
+      },
+      "failed_cases": [
+        {
+          "symbol": "ETH",
+          "window": "24h",
+          "return_24h": "18.5%",
+          "rsi_4h": "74.2",
+          "accel_renewal": false,
+          "impact": "Missed 42.8% gain"
+        }
+      ],
+      "config_path": "momentum_config.Fatigue.Return24hThreshold",
+      "suggested_fix": "Increase Return24hThreshold from 12% to 18%"
+    },
+    "late_fill_guard": {
+      "count": 1,
+      "percentage": 25.0,
+      "description": "Signal arrived too late (>30s delay)",
+      "threshold": "30 seconds",
+      "failed_cases": [
+        {
+          "symbol": "SOL",
+          "window": "24h",
+          "actual_delay": "45 seconds",
+          "threshold_violation": "50% over limit",
+          "impact": "Missed 38.4% gain"
+        }
+      ],
+      "config_path": "momentum_config.LateFill.MaxDelaySeconds",
+      "suggested_fix": "Increase MaxDelaySeconds from 30 to 45"
+    }
+  },
+  "gate_failures": {
+    "score_gate": {
+      "count": 1,
+      "percentage": 25.0,
+      "description": "Momentum score below minimum threshold (2.5)",
+      "threshold": "2.5",
+      "failed_cases": [
+        {
+          "symbol": "DOT",
+          "window": "1h",
+          "actual_score": "2.3",
+          "threshold_violation": "8% below minimum",
+          "impact": "Missed 11.8% gain"
+        }
+      ],
+      "config_path": "entry_exit_config.Entry.MinScore",
+      "suggested_fix": "Reduce MinScore from 2.5 to 2.0"
+    },
+    "volume_gate": {
+      "count": 1,
+      "percentage": 25.0,
+      "description": "Volume surge insufficient (<1.75x multiplier)",
+      "threshold": "1.75x",
+      "failed_cases": [
+        {
+          "symbol": "ADA",
+          "window": "1h",
+          "actual_multiple": "1.65x",
+          "threshold_violation": "6% below minimum",
+          "impact": "Secondary factor in 13.4% missed gain"
+        }
+      ],
+      "config_path": "entry_exit_config.Entry.VolumeMultiple",
+      "suggested_fix": "Reduce VolumeMultiple from 1.75 to 1.6"
+    },
+    "adx_gate": {
+      "count": 1,
+      "percentage": 25.0,
+      "description": "Trend strength insufficient (<25.0 ADX)",
+      "threshold": "25.0",
+      "failed_cases": [
+        {
+          "symbol": "DOT",
+          "window": "1h",
+          "actual_adx": "22.5",
+          "threshold_violation": "10% below minimum",
+          "impact": "Secondary factor in 11.8% missed gain"
+        }
+      ],
+      "config_path": "entry_exit_config.Entry.ADXThreshold",
+      "suggested_fix": "Reduce ADXThreshold from 25.0 to 22.0"
+    },
+    "rsi_threshold": {
+      "count": 1,
+      "percentage": 25.0,
+      "description": "RSI overbought condition (>70.0)",
+      "threshold": "70.0",
+      "failed_cases": [
+        {
+          "symbol": "ETH",
+          "window": "24h",
+          "actual_rsi": "74.2",
+          "threshold_violation": "6% over limit",
+          "impact": "Secondary factor in 42.8% missed gain"
+        }
+      ],
+      "config_path": "momentum_config.Fatigue.RSI4hThreshold",
+      "suggested_fix": "Part of fatigue_guard - increase RSI4hThreshold to 75.0"
+    },
+    "execution_delay": {
+      "count": 1,
+      "percentage": 25.0,
+      "description": "Execution timing constraints",
+      "failed_cases": [
+        {
+          "symbol": "SOL",
+          "window": "24h",
+          "impact": "Secondary factor in 38.4% missed gain"
+        }
+      ],
+      "notes": "Related to late_fill_guard - execution infrastructure timing"
+    }
+  },
+  "failure_patterns": {
+    "primary_vs_secondary": {
+      "guards_primary": 3,
+      "gates_primary": 1,
+      "interpretation": "Guards (timing/fatigue/freshness) are main blockers, not scoring gates"
+    },
+    "timeframe_distribution": {
+      "1h_failures": 2,
+      "24h_failures": 2,
+      "pattern": "Evenly distributed - no timeframe bias in failures"
+    },
+    "severity_analysis": {
+      "high_impact_misses": [
+        {"symbol": "ETH", "gain": 42.8, "reason": "fatigue_guard"},
+        {"symbol": "SOL", "gain": 38.4, "reason": "late_fill_guard"}
+      ],
+      "medium_impact_misses": [
+        {"symbol": "ADA", "gain": 13.4, "reason": "freshness_guard"},
+        {"symbol": "DOT", "gain": 11.8, "reason": "score_gate"}
+      ]
+    }
+  },
+  "optimization_priority": [
+    {
+      "rank": 1,
+      "component": "fatigue_guard",
+      "rationale": "Highest single missed gain (42.8%)",
+      "risk": "Medium - may increase false positives in overextended markets"
+    },
+    {
+      "rank": 2,
+      "component": "late_fill_guard", 
+      "rationale": "High missed gain (38.4%) with low adjustment risk",
+      "risk": "Low - small timing tolerance increase"
+    },
+    {
+      "rank": 3,
+      "component": "freshness_guard",
+      "rationale": "Medium gain but easy fix with moderate risk",
+      "risk": "Medium - may include stale signals"
+    },
+    {
+      "rank": 4,
+      "component": "score_gate",
+      "rationale": "Lowest gain but affects core momentum quality",
+      "risk": "High - may degrade signal quality significantly"
+    }
+  ]
+}

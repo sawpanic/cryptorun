@@ -1,0 +1,83 @@
+{
+  "name": "fatigue_guard_calm",
+  "regime": "calm",
+  "timestamp": "2025-01-15T12:00:00Z",
+  "candidates": [
+    {
+      "symbol": "BTCUSD",
+      "composite_score": 8.5,
+      "momentum_core": 8.0,
+      "rsi_4h": 65.0,
+      "volume_24h": 0.0,
+      "volume_avg": 0.0,
+      "spread_bps": 0.0,
+      "depth_usd": 0.0,
+      "vadr": 0.0,
+      "catalyst_heat": 0.0,
+      "social_score": 0.0,
+      "brand_score": 0.0,
+      "last_update": "2025-01-15T11:58:00Z",
+      "bar_age": 0,
+      "atr_current": 0.0,
+      "price_move_atr": 0.0
+    },
+    {
+      "symbol": "ETHUSD",
+      "composite_score": 9.2,
+      "momentum_core": 12.0,
+      "rsi_4h": 75.0,
+      "volume_24h": 0.0,
+      "volume_avg": 0.0,
+      "spread_bps": 0.0,
+      "depth_usd": 0.0,
+      "vadr": 0.0,
+      "catalyst_heat": 0.0,
+      "social_score": 0.0,
+      "brand_score": 0.0,
+      "last_update": "2025-01-15T11:59:00Z",
+      "bar_age": 0,
+      "atr_current": 0.0,
+      "price_move_atr": 0.0
+    },
+    {
+      "symbol": "SOLUSD",
+      "composite_score": 7.8,
+      "momentum_core": 9.0,
+      "rsi_4h": 60.0,
+      "volume_24h": 0.0,
+      "volume_avg": 0.0,
+      "spread_bps": 0.0,
+      "depth_usd": 0.0,
+      "vadr": 0.0,
+      "catalyst_heat": 0.0,
+      "social_score": 0.0,
+      "brand_score": 0.0,
+      "last_update": "2025-01-15T11:57:30Z",
+      "bar_age": 0,
+      "atr_current": 0.0,
+      "price_move_atr": 0.0
+    }
+  ],
+  "expected": {
+    "pass_count": 2,
+    "fail_count": 1,
+    "exit_code": 1,
+    "guard_results": [
+      {
+        "symbol": "BTCUSD",
+        "status": "PASS"
+      },
+      {
+        "symbol": "ETHUSD",
+        "status": "FAIL",
+        "failed_guard": "fatigue",
+        "reason": "24h momentum 12.0% > 10.0% + RSI4h 75.0 > 70.0",
+        "fix_hint": "Wait for momentum cooldown or RSI retreat"
+      },
+      {
+        "symbol": "SOLUSD",
+        "status": "PASS"
+      }
+    ]
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "name": "freshness_guard_normal",
+  "regime": "normal", 
+  "timestamp": "2025-01-15T12:00:00Z",
+  "candidates": [
+    {
+      "symbol": "BTCUSD",
+      "composite_score": 8.5,
+      "momentum_core": 0.0,
+      "rsi_4h": 0.0,
+      "volume_24h": 0.0,
+      "volume_avg": 0.0,
+      "spread_bps": 0.0,
+      "depth_usd": 0.0,
+      "vadr": 0.0,
+      "catalyst_heat": 0.0,
+      "social_score": 0.0,
+      "brand_score": 0.0,
+      "last_update": "2025-01-15T11:59:00Z",
+      "bar_age": 1,
+      "atr_current": 100.0,
+      "price_move_atr": 0.8
+    },
+    {
+      "symbol": "ETHUSD", 
+      "composite_score": 9.2,
+      "momentum_core": 0.0,
+      "rsi_4h": 0.0,
+      "volume_24h": 0.0,
+      "volume_avg": 0.0,
+      "spread_bps": 0.0,
+      "depth_usd": 0.0,
+      "vadr": 0.0,
+      "catalyst_heat": 0.0,
+      "social_score": 0.0,
+      "brand_score": 0.0,
+      "last_update": "2025-01-15T11:54:00Z",
+      "bar_age": 3,
+      "atr_current": 50.0,
+      "price_move_atr": 0.6
+    },
+    {
+      "symbol": "ADAUSD",
+      "composite_score": 7.8,
+      "momentum_core": 0.0,
+      "rsi_4h": 0.0,
+      "volume_24h": 0.0,
+      "volume_avg": 0.0,
+      "spread_bps": 0.0,
+      "depth_usd": 0.0,
+      "vadr": 0.0,
+      "catalyst_heat": 0.0,
+      "social_score": 0.0,
+      "brand_score": 0.0,
+      "last_update": "2025-01-15T11:59:30Z",
+      "bar_age": 1,
+      "atr_current": 25.0,
+      "price_move_atr": 1.4
+    }
+  ],
+  "expected": {
+    "pass_count": 1,
+    "fail_count": 2,
+    "exit_code": 1,
+    "guard_results": [
+      {
+        "symbol": "BTCUSD",
+        "status": "PASS"
+      },
+      {
+        "symbol": "ETHUSD",
+        "status": "FAIL",
+        "failed_guard": "freshness",
+        "reason": "Bar age 3 > 2 bars maximum",
+        "fix_hint": "Wait for fresh data or increase bar age tolerance"
+      },
+      {
+        "symbol": "ADAUSD",
+        "status": "FAIL",
+        "failed_guard": "freshness",
+        "reason": "Price move 1.40×ATR > 1.20×ATR limit",
+        "fix_hint": "Wait for price stabilization or increase ATR tolerance"
+      }
+    ]
+  }
+}

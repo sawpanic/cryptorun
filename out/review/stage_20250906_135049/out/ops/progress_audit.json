@@ -1,0 +1,41 @@
+{
+  "packs": [
+    "PACK-E.DOCS-REBRAND.80",
+    "PACK-B.ACCEPTANCE.45", 
+    "PACK-B.QA+GUARDS.44"
+  ],
+  "evidence": [
+    {
+      "pack": "PACK-E.DOCS-REBRAND.80",
+      "source": "CHANGELOG.md",
+      "timestamp": "2025-09-06T11:23:00+03:00",
+      "file": "CHANGELOG.md",
+      "line": 3,
+      "description": "Documentation rebranding from CProtocol to CryptoRun"
+    },
+    {
+      "pack": "PACK-B.ACCEPTANCE.45", 
+      "source": "CHANGELOG.md",
+      "timestamp": "2025-09-06T11:00:00+03:00",
+      "file": "CHANGELOG.md", 
+      "line": 33,
+      "description": "QA Acceptance Mode with no-stub gate and verification"
+    },
+    {
+      "pack": "PACK-B.QA+GUARDS.44",
+      "source": "CHANGELOG.md",
+      "timestamp": "2025-09-06T08:55:00+03:00", 
+      "file": "CHANGELOG.md",
+      "line": 86,
+      "description": "QA Command & Provider Guards implementation"
+    },
+    {
+      "pack": "PACK-B.ACCEPTANCE.45",
+      "source": "QA_REPORT.json",
+      "timestamp": "2025-09-06T11:00:00+03:00",
+      "file": "out/qa/QA_REPORT.json",
+      "description": "QA report artifact with build failure analysis"
+    }
+  ],
+  "decided_at": "2025-09-06T11:24:00+03:00"
+}

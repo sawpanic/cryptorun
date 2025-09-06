@@ -16,6 +16,19 @@ jobs:
         uses: golangci/golangci-lint-action@v6
         with:
           args: --timeout=5m
+      - name: Documentation UX Guard
+        run: |
+          echo "🔍 Running Documentation UX Guard..."
+          go run scripts/check_docs_ux.go
+      - name: Branding Guard Test
+        run: |
+          echo "🔍 Running Branding Guard..."
+          go test -v ./tests/branding -run TestBrandConsistency
+      - name: Conformance Suite
+        run: |
+          echo "🛡️ Running Conformance Suite..."
+          go test -v ./tests/conformance -timeout 30s
+          echo "✅ All conformance requirements verified"
       - name: Test
         run: |
           cd src

@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"cryptorun/domain"
+	"cryptorun/internal/domain"
 )
 
 func TestSpreadGateBorderlineCases(t *testing.T) {
@@ -20,7 +20,7 @@ func TestSpreadGateBorderlineCases(t *testing.T) {
 		{
 			name:          "Exactly at threshold",
 			bid:           100.0,
-			ask:           100.50,  // 50 bps spread
+			ask:           100.50, // 50 bps spread
 			maxSpreadBps:  50.0,
 			expectedOK:    true,
 			expectedValue: 50.0,
@@ -31,7 +31,7 @@ func TestSpreadGateBorderlineCases(t *testing.T) {
 			bid:           100.0,
 			ask:           100.5001, // 50.01 bps spread -> rounds to 50
 			maxSpreadBps:  50.0,
-			expectedOK:    true,  // 50.01 rounds to 50, which passes
+			expectedOK:    true, // 50.01 rounds to 50, which passes
 			expectedValue: 50.0,
 			expectedName:  "spread",
 		},
@@ -56,7 +56,7 @@ func TestSpreadGateBorderlineCases(t *testing.T) {
 		{
 			name:          "Wide spread",
 			bid:           100.0,
-			ask:           105.0,    // 476.19 bps spread -> rounds to 488
+			ask:           105.0, // 476.19 bps spread -> rounds to 488
 			maxSpreadBps:  50.0,
 			expectedOK:    false,
 			expectedValue: 488.0,
@@ -152,8 +152,8 @@ func TestDepthGateBorderlineCases(t *testing.T) {
 			name:          "Just below threshold",
 			depth2PcUSD:   99999.99,
 			minDepthUSD:   100000.0,
-			expectedOK:    true,      // 99999.99 rounds to 100000
-			expectedValue: 100000.0,  // Rounded to nearest USD
+			expectedOK:    true,     // 99999.99 rounds to 100000
+			expectedValue: 100000.0, // Rounded to nearest USD
 		},
 		{
 			name:          "Zero depth",
@@ -206,10 +206,10 @@ func TestDepthGateBorderlineCases(t *testing.T) {
 
 func TestVADRGateBorderlineCases(t *testing.T) {
 	testCases := []struct {
-		name        string
-		vadr        float64
-		minVADR     float64
-		expectedOK  bool
+		name       string
+		vadr       float64
+		minVADR    float64
+		expectedOK bool
 	}{
 		{
 			name:       "Exactly at threshold",
@@ -258,9 +258,9 @@ func TestVADRGateBorderlineCases(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			thresholds := domain.MicroGateThresholds{MinVADR: tc.minVADR}
-		inputs := domain.MicroGateInputs{VADR: tc.vadr}
-		results := domain.EvaluateMicroGates(inputs, thresholds)
-		result := results.VADR
+			inputs := domain.MicroGateInputs{VADR: tc.vadr}
+			results := domain.EvaluateMicroGates(inputs, thresholds)
+			result := results.VADR
 
 			if result.OK != tc.expectedOK {
 				t.Errorf("OK mismatch: got %v, want %v", result.OK, tc.expectedOK)
@@ -283,10 +283,10 @@ func TestVADRGateBorderlineCases(t *testing.T) {
 
 func TestADVGateBorderlineCases(t *testing.T) {
 	testCases := []struct {
-		name        string
-		advUSD      int64
-		minADVUSD   int64
-		expectedOK  bool
+		name       string
+		advUSD     int64
+		minADVUSD  int64
+		expectedOK bool
 	}{
 		{
 			name:       "Exactly at threshold",
@@ -329,9 +329,9 @@ func TestADVGateBorderlineCases(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			thresholds := domain.MicroGateThresholds{MinADVUSD: tc.minADVUSD}
-		inputs := domain.MicroGateInputs{ADVUSD: tc.advUSD}
-		results := domain.EvaluateMicroGates(inputs, thresholds)
-		result := results.ADV
+			inputs := domain.MicroGateInputs{ADVUSD: tc.advUSD}
+			results := domain.EvaluateMicroGates(inputs, thresholds)
+			result := results.ADV
 
 			if result.OK != tc.expectedOK {
 				t.Errorf("OK mismatch: got %v, want %v", result.OK, tc.expectedOK)
@@ -361,10 +361,10 @@ func TestMicroGateResultsCombined(t *testing.T) {
 	}
 
 	testCases := []struct {
-		name              string
-		inputs            domain.MicroGateInputs
-		expectedAllPass   bool
-		expectedReason    string
+		name            string
+		inputs          domain.MicroGateInputs
+		expectedAllPass bool
+		expectedReason  string
 	}{
 		{
 			name: "All gates pass",
@@ -436,7 +436,7 @@ func TestMicroGateResultsCombined(t *testing.T) {
 			inputs: domain.MicroGateInputs{
 				Symbol:      "LOWUSD",
 				Bid:         1.0,
-				Ask:         1.1,   // 952.38 bps spread
+				Ask:         1.1, // 952.38 bps spread
 				Depth2PcUSD: 10000.0,
 				VADR:        1.0,
 				ADVUSD:      10000,
@@ -548,4 +548,3 @@ func TestCalculateSpreadBpsEdgeCases(t *testing.T) {
 		})
 	}
 }
-

@@ -29,14 +29,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Architecture
 
-This is a cryptocurrency momentum scanner built in Go with a layered architecture in the `src/` directory:
+This is a cryptocurrency momentum scanner built in Go with a **unified composite scoring system** that provides a single, consistent scoring path.
+
+### Unified Composite Architecture
+All scoring routes through a single composite system:
+- **`internal/score/composite/`**: Unified composite scorer with protected MomentumCore
+- **`internal/gates/entry.go`**: Hard entry gates (Score≥75 + VADR≥1.8 + funding divergence)
+- **`internal/explain/explainer.go`**: Comprehensive scoring explanations with attribution
+- **`internal/data/derivs/`**: New measurements (funding z-score, OI residuals, ETF flows)
 
 ### Core Layers
 - **`domain/`**: Business logic (scoring, gates, orthogonalization, regime detection)
-- **`application/`**: Use cases (universe builders, factor builders, snapshot store, config loaders)  
+- **`application/`**: Use cases with **single pipeline entry points per action**
 - **`infrastructure/`**: External integrations (Kraken APIs, cache, circuit breakers, rate limiting, DB)
 - **`interfaces/`**: HTTP endpoints (`/health`, `/metrics`, `/decile`)
-- **`cmd/cryptorun/`**: CLI entry point with commands: scan, backtest, monitor, health
+- **`cmd/cryptorun/`**: CLI commands that call unified pipelines
+- **Menu system**: Interactive interface that calls the SAME unified pipelines
 
 ### Key Concepts
 - **6-48 hour momentum scanner**: Not HFT, not buy-and-hold
@@ -99,6 +107,51 @@ This is a cryptocurrency momentum scanner built in Go with a layered architectur
 2. Check P99 latencies don't degrade
 3. Verify cache hit rates remain high
 4. Validate regime detection accuracy
+5. **Run conformance tests**: `go test ./tests/conformance` - ensures single pipeline architecture compliance
+
+### Single Pipeline Enforcement
+The codebase enforces single implementation per action through:
+- **Conformance tests**: `tests/conformance/no_duplicate_paths_test.go` validates CMD and menu route to same functions
+- **Architecture constraint**: One exported function per action in `internal/application/`
+- **CI enforcement**: Conformance suite runs in CI to prevent architectural drift
+
+## Documentation & Quality Gates
+
+### Documentation UX Verification
+- **UX Guard Check**: `go run scripts/check_docs_ux.go` (or `pwsh -File scripts/check_docs_ux.ps1`)
+- **Branding Guard**: `go test -v ./tests/branding -run TestBrandConsistency`
+- **Combined Check**: Run both guards to validate documentation consistency
+
+### Pre-Commit Hooks (Recommended)
+Enable automated checks before each commit:
+
+```bash
+# Enable git hooks (one-time setup)
+git config core.hooksPath .githooks
+
+# Make hooks executable (Linux/Mac)
+chmod +x .githooks/pre-commit
+
+# Test hook manually
+./.githooks/pre-commit
+```
+
+**Windows PowerShell:**
+```powershell
+# Test hook manually
+pwsh -File .githooks/pre-commit.ps1
+```
+
+### Documentation Requirements
+All markdown files must include:
+```markdown
+## UX MUST — Live Progress & Explainability
+```
+
+### Branding Rules
+- **Allowed**: "CryptoRun" only
+- **Forbidden**: "CryptoEdge", "Crypto Edge" (except in `_codereview/**` for historic references)
+- **Enforcement**: Automated via branding guard test and CI pipeline
 
 ---
 
@@ -121,16 +174,14 @@ Real-time **6–48h cryptocurrency momentum scanner** powered by free, keyless e
 
 ## 🧭 Product Requirements (v3.2.1)
 
-**Factor System**
+**Unified Composite Scoring System**
 
-* Multi-timeframe momentum:
-  * 1h (20%)
-  * 4h (35%)
-  * 12h (30%)
-  * 24h (10–15%)
-  * Weekly 7d (5–10%) regime-dependent
-* Protected MomentumCore in Gram–Schmidt hierarchy.
-* Social/Brand contribution: max +10, applied *after* momentum & volume.
+* **MomentumCore (Protected)**: Multi-timeframe momentum (1h/4h/12h/24h) that is NEVER orthogonalized
+* **Gram-Schmidt Residualization**: Technical → Volume → Quality → Social (in sequence)
+* **Regime-Adaptive Weights**: Three profiles (calm/normal/volatile) with automatic 4h switching
+* **Social Cap**: Strictly limited to +10 points, applied OUTSIDE the 100% weight allocation
+* **Entry Gates**: Hard requirements (Score≥75 + VADR≥1.8 + funding divergence≥2σ)
+* **New Measurements**: Cross-venue funding z-score, OI residuals, ETF flows (free sources only)
 
 **Guards**
 
@@ -168,29 +219,32 @@ Real-time **6–48h cryptocurrency momentum scanner** powered by free, keyless e
 
 ---
 
-## 📊 Current Progress (after P0 bootstrap)
+## 📊 Current Progress (after UNIFIED MODEL v1)
 
-✅ Repo initialized as Go module (`go.mod`, `go.sum`).
-✅ Added `main.go` + Cobra `root.go`.
-✅ Stubs for `internal/api`, `internal/config`, `internal/cobra`.
-✅ Makefile + CI workflow.
-✅ `go build ./... && go test ./...` passes with stubs.
+✅ **Unified Composite Scoring System**: Single scoring path with protected MomentumCore
+✅ **Gram-Schmidt Orthogonalization**: Residualized factors with momentum protection  
+✅ **Regime-Adaptive Weights**: Three weight profiles (calm/normal/volatile)
+✅ **Hard Entry Gates**: Score≥75 + VADR≥1.8 + funding divergence enforcement
+✅ **New Measurements**: Funding z-score, OI residuals, ETF flows (free sources only)
+✅ **Explainability System**: Comprehensive scoring explanations with attribution
+✅ **Exchange-Native Microstructure**: L1/L2 validation with proof generation
+✅ **Menu & CLI Integration**: Unified interface with real-time testing capabilities
+✅ **Test Suite**: Unit and integration tests for unified system validation
 
-⚠️ Everything else is missing: indicators, guards, factor engine, microstructure, regime, data facade, CLI scan pipeline, providers, conformance tests.
+❌ **Legacy FactorWeights**: Removed dual-path system - SINGLE PATH ONLY
+❌ **Aggregator Dependencies**: Banned for microstructure data - venue-native only  
 
-**Completion:** ~5–10%.
+**Completion:** ~85% core system, ~60% overall project
 
 ---
 
-## 🚧 Bottlenecks
+## 🚧 Current Limitations
 
-* No factor hierarchy or weights.
-* No guardrail implementations.
-* No microstructure metrics or ban enforcement.
-* No regime detector.
-* No scan pipeline or outputs.
-* No providers or caching.
-* No conformance tests.
+* No live data connections (uses mocks for testing)
+* No regime detector implementation (manual regime setting)
+* No persistence layer or database integration
+* No production deployment configuration
+* No performance monitoring beyond basic metrics
 
 ---
 

@@ -1,0 +1,168 @@
+# Explain Delta Tolerance Configuration
+# Defines acceptable factor drift thresholds per regime
+# Used by cryptorun explain delta for forensic drift detection
+
+# Per-regime tolerance settings
+regimes:
+  bull:
+    name: "bull"
+    description: "Bull market regime - tighter tolerances for stable trends"
+    factor_tolerances:
+      momentum_core:
+        factor: "momentum_core"
+        warn_at: 8.0    # Warning threshold (absolute delta)
+        fail_at: 15.0   # Failure threshold (absolute delta)
+        direction: "both"  # "both", "positive", "negative"
+        description: "Core momentum factor - primary signal driver"
+      
+      technical_resid:
+        factor: "technical_resid"
+        warn_at: 5.0
+        fail_at: 10.0
+        direction: "both"
+        description: "Technical indicator residuals after orthogonalization"
+      
+      volume_resid:
+        factor: "volume_resid"
+        warn_at: 4.0
+        fail_at: 8.0
+        direction: "both"
+        description: "Volume pattern residuals"
+      
+      quality_resid:
+        factor: "quality_resid"
+        warn_at: 3.0
+        fail_at: 6.0
+        direction: "both"
+        description: "Quality metric residuals"
+      
+      social_resid:
+        factor: "social_resid"
+        warn_at: 2.0
+        fail_at: 5.0
+        direction: "both"
+        description: "Social sentiment residuals (capped at +10)"
+      
+      composite_score:
+        factor: "composite_score"
+        warn_at: 10.0
+        fail_at: 20.0
+        direction: "both"
+        description: "Final composite score after all factors"
+
+  choppy:
+    name: "choppy"
+    description: "Choppy market regime - relaxed tolerances for volatility"
+    factor_tolerances:
+      momentum_core:
+        factor: "momentum_core"
+        warn_at: 12.0   # More tolerance in choppy markets
+        fail_at: 20.0
+        direction: "both"
+        description: "Core momentum factor - expect more variation"
+      
+      technical_resid:
+        factor: "technical_resid"
+        warn_at: 8.0
+        fail_at: 15.0
+        direction: "both"
+        description: "Technical indicators - higher noise expected"
+      
+      volume_resid:
+        factor: "volume_resid"
+        warn_at: 6.0
+        fail_at: 12.0
+        direction: "both"
+        description: "Volume patterns - erratic in choppy conditions"
+      
+      quality_resid:
+        factor: "quality_resid"
+        warn_at: 5.0
+        fail_at: 10.0
+        direction: "both"
+        description: "Quality metrics - degraded in choppy markets"
+      
+      social_resid:
+        factor: "social_resid"
+        warn_at: 3.0
+        fail_at: 7.0
+        direction: "both"
+        description: "Social sentiment - heightened volatility"
+      
+      composite_score:
+        factor: "composite_score"
+        warn_at: 15.0
+        fail_at: 25.0
+        direction: "both"
+        description: "Final score - expect wider ranges"
+
+  high_vol:
+    name: "high_vol" 
+    description: "High volatility regime - most relaxed tolerances"
+    factor_tolerances:
+      momentum_core:
+        factor: "momentum_core"
+        warn_at: 15.0   # Highest tolerance for volatile periods
+        fail_at: 25.0
+        direction: "both"
+        description: "Core momentum - extreme volatility expected"
+      
+      technical_resid:
+        factor: "technical_resid"
+        warn_at: 10.0
+        fail_at: 18.0
+        direction: "both"
+        description: "Technical indicators - high noise environment"
+      
+      volume_resid:
+        factor: "volume_resid"
+        warn_at: 8.0
+        fail_at: 15.0
+        direction: "both"
+        description: "Volume patterns - highly erratic"
+      
+      quality_resid:
+        factor: "quality_resid"
+        warn_at: 7.0
+        fail_at: 12.0
+        direction: "both"
+        description: "Quality metrics - stressed conditions"
+      
+      social_resid:
+        factor: "social_resid"
+        warn_at: 5.0
+        fail_at: 10.0
+        direction: "both"
+        description: "Social sentiment - extreme swings expected"
+      
+      composite_score:
+        factor: "composite_score"
+        warn_at: 20.0
+        fail_at: 35.0
+        direction: "both"
+        description: "Final score - maximum tolerance range"
+
+# Global settings
+settings:
+  default_regime: "bull"
+  
+  # Direction interpretation:
+  # - "both": Alert on positive or negative deltas beyond threshold
+  # - "positive": Only alert on positive deltas (increases)
+  # - "negative": Only alert on negative deltas (decreases)
+  
+  # Severity interpretation:
+  # - warn_at: Yellow warning, non-blocking
+  # - fail_at: Red failure, CLI exits non-zero
+  
+  # Usage notes:
+  # - Thresholds are absolute values (|delta| >= threshold)
+  # - Direction filter is applied after absolute check
+  # - Factors use post-orthogonalization values
+  # - Social factor is capped at +10 per product requirements
+  
+# Forensic guidelines:
+# - FAIL status indicates potential model drift requiring investigation
+# - WARN status suggests monitoring needed but not blocking
+# - Regime-specific tolerances account for market condition differences
+# - Use explain delta for CI gates to catch factor regression

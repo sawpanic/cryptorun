@@ -1,0 +1,78 @@
+# Guards Configuration for CryptoRun
+# Controls regime-aware guard behavior and threshold profiles
+
+# Enable regime-specific guard thresholds (false = legacy behavior)
+regime_aware: false
+
+# Active profile name
+active_profile: "conservative"
+
+# Guard threshold profiles
+profiles:
+  conservative:
+    name: "Conservative"
+    description: "Safe baseline thresholds for all regimes"
+    regimes:
+      trending:
+        fatigue:
+          threshold_24h: 12.0  # 24h momentum threshold %
+          rsi_4h: 70           # RSI 4h threshold
+        freshness:
+          max_bars_age: 2      # Maximum bar age
+          atr_factor: 1.2      # ATR proximity factor
+        late_fill:
+          max_delay_seconds: 30    # Maximum execution delay
+          p99_latency_req: 400     # P99 latency requirement (ms)
+          atr_proximity: 1.2       # ATR proximity requirement
+      choppy:
+        fatigue:
+          threshold_24h: 12.0
+          rsi_4h: 70
+        freshness:
+          max_bars_age: 2
+          atr_factor: 1.2
+        late_fill:
+          max_delay_seconds: 30
+      high_vol:
+        fatigue:
+          threshold_24h: 12.0
+          rsi_4h: 65        # Stricter RSI for high vol
+        freshness:
+          max_bars_age: 2
+          atr_factor: 1.0   # Tighter ATR for high vol
+        late_fill:
+          max_delay_seconds: 30
+
+  trending_risk_on:
+    name: "Trending Risk-On"
+    description: "Relaxed thresholds for trending markets with safety conditions"
+    regimes:
+      trending:
+        fatigue:
+          threshold_24h: 18.0  # Relaxed for trending
+          rsi_4h: 70
+        freshness:
+          max_bars_age: 3      # Relaxed for trending
+          atr_factor: 1.2
+        late_fill:
+          max_delay_seconds: 45    # Relaxed for trending
+          p99_latency_req: 400     # Safety condition
+          atr_proximity: 1.2       # Safety condition
+      choppy:
+        fatigue:
+          threshold_24h: 12.0
+          rsi_4h: 70
+        freshness:
+          max_bars_age: 2
+          atr_factor: 1.2
+        late_fill:
+          max_delay_seconds: 30
+      high_vol:
+        fatigue:
+          threshold_24h: 10.0  # Stricter for high vol
+          rsi_4h: 65
+        freshness:
+          max_bars_age: 2
+          atr_factor: 1.0
+        late_fill:
+          max_delay_seconds: 30

@@ -1,0 +1,61 @@
+{
+  "timestamp": "2025-09-06T11:30:00Z",
+  "processing_time": "245ms",
+  "total_candidates": 0,
+  "candidates": [],
+  "config": {
+    "trend": {
+      "ma_len_12h": 50,
+      "ma_len_24h": 50,
+      "adx_4h_min": 25.0,
+      "hurst_min": 0.55,
+      "lookback_n": 20
+    },
+    "fib": {
+      "min": 0.38,
+      "max": 0.62
+    },
+    "rsi": {
+      "low_min": 25,
+      "low_max": 40,
+      "div_confirm_bars": 3
+    },
+    "volume": {
+      "adv_mult_min": 1.4,
+      "vadr_min": 1.75
+    },
+    "microstructure": {
+      "spread_bps_max": 50.0,
+      "depth_usd_2pc_min": 100000
+    },
+    "scoring": {
+      "core_w": 0.5,
+      "vol_w": 0.2,
+      "qual_w": 0.2,
+      "brand_cap_pts": 10,
+      "threshold": 0.62
+    },
+    "guards": {
+      "news_shock": {
+        "return_24h_min": -15.0,
+        "accel_rebound": 3.0,
+        "rebound_bars": 2
+      },
+      "stair_step": {
+        "max_attempts": 2,
+        "lower_high_window": 5
+      },
+      "time_decay": {
+        "bars_to_live": 2
+      }
+    }
+  },
+  "summary": {
+    "qualified_trends": 0,
+    "detected_dips": 0,
+    "passed_guards": 0,
+    "avg_composite_score": 0.0,
+    "top_symbol": "",
+    "top_score": 0.0
+  }
+}

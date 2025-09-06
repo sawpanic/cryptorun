@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"strings"
 )
 
 // RepoRoot walks up from runtime.Caller until go.mod found
@@ -14,13 +13,13 @@ func RepoRoot() string {
 	if !ok {
 		panic("unable to determine caller location")
 	}
-	
+
 	dir := filepath.Dir(filename)
 	for {
 		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
 			return dir
 		}
-		
+
 		parent := filepath.Dir(dir)
 		if parent == dir {
 			panic("go.mod not found in any parent directory")
@@ -51,12 +50,12 @@ func MustWriteFileAtomic(path string, data []byte) {
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		panic(fmt.Sprintf("failed to create dir %s: %v", dir, err))
 	}
-	
+
 	tmpPath := path + ".tmp"
 	if err := os.WriteFile(tmpPath, data, 0644); err != nil {
 		panic(fmt.Sprintf("failed to write %s: %v", tmpPath, err))
 	}
-	
+
 	if err := os.Rename(tmpPath, path); err != nil {
 		panic(fmt.Sprintf("failed to rename %s to %s: %v", tmpPath, path, err))
 	}

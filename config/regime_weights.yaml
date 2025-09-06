@@ -1,0 +1,53 @@
+# Regime-specific scoring weights for unified composite model
+# Weights must sum to 1.0 (excluding social, which is applied after normalization)
+
+calm:
+  momentum_core: 0.40       # 40% - reduced momentum in calm markets  
+  technical_residual: 0.25  # 25% - higher technical focus
+  supply_demand_block: 0.35 # 35% - higher supply/demand importance
+  
+  # Supply/demand block allocation (must sum to 1.0)
+  volume_weight: 0.55       # 55% of supply/demand block → volume factors
+  quality_weight: 0.45      # 45% of supply/demand block → quality factors
+
+normal:
+  momentum_core: 0.45       # 45% - balanced momentum weight
+  technical_residual: 0.22  # 22% - moderate technical influence
+  supply_demand_block: 0.33 # 33% - balanced supply/demand focus
+  
+  # Supply/demand block allocation
+  volume_weight: 0.55       # 55% → volume (standard allocation)
+  quality_weight: 0.45      # 45% → quality (standard allocation)
+
+volatile:
+  momentum_core: 0.50       # 50% - increased momentum in volatile markets
+  technical_residual: 0.20  # 20% - reduced technical reliance
+  supply_demand_block: 0.30 # 30% - reduced supply/demand weight
+  
+  # Supply/demand block allocation  
+  volume_weight: 0.60       # 60% → volume (higher in volatility)
+  quality_weight: 0.40      # 40% → quality (reduced in volatility)
+
+# Quality factor sub-components (within quality_resid)
+# These are applied within the quality residual calculation
+quality_components:
+  oi_residual: 0.35         # 35% - OI residual after volume orthogonalization
+  reserves: 0.25            # 25% - exchange reserve health  
+  etf_tint: 0.20           # 20% - ETF flow influence
+  venue_health: 0.20        # 20% - venue-specific health metrics
+
+# Volume factor sub-components (within volume_resid)  
+volume_components:
+  volume_surge: 0.70        # 70% - 24h volume surge
+  delta_oi: 0.30           # 30% - 1h open interest change
+
+# Social capping (applied AFTER 0-100 normalization)
+social:
+  max_contribution: 10.0    # Maximum +10 points social can add
+  brand_weight: 0.50        # 50% brand score
+  sentiment_weight: 0.50    # 50% social sentiment
+
+# Validation thresholds
+validation:
+  orthogonality_tolerance: 0.01    # Max dot product for orthogonal factors
+  weight_sum_tolerance: 0.001      # Tolerance for weight sum = 1.0 validation

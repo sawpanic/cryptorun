@@ -9,3 +9,6 @@
 # Editor/OS
 .vscode/
 *.log
+
+# Code review snapshots
+_codereview/

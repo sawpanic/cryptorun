@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"cryptorun/application/pipeline"
+	"cryptorun/internal/application/pipeline"
 )
 
 func TestOrthogonalizer_OrthogonalizeFactors(t *testing.T) {
@@ -21,7 +21,7 @@ func TestOrthogonalizer_OrthogonalizeFactors(t *testing.T) {
 			Raw:          make(map[string]float64),
 		},
 		{
-			Symbol:       "TEST2", 
+			Symbol:       "TEST2",
 			MomentumCore: 15.0,
 			Volume:       3.0,
 			Social:       -2.0,
@@ -39,7 +39,7 @@ func TestOrthogonalizer_OrthogonalizeFactors(t *testing.T) {
 	}
 
 	result, err := orthogonalizer.OrthogonalizeFactors(factorSets)
-	
+
 	if err != nil {
 		t.Fatalf("OrthogonalizeFactors failed: %v", err)
 	}
@@ -52,7 +52,7 @@ func TestOrthogonalizer_OrthogonalizeFactors(t *testing.T) {
 		// Verify MomentumCore is protected (unchanged)
 		originalMomentum := factorSets[i].MomentumCore
 		if math.Abs(fs.MomentumCore-originalMomentum) > 0.001 {
-			t.Errorf("MomentumCore not protected for %s: original=%.3f, result=%.3f", 
+			t.Errorf("MomentumCore not protected for %s: original=%.3f, result=%.3f",
 				fs.Symbol, originalMomentum, fs.MomentumCore)
 		}
 
@@ -74,7 +74,7 @@ func TestOrthogonalizer_OrthogonalizeFactors(t *testing.T) {
 		}
 
 		if fs.Meta.OrthogonalityCheck <= 0 {
-			t.Errorf("Orthogonality check should be positive for %s, got %.3f", 
+			t.Errorf("Orthogonality check should be positive for %s, got %.3f",
 				fs.Symbol, fs.Meta.OrthogonalityCheck)
 		}
 
@@ -90,9 +90,9 @@ func TestOrthogonalizer_OrthogonalizeFactors(t *testing.T) {
 
 func TestOrthogonalizer_EmptyInput(t *testing.T) {
 	orthogonalizer := pipeline.NewOrthogonalizer()
-	
+
 	result, err := orthogonalizer.OrthogonalizeFactors([]pipeline.FactorSet{})
-	
+
 	if err != nil {
 		t.Errorf("OrthogonalizeFactors should handle empty input gracefully: %v", err)
 	}
@@ -115,7 +115,7 @@ func TestOrthogonalizer_SingleFactorSet(t *testing.T) {
 	}
 
 	result, err := orthogonalizer.OrthogonalizeFactors([]pipeline.FactorSet{factorSet})
-	
+
 	if err != nil {
 		t.Fatalf("OrthogonalizeFactors failed for single input: %v", err)
 	}
@@ -129,7 +129,7 @@ func TestOrthogonalizer_SingleFactorSet(t *testing.T) {
 
 	// MomentumCore should be protected
 	if math.Abs(fs.MomentumCore-factorSet.MomentumCore) > 0.001 {
-		t.Errorf("MomentumCore not protected: original=%.3f, result=%.3f", 
+		t.Errorf("MomentumCore not protected: original=%.3f, result=%.3f",
 			factorSet.MomentumCore, fs.MomentumCore)
 	}
 
@@ -149,7 +149,7 @@ func TestApplySocialCap(t *testing.T) {
 			Social: 5.0, // Within cap
 		},
 		{
-			Symbol: "OVER_CAP", 
+			Symbol: "OVER_CAP",
 			Social: 15.0, // Over +10 cap
 		},
 		{
@@ -177,10 +177,10 @@ func TestApplySocialCap(t *testing.T) {
 		original float64
 		expected float64
 	}{
-		{"NORMAL", 5.0, 5.0},    // Should remain unchanged
-		{"OVER_CAP", 15.0, 10.0}, // Should be capped at 10
+		{"NORMAL", 5.0, 5.0},      // Should remain unchanged
+		{"OVER_CAP", 15.0, 10.0},  // Should be capped at 10
 		{"UNDER_CAP", -5.0, -5.0}, // Negative values not capped upward
-		{"WAY_OVER", 25.0, 10.0}, // Should be capped at 10
+		{"WAY_OVER", 25.0, 10.0},  // Should be capped at 10
 	}
 
 	for _, tc := range testCases {
@@ -198,7 +198,7 @@ func TestApplySocialCap(t *testing.T) {
 		}
 
 		if math.Abs(found.Social-tc.expected) > 0.001 {
-			t.Errorf("Social cap for %s: expected %.1f, got %.1f", 
+			t.Errorf("Social cap for %s: expected %.1f, got %.1f",
 				tc.symbol, tc.expected, found.Social)
 		}
 

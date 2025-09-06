@@ -1,0 +1,14 @@
+{
+  "symbol": "BTCUSD",
+  "monotonic_timestamp": 1704067200,
+  "current_oi_usd": 2500000000.0,
+  "previous_oi_usd": 2400000000.0,
+  "delta_oi_1h": 100000000.0,
+  "price_change_1h": 0.02,
+  "beta_7d": 2.5,
+  "beta_r2": 0.75,
+  "oi_residual": 50000000.0,
+  "cache_hit": false,
+  "source": "test-fixture",
+  "signature_hash": "oi123def789"
+}

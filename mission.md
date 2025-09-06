@@ -1,11 +1,11 @@
-# CProtocol Product Vision & Requirements v3.2.1
+# CryptoRun Product Vision & Requirements v3.2.1
 *Real-Time 6-48 Hour Cryptocurrency Momentum Scanner with Fact-Checked Free API Implementation*
 
 ---
 
 ## Executive Summary
 
-CProtocol identifies and ranks cryptocurrency trading opportunities optimized for 6-48 hour holding periods by combining price momentum, catalyst timing, brand power, and market microstructure into transparent, actionable signals. The system prevents late entries through freshness gates, avoids exhausted moves via fatigue guards, and maintains score calibration across market regimes. **V3.2.1 provides fact-checked, production-ready free API implementation with proper rate limits and provider-aware circuit breakers.**
+CryptoRun identifies and ranks cryptocurrency trading opportunities optimized for 6-48 hour holding periods by combining price momentum, catalyst timing, brand power, and market microstructure into transparent, actionable signals. The system prevents late entries through freshness gates, avoids exhausted moves via fatigue guards, and maintains score calibration across market regimes. **V3.2.1 provides fact-checked, production-ready free API implementation with proper rate limits and provider-aware circuit breakers.**
 
 ---
 
@@ -591,7 +591,7 @@ Circuit Status: [CG Budget Guard Active - 1,766 remaining]
 
 ## Core Product Promise
 
-**CProtocol delivers disciplined 6-48 hour momentum signals that:**
+**CryptoRun delivers disciplined 6-48 hour momentum signals that:**
 - Won't chase late entries (freshness gates + late fill guard)
 - Won't size what can't be exited (venue-specific depth requirements)  
 - Won't let hype outrank price/volume reality (capped social contribution)
@@ -665,4 +665,4 @@ Circuit Status: [CG Budget Guard Active - 1,766 remaining]
 
 ---
 
-*CProtocol V3.2.1 - Production-ready momentum scanning with fact-checked free APIs and industrial-grade reliability at zero cost.*
+*CryptoRun V3.2.1 - Production-ready momentum scanning with fact-checked free APIs and industrial-grade reliability at zero cost.*

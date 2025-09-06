@@ -1,0 +1,172 @@
+# CryptoRun Provider Configuration
+# Defines rate limits, budgets, and constraints for all data providers
+
+# CoinGecko Configuration (Lists/Indices Only)
+coingecko:
+  enabled: true
+  base_url: "https://api.coingecko.com/api/v3"
+  rate_limits:
+    rpm: 30              # Requests per minute (free tier)
+    monthly: 10000       # Monthly request limit
+  budget:
+    monthly_limit_usd: 0  # Free tier
+    switch_at_remaining: 1000  # Switch to degraded mode when < 1000 calls left
+  timeout:
+    request: 15s
+    connect: 5s
+  retry:
+    max_attempts: 3
+    backoff_base: 1s
+    backoff_max: 30s
+  cache:
+    ttl: 300s           # 5 minute cache for indices
+    enabled: true
+  constraints:
+    # STRICT: Only lists and indices allowed, no microstructure data
+    allowed_endpoints:
+      - "/coins/list"
+      - "/coins/markets"
+      - "/global"
+      - "/search/trending"
+    forbidden_endpoints:
+      - "/exchanges/*/orderbook"  # No aggregated order books
+      - "/exchanges/*/tickers"    # No aggregated tickers
+
+# Kraken Configuration (Exchange-Native L1/L2)
+kraken:
+  enabled: true
+  base_url: "https://api.kraken.com"
+  rate_limits:
+    # Kraken tier-based limits (free tier)
+    requests_per_second: 1
+    burst_limit: 15
+    decay_rate: 0.5     # Counter decay per second
+  concurrency:
+    max_connections: 4
+    max_concurrent: 2
+  timeout:
+    request: 10s
+    connect: 3s
+  retry:
+    max_attempts: 3
+    backoff_base: 1s
+    backoff_max: 15s
+  jitter:
+    min_ms: 50
+    max_ms: 150
+  cache:
+    pairs_ttl: 3600s    # Asset pairs cached for 1 hour
+    orderbook_ttl: 5s   # Order books cached briefly
+    ticker_ttl: 30s     # Tickers cached for 30s
+  constraints:
+    # USD pairs only
+    quote_currencies: ["USD", "ZUSD"]
+    min_adv_usd: 100000  # Minimum average daily volume
+    # STRICT: Exchange-native only, no aggregators
+    exchange_native_only: true
+
+# OKX Configuration (Exchange-Native L1/L2)
+okx:
+  enabled: true
+  base_url: "https://www.okx.com"
+  rate_limits:
+    # OKX public API limits
+    requests_per_second: 20
+    burst_limit: 100
+  concurrency:
+    max_connections: 4
+    max_concurrent: 2
+  timeout:
+    request: 8s
+    connect: 3s
+  retry:
+    max_attempts: 3
+    backoff_base: 1s
+    backoff_max: 15s
+  jitter:
+    min_ms: 50
+    max_ms: 150
+  cache:
+    instruments_ttl: 3600s
+    orderbook_ttl: 5s
+    ticker_ttl: 30s
+  constraints:
+    quote_currencies: ["USD", "USDT", "USDC"]
+    min_volume_usd: 50000
+    exchange_native_only: true
+    instrument_types: ["SPOT"]  # Spot only, no derivatives
+
+# Coinbase Configuration (Exchange-Native L1/L2) 
+coinbase:
+  enabled: true
+  base_url: "https://api.exchange.coinbase.com"
+  rate_limits:
+    # Coinbase Pro public API limits
+    requests_per_second: 10
+    requests_per_hour: 10000
+  concurrency:
+    max_connections: 4
+    max_concurrent: 2
+  timeout:
+    request: 10s
+    connect: 3s
+  retry:
+    max_attempts: 3
+    backoff_base: 1s
+    backoff_max: 15s
+  jitter:
+    min_ms: 50
+    max_ms: 150
+  cache:
+    products_ttl: 3600s
+    orderbook_ttl: 5s
+    stats_ttl: 60s
+  constraints:
+    quote_currencies: ["USD"]
+    min_volume_usd: 100000
+    exchange_native_only: true
+    status_filter: ["online"]  # Only active products
+
+# Global Provider Settings
+global:
+  # Health monitoring
+  health_check_interval: 30s
+  degraded_threshold:
+    success_rate: 0.90      # 90% success rate minimum
+    max_latency_p95: 2000   # 2s P95 latency maximum
+    budget_remaining: 0.10  # 10% budget remaining minimum
+  
+  # Circuit breaker settings
+  circuit_breaker:
+    failure_threshold: 5    # Trip after 5 consecutive failures
+    recovery_timeout: 60s   # Try recovery after 60s
+    half_open_requests: 3   # Allow 3 requests in half-open state
+  
+  # Fallback behavior
+  fallback:
+    enabled: true
+    # When provider degraded, short-circuit dependent operations
+    skip_microstructure_on_degraded: true
+    skip_volume_checks_on_degraded: false  # Volume still required
+    
+  # Logging and monitoring
+  monitoring:
+    log_requests: false     # Set to true for debugging
+    log_latencies: true
+    log_failures: true
+    metrics_export: true
+    
+  # Budget management
+  budget:
+    auto_throttle: true     # Automatically throttle when budget low
+    throttle_threshold: 0.20  # Start throttling at 20% budget remaining
+    emergency_stop: 0.05    # Stop all requests at 5% budget remaining
+
+# QA-specific overrides for testing
+qa_overrides:
+  # Reduced timeouts for faster QA runs
+  timeout_multiplier: 0.5
+  # Increased concurrency for load testing
+  concurrency_multiplier: 2.0
+  # Shorter cache TTLs for testing freshness
+  cache_ttl_multiplier: 0.1

@@ -1,0 +1,37 @@
+{
+  "timestamp": "2025-09-06T04:15:22.063941+03:00",
+  "overall_status": "PASS",
+  "tests": [
+    {
+      "name": "filesystem_atomicity",
+      "status": "PASS",
+      "details": "Filesystem atomicity: atomic write patterns detected in source"
+    },
+    {
+      "name": "universe_hygiene",
+      "status": "PASS",
+      "details": "Universe hygiene: 5 USD pairs, ADV≥$100k, hash present"
+    },
+    {
+      "name": "gates_fixtures",
+      "status": "PASS",
+      "details": "Gates validation: fatigue, freshness, late-fill gates working correctly"
+    },
+    {
+      "name": "microstructure_fixtures",
+      "status": "PASS",
+      "details": "Microstructure: spread, depth, venue-native validation working correctly"
+    },
+    {
+      "name": "menu_integrity",
+      "status": "PASS",
+      "details": "Menu integrity: all 8 required menu options found"
+    },
+    {
+      "name": "specification_compliance",
+      "status": "PASS",
+      "details": "Specification compliance: all spec validations passed"
+    }
+  ],
+  "summary": "6/6 tests passed in 23ms"
+}

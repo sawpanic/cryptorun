@@ -1,4 +1,4 @@
-# CProtocol Code Review Package
+# CryptoRun Code Review Package
 **Version:** v1.0.4 Orthogonal Release  
 **Package Date:** 2025-09-03 15:02:17 Jerusalem  
 **Package Type:** Complete Source Code Review
@@ -23,7 +23,7 @@
 - `MONITORING_CONFIG.md` - Factor monitoring configuration
 
 ### **🔧 EXECUTABLES (Reference)**
-- `CProtocol.exe` - Current production executable
+- `CryptoRun.exe` - Current production executable
 - `CProtocol_QA_v1.0.4_20250903_145830.exe` - QA package executable
 
 ---
@@ -141,7 +141,7 @@ func extractSocialResidual(opp, quality, volume, tech) float64
 
 ### **Build Verification:**
 ```bash
-go build -o CryptoEdge.exe main.go  # ✅ PASSES
+go build -o CryptoEdge.exe main.go  # ✅ PASSES (archived in _codereview/)
 ```
 
 ### **Weight Sum Tests:**

@@ -1,23 +1,23 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-- Source: `CProtocol/src/` with layered packages:
+- Source: `CryptoRun/src/` with layered packages:
   - `domain/` (scoring, gates, orthogonalization, regime logic)
   - `application/` (universe/factors builders, snapshot store, config loaders)
   - `infrastructure/` (Kraken APIs, cache, circuit breaker, rate limit, DB)
   - `interfaces/` (HTTP: `/health`, `/metrics`, `/decile`)
-  - `cmd/cprotocol/` (CLI entry: scan/backtest/monitor/health)
-- Docs: `CProtocol/docs/` (build, usage, monitoring, integrations).
-- Tests: `CProtocol/tests/` (`unit/`, `integration/`, `load/`).
-- Config: `CProtocol/config/` (`apis.yaml`, `cache.yaml`, `circuits.yaml`, `regimes.yaml`, `pairs.yaml`).
+  - `cmd/cryptorun/` (CLI entry: scan/backtest/monitor/health)
+- Docs: `CryptoRun/docs/` (build, usage, monitoring, integrations).
+- Tests: `CryptoRun/tests/` (`unit/`, `integration/`, `load/`).
+- Config: `CryptoRun/config/` (`apis.yaml`, `cache.yaml`, `circuits.yaml`, `regimes.yaml`, `pairs.yaml`).
 - Artifacts & logs: `C:\wallet\artifacts\` (audit/logs when DB disabled).
 
 ## Build, Test, and Development Commands
-- Build (dev): `go build ./src/cmd/cprotocol`
+- Build (dev): `go build ./src/cmd/cryptorun`
 - Build (release):
   - `go run ./tools/buildstamp`
-  - `go build -ldflags "-X main.BuildStamp=<STAMP>" -o cprotocol.exe ./src/cmd/cprotocol`
-- Run: `./cprotocol scan --exchange kraken --pairs USD-only --dry-run`
+  - `go build -ldflags "-X main.BuildStamp=<STAMP>" -o cryptorun.exe ./src/cmd/cryptorun`
+- Run: `./cryptorun scan --exchange kraken --pairs USD-only --dry-run`
 - Tests: `go test ./...` (unit covers orthogonalization, VADR, gates; integration uses httptest; load includes P99 latency).
 
 ## Coding Style & Naming Conventions

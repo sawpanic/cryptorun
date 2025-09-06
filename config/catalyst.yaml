@@ -1,0 +1,151 @@
+# CryptoRun Catalyst-Heat Configuration
+# 
+# Configures catalyst event sources, time-decay buckets, and heat calculation
+# parameters for the Catalyst-Heat factor integration.
+
+# Source Configuration
+sources:
+  # Polling behavior for external sources
+  polling_cadence: "15m"      # How often to check for new events
+  cache_ttl: "30m"           # How long to cache events per source
+  respect_robots_txt: true   # Check robots.txt before scraping
+  user_agent: "CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)"
+  request_timeout: "30s"     # HTTP request timeout
+  max_retries: 3             # Maximum retry attempts per request
+
+  # CoinMarketCal integration (free tier)
+  coinmarketcal:
+    enabled: true
+    base_url: "https://coinmarketcal.com/api/v1"
+    api_key: ""              # Optional: free tier works without key
+    cache_ttl: "30m"         # CMC events change slowly
+    rate_limit: "60/hour"    # Free tier limit
+    
+  # Exchange announcement scraping
+  exchanges:
+    enabled: true
+    cache_ttl: "5m"          # Announcements can be time-sensitive
+    venues:
+      - name: "kraken"
+        url: "https://blog.kraken.com"
+        selector: ".post-title" # CSS selector for announcement titles
+      - name: "coinbase"
+        url: "https://blog.coinbase.com"
+        selector: ".post-title"
+    rate_limit: "10/hour"    # Polite scraping frequency
+
+# Heat Calculation Configuration
+heat:
+  # Time-Decay Buckets (PRD specified multipliers)
+  time_decay:
+    imminent_weeks: 4.0      # 0-4w bucket boundary
+    near_term_weeks: 8.0     # 4-8w bucket boundary  
+    medium_weeks: 16.0       # 8-16w bucket boundary
+    
+    imminent_multiplier: 1.2 # 0-4w: 1.2× (most impactful)
+    near_term_multiplier: 1.0 # 4-8w: 1.0× (baseline)
+    medium_multiplier: 0.8   # 8-16w: 0.8× (reduced impact)
+    distant_multiplier: 0.6  # 16w+: 0.6× (minimal impact)
+  
+  # Event Tier Weights (impact by event importance)
+  tier_weights:
+    major: 1.0               # Tier 1: Full weight (ETF approvals, major upgrades)
+    minor: 0.6               # Tier 2: Reduced weight (staking launches, partnerships)
+    info: 0.3                # Tier 3: Low weight (maintenance, minor announcements)
+  
+  # Heat Aggregation Method
+  aggregation_method: "smooth" # "smooth" or "max" - how to combine multiple events
+  
+  # Output Normalization
+  normalization:
+    min_heat: 0.0            # Minimum heat score
+    max_heat: 100.0          # Maximum heat score  
+    neutral_point: 50.0      # Neutral score (no significant events)
+    
+# Symbol Mapping Configuration
+symbol_mapping:
+  # Normalize external symbols to CryptoRun format
+  coinmarketcal:
+    "Bitcoin": "BTCUSD"
+    "Ethereum": "ETHUSD" 
+    "Cardano": "ADAUSD"
+    "Solana": "SOLUSD"
+    "Polygon": "MATICUSD"
+    "Chainlink": "LINKUSD"
+    "Avalanche": "AVAXUSD"
+    
+  kraken:
+    "XXBTZUSD": "BTCUSD"
+    "XETHZUSD": "ETHUSD"
+    "ADAUSD": "ADAUSD"      # Already normalized
+    "SOLUSD": "SOLUSD"      # Already normalized
+    
+  coinbase:
+    "BTC-USD": "BTCUSD"
+    "ETH-USD": "ETHUSD"
+    "ADA-USD": "ADAUSD"
+    "SOL-USD": "SOLUSD"
+
+# Event Filtering
+filtering:
+  # Categories to include/exclude
+  include_categories:
+    - "regulatory"           # Regulatory decisions, approvals
+    - "upgrade"             # Protocol upgrades, hard forks
+    - "partnership"         # Major partnerships, integrations
+    - "listing"             # Exchange listings
+    - "etf"                 # ETF approvals, rejections
+    - "staking"             # Staking launches, changes
+    
+  exclude_categories:
+    - "spam"                # Known spam events
+    - "duplicate"           # Duplicate announcements
+    - "irrelevant"          # Non-price-impacting events
+    
+  # Minimum event tier to process
+  min_tier: 3               # Process all tiers (1=Major, 2=Minor, 3=Info)
+  
+  # Time window for events (only process future events within this range)
+  max_horizon_weeks: 52.0   # 1 year forward-looking window
+
+# Caching Strategy
+cache:
+  # Redis configuration for event caching
+  redis:
+    enabled: true
+    key_prefix: "catalyst:"
+    default_ttl: "30m"       # Default cache TTL
+    
+  # Cache TTL by data type
+  ttls:
+    events: "30m"            # Raw event data
+    heat_scores: "5m"        # Computed heat scores
+    symbol_mapping: "24h"    # Symbol normalization maps
+    robots_txt: "24h"        # Robots.txt check results
+    
+# Monitoring & Alerting
+monitoring:
+  # Event source health checks
+  health_checks:
+    enabled: true
+    check_interval: "5m"     # How often to verify source availability
+    timeout: "10s"           # Health check timeout
+    
+  # Alert thresholds
+  alerts:
+    source_failures: 3       # Alert after N consecutive failures
+    stale_data_hours: 2      # Alert if no new events for N hours
+    low_event_count: 5       # Alert if event count drops below N per day
+    
+# Development & Testing
+development:
+  # Mock data for testing
+  mock_events: true          # Use mock events when external sources unavailable
+  mock_event_count: 10       # Number of mock events to generate
+  
+  # Debug options
+  debug_logging: false       # Enable detailed catalyst event logging
+  save_raw_events: false     # Save raw event JSON for debugging
+  
+  # Rate limiting bypass for development
+  bypass_rate_limits: false  # WARNING: Respect external service limits

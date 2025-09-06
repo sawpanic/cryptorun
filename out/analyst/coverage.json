@@ -1,0 +1,12 @@
+{
+  "generated": "2025-09-06T12:00:00Z",
+  "total_symbols": 25,
+  "covered_symbols": 22,
+  "coverage_rate": 0.88,
+  "symbols": [
+    {"symbol": "BTCUSD"},
+    {"symbol": "ETHUSD"},
+    {"symbol": "ADAUSD", "reason": "low_volume", "bad_miss": false}
+  ],
+  "policy_status": "PASS"
+}

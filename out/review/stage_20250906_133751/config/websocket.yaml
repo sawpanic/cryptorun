@@ -1,0 +1,110 @@
+# WebSocket Hot Set Configuration
+# Real-time market data ingestion from exchange-native sources
+
+hotset:
+  # Number of top USD pairs to track
+  top_n: 20
+  
+  # Update frequency for symbol rankings
+  update_interval: 5m
+  
+  # Connection retry settings
+  reconnect_delay: 5s
+  max_reconnects: 3
+  
+  # Metrics collection interval
+  metrics_interval: 30s
+  
+  # VADR calculation parameters
+  vadr_min_bars: 20
+  
+  # Data staleness threshold
+  stale_threshold: 60s
+
+venues:
+  # Kraken (preferred exchange)
+  - name: kraken
+    enabled: true
+    ws_endpoint: wss://ws.kraken.com
+    subscribe_msg:
+      event: subscribe
+      subscription:
+        name: ticker
+    ping_interval: 30s
+    pong_timeout: 10s
+    rate_limit:
+      requests_per_second: 1.0
+      burst: 5
+    
+  # Binance
+  - name: binance  
+    enabled: true
+    ws_endpoint: wss://stream.binance.com:9443/ws/!ticker@arr
+    subscribe_msg:
+      method: SUBSCRIBE
+      params: []
+    ping_interval: 3m
+    pong_timeout: 10s
+    rate_limit:
+      requests_per_second: 2.0
+      burst: 10
+      
+  # Coinbase Pro
+  - name: coinbase
+    enabled: true
+    ws_endpoint: wss://ws-feed.pro.coinbase.com
+    subscribe_msg:
+      type: subscribe
+      channels:
+        - name: ticker
+    ping_interval: 30s
+    pong_timeout: 10s
+    rate_limit:
+      requests_per_second: 1.0
+      burst: 5
+      
+  # OKX
+  - name: okx
+    enabled: false  # Disabled by default
+    ws_endpoint: wss://ws.okx.com:8443/ws/v5/public
+    subscribe_msg:
+      op: subscribe
+      args:
+        - channel: tickers
+          instType: SPOT
+    ping_interval: 30s
+    pong_timeout: 10s
+    rate_limit:
+      requests_per_second: 1.0  
+      burst: 5
+
+# Microstructure gate thresholds
+gates:
+  # Maximum spread in basis points
+  max_spread_bps: 50.0
+  
+  # Minimum depth in USD within ±2%
+  min_depth_usd: 100000.0
+  
+  # Minimum VADR threshold
+  min_vadr: 1.75
+  
+  # Venue health requirements
+  venue_health:
+    max_tick_age: 30s
+    max_processing_latency: 100ms
+    min_update_frequency: 10s
+
+# Latency performance targets
+latency:
+  # P99 end-to-end target in milliseconds
+  p99_target_ms: 300.0
+  
+  # Freshness target in seconds
+  freshness_target_s: 5.0
+  
+  # Enable latency histograms
+  enable_histograms: true
+  
+  # Histogram bucket configuration
+  buckets: [1, 5, 10, 25, 50, 100, 200, 300, 500, 1000]

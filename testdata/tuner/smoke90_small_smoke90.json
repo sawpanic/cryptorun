@@ -1,0 +1,24 @@
+[
+  {
+    "symbol": "BTCUSDT",
+    "timestamp": "2025-01-01T12:00:00Z",
+    "score": 85.5,
+    "regime": "normal",
+    "forward_return": 0.032,
+    "hit": true,
+    "window": "4h",
+    "entry_price": 50000.0,
+    "exit_price": 51600.0
+  },
+  {
+    "symbol": "ETHUSDT", 
+    "timestamp": "2025-01-01T13:00:00Z",
+    "score": 72.3,
+    "regime": "normal",
+    "forward_return": 0.018,
+    "hit": false,
+    "window": "4h",
+    "entry_price": 3000.0,
+    "exit_price": 3054.0
+  }
+]

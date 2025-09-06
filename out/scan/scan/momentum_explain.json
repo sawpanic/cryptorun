@@ -1,0 +1,66 @@
+{
+  "candidates": null,
+  "configuration": {
+    "entry_exit_config": {
+      "Entry": {
+        "MinScore": 2.5,
+        "VolumeMultiple": 1.75,
+        "ADXThreshold": 25,
+        "HurstThreshold": 0.55
+      },
+      "Exit": {
+        "HardStop": 5,
+        "VenueHealth": 0.8,
+        "MaxHoldHours": 48,
+        "AccelReversal": 0.5,
+        "FadeThreshold": 1,
+        "TrailingStop": 2,
+        "ProfitTarget": 8
+      }
+    },
+    "momentum_config": {
+      "Weights": {
+        "TF1h": 0.2,
+        "TF4h": 0.35,
+        "TF12h": 0.3,
+        "TF24h": 0.15
+      },
+      "Fatigue": {
+        "Return24hThreshold": 12,
+        "RSI4hThreshold": 70,
+        "AccelRenewal": true
+      },
+      "Freshness": {
+        "MaxBarsAge": 2,
+        "ATRWindow": 14,
+        "ATRFactor": 1.2
+      },
+      "LateFill": {
+        "MaxDelaySeconds": 30
+      },
+      "Regime": {
+        "AdaptWeights": true,
+        "UpdatePeriod": 4
+      }
+    },
+    "pipeline_config": {
+      "ExplainabilityOutput": true,
+      "OutputPath": "./out/scan",
+      "ProtectedFactors": [
+        "MomentumCore"
+      ],
+      "MaxSymbols": 1
+    }
+  },
+  "scan_metadata": {
+    "methodology": "CryptoRun MomentumCore v3.2.1 with Gram-Schmidt orthogonalization",
+    "processing_time": "1.6556ms",
+    "timestamp": "2025-09-06T13:14:14+03:00",
+    "total_candidates": 0
+  },
+  "summary": {
+    "avg_score": 0,
+    "qualified_count": 0,
+    "top_performer": "none"
+  }
+}

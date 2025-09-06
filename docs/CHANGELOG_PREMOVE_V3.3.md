@@ -2,12 +2,15 @@
 
 ### Added
 - New **Pre‑Movement Detector** module (menu‑only, Top‑100) with 100‑pt composite and **2‑of‑3 gates**
-- Portfolio pruning (corr≤0.65, 2‑per‑sector, beta budget), execution quality tracking, alert governance (3/hour,10/day)
+- Portfolio pruning (corr≤0.65, 2‑per‑sector, beta budget=15.0), execution quality tracking, alert governance (3/hour,10/day)
 - **Backtest & calibration harness** with PIT replay from artifacts, hit-rate computation by state/regime
 - **Isotonic calibration curve** (score → P(move>5% in 48h)) with monthly refresh and freeze governance
 - **CVD residual R² tracking** for daily signal quality monitoring
 - CLI-free backtest invocation via internal test harness with deterministic unit tests
-- System Health page; SSE‑based UI transitions
+- **SSE-Throttled Live Dashboard** (≤1 Hz) accessible via Monitor Menu > PreMove Detection Board
+- **Interactive Console Interface** with real-time candidate display and manual refresh capabilities
+- **Execution Quality Monitoring** with slippage BPS tracking, fill time metrics, and recovery mode
+- **Alert Rate Limiting** with manual override support and volatility allowance
 
 ### Fixed
 - Freshness **hard_fail_s** corrected to **90s** (worst‑feed precedence)

@@ -1,0 +1,46 @@
+[
+  {
+    "symbol": "NANTOKEN",
+    "timestamp": "2025-01-01T10:00:00Z",
+    "score": null,
+    "regime": "normal",
+    "forward_return": 0.0,
+    "hit": false,
+    "window": "4h",
+    "entry_price": 100.0,
+    "exit_price": 100.0
+  },
+  {
+    "symbol": "ZERORET",
+    "timestamp": "2025-01-01T11:00:00Z",
+    "score": 50.0,
+    "regime": "calm",
+    "forward_return": 0.0,
+    "hit": false,
+    "window": "4h",
+    "entry_price": 200.0,
+    "exit_price": 200.0
+  },
+  {
+    "symbol": "HIGHSCORE",
+    "timestamp": "2025-01-01T12:00:00Z",
+    "score": 99.9,
+    "regime": "volatile",
+    "forward_return": 0.15,
+    "hit": true,
+    "window": "24h",
+    "entry_price": 10.0,
+    "exit_price": 11.5
+  },
+  {
+    "symbol": "LOWSCORE",
+    "timestamp": "2025-01-01T13:00:00Z",
+    "score": 1.0,
+    "regime": "normal",
+    "forward_return": -0.08,
+    "hit": false,
+    "window": "1h",
+    "entry_price": 50.0,
+    "exit_price": 46.0
+  }
+]

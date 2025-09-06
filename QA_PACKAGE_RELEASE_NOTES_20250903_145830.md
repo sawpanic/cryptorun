@@ -1,7 +1,7 @@
-# CProtocol QA Package Release Notes
+# CryptoRun QA Package Release Notes
 **Version:** v1.0.4  
 **Build Date:** 2025-09-03 14:58:30 Jerusalem  
-**Package:** CProtocol_QA_v1.0.4_20250903_145830.exe
+**Package:** CryptoRun_QA_v1.0.4_20250903_145830.exe
 
 ---
 
@@ -148,8 +148,8 @@ This QA package contains the **COMPLETE ORTHOGONAL SCANNER SYSTEM** with restore
 
 ## 🔄 DEPLOYMENT INSTRUCTIONS
 
-1. **Replace existing executable:** Copy `CProtocol_QA_v1.0.4_20250903_145830.exe` to production location
-2. **Rename for production:** `CProtocol_QA_v1.0.4_20250903_145830.exe` → `CProtocol.exe` 
+1. **Replace existing executable:** Copy `CryptoRun_QA_v1.0.4_20250903_145830.exe` to production location
+2. **Rename for production:** `CryptoRun_QA_v1.0.4_20250903_145830.exe` → `CryptoRun.exe` 
 3. **Run initial test:** Execute option 4 (Social Orthogonal) to verify 50% social weighting
 4. **Validate table format:** Confirm all columns display correctly with COMPOSITE sorting
 

@@ -1,0 +1,127 @@
+# CryptoRun v3.2.1 Alerts Configuration
+# Actionable alerts to Discord/Telegram with throttling and safety constraints
+
+# Global alerts control
+alerts:
+  enabled: false  # Master switch - must be true for any alerts to send
+  dry_run_default: true  # Default to dry-run mode for safety
+
+# Alert destinations
+destinations:
+  discord:
+    enabled: false
+    webhook_url: "${DISCORD_WEBHOOK_URL}"
+    username: "CryptoRun Scanner"
+    avatar_url: ""
+    
+  telegram:
+    enabled: false
+    bot_token: "${TELEGRAM_BOT_TOKEN}"
+    chat_id: "${TELEGRAM_CHAT_ID}"
+
+# Event thresholds for triggering alerts
+thresholds:
+  # Entry signal thresholds
+  score_min: 75.0                # Minimum composite score for entry alerts
+  freshness_max_bars: 2          # Maximum bars since signal for freshness
+  spread_bps_max: 50.0           # Maximum spread in basis points
+  depth_usd_min: 100000          # Minimum depth in USD at ±2%
+  
+  # Exit signal thresholds  
+  exit_min_hold_minutes: 5       # Minimum hold time before exit alerts
+  exit_pnl_threshold: -0.05      # Alert on losses > 5%
+
+# Throttling and deduplication rules
+throttles:
+  min_interval_per_symbol: 3600  # Seconds between alerts for same symbol (1 hour)
+  global_rate_limit: 300         # Seconds between any alerts globally (5 minutes)
+  resend_cooloff_after_exit: 7200 # Seconds before resending entry after exit (2 hours)
+  
+  # Quiet hours (UTC)
+  quiet_hours:
+    enabled: true
+    start: "22:00"  # 10 PM UTC
+    end: "08:00"    # 8 AM UTC
+    
+  # Burst protection
+  max_alerts_per_hour: 10
+  max_alerts_per_day: 50
+
+# Alert message formatting
+formats:
+  # Entry alert template
+  entry_template: |
+    🚨 **NEW TOP-DECILE ENTRY SIGNAL** 🚨
+    
+    **Symbol:** `{symbol}`
+    **Composite Score:** `{composite_score}`
+    **Top Factor:** {top_factor}
+    **Decision:** {decision}
+    
+    **📊 Microstructure:**
+    ```
+    Spread: {spread_bps} bps
+    Depth (±2%): ${depth_usd:,.0f}
+    VADR: {vadr}x
+    Venue: {venue} (native)
+    ```
+    
+    **⚡ Freshness:** {freshness_badge}
+    **🎯 Catalyst:** {catalyst_bucket} (x{catalyst_multiplier})
+    
+    **💡 Why Now:** {why_now}
+    
+    *Rank #{rank} • {timestamp}*
+
+  # Exit alert template  
+  exit_template: |
+    ⛔ **EXIT SIGNAL** ⛔
+    
+    **Symbol:** `{symbol}`
+    **Exit Cause:** {exit_cause}
+    **Hold Time:** {hold_duration}
+    **P&L:** {pnl_percent}%
+    
+    **🔍 Exit Details:**
+    ```
+    Entry Score: {entry_score}
+    Exit Score: {exit_score}
+    Max Drawdown: {max_drawdown}%
+    Peak Gain: {peak_gain}%
+    ```
+    
+    **📈 Final Stats:** {final_stats}
+    
+    *{timestamp}*
+
+# Safety constraints
+safety:
+  # Exchange-native enforcement
+  allowed_venues:
+    - "binance"
+    - "okx" 
+    - "coinbase"
+    - "kraken"
+  
+  banned_aggregators:
+    - "dexscreener"
+    - "coingecko"
+    - "coinmarketcap"
+    - "cryptocompare"
+    - "tradingview"
+    - "messari"
+  
+  # Social factor constraints
+  social_cap_max: 10.0             # Maximum social contribution (+10 points)
+  enforce_momentum_priority: true   # Social applied after momentum/volume
+  
+  # Data freshness requirements
+  max_data_age_minutes: 10         # Maximum age of market data
+  require_venue_native: true       # Only venue-native microstructure data
+
+# Feature flags
+features:
+  candidate_alerts: true      # New top-decile candidate alerts
+  exit_alerts: true          # Exit signal alerts  
+  throttle_bypass_critical: false  # Allow bypass for critical signals
+  include_debug_info: false  # Include debug info in messages

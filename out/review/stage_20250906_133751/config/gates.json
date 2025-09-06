@@ -1,0 +1,31 @@
+{
+  "microstructure": {
+    "min_depth_usd": 100000,
+    "max_spread_bps": 50,
+    "min_vadr_multiplier": 1.75,
+    "depth_check_percent": 2.0
+  },
+  "freshness": {
+    "max_bars_old": 2,
+    "max_atr_multiplier": 1.2
+  },
+  "fatigue": {
+    "max_24h_gain_percent": 12.0,
+    "max_rsi_4h": 70.0
+  },
+  "late_fill": {
+    "max_seconds_after_close": 30
+  },
+  "volume": {
+    "min_surge_multiplier": 1.75,
+    "min_adv_multiplier": 1.0
+  },
+  "trend": {
+    "min_adx": 25.0,
+    "min_hurst": 0.55
+  },
+  "aggregator_ban": {
+    "banned_sources": ["dexscreener", "coingecko", "coinmarketcap"],
+    "allowed_exchanges": ["binance", "okx", "coinbase", "kraken"]
+  }
+}

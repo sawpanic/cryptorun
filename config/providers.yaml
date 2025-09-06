@@ -1,0 +1,100 @@
+# CryptoRun Provider Operations Configuration
+# Free/keyless endpoints with rate limits, circuit breakers, and daily budgets
+
+providers:
+  coingecko:
+    host: "api.coingecko.com"
+    rps: 3                    # Requests per second (conservative for free tier)
+    burst: 6                  # Burst capacity (2x RPS)
+    daily_budget: 5000        # Max requests per UTC day
+    ttl_secs: 600            # Cache TTL (10 minutes for price data)
+    backoff_ms:
+      base: 200              # Base backoff milliseconds
+      max: 8000              # Max backoff (8 seconds)
+      jitter: true           # Add jitter to prevent thundering herd
+    circuit:
+      failure_threshold: 5    # Consecutive failures to open circuit
+      success_threshold: 3    # Successes needed to close circuit
+      timeout_ms: 30000      # Request timeout (30s)
+    enabled: true
+    base_url: "https://api.coingecko.com/api/v3"
+    constraints:
+      # STRICT: Only lists and indices allowed, no microstructure data
+      allowed_endpoints:
+        - "/coins/list"
+        - "/coins/markets"
+        - "/global"
+        - "/search/trending"
+      forbidden_endpoints:
+        - "/exchanges/*/orderbook"  # No aggregated order books
+        - "/exchanges/*/tickers"    # No aggregated tickers
+
+  binance:
+    host: "api.binance.com"
+    rps: 5                    # Conservative for public endpoints
+    burst: 10                 # 2x RPS burst
+    daily_budget: 8000        # Higher budget for orderbook data
+    ttl_secs: 300            # 5 minute cache for orderbook data
+    backoff_ms:
+      base: 100              # Faster recovery for orderbooks
+      max: 4000              # 4 second max backoff
+      jitter: true
+    circuit:
+      failure_threshold: 5
+      success_threshold: 3
+      timeout_ms: 15000      # 15s timeout for orderbooks
+    enabled: true
+    base_url: "https://api.binance.com"
+
+  okx:
+    host: "www.okx.com"
+    rps: 5
+    burst: 10
+    daily_budget: 8000
+    ttl_secs: 300            # 5 minute cache
+    backoff_ms:
+      base: 100
+      max: 4000
+      jitter: true
+    circuit:
+      failure_threshold: 5
+      success_threshold: 3
+      timeout_ms: 15000
+    enabled: true
+    base_url: "https://www.okx.com"
+
+  coinbase:
+    host: "api.exchange.coinbase.com"
+    rps: 5
+    burst: 10
+    daily_budget: 8000
+    ttl_secs: 300
+    backoff_ms:
+      base: 100
+      max: 4000
+      jitter: true
+    circuit:
+      failure_threshold: 5
+      success_threshold: 3
+      timeout_ms: 15000
+    enabled: true
+    base_url: "https://api.exchange.coinbase.com"
+
+# Budget warnings and enforcement
+budget:
+  warn_threshold: 0.8        # Warn at 80% of daily budget
+  reset_hour: 0             # Reset budgets at UTC midnight
+  
+# Global settings
+global:
+  max_concurrent_per_host: 3  # Max concurrent requests per provider
+  user_agent: "CryptoRun/3.2.1 (Free-tier; respect-robots.txt)"
+
+# QA-specific overrides for testing
+qa_overrides:
+  # Reduced timeouts for faster QA runs
+  timeout_multiplier: 0.5
+  # Increased concurrency for load testing
+  concurrency_multiplier: 2.0
+  # Shorter cache TTLs for testing freshness
+  cache_ttl_multiplier: 0.1

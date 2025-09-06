@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"cryptorun/application"
+	"cryptorun/internal/application"
 )
 
 func TestCalculateADV(t *testing.T) {
@@ -204,22 +204,22 @@ func TestBatchCalculateADV(t *testing.T) {
 			QuoteCurrency:  "USD",
 		},
 		{
-			Symbol:         "ETHUSD",
-			Volume24hBase:  1000.0,
-			LastPrice:      3000.0,
-			QuoteCurrency:  "USD",
+			Symbol:        "ETHUSD",
+			Volume24hBase: 1000.0,
+			LastPrice:     3000.0,
+			QuoteCurrency: "USD",
 		},
 		{
-			Symbol:         "SMALLUSD",
-			Volume24hBase:  10.0,
-			LastPrice:      1.0,
-			QuoteCurrency:  "USD",
+			Symbol:        "SMALLUSD",
+			Volume24hBase: 10.0,
+			LastPrice:     1.0,
+			QuoteCurrency: "USD",
 		},
 		{
-			Symbol:         "INVALIDUSD",
-			Volume24hBase:  0.0,
-			LastPrice:      100.0,
-			QuoteCurrency:  "USD",
+			Symbol:        "INVALIDUSD",
+			Volume24hBase: 0.0,
+			LastPrice:     100.0,
+			QuoteCurrency: "USD",
 		},
 	}
 
@@ -259,10 +259,10 @@ func TestRoundingEdgeCases(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ticker := application.TickerData{
-				Symbol:         "TEST",
-				Volume24hBase:  tt.volume,
-				LastPrice:      tt.price,
-				QuoteCurrency:  "USD",
+				Symbol:        "TEST",
+				Volume24hBase: tt.volume,
+				LastPrice:     tt.price,
+				QuoteCurrency: "USD",
 			}
 
 			result := application.CalculateADV(ticker)

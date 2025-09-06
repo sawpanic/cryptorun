@@ -1,0 +1,46 @@
+{"timestamp":"2025-09-06T13:14:07.944124+03:00","phase":"init","status":"start","progress":0,"total":0,"current":0,"message":"Starting momentum scan with 2 symbols","metrics":{"pipeline":"momentum","symbol_count":2}}
+{"timestamp":"2025-09-06T13:14:07.9541784+03:00","phase":"init","status":"start","progress":0,"total":2,"current":0,"message":"Initializing momentum pipeline"}
+{"timestamp":"2025-09-06T13:14:07.9541784+03:00","phase":"fetch","status":"start","progress":5,"total":2,"current":0,"message":"Fetching regime data"}
+{"timestamp":"2025-09-06T13:14:07.9541784+03:00","phase":"fetch","status":"success","progress":10,"total":2,"current":0,"message":"Regime data fetched","metrics":{"regime":"trending"}}
+{"timestamp":"2025-09-06T13:14:07.9551987+03:00","phase":"analyze","status":"start","progress":10,"total":2,"current":0,"message":"Starting symbol analysis"}
+{"timestamp":"2025-09-06T13:14:07.9551987+03:00","phase":"analyze","symbol":"BTCUSD","status":"progress","progress":10,"total":2,"current":1,"message":"Processing symbol"}
+{"timestamp":"2025-09-06T13:14:07.9551987+03:00","phase":"analyze","symbol":"BTCUSD","status":"success","progress":10,"total":2,"current":1,"message":"Symbol analyzed","metrics":{"momentum_score":0.1960309975158801,"qualified":false}}
+{"timestamp":"2025-09-06T13:14:07.9551987+03:00","phase":"analyze","symbol":"ETHUSD","status":"progress","progress":40,"total":2,"current":2,"message":"Processing symbol"}
+{"timestamp":"2025-09-06T13:14:07.9551987+03:00","phase":"analyze","symbol":"ETHUSD","status":"success","progress":40,"total":2,"current":2,"message":"Symbol analyzed","metrics":{"momentum_score":0.1960309975158801,"qualified":false}}
+{"timestamp":"2025-09-06T13:14:07.9551987+03:00","phase":"orthogonalize","status":"start","progress":70,"total":1,"current":0,"message":"Starting orthogonalization","metrics":{"candidate_count":2}}
+{"timestamp":"2025-09-06T13:14:07.9551987+03:00","phase":"orthogonalize","status":"success","progress":80,"total":1,"current":1,"message":"Orthogonalization completed"}
+{"timestamp":"2025-09-06T13:14:07.9551987+03:00","phase":"filter","status":"start","progress":80,"total":1,"current":0,"message":"Filtering qualified candidates"}
+{"timestamp":"2025-09-06T13:14:07.9561912+03:00","phase":"filter","status":"success","progress":90,"total":1,"current":1,"message":"Candidate filtering completed","metrics":{"qualified_count":0,"total_count":2}}
+{"timestamp":"2025-09-06T13:14:07.9561912+03:00","phase":"complete","status":"start","progress":90,"total":1,"current":0,"message":"Generating explainability output"}
+{"timestamp":"2025-09-06T13:14:07.9561912+03:00","phase":"complete","status":"success","progress":100,"total":1,"current":1,"message":"Explainability output completed"}
+{"timestamp":"2025-09-06T13:14:07.957191+03:00","phase":"complete","status":"success","progress":0,"total":0,"current":0,"message":"Scan completed with 0 candidates","metrics":{"candidates":0,"output_path":"out\\scan\\scan\\momentum_explain.json"}}
+{"timestamp":"2025-09-06T13:14:14.4471116+03:00","phase":"init","status":"start","progress":0,"total":0,"current":0,"message":"Starting momentum scan with 1 symbols","metrics":{"pipeline":"momentum","symbol_count":1}}
+{"timestamp":"2025-09-06T13:14:14.4477126+03:00","phase":"init","status":"start","progress":0,"total":1,"current":0,"message":"Initializing momentum pipeline"}
+{"timestamp":"2025-09-06T13:14:14.4477126+03:00","phase":"fetch","status":"start","progress":5,"total":1,"current":0,"message":"Fetching regime data"}
+{"timestamp":"2025-09-06T13:14:14.4482417+03:00","phase":"fetch","status":"success","progress":10,"total":1,"current":0,"message":"Regime data fetched","metrics":{"regime":"trending"}}
+{"timestamp":"2025-09-06T13:14:14.4482417+03:00","phase":"analyze","status":"start","progress":10,"total":1,"current":0,"message":"Starting symbol analysis"}
+{"timestamp":"2025-09-06T13:14:14.4482417+03:00","phase":"analyze","symbol":"BTCUSD","status":"progress","progress":10,"total":1,"current":1,"message":"Processing symbol"}
+{"timestamp":"2025-09-06T13:14:14.4482417+03:00","phase":"analyze","symbol":"BTCUSD","status":"success","progress":10,"total":1,"current":1,"message":"Symbol analyzed","metrics":{"momentum_score":0.1960309975158801,"qualified":false}}
+{"timestamp":"2025-09-06T13:14:14.4482417+03:00","phase":"orthogonalize","status":"start","progress":70,"total":1,"current":0,"message":"Starting orthogonalization","metrics":{"candidate_count":1}}
+{"timestamp":"2025-09-06T13:14:14.4487672+03:00","phase":"orthogonalize","status":"success","progress":80,"total":1,"current":1,"message":"Orthogonalization skipped (insufficient candidates)"}
+{"timestamp":"2025-09-06T13:14:14.4487672+03:00","phase":"filter","status":"start","progress":80,"total":1,"current":0,"message":"Filtering qualified candidates"}
+{"timestamp":"2025-09-06T13:14:14.4487672+03:00","phase":"filter","status":"success","progress":90,"total":1,"current":1,"message":"Candidate filtering completed","metrics":{"qualified_count":0,"total_count":1}}
+{"timestamp":"2025-09-06T13:14:14.4487672+03:00","phase":"complete","status":"start","progress":90,"total":1,"current":0,"message":"Generating explainability output"}
+{"timestamp":"2025-09-06T13:14:14.4492846+03:00","phase":"complete","status":"success","progress":100,"total":1,"current":1,"message":"Explainability output completed"}
+{"timestamp":"2025-09-06T13:14:14.4492846+03:00","phase":"complete","status":"success","progress":0,"total":0,"current":0,"message":"Scan completed with 0 candidates","metrics":{"candidates":0,"output_path":"out\\scan\\scan\\momentum_explain.json"}}
+{"timestamp":"2025-09-06T13:32:48.670136+03:00","phase":"init","status":"start","progress":0,"total":0,"current":0,"message":"Starting topgainers-benchmark scan with 2 symbols","metrics":{"pipeline":"topgainers-benchmark","symbol_count":2}}
+{"timestamp":"2025-09-06T13:32:48.6706726+03:00","phase":"init","status":"start","progress":0,"total":2,"current":0,"message":"Initializing benchmark"}
+{"timestamp":"2025-09-06T13:32:48.6712057+03:00","phase":"fetch","status":"start","progress":10,"total":2,"current":0,"message":"Fetching top gainers data"}
+{"timestamp":"2025-09-06T13:32:48.6712057+03:00","phase":"fetch","symbol":"1h","status":"progress","progress":10,"total":2,"current":1,"message":"Fetching window data"}
+{"timestamp":"2025-09-06T13:32:48.6717256+03:00","phase":"fetch","symbol":"1h","status":"success","progress":10,"total":2,"current":1,"message":"Window data fetched","metrics":{"gainers_count":5}}
+{"timestamp":"2025-09-06T13:32:48.6722501+03:00","phase":"fetch","symbol":"24h","status":"progress","progress":30,"total":2,"current":2,"message":"Fetching window data"}
+{"timestamp":"2025-09-06T13:32:48.6727692+03:00","phase":"fetch","symbol":"24h","status":"success","progress":30,"total":2,"current":2,"message":"Window data fetched","metrics":{"gainers_count":5}}
+{"timestamp":"2025-09-06T13:32:48.6732935+03:00","phase":"analyze","status":"start","progress":50,"total":1,"current":0,"message":"Analyzing scan alignment"}
+{"timestamp":"2025-09-06T13:32:48.6732935+03:00","phase":"score","status":"start","progress":70,"total":2,"current":0,"message":"Calculating alignment scores"}
+{"timestamp":"2025-09-06T13:32:48.6732935+03:00","phase":"score","symbol":"1h","status":"progress","progress":70,"total":2,"current":1,"message":"Calculating window alignment"}
+{"timestamp":"2025-09-06T13:32:48.6739942+03:00","phase":"score","symbol":"1h","status":"success","progress":70,"total":2,"current":1,"message":"Window alignment calculated","metrics":{"alignment_score":0.6,"matches":3}}
+{"timestamp":"2025-09-06T13:32:48.6739942+03:00","phase":"score","symbol":"24h","status":"progress","progress":80,"total":2,"current":2,"message":"Calculating window alignment"}
+{"timestamp":"2025-09-06T13:32:48.6739942+03:00","phase":"score","symbol":"24h","status":"success","progress":80,"total":2,"current":2,"message":"Window alignment calculated","metrics":{"alignment_score":0.6,"matches":3}}
+{"timestamp":"2025-09-06T13:32:48.6739942+03:00","phase":"output","status":"start","progress":90,"total":1,"current":0,"message":"Writing output artifacts"}
+{"timestamp":"2025-09-06T13:32:48.6845989+03:00","phase":"output","status":"success","progress":100,"total":1,"current":1,"message":"Artifacts written successfully"}
+{"timestamp":"2025-09-06T13:32:48.6845989+03:00","phase":"complete","status":"success","progress":0,"total":0,"current":0,"message":"Scan completed with 2 candidates","metrics":{"candidates":2,"output_path":"out/bench/topgainers_alignment.json, out/bench/topgainers_alignment.md, out/bench/topgainers_1h.json, out/bench/topgainers_24h.json"}}
