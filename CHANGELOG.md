@@ -1,5 +1,45 @@
 # CryptoRun Changelog
 
+## 2025-09-06 - CI_GUARD_IMPLEMENTATION
+
+PROMPT_ID=SPEED.PACK.06.CI-GUARD: Implemented CI guard policy requiring PRs to increase at least one of: progress percent, test count, or docs/CHANGELOG diff. Features cross-platform PowerShell test counting and GitHub Actions workflow with clear failure messaging for quality gate enforcement.
+
+### Added
+- **CI Guard Workflow**: `.github/workflows/ci-guard.yml` with progress, test count, and documentation delta tracking
+- **Test Count Script**: `tools/test_count.ps1` with Go test function parsing and cross-platform compatibility
+- **Quality Gate Policy**: PR validation requiring measurable progress in metrics or documentation content
+- **Delta Analysis**: Automated comparison against base branch with clear pass/fail messaging
+
+### Core Features
+- **Progress Delta**: Integration with `tools/progress.ps1` for completion percentage tracking
+- **Test Count Delta**: Comprehensive Go test function counting via `go test -list` parsing with regex fallback
+- **Documentation Delta**: CHANGELOG.md and markdown file size tracking for content growth validation
+- **Fork Compatibility**: No secrets required, works on external PRs with base branch comparison
+
+### Technical Architecture
+- **Multi-Platform Support**: PowerShell Core for Linux/Windows compatibility with bc calculation fallbacks
+- **Robust Test Detection**: Primary `go test -list` parsing with regex pattern fallback for reliability
+- **Clear Messaging**: Detailed pass/fail output with specific improvement suggestions for failing PRs
+
+### Quality Enforcement
+- **CI Integration**: Automated blocking of PRs without measurable improvements
+- **Developer Guidance**: Clear failure messages with actionable steps for PR acceptance
+- **Progress Tracking**: Alignment with overall project progress measurement and accountability
+
+## 2025-01-15 - Progress Tracking System
+
+### Added
+- **PROGRESS.yaml** weighted milestone ledger with 100% completion tracking
+- **tools/progress.ps1** PowerShell calculator for progress percentage computation  
+- **Pre-push hooks** (.githooks/pre-push.ps1) enforcing progress or test improvements
+- **CI enforcement** (.github/workflows/progress.yml) blocking PRs without measurable gains
+- **Progress documentation** (docs/PROGRESS.md) explaining tracking rules and usage
+
+### System
+- Progress tracking now enforces 0.1% minimum improvement or test/doc changes
+- Milestones weighted by importance: Core Architecture (25%), Data Pipeline (20%), Risk Management (20%), Detection (15%), Quality (10%), UI (10%)
+- Current completion: ~87% based on implemented features
+
 ## 2025-09-06 - DATA_FACADE_HOT_WARM
 
 PROMPT_ID=DATA.FACADE.HOTWARM.IMPL: Implemented data facade with hot WebSocket streams for top symbols and warm REST caching for broader universe. Features canonical source authority (exchange-native for microstructure, aggregated for price/volume), point-in-time integrity, and trimmed median reconciliation with outlier detection.

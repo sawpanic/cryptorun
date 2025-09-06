@@ -1,0 +1,99 @@
+# CryptoRun v3.2.1 Progress Tracking
+# Weighted milestone completion for enforcing measurable progress
+
+version: "3.2.1"
+last_updated: "2025-01-15"
+
+milestones:
+  # Core Architecture (25% total weight)
+  unified_composite_scoring:
+    weight: 15
+    completed: true
+    description: "Single scoring path with protected MomentumCore"
+    completion_date: "2025-01-10"
+    
+  gram_schmidt_orthogonalization:
+    weight: 10
+    completed: true
+    description: "Factor residualization with momentum protection"
+    completion_date: "2025-01-10"
+
+  # Data Pipeline (20% total weight)
+  data_facade_hot_warm:
+    weight: 10
+    completed: false
+    description: "TTL caches + deterministic fakes"
+    progress: 40
+    
+  exchange_native_microstructure:
+    weight: 10
+    completed: true
+    description: "L1/L2 validation with proof generation"
+    completion_date: "2025-01-12"
+
+  # Risk & Portfolio Management (20% total weight)
+  regime_adaptive_weights:
+    weight: 8
+    completed: true
+    description: "Three weight profiles with 4h switching"
+    completion_date: "2025-01-10"
+    
+  portfolio_risk_controls:
+    weight: 12
+    completed: true
+    description: "Correlation matrix, sector caps, beta budget"
+    completion_date: "2025-01-15"
+
+  # Detection Systems (15% total weight)
+  premove_detector:
+    weight: 15
+    completed: true
+    description: "Pre-movement detection with 2-of-3 gates"
+    completion_date: "2025-01-15"
+
+  # Quality & Testing (10% total weight)
+  unit_test_coverage:
+    weight: 5
+    completed: false
+    description: "Comprehensive unit test suite"
+    progress: 70
+    
+  integration_tests:
+    weight: 5
+    completed: false
+    description: "End-to-end integration testing"
+    progress: 60
+
+  # User Interface (10% total weight)
+  menu_system_unified:
+    weight: 6
+    completed: true
+    description: "Unified menu system with single pipeline calls"
+    completion_date: "2025-01-12"
+    
+  real_time_dashboard:
+    weight: 4
+    completed: true
+    description: "SSE-throttled live dashboard"
+    completion_date: "2025-01-15"
+
+# Calculation rules
+calculation:
+  # Weight must sum to 100
+  total_weight_check: true
+  
+  # Completed milestones get full weight
+  completed_weight_multiplier: 1.0
+  
+  # Partial progress gets proportional weight
+  partial_progress_formula: "weight * (progress / 100)"
+  
+  # Minimum progress increment to pass CI
+  min_progress_increment: 0.1
+
+# Metadata
+tracking:
+  baseline_commit: "main"
+  progress_file: ".progress"
+  enforce_in_ci: true
+  enforce_in_pre_push: true
