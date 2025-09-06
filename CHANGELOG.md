@@ -1,5 +1,33 @@
 # CryptoRun Changelog
 
+## 2025-09-06 - PATCH_ONLY_ENFORCEMENT
+
+PROMPT_ID=SPEED.PACK.04.PATCH-ONLY: Implemented patch-only enforcement system to prevent giant rewrites and nudge focused, atomic commits. Features configurable line limits per file, WRITE-SCOPE validation, commit metadata enhancement, and human override capabilities for emergency hotfixes.
+
+### Added
+- **Patch-Only Enforcer**: `tools/patch_only.ps1` with configurable line limits (default: 600 lines/file) and WRITE-SCOPE validation
+- **Commit Message Enhancer**: `.githooks/prepare-commit-msg.ps1` appending patch summaries with file counts and scope info
+- **Policy Documentation**: `docs/PATCH_POLICY.md` with comprehensive usage guide and troubleshooting
+- **Human Override**: `PATCH_ONLY_DISABLE=1` environment variable for emergency bypass scenarios
+
+### Core Features
+- **Line Limit Enforcement**: Configurable maximum lines changed per file with staged diff analysis
+- **Scope Validation**: WRITE-SCOPE header parsing from commit messages with pattern matching
+- **Automatic Metadata**: Commit message enhancement with file summaries and enforcement instructions
+- **Emergency Bypass**: Human override for critical hotfixes while maintaining audit trail
+
+### Technical Architecture
+- **Git Integration**: Pre-commit and prepare-commit-msg hooks with proper PowerShell error handling
+- **Cross-Platform**: PowerShell Core compatibility for Linux/Windows development environments
+- **Configurable Limits**: Command-line parameters for custom line limits and check-only mode
+- **Smart Filtering**: File list truncation and path shortening for readable commit messages
+
+### Quality Benefits
+- **Prevents Giant Rewrites**: Forces focused, reviewable changes through line limit enforcement
+- **Scope Discipline**: Validates staged files against declared WRITE-SCOPE restrictions
+- **Transparency**: Automatic commit metadata for easy change tracking and review
+- **Human-Friendly**: Emergency override capabilities with clear bypass instructions
+
 ## 2025-09-06 - PREFLIGHT_POSTFLIGHT_MACROS
 
 PROMPT_ID=SPEED.PACK.05.PREFLIGHT-POSTFLIGHT: Added preflight/postflight QA macros ensuring consistent quality checks (go fmt/vet/lint/test) and scope enforcement for every commit. Features optional golangci-lint integration and WRITE-SCOPE validation against staged files.

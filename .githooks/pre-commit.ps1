@@ -15,6 +15,14 @@ if (-not $RepoRoot) {
 
 Set-Location $RepoRoot
 
+# Run write lock guard first
+Write-Host "`n🔒 Checking write lock restrictions..." -ForegroundColor Cyan
+& "$RepoRoot\tools\lock_guard.ps1" "pre-commit"
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "❌ Write lock check failed" -ForegroundColor Red
+    exit 1
+}
+
 # Run preflight checks first
 Write-Host "`n🚀 Running preflight checks..." -ForegroundColor Cyan
 & "$RepoRoot\tools\preflight.ps1"
