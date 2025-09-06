@@ -1,5 +1,24 @@
 # CryptoRun Changelog
 
+## 2025-01-15 - Prompt Pack Templates & Style Guide
+
+### Added
+- **Prompt Pack Templates** (.claude/prompt_packs/) for domain-scoped development patterns
+- **DOMAIN_TEMPLATE.md** standardized template for business logic and mathematical functions
+- **UI_TEMPLATE.md** template for user interfaces with SSE throttling requirements  
+- **Contributing Guide** (docs/CONTRIBUTING.md) explaining development workflow and Prompt Pack usage
+- **Prompt Style Guide** (docs/PROMPT_STYLE_GUIDE.md) documenting required headers and patterns
+
+### Documentation
+- WRITE-SCOPE enforcement patterns with file-level granularity
+- TEST-FIRST development guidelines with examples
+- SSE throttling requirements (≤1 Hz) for real-time UI components
+- Quality gate integration with progress tracking system
+
+## 2025-09-06 - SPEED_PACK_03_TESTS_FIRST
+
+PROMPT_ID=SPEED.PACK.03.TESTS-FIRST: Added comprehensive failing tests and deterministic fixtures for Pre-Movement Detector v3.3 components. Implemented test-driven development strategy with portfolio pruner, alerts governor, execution tracker, percentile engine, and CVD residual quality monitoring. Created 24 PIT records, price/volume fixtures, and integration tests for deterministic backtest replay. All tests fail as expected, driving future implementations.
+
 ## 2025-09-06 - ARTIFACT_LEDGER
 
 PROMPT_ID=SPEED.PACK.11.ARTIFACT-LEDGER: Implemented minimal point-in-time artifact writer for CSV/JSON output with UTC timestamps, stable schemas, and ledger documentation. Provides standardized data export capabilities for all CryptoRun components.
