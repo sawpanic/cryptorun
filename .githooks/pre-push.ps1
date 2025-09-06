@@ -8,6 +8,19 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
     Write-Warning "PowerShell 7+ recommended. Current version: $($PSVersionTable.PSVersion)"
 }
 
+# Run documentation guard first
+Write-Host "📝 Checking documentation requirements..."
+try {
+    & pwsh -File "tools/docs_guard.ps1"
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "❌ Documentation guard failed"
+        exit 1
+    }
+} catch {
+    Write-Error "❌ Error running documentation guard: $_"
+    exit 1
+}
+
 # Run progress check with failure enforcement
 Write-Host "📊 Checking progress..."
 try {

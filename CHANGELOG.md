@@ -1,5 +1,97 @@
 # CryptoRun Changelog
 
+## 2025-09-06 - WRITE_LOCKS_CODEOWNERS
+
+PROMPT_ID=SPEED.PACK.09.WRITE-LOCKS: Implemented repository write lock system with CODEOWNERS integration and pre-commit enforcement. Enables controlled development phases where only docs or only code can be modified, preventing accidental changes during focused work periods.
+
+### Added
+- **Write Lock System**: `.crun_write_lock` configuration file with UNLOCKED/LOCKED:code/LOCKED:docs states
+- **Lock Guard Script**: `tools/lock_guard.ps1` enforcing write restrictions based on file patterns
+- **Pre-commit Integration**: Updated `.githooks/pre-commit.ps1` to run lock guard before other checks
+- **CODEOWNERS File**: Comprehensive ownership mapping for all repository directories and critical files
+- **Lock Documentation**: `docs/REPO_LOCKS.md` with usage guide and workflow examples
+
+### Core Features
+- **Granular File Control**: Code vs documentation file classification with pattern matching
+- **Development Phase Support**: Documentation-only or code-only work modes with automatic enforcement
+- **Always-Allowed Files**: Lock system files bypass restrictions for administrative updates
+- **Clear Error Messages**: Detailed feedback on blocked files with resolution instructions
+
+### Technical Architecture
+- **PowerShell Implementation**: Cross-platform lock guard with git integration
+- **Pre-commit Enforcement**: Automatic checking of staged files against current lock state
+- **Pattern-Based Classification**: Regex matching for code, docs, and system files
+- **Graceful Fallbacks**: Unknown states default to unlocked with warning messages
+
+### CODEOWNERS Integration
+- **Team Ownership**: Directory-based code ownership with specialized team assignments
+- **Multi-Approval Requirements**: Critical files require multiple team approvals
+- **Comprehensive Coverage**: All directories from domain layer to tooling have designated owners
+
+### Quality Benefits
+- **Focused Development**: Enforce single-purpose work periods (docs-only or code-only)
+- **Risk Reduction**: Prevent accidental code changes during documentation sprints
+- **Team Coordination**: Clear signals about current development focus and restrictions
+- **Audit Trail**: Lock state changes are tracked in version control
+
+## 2025-09-06 - DOCS_GUARD_ENFORCEMENT
+
+PROMPT_ID=SPEED.PACK.10.DOCS-BOT: Implemented documentation enforcement system requiring docs or CHANGELOG updates with any source code changes. Features pre-push guard, emergency override, and clear policy documentation for maintaining documentation discipline.
+
+### Added
+- **Documentation Guard**: `tools/docs_guard.ps1` enforcing docs/CHANGELOG updates for src/ changes
+- **Pre-push Integration**: Updated `.githooks/pre-push.ps1` to run documentation guard before other checks
+- **Policy Documentation**: `docs/DOCS_POLICY.md` with comprehensive usage guide and emergency override instructions
+- **Emergency Override**: `DOCS_GUARD_DISABLE=1` environment variable for critical hotfix scenarios
+
+### Core Features
+- **Source Change Detection**: Automatically detects modifications to `src/**` files using git diff-tree
+- **Documentation Requirement**: Requires corresponding updates to `docs/**` or `CHANGELOG.md`
+- **Windows-Friendly**: PowerShell implementation compatible with Windows development environment
+- **Emergency Bypass**: Human override for critical situations while maintaining audit trail
+
+### Technical Architecture
+- **Git Integration**: Uses git diff-tree for reliable change detection without git plumbing
+- **Pre-push Enforcement**: Runs before progress and test guards to ensure documentation discipline
+- **Cross-Platform**: PowerShell Core compatibility for consistent behavior across environments
+- **Error Handling**: Graceful fallback to HEAD~1 when remote branch is unavailable
+
+### Quality Benefits
+- **Documentation Discipline**: Forces developers to update documentation with code changes
+- **Knowledge Retention**: Prevents tribal knowledge loss by requiring written explanations
+- **Audit Compliance**: Ensures regulatory and compliance requirements are met
+- **Maintainability**: Future developers understand reasoning behind changes
+
+## 2025-09-06 - CLAUDE_DOCTOR_SCRIPT
+
+PROMPT_ID=SPEED.PACK.07.CLAUDE-DOCTOR: Added claude_doctor.ps1 script to ensure agent front-matter consistency and settings normalization. Validates .claude/agents/*.md files have proper name: fields and tidies .claude/settings.json permissions formatting.
+
+### Added
+- **Claude Doctor Script**: `tools/claude_doctor.ps1` with agent front-matter validation and settings normalization
+- **Agent Front-matter Fixing**: Auto-generates missing `name:` fields from filename slugs 
+- **Settings Permission Tidying**: Normalizes .claude/settings.json permissions array formatting
+- **Idempotent Operations**: Safe to run repeatedly without side effects
+- **Documentation**: `docs/CLAUDE_ENV.md` with usage instructions and troubleshooting guide
+
+### Core Features
+- **Front-matter Validation**: Scans all .claude/agents/*.md files for proper YAML headers
+- **Slug Generation**: Creates name: fields from filenames using kebab-case conversion
+- **Settings Normalization**: Ensures consistent allow/deny permissions formatting
+- **Dry-run Support**: Preview changes without modification using -DryRun flag
+- **Verbose Reporting**: Detailed output with -Verbose flag for debugging
+
+### Technical Architecture
+- **PowerShell Integration**: Cross-platform PowerShell with proper error handling
+- **File Safety**: Only modifies files that actually need fixing
+- **JSON Validation**: Proper JSON parsing and formatting for settings files
+- **Path Handling**: Robust file path resolution and validation
+
+### Quality Benefits
+- **Agent Reliability**: Ensures all agents register properly in Claude Code
+- **Configuration Consistency**: Standardized settings format across environments
+- **Developer Experience**: Clear /doctor command integration for validation
+- **Maintenance Automation**: Reduces manual agent configuration overhead
+
 ## 2025-09-06 - PATCH_ONLY_ENFORCEMENT
 
 PROMPT_ID=SPEED.PACK.04.PATCH-ONLY: Implemented patch-only enforcement system to prevent giant rewrites and nudge focused, atomic commits. Features configurable line limits per file, WRITE-SCOPE validation, commit metadata enhancement, and human override capabilities for emergency hotfixes.
