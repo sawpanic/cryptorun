@@ -9,7 +9,8 @@ import (
 
 // Runner orchestrates the premove detection pipeline with portfolio pruning
 type Runner struct {
-	portfolioManager *premove.PortfolioManager
+	portfolioManager *premove.PortfolioManager // Legacy - to be deprecated
+	portfolioPruner  *premove.PortfolioPruner  // New pruning system
 	alertManager     *AlertManager
 	executionMonitor *ExecutionMonitor
 	backtestEngine   *BacktestEngine
@@ -19,6 +20,16 @@ type Runner struct {
 func NewRunner(portfolioManager *premove.PortfolioManager, alertManager *AlertManager, executionMonitor *ExecutionMonitor, backtestEngine *BacktestEngine) *Runner {
 	return &Runner{
 		portfolioManager: portfolioManager,
+		alertManager:     alertManager,
+		executionMonitor: executionMonitor,
+		backtestEngine:   backtestEngine,
+	}
+}
+
+// NewRunnerWithPruner creates a runner with the new portfolio pruning system
+func NewRunnerWithPruner(portfolioPruner *premove.PortfolioPruner, alertManager *AlertManager, executionMonitor *ExecutionMonitor, backtestEngine *BacktestEngine) *Runner {
+	return &Runner{
+		portfolioPruner:  portfolioPruner,
 		alertManager:     alertManager,
 		executionMonitor: executionMonitor,
 		backtestEngine:   backtestEngine,
@@ -71,7 +82,65 @@ func (r *Runner) RunPipeline(candidates []Candidate, existingPositions []premove
 	result.PostGatesCandidates = postGatesCandidates
 
 	// Step 2: Portfolio pruning (post-gates, pre-alerts)
-	if r.portfolioManager != nil {
+	if r.portfolioPruner != nil {
+		// Convert candidates to pruning format
+		pruningCandidates := make([]premove.Candidate, len(postGatesCandidates))
+		for i, candidate := range postGatesCandidates {
+			pruningCandidates[i] = premove.Candidate{
+				Symbol:      candidate.Symbol,
+				Score:       candidate.Score,
+				PassedGates: candidate.PassedGates,
+				Sector:      candidate.Sector,
+				Beta:        candidate.Beta,
+				ADV:         candidate.Size * 1000, // Simplified ADV calculation
+				Correlation: 0.0,                   // Will be calculated during pruning
+			}
+		}
+
+		pruneResult := r.portfolioPruner.PrunePortfolio(pruningCandidates, correlationMatrix)
+		if pruneResult != nil {
+			// Store pruning result in the ProcessingResult
+			// Convert back to legacy format for compatibility
+			legacyResult := &premove.PortfolioPruningResult{
+				Candidates:       make([]premove.Position, 0),
+				Accepted:         make([]premove.Position, 0),
+				Rejected:         make([]premove.Position, 0),
+				RejectionReasons: make(map[string][]string),
+				PrunedCount:      pruneResult.Metrics.TotalPruned,
+				BetaUtilization:  pruneResult.Metrics.FinalBetaUtilization,
+			}
+
+			// Convert kept candidates to accepted positions
+			for _, kept := range pruneResult.Kept {
+				legacyResult.Accepted = append(legacyResult.Accepted, premove.Position{
+					Symbol:      kept.Symbol,
+					Score:       kept.Score,
+					Sector:      kept.Sector,
+					Beta:        kept.Beta,
+					Size:        kept.ADV / 1000, // Convert back
+					EntryTime:   startTime,
+					Correlation: kept.Correlation,
+				})
+			}
+
+			// Convert pruned candidates to rejected positions
+			for _, pruned := range pruneResult.Pruned {
+				legacyResult.Rejected = append(legacyResult.Rejected, premove.Position{
+					Symbol:      pruned.Symbol,
+					Score:       pruned.Score,
+					Sector:      pruned.Sector,
+					Beta:        pruned.Beta,
+					Size:        pruned.ADV / 1000,
+					EntryTime:   startTime,
+					Correlation: pruned.Correlation,
+				})
+				legacyResult.RejectionReasons[pruned.Symbol] = []string{pruned.Reason}
+			}
+
+			result.PortfolioPruneResult = legacyResult
+		}
+	} else if r.portfolioManager != nil {
+		// Fallback to legacy portfolio manager
 		portfolioPositions := make([]premove.Position, len(postGatesCandidates))
 		for i, candidate := range postGatesCandidates {
 			portfolioPositions[i] = premove.Position{
@@ -137,6 +206,7 @@ func (r *Runner) GetPipelineStatus() map[string]interface{} {
 		"pipeline": "premove_detection",
 		"components": map[string]interface{}{
 			"portfolio_manager": r.portfolioManager != nil,
+			"portfolio_pruner":  r.portfolioPruner != nil,
 			"alert_manager":     r.alertManager != nil,
 			"execution_monitor": r.executionMonitor != nil,
 			"backtest_engine":   r.backtestEngine != nil,
@@ -285,9 +355,13 @@ func (r *Runner) GetMetrics() map[string]float64 {
 		metrics["premove_slippage_bps"] = execMetrics.AvgSlippageBps
 	}
 
-	// Portfolio pruning metrics would be added here
-	// This would require tracking pruning statistics over time
-	metrics["premove_portfolio_pruned_total"] = 0.0 // Placeholder
+	// Portfolio pruning metrics - these would be tracked over time in a real implementation
+	// For now, return 0 as these would come from a metrics registry
+	metrics["premove_portfolio_pruned_total{reason=correlation}"] = 0.0
+	metrics["premove_portfolio_pruned_total{reason=sector}"] = 0.0
+	metrics["premove_portfolio_pruned_total{reason=beta}"] = 0.0
+	metrics["premove_portfolio_pruned_total{reason=position_size}"] = 0.0
+	metrics["premove_portfolio_pruned_total{reason=exposure}"] = 0.0
 
 	return metrics
 }

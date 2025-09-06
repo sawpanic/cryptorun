@@ -7,7 +7,63 @@ import (
 	"time"
 )
 
-// PortfolioManager handles correlation analysis and position sizing constraints
+// PortfolioPruner handles portfolio construction and risk management
+type PortfolioPruner struct {
+	pairwiseCorrMax       float64
+	sectorCaps            map[string]int
+	betaBudgetToBTC       float64
+	maxSinglePositionPct  float64
+	maxTotalExposurePct   float64
+}
+
+// PortfolioConstraints defines portfolio pruning parameters
+type PortfolioConstraints struct {
+	PairwiseCorrMax      float64            `yaml:"pairwise_corr_max"`
+	SectorCaps           map[string]int     `yaml:"sector_caps"`
+	BetaBudgetToBTC      float64            `yaml:"beta_budget_to_btc"`
+	MaxSinglePositionPct float64            `yaml:"max_single_position_pct"`
+	MaxTotalExposurePct  float64            `yaml:"max_total_exposure_pct"`
+}
+
+// Candidate represents a pre-movement candidate for portfolio pruning
+type Candidate struct {
+	Symbol       string  `json:"symbol"`
+	Score        float64 `json:"score"`
+	PassedGates  int     `json:"passed_gates"`
+	Sector       string  `json:"sector"`
+	Beta         float64 `json:"beta"`         // Beta to BTC
+	ADV          float64 `json:"adv"`          // Average daily volume
+	Correlation  float64 `json:"correlation"`  // Correlation to portfolio
+}
+
+// PruningResult contains the results of portfolio pruning
+type PruningResult struct {
+	Kept     []Candidate          `json:"kept"`
+	Pruned   []PrunedCandidate    `json:"pruned"`
+	Metrics  PruningMetrics       `json:"metrics"`
+}
+
+// PrunedCandidate represents a candidate that was pruned with reason
+type PrunedCandidate struct {
+	Candidate `json:",inline"`
+	Reason    string `json:"reason"`
+}
+
+// PruningMetrics provides statistics about the pruning operation
+type PruningMetrics struct {
+	TotalInput          int     `json:"total_input"`
+	TotalKept           int     `json:"total_kept"`
+	TotalPruned         int     `json:"total_pruned"`
+	PrunedByCorrelation int     `json:"pruned_by_correlation"`
+	PrunedBySector      int     `json:"pruned_by_sector"`
+	PrunedByBeta        int     `json:"pruned_by_beta"`
+	PrunedByPosition    int     `json:"pruned_by_position"`
+	PrunedByExposure    int     `json:"pruned_by_exposure"`
+	FinalBetaUtilization float64 `json:"final_beta_utilization"`
+	FinalExposure       float64 `json:"final_exposure"`
+}
+
+// PortfolioManager handles correlation analysis and position sizing constraints (legacy)
 type PortfolioManager struct {
 	maxCorrelation float64
 	maxPerSector   int
@@ -45,6 +101,120 @@ type Position struct {
 	Correlation float64   `json:"correlation"` // Max correlation with existing positions
 }
 
+// NewPortfolioPruner creates a portfolio pruner with specified constraints
+func NewPortfolioPruner(constraints PortfolioConstraints) *PortfolioPruner {
+	return &PortfolioPruner{
+		pairwiseCorrMax:       constraints.PairwiseCorrMax,
+		sectorCaps:            constraints.SectorCaps,
+		betaBudgetToBTC:       constraints.BetaBudgetToBTC,
+		maxSinglePositionPct:  constraints.MaxSinglePositionPct,
+		maxTotalExposurePct:   constraints.MaxTotalExposurePct,
+	}
+}
+
+// PrunePortfolio applies portfolio constraints to candidate list
+func (p *PortfolioPruner) PrunePortfolio(candidates []Candidate, correlationMatrix *CorrelationMatrix) *PruningResult {
+	result := &PruningResult{
+		Kept:    make([]Candidate, 0),
+		Pruned:  make([]PrunedCandidate, 0),
+		Metrics: PruningMetrics{TotalInput: len(candidates)},
+	}
+
+	// Sort candidates by score (highest first) for greedy selection
+	sortedCandidates := make([]Candidate, len(candidates))
+	copy(sortedCandidates, candidates)
+	sort.Slice(sortedCandidates, func(i, j int) bool {
+		return sortedCandidates[i].Score > sortedCandidates[j].Score
+	})
+
+	// Track running constraints
+	sectorCounts := make(map[string]int)
+	betaUsed := 0.0
+	totalExposure := 0.0
+
+	for _, candidate := range sortedCandidates {
+		reasons := make([]string, 0)
+		pruned := false
+
+		// Check pairwise correlation constraint
+		if p.violatesCorrelationConstraint(candidate, result.Kept, correlationMatrix) {
+			reasons = append(reasons, fmt.Sprintf("pairwise correlation > %.2f", p.pairwiseCorrMax))
+			result.Metrics.PrunedByCorrelation++
+			pruned = true
+		}
+
+		// Check sector cap constraint
+		if sectorCounts[candidate.Sector] >= p.sectorCaps[candidate.Sector] {
+			reasons = append(reasons, fmt.Sprintf("sector %s at cap (%d)", candidate.Sector, p.sectorCaps[candidate.Sector]))
+			result.Metrics.PrunedBySector++
+			pruned = true
+		}
+
+		// Check beta budget constraint
+		candidateBeta := math.Abs(candidate.Beta)
+		if betaUsed+candidateBeta > p.betaBudgetToBTC {
+			reasons = append(reasons, fmt.Sprintf("beta budget exceeded (%.2f + %.2f > %.2f)", 
+				betaUsed, candidateBeta, p.betaBudgetToBTC))
+			result.Metrics.PrunedByBeta++
+			pruned = true
+		}
+
+		// Check single position size constraint (assume 1% for now, could be dynamic)
+		positionSize := 1.0 // Simplified - in practice would calculate based on score/volatility
+		if positionSize > p.maxSinglePositionPct {
+			reasons = append(reasons, fmt.Sprintf("position size %.1f%% > %.1f%% limit", 
+				positionSize, p.maxSinglePositionPct))
+			result.Metrics.PrunedByPosition++
+			pruned = true
+		}
+
+		// Check total exposure constraint
+		if totalExposure+positionSize > p.maxTotalExposurePct {
+			reasons = append(reasons, fmt.Sprintf("total exposure %.1f%% + %.1f%% > %.1f%% limit", 
+				totalExposure, positionSize, p.maxTotalExposurePct))
+			result.Metrics.PrunedByExposure++
+			pruned = true
+		}
+
+		if pruned {
+			result.Pruned = append(result.Pruned, PrunedCandidate{
+				Candidate: candidate,
+				Reason:    fmt.Sprintf("[%s]", fmt.Sprintf("%s", reasons[0])), // Use first reason
+			})
+		} else {
+			// Accept candidate
+			result.Kept = append(result.Kept, candidate)
+			sectorCounts[candidate.Sector]++
+			betaUsed += candidateBeta
+			totalExposure += positionSize
+		}
+	}
+
+	// Update final metrics
+	result.Metrics.TotalKept = len(result.Kept)
+	result.Metrics.TotalPruned = len(result.Pruned)
+	result.Metrics.FinalBetaUtilization = (betaUsed / p.betaBudgetToBTC) * 100.0
+	result.Metrics.FinalExposure = totalExposure
+
+	return result
+}
+
+// violatesCorrelationConstraint checks if candidate violates pairwise correlation with kept candidates
+func (p *PortfolioPruner) violatesCorrelationConstraint(candidate Candidate, kept []Candidate, correlationMatrix *CorrelationMatrix) bool {
+	if correlationMatrix == nil {
+		return false // Cannot check without correlation matrix
+	}
+
+	for _, keptCandidate := range kept {
+		if corr, exists := correlationMatrix.Matrix[candidate.Symbol][keptCandidate.Symbol]; exists {
+			if math.Abs(corr) > p.pairwiseCorrMax {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // PortfolioPruningResult contains the result of portfolio pruning
 type PortfolioPruningResult struct {
 	Candidates       []Position          `json:"candidates"`        // Original candidates
@@ -74,7 +244,7 @@ func (pm *PortfolioManager) CalculateCorrelationMatrix(priceData map[string][]fl
 
 	// Verify minimum observations
 	observations := 0
-	for symbol, prices := range priceData {
+	for _, prices := range priceData {
 		if len(prices) > 0 {
 			if observations == 0 || len(prices) < observations {
 				observations = len(prices)
