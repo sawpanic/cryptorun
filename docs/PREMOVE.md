@@ -1,0 +1,175 @@
+# Pre-Movement Detector v3.3 — Feature Specification
+
+> **Status:** Menu-only, Top-100 universe  
+> **Model:** 100-point composite with 2-of-3 gates  
+> **Scope:** Coiled-spring detection before breakouts
+
+## UX MUST — Live Progress & Explainability
+
+The Pre-Movement Detector provides real-time insight into "coiled-spring" setups before major price movements through:
+- **Live state transitions** (QUIET → WATCH → PREPARE → PRIME → EXECUTE)
+- **Detailed attribution** showing which factors contribute most to the composite score
+- **Gate status visualization** indicating which of the 2-of-3 critical gates are satisfied
+- **Portfolio-level risk controls** with correlation, sector, and beta budget management
+
+---
+
+## Overview
+
+The Pre-Movement Detector identifies assets showing signs of accumulation and preparation before significant price movements (>5% in 48h). It uses a 100-point composite scoring system across three main categories:
+
+- **Structural (45 pts):** Derivatives, microstructure, exchange flows
+- **Behavioral (30 pts):** Whale activity, CVD residuals, volume profiling  
+- **Catalyst & Compression (25 pts):** Technical squeeze indicators, event catalysts
+
+## Scoring States
+
+| Score Range | State    | Description                    |
+|-------------|----------|--------------------------------|
+| < 60        | QUIET    | Low activity, monitoring only  |
+| 60-79       | WATCH    | Initial interest detected      |
+| 80-99       | PREPARE  | Building momentum              |
+| 100-119     | PRIME    | High probability setup         |
+| ≥ 120       | EXECUTE  | Maximum conviction             |
+
+## Critical Gates (2-of-3 Required)
+
+The detector requires at least 2 of the following 3 gates to be satisfied:
+
+1. **Funding Divergence:** Perp funding rate diverges from price action
+2. **Supply Squeeze:** Primary reserves declining or proxy indicators showing scarcity  
+3. **Accumulation:** CVD residual + iceberg detection ≥ 80th percentile
+
+In risk-off or BTC-driven regimes, **volume confirmation** provides additional conviction but doesn't replace the 2-of-3 requirement.
+
+## Regime Adaptivity
+
+The detector adjusts its sensitivity and decay rates based on market regime:
+
+| Regime     | Half-life | Characteristics              |
+|------------|-----------|------------------------------|
+| Risk-on    | 8h        | High risk appetite           |
+| Selective  | 6h        | Mixed signals                |
+| BTC-driven | 5h        | Correlated moves             |
+| Risk-off   | 4h        | Flight to quality            |
+
+## Data Freshness & Penalties
+
+Freshness penalties are applied based on data staleness across all feeds:
+
+- **Soft penalty:** Starts at 8 seconds
+- **Exponential decay:** τ = 30 seconds  
+- **Hard failure:** 90 seconds (worst-feed precedence)
+- **Feeds monitored:** Funding, trades, depth, basis
+
+## Portfolio Controls
+
+Risk management is applied after scoring and gates but before alerts:
+
+- **Pairwise correlation:** ≤ 0.65 maximum
+- **Sector concentration:** ≤ 2 positions per sector  
+- **Beta budget:** ≤ 2.0 to BTC
+- **Position sizing:** ≤ 5% single position, ≤ 20% total exposure
+- **Tie-breaking:** By ADV then symbol
+
+## Alert Governance
+
+Rate-limited alerting prevents operator fatigue:
+
+- **Standard rates:** 3 per hour, 10 per day
+- **High volatility:** Up to 6 per hour when realized vol > 90th percentile
+- **Manual override:** Alert-only mode when score > 90 but < 2 gates satisfied
+
+## Execution Quality Tracking
+
+The system monitors execution performance and adapts:
+
+- **Slippage monitoring:** Tracks intended vs actual fills
+- **Tightening threshold:** 30 bps slippage triggers stricter requirements
+- **Recovery criteria:** 20 good trades OR 48-hour reset
+
+## Calibration & Governance
+
+### Point-in-Time Replay
+
+The backtest harness processes historical artifacts from `artifacts/premove/*.jsonl` to compute:
+
+- **Hit rates by state and regime** for model validation
+- **Daily CVD residual R² scores** to monitor signal quality  
+- **Performance attribution** across different market conditions
+
+### Isotonic Calibration
+
+The system maintains a monotonic mapping from composite scores to movement probabilities:
+
+- **Calibration curve:** Score → P(move > 5% in 48h)
+- **Monthly refresh:** Automatic recalibration using trailing data
+- **Immutability guarantee:** No changes during freeze windows
+- **Governance process:** Propose → backtest → paper trade → gradual rollout
+
+### Freeze Windows & Change Control
+
+- **Minimum stability:** 30 days between material changes
+- **Emergency exceptions:** Critical bugs or abort conditions only
+- **Change process:** All modifications require backtested validation
+- **Burn-in period:** 30 days read-only operation for new versions
+
+### Calibration Artifacts
+
+The system produces three key calibration outputs:
+
+1. **`hit_rates_by_state_and_regime.json`** — Success rates by detector state and market regime
+2. **`isotonic_calibration_curve.json`** — Monotonic score-to-probability mapping  
+3. **`cvd_resid_r2_daily.csv`** — Daily correlation quality for CVD residual signals
+
+These artifacts enable:
+- Model validation and performance tracking
+- Confidence interval estimation for predictions
+- Signal degradation detection and recovery
+- Governance decision support for parameter changes
+
+## Data Sources
+
+| Signal Type        | Primary Source           | Fallback            | Update Frequency |
+|--------------------|--------------------------|---------------------|------------------|
+| Price/Volume       | Exchange WebSocket       | Exchange REST       | Real-time/30s    |
+| Depth/Spread       | Exchange native only     | —                   | Real-time/15s    |
+| Funding rates      | Exchange REST            | Alt exchange        | 5-10 minutes     |
+| Open interest      | Exchange REST            | —                   | 5-10 minutes     |
+| Options data       | Deribit public API       | —                   | 10 minutes       |
+| Catalysts          | CoinMarketCal, DefiLlama | TokenUnlocks        | 30-60 minutes    |
+
+**Note:** Microstructure data (depth, spread) uses **exchange-native feeds only** — no aggregators.
+
+## Metrics & Monitoring
+
+Prometheus metrics exposed at `/metrics`:
+
+- `premove_score{symbol}` — Current composite score
+- `premove_state{symbol}` — Detector state (QUIET/WATCH/PREPARE/PRIME/EXECUTE)  
+- `premove_gate_count{symbol}` — Number of gates satisfied
+- `premove_data_staleness_seconds{feed}` — Data freshness by source
+- `premove_slippage_bps` — Execution slippage tracking
+- `premove_alerts_rate_limited_total` — Rate limiting activity
+- `premove_portfolio_pruned_total` — Risk control interventions
+
+## Configuration
+
+Key configuration parameters in `config/premove.yaml`:
+
+```yaml
+version: 3.3
+weights: { structural: 45, behavioral: 30, catalyst: 25 }
+gates: { two_of_three: true }
+decay: 
+  freshness: { soft_start_s: 8, tau_s: 30, hard_fail_s: 90 }
+portfolio:
+  pairwise_corr_max: 0.65
+  beta_budget_to_btc: 2.0
+alerts: { per_hour: 3, per_day: 10 }
+execution_quality: { slippage_bps_tighten_threshold: 30 }
+```
+
+---
+
+*CryptoRun Pre-Movement Detector — Real-time coiled-spring detection with robust risk controls*
