@@ -1,7 +1,6 @@
 package conformance
 
 import (
-	"encoding/json"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"path/filepath"

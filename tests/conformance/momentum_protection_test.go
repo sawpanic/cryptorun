@@ -65,7 +65,7 @@ func TestOrthogonalizationSequence(t *testing.T) {
 
 	// Look for evidence of proper ordering in comments or code structure
 	lastIndex := -1
-	for i, factor := range expectedOrder {
+	for _, factor := range expectedOrder {
 		index := strings.Index(content, factor)
 		if index == -1 && factor != "TechnicalResidual" { // TechnicalResidual might not exist yet
 			t.Errorf("CONFORMANCE VIOLATION: Factor '%s' not found in expected orthogonalization sequence", factor)
