@@ -2,344 +2,364 @@
 
 ## UX MUST — Live Progress & Explainability
 
-Complete guide to CryptoRun's entry gate system, providing transparent and deterministic evaluation of trading signal quality with comprehensive explanations and CLI debugging tools.
+Complete guide to CryptoRun's unified entry gate system, providing transparent and deterministic evaluation of trading signal quality with comprehensive explanations and CLI debugging tools.
 
-## Entry Gate Overview
+## Overview
 
-The entry gate system enforces strict criteria before allowing position entries. Gates are evaluated in two phases:
+The CryptoRun entry gates system implements a multi-stage validation pipeline that evaluates trading signals before entry. Each gate has specific thresholds and provides detailed reasoning for pass/fail decisions.
 
-1. **Hard Gates**: Mandatory scoring and microstructure requirements
-2. **Guards**: Timing, fatigue, and execution quality checks
+## Gate Evaluation Flow
 
-Entry is **only allowed** when ALL gates and guards pass.
-
-## Hard Gates (Phase 1)
-
-Hard gates are non-negotiable requirements that must be met for any entry consideration.
-
-### Gate 1: Composite Score ≥ 75
-```yaml
-threshold: 75.0
-description: "Unified composite score must exceed minimum threshold"
-short_circuit: true  # Fail fast if not met
+```mermaid
+graph TD
+    A[Signal Input] --> B[Freshness Gate]
+    B --> C[Fatigue Gate]  
+    C --> D[Late-Fill Gate]
+    D --> E[Microstructure Gate]
+    E --> F[Final Decision]
+    
+    B --> G[Freshness Metrics]
+    C --> H[Fatigue Metrics] 
+    D --> I[Timing Metrics]
+    E --> J[Market Quality Metrics]
+    
+    G --> F
+    H --> F
+    I --> F
+    J --> F
+    
+    F --> K{All Gates Pass?}
+    K -->|Yes| L[✅ Entry Allowed]
+    K -->|No| M[❌ Entry Blocked]
 ```
 
-**Rationale**: Ensures fundamental momentum and quality signals are strong before considering entry.
+## Gate Specifications
 
-### Gate 2: Microstructure Gates
-#### VADR ≥ 1.8×
-```yaml
-threshold: 1.8
-description: "Volume-Adjusted Daily Range must show sufficient activity"
-calculation: "24h volume / (high - low) normalized to daily range"
+### 1. Freshness Gate
+
+**Purpose**: Ensures signals are recent and price moves are within acceptable ranges.
+
+**Criteria**:
+- **Bars Age**: ≤ 2 bars from signal generation
+- **Price Move**: ≤ 1.2× ATR (1-hour) from signal price
+
+**Failure Reasons**:
+- `stale_bars`: Signal is > 2 bars old
+- `excessive_move`: Price moved > 1.2× ATR from signal
+
+**Metrics Provided**:
+- `bars_age`: Number of bars since signal
+- `price_change`: Absolute price change from signal
+- `atr_1h`: 1-hour Average True Range
+- `atr_ratio`: Price change / ATR ratio
+
+### 2. Fatigue Gate
+
+**Purpose**: Prevents entries into overextended moves that lack momentum acceleration.
+
+**Criteria**:
+- Block if **24h momentum > +12%** AND **RSI(4h) > 70** UNLESS **acceleration ≥ 2%**
+
+**Logic**:
+```
+if (momentum_24h > 12.0 AND rsi_4h > 70.0) then
+    if (acceleration < 2.0) then
+        BLOCK with "fatigue_block"
+    else
+        ALLOW with "fatigue_pass" (acceleration override)
+    end
+else
+    ALLOW with "fatigue_pass"
+end
 ```
 
-#### Spread ≤ 50 bps
-```yaml
-threshold: 50.0  # basis points
-description: "Bid-ask spread must be tight for efficient execution"
-measurement: "60s rolling average spread"
+**Failure Reasons**:
+- `fatigue_block`: High momentum + overbought RSI without sufficient acceleration
+
+**Metrics Provided**:
+- `momentum_24h`: 24-hour momentum percentage
+- `rsi_4h`: 4-hour RSI value
+- `acceleration`: 4-hour acceleration percentage
+
+### 3. Late-Fill Gate
+
+**Purpose**: Ensures execution timing is within acceptable limits after signal generation.
+
+**Criteria**:
+- **Execution Delay**: ≤ 30 seconds from signal time
+
+**Failure Reasons**:
+- `late_fill`: Execution > 30 seconds after signal
+
+**Metrics Provided**:
+- `execution_delay_seconds`: Time between signal and execution
+
+### 4. Microstructure Gate (Optional)
+
+**Purpose**: Validates market microstructure quality for safe execution.
+
+**Criteria** (all must pass):
+- **Spread**: ≤ 50 basis points
+- **Depth**: ≥ $100,000 within ±2% of mid-price
+- **VADR**: ≥ 1.75× (Volume-Adjusted Daily Range)
+
+**Failure Reasons**:
+- `spread_too_wide_XXXbps`: Spread exceeds 50 bps
+- `insufficient_depth_$XXX`: Depth below $100k requirement
+- `low_vadr_X.XXx`: VADR below 1.75× threshold
+
+**Metrics Provided**:
+- `spread_bps`: Current bid-ask spread in basis points
+- `depth_usd`: Available liquidity within ±2% range
+- `vadr`: Volume-Adjusted Daily Range multiplier
+
+**Note**: Microstructure gate only evaluates when market data is provided. When unavailable, this gate is skipped.
+
+## Boundary Conditions
+
+### Critical Thresholds
+
+| Gate | Metric | Pass Threshold | Boundary Examples |
+|------|--------|---------|---------|
+| Freshness | Bars Age | ≤ 2 | 2 bars = PASS, 3 bars = FAIL |
+| Freshness | ATR Ratio | ≤ 1.2 | 1.20× = PASS, 1.21× = FAIL |
+| Fatigue | Combined Rule | See logic above | 12.0% + RSI 70.0 + accel 2.0% = PASS |
+| Late-Fill | Delay | ≤ 30s | 30s = PASS, 31s = FAIL |
+| Microstructure | Spread | ≤ 50 bps | 50.0 bps = PASS, 50.1 bps = FAIL |
+| Microstructure | Depth | ≥ $100k | $100,000 = PASS, $99,999 = FAIL |
+| Microstructure | VADR | ≥ 1.75× | 1.75× = PASS, 1.74× = FAIL |
+
+## CLI Usage
+
+### Basic Gate Explanation
+
+```bash
+# Explain gates for a symbol with default parameters
+cryptorun gates explain --symbol BTCUSD
+
+# Explain with specific timing
+cryptorun gates explain --symbol ETHUSD --at 2025-09-07T14:30:00Z
+
+# Explain with custom gate parameters
+cryptorun gates explain --symbol SOLUSD \
+  --bars-age 2 \
+  --price-change 150.0 \
+  --atr-1h 120.0 \
+  --momentum-24h 15.0 \
+  --rsi-4h 75.0 \
+  --acceleration 1.8
 ```
 
-#### Depth ≥ $100k within ±2%
-```yaml
-threshold: 100000.0  # USD
-range: 2.0  # percent
-description: "Sufficient liquidity for position entry/exit"
-measurement: "Combined bid/ask depth within price range"
+### Advanced Examples
+
+```bash
+# Test fatigue override scenario
+cryptorun gates explain --symbol ADAUSD \
+  --momentum-24h 13.0 \
+  --rsi-4h 72.0 \
+  --acceleration 2.5
+
+# Test microstructure requirements
+cryptorun gates explain --symbol DOGEUSD \
+  --spread-bps 45.0 \
+  --depth-usd 150000 \
+  --vadr 2.1
+
+# Test boundary conditions
+cryptorun gates explain --symbol MATICUSD \
+  --bars-age 2 \
+  --price-change 120.0 \
+  --atr-1h 100.0
+
+# JSON output for automation
+cryptorun gates explain --symbol LINKUSD --json
 ```
 
-**Critical**: Must use **exchange-native** L1/L2 data only. Aggregators banned for microstructure.
+## Example CLI Output
 
-**Implementation**: See [docs/MICROSTRUCTURE.md](./MICROSTRUCTURE.md) for complete L1/L2 collector architecture with health monitoring.
+### Passing All Gates
 
-### Gate 3: Funding Divergence Present
-```yaml
-threshold: 2.0  # standard deviations
-requirement: "≤ 0 with price holding"
-description: "Cross-venue funding rate divergence signals opportunity"
-calculation: "Z-score of venue-median funding vs 7-day rolling stats"
+```
+✅ BTCUSD: ALL GATES PASSED
+
+📊 Gate Details:
+   ✅ freshness: fresh
+      • Price move: 0.80x ATR (limit: 1.2x)
+      • Bars age: 1 (limit: 2)
+   ✅ fatigue: fatigue_pass
+      • 24h momentum: 8.5% (fatigue threshold: >12%)
+      • RSI 4h: 65.0 (overbought threshold: >70)
+      • Acceleration: 1.2% (override threshold: ≥2%)
+   ✅ late_fill: timely_fill
+      • Execution delay: 15.0s (limit: 30s)
+   ✅ microstructure: microstructure_pass
+      • Spread: 35.0 bps (limit: 50 bps)
+      • Depth: $125000 (limit: $100k)
+      • VADR: 2.15x (limit: 1.75x)
+
+🕐 Evaluation time: 2025-09-07 14:30:15
 ```
 
-**Logic**: Funding divergence ≤ 0 indicates negative/neutral funding rates while price holds, suggesting potential supply squeeze.
+### Blocked by Fatigue
 
-### Optional Gates (Configurable)
-#### Open Interest Residual ≥ $1M
-```yaml
-threshold: 1000000.0  # USD
-optional: true
-description: "Independent position building beyond price-driven OI"
-calculation: "1h ΔOI - β*ΔPrice residual from 7d regression"
+```
+❌ ETHUSD: ENTRY BLOCKED
+   Overall: blocked_by_fatigue: fatigue_block
+
+📊 Gate Details:
+   ✅ freshness: fresh
+      • Price move: 0.95x ATR (limit: 1.2x)
+      • Bars age: 1 (limit: 2)
+   ❌ fatigue: fatigue_block
+      • 24h momentum: 15.2% (fatigue threshold: >12%)
+      • RSI 4h: 72.0 (overbought threshold: >70)
+      • Acceleration: 1.8% (override threshold: ≥2%)
+   ✅ late_fill: timely_fill
+      • Execution delay: 12.0s (limit: 30s)
+
+💡 To simulate passing gates, try:
+  Override fatigue with stronger acceleration: --acceleration 2.5
+
+🕐 Evaluation time: 2025-09-07 14:30:15
 ```
 
-#### ETF Flow Tint ≥ 0.3
-```yaml
-threshold: 0.3
-optional: true  
-description: "Positive institutional flows via ETF creation/redemption"
-calculation: "Daily net flows normalized by 7d average daily volume"
+## Integration Points
+
+### Application Integration
+
+```go
+import "github.com/sawpanic/cryptorun/internal/domain/gates"
+
+// Evaluate all gates for a trading signal
+inputs := gates.EvaluateAllGatesInputs{
+    Symbol:        "BTCUSD",
+    Timestamp:     time.Now(),
+    BarsAge:       1,
+    PriceChange:   120.0,
+    ATR1h:         150.0,
+    Momentum24h:   8.5,
+    RSI4h:         65.0,
+    Acceleration:  1.2,
+    SignalTime:    signalTime,
+    ExecutionTime: time.Now(),
+    // Optional microstructure data
+    Spread:        &spreadBps,
+    Depth:         &depthUSD,
+    VADR:          &vadrValue,
+}
+
+result, err := gates.EvaluateAllGates(ctx, inputs)
+if err != nil {
+    return fmt.Errorf("gate evaluation failed: %w", err)
+}
+
+if !result.Passed {
+    log.Warn().
+        Str("symbol", result.Symbol).
+        Str("reason", result.OverallReason).
+        Msg("Entry blocked by gates")
+    return nil // Skip this signal
+}
+
+// Proceed with entry logic
 ```
 
-## Guards (Phase 2)
+### Menu System Integration
 
-Guards prevent poor timing and overextended entries even when hard gates pass.
+The gates system integrates with the interactive menu for real-time testing and debugging:
 
-### Freshness Guard: Signal Age ≤ 2 Bars
-```yaml
-threshold: 2  # bars
-description: "Signal must be recent to avoid stale opportunities"
-calculation: "Bars elapsed since trigger signal generation"
+1. **Menu Option**: "Test Entry Gates"
+2. **Interactive Input**: Prompts for symbol and parameters
+3. **Real-time Results**: Shows gate evaluation with explanations
+4. **What-if Analysis**: Allows parameter adjustment and re-testing
+
+## Error Handling
+
+### Common Errors
+
+- **Invalid Symbol**: Symbol not found in universe
+- **Missing Required Data**: ATR, momentum, or RSI unavailable
+- **Timestamp Parse Errors**: Invalid RFC3339 format
+- **Negative Values**: Invalid negative inputs for positive metrics
+
+### Graceful Degradation
+
+- **Missing Microstructure Data**: Gate skipped, does not fail overall evaluation
+- **Optional Parameters**: Default values used when not provided
+- **Connectivity Issues**: Falls back to cached data when available
+
+## Performance Characteristics
+
+- **Latency**: < 1ms for gate evaluation (excluding data fetching)
+- **Memory Usage**: Minimal, stateless evaluation
+- **Concurrency**: Thread-safe, supports parallel evaluation
+- **Caching**: No internal caching, relies on upstream data caches
+
+## Testing and Validation
+
+### Test Coverage
+
+The gates system includes comprehensive test coverage for:
+
+- **Boundary Conditions**: Exact threshold testing (2 vs 3 bars, 1.2 vs 1.21 ATR)
+- **Combined Scenarios**: Multiple gate failures and interactions
+- **Edge Cases**: Missing data, extreme values, timing edge cases
+- **Output Format Validation**: CLI output consistency and JSON schema
+
+### Continuous Validation
+
+- **Conformance Tests**: Ensure gate logic matches specification
+- **Performance Tests**: Validate sub-millisecond evaluation times
+- **Integration Tests**: End-to-end testing with real market data
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Gates Always Failing**
+   - Check parameter ranges against boundary conditions
+   - Verify timestamp formats (use RFC3339)
+   - Ensure ATR values are reasonable for asset price levels
+
+2. **Microstructure Gate Missing**
+   - Confirm spread, depth, and VADR parameters are provided (≥ 0)
+   - Use -1 values to explicitly skip microstructure evaluation
+
+3. **CLI Parameter Confusion**
+   - Use `--help` flag for parameter descriptions
+   - Check example commands in this documentation
+   - Validate parameter types (float64 vs int)
+
+### Debug Tips
+
+```bash
+# Test individual gates by setting others to pass
+cryptorun gates explain --symbol BTCUSD --bars-age 1 --momentum-24h 5.0 --rsi-4h 50.0
+
+# Use JSON output for programmatic analysis
+cryptorun gates explain --symbol ETHUSD --json | jq '.reasons[] | select(.passed == false)'
+
+# Test exact boundary conditions
+cryptorun gates explain --symbol SOLUSD --bars-age 2 --price-change 120.0 --atr-1h 100.0
 ```
 
-**Rationale**: Prevents acting on outdated signals in fast-moving markets.
+## Future Enhancements
 
-### Fatigue Guard: Overextension Check
-```yaml
-conditions:
-  price_24h: "> 12%"
-  rsi_4h: "> 70"
-  logic: "AND (both conditions required for fatigue)"
-exceptions:
-  pullback_detected: "Override fatigue if recent pullback present"
-  acceleration_renewed: "Override fatigue if momentum re-accelerating"
-```
+### Planned Features
 
-**Logic**: 
-- IF `price_24h > 12% AND rsi_4h > 70` → Fatigue detected
-- UNLESS `pullback OR acceleration` → Allow entry despite fatigue
+1. **Historical Gate Analysis**: Batch evaluation against historical signals
+2. **Gate Performance Metrics**: Success rates and correlations with returns
+3. **Dynamic Thresholds**: Regime-aware gate parameter adjustment
+4. **Gate Ranking**: Priority ordering for multi-gate failures
 
-### Proximity Guard: Price Distance ≤ 1.2× ATR(1h)
-```yaml
-threshold: 1.2  # ATR multiple
-description: "Current price must be near original trigger price"
-calculation: "|current_price - trigger_price| ≤ 1.2 × ATR_1h"
-```
+### Configuration Options
 
-**Rationale**: Prevents chasing price that has moved significantly from signal.
+Future versions will support:
+- Configurable gate thresholds per regime
+- Custom gate combinations and weights
+- Asset-class specific parameters
+- A/B testing framework for threshold optimization
 
-### Late Fill Guard: Execution Timing < 30s
-```yaml
-threshold: 30  # seconds
-description: "Fill must occur quickly after trigger bar close"
-calculation: "fill_time - trigger_bar_close_time < 30s"
-```
+---
 
-**Rationale**: Ensures fills are based on current market conditions, not stale triggers.
-
-## Gate Evaluation Process
-
-### Evaluation Order
-1. **Hard Gates** (short-circuit on failure)
-   - Composite Score → VADR → Spread → Depth → Funding Divergence
-   - Optional: OI Residual → ETF Flow Tint
-2. **Guards** (all evaluated regardless of individual failures)  
-   - Freshness → Fatigue → Proximity → Late Fill
-
-### Short-Circuit Logic
-- Hard gates fail fast: if any mandatory gate fails, stop evaluation
-- Guards are always fully evaluated for complete reporting
-- Final decision: `entry_allowed = all_hard_gates_pass AND all_guards_pass`
-
-## Reason Codes
-
-### Hard Gate Failures
-- `score_insufficient`: Composite score below 75.0 threshold
-- `vadr_insufficient`: VADR below 1.8× threshold  
-- `spread_too_wide`: Spread exceeds 50 bps limit
-- `depth_insufficient`: Liquidity below $100k within ±2%
-- `funding_divergence_absent`: No significant funding divergence present
-- `oi_residual_low`: OI residual below $1M threshold (optional)
-- `etf_flows_negative`: ETF flows below 0.3 tint threshold (optional)
-
-### Guard Failures
-- `signal_stale`: Signal older than 2 bars
-- `fatigue_detected`: 24h >12% + RSI >70 without pullback/acceleration
-- `price_moved_away`: Current price >1.2× ATR from trigger
-- `late_fill`: Fill occurred >30s after trigger bar close
-
-## Configuration Examples
-
-### Production Configuration
-```yaml
-# Hard gates
-min_composite_score: 75.0
-min_vadr: 1.8
-max_spread_bps: 50.0
-min_depth_usd: 100000.0
-depth_range_pct: 2.0
-
-# Funding divergence
-min_funding_z_score: 2.0
-require_funding_divergence: true
-
-# Optional gates
-enable_oi_gate: true
-min_oi_residual: 1000000.0
-enable_etf_gate: true
-min_etf_flow_tint: 0.3
-
-# Guards
-max_bars_age: 2
-max_seconds_since_trigger: 30
-fatigue_price_24h_threshold: 12.0
-fatigue_rsi_4h_threshold: 70.0
-proximity_atr_multiple: 1.2
-```
-
-### High-Volatility Regime Adjustments
-```yaml
-# Tighter thresholds for volatile markets
-proximity_atr_multiple: 1.0  # Reduced from 1.2
-max_seconds_since_trigger: 20  # Reduced from 30
-fatigue_price_24h_threshold: 10.0  # Reduced from 12.0
-```
-
-# Entry & Exit Gate Set (6–48h Horizon)
-
-## Updated for PROMPT_ID=DOCS.FINISHER.UNIFIED.PIPELINE.V1
-
-**Last Updated:** 2025-09-07  
-**Version:** v3.3 Unified Pipeline  
-**Status:** Implemented
-
-**Entry (all must pass)**
-- Composite ≥ 75.
-- Movement threshold by regime (≥2.5% bull / 3.0% chop / 4.0% bear).
-- Volume surge: VADR ≥ 1.75× (freeze <20 bars).
-- Liquidity: ≥$500k 24h; microstructure gates (spread/depth) pass.
-- Trend quality: ADX > 25 OR Hurst > 0.55.
-- Freshness: ≤2 bars from trigger; late-fill <30s.
-
-**Exit (first trigger wins)**
-1) −1.5× ATR hard stop
-2) Venue health degrade → tighten +0.3× ATR
-3) Time limit: 48h max
-4) Acceleration reversal (4h d²<0)
-5) Momentum fade (1h & 4h negative)
-6) Trailing after 12h: ATR×1.8 unless accelerating
-7) Profit targets: +8% / +15% / +25%
-
-**Attribution**
-- Each decision logs gate pass/fail reasons and the active regime.
-
-## Entry Gate Set (All Must Pass)
-
-### 1. Composite Score ≥ 75
-- **Requirement**: Unified composite score must meet minimum threshold
-- **Purpose**: Ensures fundamental momentum and quality signals are strong
-- **Attribution**: "Score 82.5 ≥ 75.0 ✓" or "Score 68.2 below 75.0 threshold"
-
-### 2. Movement Threshold by Regime  
-- **Trending Bull**: ≥2.5% price movement required
-- **Choppy**: ≥3.0% price movement required
-- **High Vol**: ≥4.0% price movement required (tightened gates)
-- **Purpose**: Filters out insufficient price momentum for current regime
-- **Attribution**: "Movement 3.2% ≥ 2.5% (TRENDING_BULL)" or "Movement 1.8% below 3.0% threshold (CHOPPY)"
-
-### 3. Volume Surge: VADR ≥ 1.75× (freeze <20 bars)
-- **Requirement**: Volume-Adjusted Daily Range ≥1.75× average
-- **Bar Validation**: ≥20 bars required (freeze if <20 bars)
-- **Purpose**: Confirms volume surge behind price movement
-- **Attribution**: "VADR 2.15× ≥ 1.75×" or "VADR 1.42× below threshold 1.75×" or "Freeze: only 15 bars < 20 minimum"
-
-### 4. Liquidity: ≥$500k 24h; microstructure gates (spread/depth) pass
-- **Daily Volume**: Minimum $500,000 daily trading volume
-- **Spread Gate**: Bid-ask spread <50bps
-- **Depth Gate**: ≥$100k depth within ±2%
-- **Purpose**: Ensures sufficient liquidity for entry/exit with tight execution
-- **Attribution**: "Volume $1.2M ≥ $500k ✓, Spread 28bps < 50 ✓, Depth $180k ≥ $100k ✓"
-
-### 5. Trend Quality: ADX > 25 OR Hurst > 0.55
-- **Requirement**: Either ADX >25 OR Hurst exponent >0.55
-- **Purpose**: Validates trend strength or persistence
-- **Attribution**: "ADX 32 > 25 ✓" or "ADX 18 ≤ 25, Hurst 0.62 > 0.55 ✓" or "ADX 19 ≤ 25 AND Hurst 0.48 ≤ 0.55 ❌"
-
-### 6. Freshness: ≤2 bars from trigger; late-fill <30s
-- **Signal Age**: ≤2 bars from original trigger
-- **Fill Timing**: Execution within 30 seconds of signal
-- **Purpose**: Ensures signals are recent and fills are timely
-- **Attribution**: "Fresh: 1 bar ≤ 2, Fill: 18s < 30s ✓" or "Stale: 3 bars > 2 limit" or "Late fill: 45s > 30s"
-
-## Exit Hierarchy (First Trigger Wins)
-
-The exit system evaluates conditions in strict precedence order. **First trigger wins** - no combination logic.
-
-### 1) −1.5× ATR hard stop
-- **Calculation**: Stop = Entry Price - (1.5 × ATR1h)
-- **Purpose**: Absolute loss protection (highest precedence)
-- **Attribution**: "Hard stop: $43,250 ≤ $43,180 (-1.5×ATR)"
-
-### 2) Venue health degrade → tighten +0.3× ATR
-- **Triggers**: P99 latency >2000ms OR error rate >3% OR reject rate >5%
-- **Calculation**: Tightened Stop = Entry Price - (0.3 × ATR1h)
-- **Purpose**: Protect against venue degradation
-- **Attribution**: "Venue degraded, tightened stop: $43,890 ≤ $43,850 (+0.3×ATR tightener)"
-
-### 3) Time limit: 48h max
-- **Requirement**: Position held ≥48 hours
-- **Purpose**: Prevent indefinite holding
-- **Attribution**: "Time limit: 48.2 hours ≥ 48.0 hour max"
-
-### 4) Acceleration reversal (4h d²<0)
-- **Requirement**: 4-hour momentum acceleration turns negative
-- **Purpose**: Exit on momentum deceleration
-- **Attribution**: "Acceleration reversal: 4h d² = -0.015 < 0"
-
-### 5) Momentum fade (1h & 4h negative)
-- **Requirement**: Both 1h AND 4h momentum become negative
-- **Purpose**: Exit when short and medium-term momentum fade
-- **Attribution**: "Momentum fade: 1h=-0.12<0 & 4h=-0.08<0"
-
-### 6) Trailing after 12h: ATR×1.8 unless accelerating
-- **Requirement**: Position held ≥12 hours AND not accelerating
-- **Calculation**: Stop = High Water Mark - (1.8 × ATR1h)
-- **Purpose**: Protect profits with trailing mechanism
-- **Attribution**: "Trailing stop: $44,120 ≤ $43,980 (HWM $45,200 - 1.8×ATR)"
-
-### 7) Profit targets: +8% / +15% / +25%
-- **Target 1**: +8% profit from entry
-- **Target 2**: +15% profit from entry
-- **Target 3**: +25% profit from entry
-- **Purpose**: Systematic profit taking (lowest precedence)
-- **Attribution**: "Profit target 2: $45,230 ≥ $45,175 (+15%)"
-
-## Attribution System
-
-**Each decision logs gate pass/fail reasons and the active regime.**
-
-### Gate Pass/Fail Logging
-- **Entry Gates**: Each gate provides specific threshold comparisons
-- **Exit Triggers**: Precise calculation showing which condition fired
-- **Regime Context**: Active regime included in all attributions
-- **Timing Data**: Evaluation timestamps and processing time
-
-### Example Attribution Outputs
-
-**Entry Gate Success**:
-```
-✅ Entry Approved (TRENDING_BULL regime)
-- Score: 82.5 ≥ 75.0 ✓
-- Movement: 3.2% ≥ 2.5% (TRENDING_BULL) ✓  
-- Volume: VADR 2.15× ≥ 1.75× ✓
-- Liquidity: $1.2M ≥ $500k ✓, Spread 28bps < 50 ✓, Depth $180k ≥ $100k ✓
-- Trend: ADX 32 > 25 ✓
-- Fresh: 1 bar ≤ 2, Fill: 18s < 30s ✓
-```
-
-**Exit Trigger Example**:
-```
-🚪 Exit: Hard Stop (precedence #1)
-- Price $43,250 ≤ $43,180 (-1.5×ATR)
-- Entry: $45,000, ATR: $1,213
-- Duration: 3.2h, PnL: -3.9%
-```
-
-## Implementation Status
-
-✅ **Entry Gates Implemented**: All gates from PROMPT_ID requirements  
-✅ **Exit Hierarchy Implemented**: First-trigger-wins logic with ATR-based calculations  
-✅ **Regime Integration**: Movement thresholds adapt to detected regime  
-✅ **Attribution Complete**: Detailed pass/fail explanations for transparency  
-✅ **CLI Integration**: Gate status visible in momentum signals menu
-
-This gates system ensures only the highest-quality opportunities with proper risk management controls pass through to execution while providing complete transparency into the decision process.
+*This documentation is automatically validated by the CryptoRun documentation UX guard to ensure consistency and completeness.*

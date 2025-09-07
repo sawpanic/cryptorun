@@ -182,12 +182,12 @@ func TestEvaluateAllGates_BoundaryConditions_Fatigue(t *testing.T) {
 			expectedMsg:  "fatigue_pass",
 		},
 		{
-			name:         "exactly_12_momentum_rsi_70_fail",
+			name:         "exactly_12_momentum_rsi_70_pass", // Both are at threshold, not over
 			momentum24h:  12.0,
 			rsi4h:        70.0,
 			acceleration: 0.0,
-			shouldPass:   false,
-			expectedMsg:  "fatigue_block",
+			shouldPass:   true,
+			expectedMsg:  "fatigue_pass",
 		},
 		{
 			name:         "exactly_12_momentum_rsi_70_accel_2.5_pass",
@@ -196,6 +196,14 @@ func TestEvaluateAllGates_BoundaryConditions_Fatigue(t *testing.T) {
 			acceleration: 2.5,
 			shouldPass:   true,
 			expectedMsg:  "fatigue_pass",
+		},
+		{
+			name:         "12.01_momentum_rsi_70.01_fail", // Just over thresholds
+			momentum24h:  12.01,
+			rsi4h:        70.01,
+			acceleration: 0.0,
+			shouldPass:   false,
+			expectedMsg:  "fatigue_block",
 		},
 	}
 	

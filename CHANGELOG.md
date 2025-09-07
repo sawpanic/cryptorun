@@ -6,6 +6,14 @@ Real-time implementation progress tracking with comprehensive change documentati
 
 ## Unreleased
 
+### feat(gates): integrate EvaluateAllGates orchestration + CLI explain; add boundary tests
+- Implement unified `EvaluateAllGates()` in `internal/domain/gates/evaluate.go` with comprehensive reason codes and metrics
+- Add CLI command `cryptorun gates explain --symbol SYMBOL` for deterministic gate evaluation with human-readable explanations  
+- Integrate Freshness, Fatigue, Late-Fill, and optional Microstructure gates in sequence with transparency (no short-circuit for reasons)
+- Add boundary condition tests covering exact thresholds (2 vs 3 bars, 1.19x vs 1.21x ATR, 29s vs 31s timing, fatigue override scenarios)
+- Update GATES.md with complete CLI usage examples, gate specifications, troubleshooting, and integration points
+- CLI supports JSON output, what-if parameter testing, and example scenarios for debugging gate failures
+
 ### fix(ci): align deploy triggers to reset/main-clean; add manual dispatch; adjust permissions/concurrency; docs
 - Align workflow branch triggers from `main` to `reset/main-clean` for progress.yml and ci-guard.yml
 - Add `workflow_dispatch: {}` to progress.yml, ci-guard.yml, and cr-nightly-analyst.yml for manual runs
