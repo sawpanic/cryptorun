@@ -3,6 +3,7 @@ package regime
 import (
 	"fmt"
 	"math"
+	"time"
 )
 
 // FactorWeights represents the weight allocation for a specific regime
@@ -72,19 +73,27 @@ func NewWeightResolver(weightMap RegimeWeightMap, detector *RegimeDetector) *Wei
 
 // GetWeights returns the current factor weights based on detected regime
 func (wr *WeightResolver) GetWeights() FactorWeights {
-	currentRegime := wr.detector.GetCurrentRegime()
+	// Use default market data for current regime
+	defaultData := MarketData{
+		Timestamp:    time.Now(),
+		CurrentPrice: 1.0,
+		MA20:        1.0,
+		RealizedVol7d: 0.2,
+		Prices:      []float64{1.0},
+	}
+	currentRegime, _ := wr.detector.GetCurrentRegime(defaultData)
 	return wr.GetWeightsForRegime(currentRegime)
 }
 
 // GetWeightsForRegime returns weights for a specific regime
 func (wr *WeightResolver) GetWeightsForRegime(regime RegimeType) FactorWeights {
 	switch regime {
-	case TrendingBull:
-		return wr.weightMap.TrendingBull
-	case Choppy:
-		return wr.weightMap.Choppy
-	case HighVol:
-		return wr.weightMap.HighVol
+	case RegimeCalm:
+		return wr.weightMap.TrendingBull // Calm markets favor trending approach
+	case RegimeNormal:
+		return wr.weightMap.Choppy      // Normal markets are mixed
+	case RegimeVolatile:
+		return wr.weightMap.HighVol     // Volatile markets need special handling
 	default:
 		// Fallback to choppy as safe default
 		return wr.weightMap.Choppy

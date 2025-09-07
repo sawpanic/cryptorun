@@ -380,3 +380,51 @@ func FormatRegimeReport(detection *RegimeDetection) string {
 	
 	return report
 }
+
+// GetLastUpdate returns when the detector last ran
+func (rd *RegimeDetector) GetLastUpdate() time.Time {
+	if rd.lastDetection == nil {
+		return time.Time{}
+	}
+	return rd.lastDetection.DetectionTime
+}
+
+// GetDetectorStatus returns the current status of the detector
+func (rd *RegimeDetector) GetDetectorStatus() string {
+	if rd.lastDetection == nil {
+		return "Not initialized"
+	}
+	
+	now := time.Now()
+	if now.Before(rd.lastDetection.ValidUntil) {
+		return "Active (cached result)"
+	}
+	return "Stale (needs refresh)"
+}
+
+// GetRegimeHistory returns the recent regime detection history
+func (rd *RegimeDetector) GetRegimeHistory(limit int) []*RegimeDetection {
+	// For now, just return the current detection
+	// In a full implementation, this would maintain a history buffer
+	if rd.lastDetection == nil {
+		return []*RegimeDetection{}
+	}
+	return []*RegimeDetection{rd.lastDetection}
+}
+
+// ValidateInputs checks if the market data is valid for regime detection
+func (rd *RegimeDetector) ValidateInputs(data MarketData) error {
+	if len(data.Prices) == 0 {
+		return fmt.Errorf("no price data provided")
+	}
+	if data.CurrentPrice <= 0 {
+		return fmt.Errorf("invalid current price: %f", data.CurrentPrice)
+	}
+	if data.MA20 <= 0 {
+		return fmt.Errorf("invalid MA20: %f", data.MA20)
+	}
+	if data.RealizedVol7d < 0 {
+		return fmt.Errorf("invalid realized volatility: %f", data.RealizedVol7d)
+	}
+	return nil
+}

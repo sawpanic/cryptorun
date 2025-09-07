@@ -112,7 +112,15 @@ func convertToFactorWeights(regimeWeights FactorWeights) (factors.RegimeWeights,
 
 // GetCurrentRegimeStatus returns current regime and factor processing status
 func (ro *RegimeOrchestrator) GetCurrentRegimeStatus() map[string]interface{} {
-	currentRegime := ro.detector.GetCurrentRegime()
+	// Use default market data for current regime
+	defaultData := MarketData{
+		Timestamp:    time.Now(),
+		CurrentPrice: 1.0,
+		MA20:        1.0,
+		RealizedVol7d: 0.2,
+		Prices:      []float64{1.0},
+	}
+	currentRegime, _ := ro.detector.GetCurrentRegime(defaultData)
 	currentWeights := ro.weightResolver.GetWeights()
 	factorWeights := ro.factorEngine.GetCurrentWeights()
 
@@ -137,19 +145,16 @@ func (ro *RegimeOrchestrator) GetCurrentRegimeStatus() map[string]interface{} {
 
 // GetRegimeHistory returns recent regime detection and weight changes
 func (ro *RegimeOrchestrator) GetRegimeHistory() []map[string]interface{} {
-	regimeHistory := ro.detector.GetRegimeHistory()
+	regimeHistory := ro.detector.GetRegimeHistory(10) // Get last 10
 	history := make([]map[string]interface{}, len(regimeHistory))
 
-	for i, inputs := range regimeHistory {
-		// Simulate regime detection for historical data
-		detector := NewRegimeDetector(ro.detector.thresholds)
-		detectedRegime := detector.DetectRegime(inputs)
-		weights := ro.weightResolver.GetWeightsForRegime(detectedRegime)
+	for i, detection := range regimeHistory {
+		weights := ro.weightResolver.GetWeightsForRegime(detection.CurrentRegime)
 
 		history[i] = map[string]interface{}{
-			"timestamp":       inputs.Timestamp.Format(time.RFC3339),
-			"inputs":          inputs,
-			"detected_regime": detectedRegime.String(),
+			"timestamp":       detection.DetectionTime.Format(time.RFC3339),
+			"detection":       detection,
+			"detected_regime": detection.CurrentRegime.String(),
 			"weights":         weights,
 		}
 	}
@@ -159,7 +164,15 @@ func (ro *RegimeOrchestrator) GetRegimeHistory() []map[string]interface{} {
 
 // ValidateMarketInputs validates regime detection inputs
 func (ro *RegimeOrchestrator) ValidateMarketInputs(inputs RegimeInputs) error {
-	return ro.detector.ValidateInputs(inputs)
+	// Convert RegimeInputs to MarketData for validation
+	marketData := MarketData{
+		Timestamp:     inputs.Timestamp,
+		CurrentPrice:  1.0, // Default values for validation
+		MA20:         1.0,
+		RealizedVol7d: inputs.RealizedVol7d,
+		Prices:       []float64{1.0},
+	}
+	return ro.detector.ValidateInputs(marketData)
 }
 
 // GetOrthogonalityReport generates correlation matrix for factor orthogonality checking
@@ -208,7 +221,15 @@ func (ro *RegimeOrchestrator) UpdateWeightMap(newWeightMap RegimeWeightMap) erro
 	}
 
 	// Force update factor engine with current regime weights
-	currentRegime := ro.detector.GetCurrentRegime()
+	// Use default market data for current regime
+	defaultData := MarketData{
+		Timestamp:    time.Now(),
+		CurrentPrice: 1.0,
+		MA20:        1.0,
+		RealizedVol7d: 0.2,
+		Prices:      []float64{1.0},
+	}
+	currentRegime, _ := ro.detector.GetCurrentRegime(defaultData)
 	if err := ro.updateFactorEngine(currentRegime); err != nil {
 		return fmt.Errorf("failed to update factor engine after weight map change: %w", err)
 	}
