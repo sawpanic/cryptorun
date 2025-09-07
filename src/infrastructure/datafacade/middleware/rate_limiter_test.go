@@ -2,6 +2,8 @@ package middleware
 
 import (
 	"context"
+	"fmt"
+	"sync"
 	"testing"
 	"time"
 
@@ -315,6 +317,326 @@ func TestBackoffCalculator(t *testing.T) {
 		delay := bc.NextDelay()
 		if delay != time.Second {
 			t.Errorf("Delay after reset should be initial delay %v, got %v", time.Second, delay)
+		}
+	})
+}
+
+// Test weighted rate limiting with bursts and throttling
+func TestWeightedRateLimiting_BurstSimulation(t *testing.T) {
+	rl := NewTokenBucketRateLimiter()
+	
+	// Configure realistic Binance-like limits
+	limits := &interfaces.RateLimits{
+		RequestsPerSecond: 10,
+		BurstAllowance:    20,
+		WeightLimits: map[string]int{
+			"orderbook":      1,
+			"trades":         1,
+			"klines":         1,
+			"account_info":   10,
+			"all_tickers":    40,
+		},
+		DailyLimit:   intPtr(100000),
+		MonthlyLimit: intPtr(3000000),
+	}
+	
+	err := rl.UpdateLimits(context.Background(), "binance", limits)
+	if err != nil {
+		t.Fatalf("UpdateLimits failed: %v", err)
+	}
+	
+	ctx := context.Background()
+	
+	t.Run("simulate burst requests", func(t *testing.T) {
+		var requestsBlocked int
+		var requestsAllowed int
+		
+		// Simulate a burst of 50 requests
+		for i := 0; i < 50; i++ {
+			err := rl.Allow(ctx, "binance", "orderbook")
+			if err != nil {
+				requestsBlocked++
+			} else {
+				requestsAllowed++
+			}
+		}
+		
+		if requestsAllowed == 0 {
+			t.Error("At least some requests should be allowed during burst")
+		}
+		
+		if requestsBlocked == 0 {
+			t.Error("Some requests should be blocked after burst capacity")
+		}
+		
+		t.Logf("Burst test: %d allowed, %d blocked", requestsAllowed, requestsBlocked)
+	})
+	
+	t.Run("verify weight accumulation", func(t *testing.T) {
+		// Reset with fresh limiter for clean test
+		rlWeight := NewTokenBucketRateLimiter()
+		rlWeight.UpdateLimits(ctx, "binance_weight", limits)
+		
+		// Should allow lightweight requests
+		for i := 0; i < 10; i++ {
+			err := rlWeight.Allow(ctx, "binance_weight", "orderbook")
+			if err != nil {
+				t.Errorf("Lightweight request %d should be allowed: %v", i, err)
+			}
+		}
+		
+		// Heavy request should eventually be throttled
+		var heavyBlocked bool
+		for i := 0; i < 5; i++ {
+			err := rlWeight.Allow(ctx, "binance_weight", "all_tickers")
+			if err != nil {
+				heavyBlocked = true
+				break
+			}
+		}
+		
+		if !heavyBlocked {
+			t.Error("Heavy requests should eventually be throttled")
+		}
+	})
+}
+
+// Test sliding window counters for budget tracking
+func TestSlidingWindowBudgetTracking(t *testing.T) {
+	bt := NewBudgetTracker()
+	
+	// Set tight daily limits for testing
+	dailyLimit := 5
+	monthlyLimit := 100
+	bt.UpdateLimits("test_venue", &dailyLimit, &monthlyLimit)
+	
+	t.Run("daily budget enforcement", func(t *testing.T) {
+		// Use up the daily budget
+		for i := 0; i < dailyLimit; i++ {
+			err := bt.CheckBudget("test_venue")
+			if err != nil {
+				t.Errorf("Request %d should be within daily budget: %v", i, err)
+			}
+			bt.IncrementUsage("test_venue")
+		}
+		
+		// Next request should be rejected
+		err := bt.CheckBudget("test_venue")
+		if err == nil {
+			t.Error("Request should be rejected due to daily budget exhaustion")
+		}
+	})
+	
+	t.Run("budget window reset", func(t *testing.T) {
+		// Create counter with very short window
+		counter := NewUsageCounter(100 * time.Millisecond)
+		
+		// Fill the counter
+		for i := 0; i < 3; i++ {
+			counter.Increment()
+		}
+		
+		if counter.GetCount() != 3 {
+			t.Errorf("Counter should have 3, got %d", counter.GetCount())
+		}
+		
+		// Wait for window to expire
+		time.Sleep(150 * time.Millisecond)
+		
+		if counter.GetCount() != 0 {
+			t.Errorf("Counter should reset to 0, got %d", counter.GetCount())
+		}
+		
+		// Should accept new increments
+		counter.Increment()
+		if counter.GetCount() != 1 {
+			t.Errorf("Counter should accept new increments after reset, got %d", counter.GetCount())
+		}
+	})
+}
+
+// Test provider-specific header processing
+func TestProviderSpecificHeaders(t *testing.T) {
+	rl := NewTokenBucketRateLimiter()
+	
+	limits := &interfaces.RateLimits{
+		RequestsPerSecond: 10,
+		BurstAllowance:    5,
+		WeightLimits:      make(map[string]int),
+		DailyLimit:        intPtr(1000),
+		MonthlyLimit:      intPtr(30000),
+	}
+	
+	ctx := context.Background()
+	
+	vendors := []string{"binance", "okx", "coinbase", "kraken"}
+	for _, venue := range vendors {
+		rl.UpdateLimits(ctx, venue, limits)
+	}
+	
+	t.Run("binance weight headers", func(t *testing.T) {
+		headers := map[string]string{
+			"X-MBX-USED-WEIGHT": "800",
+			"X-MBX-ORDER-COUNT": "50",
+		}
+		
+		err := rl.ProcessRateLimitHeaders("binance", headers)
+		if err != nil {
+			t.Errorf("Processing Binance headers failed: %v", err)
+		}
+	})
+	
+	t.Run("okx rate limit headers", func(t *testing.T) {
+		headers := map[string]string{
+			"ratelimit-remaining": "0",
+			"ratelimit-reset":     fmt.Sprintf("%d", time.Now().Add(30*time.Second).UnixMilli()),
+		}
+		
+		err := rl.ProcessRateLimitHeaders("okx", headers)
+		if err != nil {
+			t.Errorf("Processing OKX headers failed: %v", err)
+		}
+		
+		// Request should be blocked due to rate limit
+		err = rl.Allow(ctx, "okx", "test")
+		if err == nil {
+			t.Error("Request should be blocked when ratelimit-remaining is 0")
+		}
+	})
+	
+	t.Run("generic retry-after header", func(t *testing.T) {
+		headers := map[string]string{
+			"Retry-After": "2", // 2 seconds
+		}
+		
+		err := rl.ProcessRateLimitHeaders("coinbase", headers)
+		if err != nil {
+			t.Errorf("Processing Coinbase headers failed: %v", err)
+		}
+		
+		// Request should be blocked immediately
+		err = rl.Allow(ctx, "coinbase", "test")
+		if err == nil {
+			t.Error("Request should be blocked due to Retry-After header")
+		}
+	})
+}
+
+// Test concurrent access to rate limiter
+func TestRateLimiterConcurrency(t *testing.T) {
+	rl := NewTokenBucketRateLimiter()
+	
+	limits := &interfaces.RateLimits{
+		RequestsPerSecond: 100,
+		BurstAllowance:    50,
+		WeightLimits: map[string]int{
+			"light": 1,
+			"heavy": 5,
+		},
+		DailyLimit:   intPtr(10000),
+		MonthlyLimit: intPtr(300000),
+	}
+	
+	rl.UpdateLimits(context.Background(), "concurrent", limits)
+	
+	t.Run("concurrent requests", func(t *testing.T) {
+		var wg sync.WaitGroup
+		var allowedCount int64
+		var blockedCount int64
+		var mu sync.Mutex
+		
+		// Launch 100 concurrent requests
+		for i := 0; i < 100; i++ {
+			wg.Add(1)
+			go func(id int) {
+				defer wg.Done()
+				
+				ctx := context.Background()
+				err := rl.Allow(ctx, "concurrent", "light")
+				
+				mu.Lock()
+				if err != nil {
+					blockedCount++
+				} else {
+					allowedCount++
+				}
+				mu.Unlock()
+			}(i)
+		}
+		
+		wg.Wait()
+		
+		t.Logf("Concurrent test: %d allowed, %d blocked", allowedCount, blockedCount)
+		
+		if allowedCount == 0 {
+			t.Error("Some requests should be allowed in concurrent test")
+		}
+	})
+}
+
+// Test metrics collection and reporting
+func TestRateLimiterMetrics(t *testing.T) {
+	rl := NewTokenBucketRateLimiter()
+	
+	limits := &interfaces.RateLimits{
+		RequestsPerSecond: 5,
+		BurstAllowance:    3,
+		WeightLimits:      make(map[string]int),
+		DailyLimit:        intPtr(100),
+		MonthlyLimit:      intPtr(3000),
+	}
+	
+	ctx := context.Background()
+	rl.UpdateLimits(ctx, "metrics_test", limits)
+	
+	t.Run("collect blocking metrics", func(t *testing.T) {
+		var blockedRequests int
+		var allowedRequests int
+		
+		// Generate requests to trigger blocking
+		for i := 0; i < 20; i++ {
+			err := rl.Allow(ctx, "metrics_test", "test")
+			if err != nil {
+				blockedRequests++
+			} else {
+				allowedRequests++
+			}
+		}
+		
+		t.Logf("Metrics collection: %d allowed, %d blocked", allowedRequests, blockedRequests)
+		
+		// Verify we collected meaningful metrics
+		if blockedRequests == 0 {
+			t.Error("Should have blocked some requests to test metrics collection")
+		}
+		
+		if allowedRequests == 0 {
+			t.Error("Should have allowed some requests to test metrics collection")
+		}
+	})
+	
+	t.Run("budget usage metrics", func(t *testing.T) {
+		bt := NewBudgetTracker()
+		dailyLimit := 10
+		bt.UpdateLimits("budget_metrics", &dailyLimit, nil)
+		
+		// Use some budget
+		for i := 0; i < 5; i++ {
+			bt.IncrementUsage("budget_metrics")
+		}
+		
+		// Check remaining budget
+		err := bt.CheckBudget("budget_metrics")
+		if err != nil {
+			t.Errorf("Budget check failed: %v", err)
+		}
+		
+		// Should still have budget available
+		if daily, exists := bt.dailyUsage["budget_metrics"]; exists {
+			usage := daily.GetCount()
+			if usage != 5 {
+				t.Errorf("Expected usage of 5, got %d", usage)
+			}
 		}
 	})
 }

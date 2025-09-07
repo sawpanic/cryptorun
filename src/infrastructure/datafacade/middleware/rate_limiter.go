@@ -13,24 +13,34 @@ import (
 	"golang.org/x/time/rate"
 )
 
-// TokenBucketRateLimiter implements rate limiting using token bucket algorithm
+// TokenBucketRateLimiter implements rate limiting using token bucket algorithm with sliding window counters
 type TokenBucketRateLimiter struct {
-	limiters    map[string]*venueRateLimiter
-	limits      map[string]*interfaces.RateLimits
-	mu          sync.RWMutex
+	limiters      map[string]*venueRateLimiter
+	limits        map[string]*interfaces.RateLimits
+	mu            sync.RWMutex
 	budgetTracker *BudgetTracker
+	metrics       *RateLimiterMetrics
 }
 
 type venueRateLimiter struct {
-	venue          string
-	globalLimiter  *rate.Limiter
+	venue            string
+	globalLimiter    *rate.Limiter
 	endpointLimiters map[string]*rate.Limiter
-	weights        map[string]int
+	weights          map[string]int
+	
+	// Enhanced weight tracking with sliding windows
+	weightWindow     *SlidingWindow
+	maxWeight        int
+	windowDuration   time.Duration
 	
 	// Header tracking
-	lastUsedWeight  int
-	lastResetTime   time.Time
-	retryAfter      time.Time
+	lastUsedWeight   int
+	lastResetTime    time.Time
+	retryAfter       time.Time
+	
+	// Metrics
+	requestsAllowed  int64
+	requestsBlocked  int64
 	
 	mu sync.RWMutex
 }
@@ -54,12 +64,13 @@ type BudgetLimits struct {
 	monthlyLimit int64
 }
 
-// NewTokenBucketRateLimiter creates a new rate limiter
+// NewTokenBucketRateLimiter creates a new enhanced rate limiter
 func NewTokenBucketRateLimiter() *TokenBucketRateLimiter {
 	return &TokenBucketRateLimiter{
 		limiters:      make(map[string]*venueRateLimiter),
 		limits:        make(map[string]*interfaces.RateLimits),
 		budgetTracker: NewBudgetTracker(),
+		metrics:       NewRateLimiterMetrics(),
 	}
 }
 

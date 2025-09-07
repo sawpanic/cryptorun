@@ -5,8 +5,6 @@ import (
 	"errors"
 	"testing"
 	"time"
-
-	"github.com/sawpanic/cryptorun/src/infrastructure/datafacade/interfaces"
 )
 
 func TestCircuitBreakerImpl_Call(t *testing.T) {
