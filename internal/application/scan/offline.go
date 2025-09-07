@@ -7,12 +7,12 @@ import (
 	"fmt"
 	"os"
 	"sort"
-	"strings"
 	"time"
 
 	"github.com/sawpanic/cryptorun/internal/application"
 	"github.com/sawpanic/cryptorun/internal/domain/factors"
-	"github.com/sawpanic/cryptorun/internal/domain/regime"
+	"github.com/sawpanic/cryptorun/internal/config/regime"
+	domainregime "github.com/sawpanic/cryptorun/internal/domain/regime"
 	"github.com/sawpanic/cryptorun/internal/domain/scoring"
 	"github.com/sawpanic/cryptorun/internal/infrastructure/datafacade"
 )
@@ -184,32 +184,63 @@ func NewOfflineScanner(dataFacade *datafacade.DataFacade, config ScanConfig) *Of
 		},
 		Regimes: map[string]application.RegimeWeights{
 			"calm": {
-				MomentumCore: 0.5,
-				Technical:    0.2,
-				Volume:      0.2,
-				Quality:     0.1,
-				Social:      6.0,
+				Description:       "Low volatility trending market",
+				MomentumCore:      0.5,
+				TechnicalResidual: 0.2,
+				VolumeResidual:    0.2,
+				QualityResidual:   0.1,
+				SocialResidual:    6.0,
 			},
 			"normal": {
-				MomentumCore: 0.4,
-				Technical:    0.3,
-				Volume:      0.2,
-				Quality:     0.1,
-				Social:      8.0,
+				Description:       "Mixed volatility market",
+				MomentumCore:      0.4,
+				TechnicalResidual: 0.3,
+				VolumeResidual:    0.2,
+				QualityResidual:   0.1,
+				SocialResidual:    8.0,
 			},
 			"volatile": {
-				MomentumCore: 0.6,
-				Technical:    0.15,
-				Volume:      0.15,
-				Quality:     0.1,
-				Social:      4.0,
+				Description:       "High volatility choppy market",
+				MomentumCore:      0.6,
+				TechnicalResidual: 0.15,
+				VolumeResidual:    0.15,
+				QualityResidual:   0.1,
+				SocialResidual: 4.0,
 			},
 		},
 	}
 	
-	factorBuilder := factors.NewFactorBuilder(weightsConfig)
-	regimeDetector := regime.NewRegimeDetector(weightsConfig)
-	compositeScorer := scoring.NewCompositeScorer(weightsConfig, regimeDetector)
+	// Convert application config to regime config format
+	regimeWeightsConfig := regime.WeightsConfig{
+		Regimes: make(map[string]regime.RegimeWeights),
+		Social: regime.SocialConfig{
+			MaxContribution:           weightsConfig.Validation.MaxSocialWeight,
+			AppliedAfterNormalization: true,
+		},
+		Validation: regime.ValidationConfig{
+			WeightSumTolerance: weightsConfig.Validation.WeightSumTolerance,
+			MinWeight:          0.05, // Default minimum weight
+			MaxWeight:          0.60, // Default maximum weight  
+			SocialHardCap:      weightsConfig.Validation.SocialHardCap,
+		},
+		QARequirements: regime.QARequirements{
+			CorrelationThreshold: 0.3, // Default correlation threshold
+		},
+	}
+	
+	// Convert regime weights
+	for regimeName, appWeights := range weightsConfig.Regimes {
+		regimeWeightsConfig.Regimes[regimeName] = regime.RegimeWeights{
+			MomentumCore:      appWeights.MomentumCore,
+			TechnicalResid:    appWeights.TechnicalResidual, 
+			SupplyDemandBlock: appWeights.VolumeResidual + appWeights.QualityResidual, // Combine volume + quality
+			CatalystBlock:     appWeights.SocialResidual / 10.0, // Convert to 0-1 scale
+		}
+	}
+	
+	factorBuilder := factors.NewFactorBuilder(regimeWeightsConfig)
+	regimeDetector := domainregime.NewRegimeDetector(regimeWeightsConfig)
+	compositeScorer := scoring.NewCompositeScorer(regimeWeightsConfig, regimeDetector)
 	
 	return &OfflineScanner{
 		dataFacade:     dataFacade,
@@ -221,17 +252,17 @@ func NewOfflineScanner(dataFacade *datafacade.DataFacade, config ScanConfig) *Of
 }
 
 // Scan performs the offline momentum scan
-func (os *OfflineScanner) Scan(ctx context.Context) (*ScanOutput, error) {
+func (scanner *OfflineScanner) Scan(ctx context.Context) (*ScanOutput, error) {
 	scanStart := time.Now()
 	
 	// Get symbols to scan
-	symbols := os.config.Symbols
+	symbols := scanner.config.Symbols
 	if len(symbols) == 0 {
-		symbols = os.dataFacade.GetSupportedSymbols()
+		symbols = scanner.dataFacade.GetSupportedSymbols()
 	}
 	
 	// Validate symbols
-	supportedSymbols := os.dataFacade.GetSupportedSymbols()
+	supportedSymbols := scanner.dataFacade.GetSupportedSymbols()
 	validSymbols := []string{}
 	for _, symbol := range symbols {
 		if contains(supportedSymbols, symbol) {
@@ -244,7 +275,7 @@ func (os *OfflineScanner) Scan(ctx context.Context) (*ScanOutput, error) {
 	}
 	
 	// Get regime data (market-wide)
-	regimeData, err := os.dataFacade.GetRegimeData(ctx)
+	regimeData, err := scanner.dataFacade.GetRegimeData(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get regime data: %w", err)
 	}
@@ -253,23 +284,23 @@ func (os *OfflineScanner) Scan(ctx context.Context) (*ScanOutput, error) {
 	results := []ScanResult{}
 	errors := []error{}
 	
-	if os.config.Parallel && os.config.MaxConcurrency > 1 {
-		results, errors = os.scanParallel(ctx, validSymbols, regimeData)
+	if scanner.config.Parallel && scanner.config.MaxConcurrency > 1 {
+		results, errors = scanner.scanParallel(ctx, validSymbols, regimeData)
 	} else {
-		results, errors = os.scanSequential(ctx, validSymbols, regimeData)
+		results, errors = scanner.scanSequential(ctx, validSymbols, regimeData)
 	}
 	
 	// Filter and sort results
-	filteredResults := os.filterResults(results)
-	sortedResults := os.sortResults(filteredResults)
+	filteredResults := scanner.filterResults(results)
+	sortedResults := scanner.sortResults(filteredResults)
 	
 	// Limit results if specified
-	if os.config.MaxResults > 0 && len(sortedResults) > os.config.MaxResults {
-		sortedResults = sortedResults[:os.config.MaxResults]
+	if scanner.config.MaxResults > 0 && len(sortedResults) > scanner.config.MaxResults {
+		sortedResults = sortedResults[:scanner.config.MaxResults]
 	}
 	
 	// Calculate summary statistics
-	summary := os.calculateSummary(validSymbols, sortedResults, errors, time.Since(scanStart))
+	summary := scanner.calculateSummary(validSymbols, sortedResults, errors, time.Since(scanStart))
 	
 	return &ScanOutput{
 		Results: sortedResults,
@@ -279,12 +310,12 @@ func (os *OfflineScanner) Scan(ctx context.Context) (*ScanOutput, error) {
 }
 
 // scanSequential processes symbols one by one
-func (os *OfflineScanner) scanSequential(ctx context.Context, symbols []string, regimeData *regime.MarketData) ([]ScanResult, []error) {
+func (scanner *OfflineScanner) scanSequential(ctx context.Context, symbols []string, regimeData *regime.MarketData) ([]ScanResult, []error) {
 	results := []ScanResult{}
 	errors := []error{}
 	
 	for _, symbol := range symbols {
-		result, err := os.scanSymbol(ctx, symbol, regimeData)
+		result, err := scanner.scanSymbol(ctx, symbol, regimeData)
 		if err != nil {
 			errors = append(errors, fmt.Errorf("failed to scan %s: %w", symbol, err))
 			continue
@@ -296,30 +327,30 @@ func (os *OfflineScanner) scanSequential(ctx context.Context, symbols []string, 
 }
 
 // scanParallel processes symbols concurrently (simplified implementation)
-func (os *OfflineScanner) scanParallel(ctx context.Context, symbols []string, regimeData *regime.MarketData) ([]ScanResult, []error) {
+func (scanner *OfflineScanner) scanParallel(ctx context.Context, symbols []string, regimeData *regime.MarketData) ([]ScanResult, []error) {
 	// For this implementation, fall back to sequential
 	// In production, would use worker pools and channels
-	return os.scanSequential(ctx, symbols, regimeData)
+	return scanner.scanSequential(ctx, symbols, regimeData)
 }
 
 // scanSymbol scans a single symbol and returns the result
-func (os *OfflineScanner) scanSymbol(ctx context.Context, symbol string, regimeData *regime.MarketData) (*ScanResult, error) {
+func (scanner *OfflineScanner) scanSymbol(ctx context.Context, symbol string, regimeData *regime.MarketData) (*ScanResult, error) {
 	scanStart := time.Now()
 	
 	// Get microstructure data
-	microData, err := os.dataFacade.GetMicrostructureData(ctx, symbol)
+	microData, err := scanner.dataFacade.GetMicrostructureData(ctx, symbol)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get microstructure data: %w", err)
 	}
 	
 	// Build raw factors
-	rawFactors, err := os.factorBuilder.BuildFactorRow(symbol, microData, time.Now())
+	rawFactors, err := scanner.factorBuilder.BuildFactorRow(symbol, microData, time.Now())
 	if err != nil {
 		return nil, fmt.Errorf("failed to build factors: %w", err)
 	}
 	
 	// Calculate composite score
-	score, err := os.compositeScorer.CalculateCompositeScore(*rawFactors, *regimeData)
+	score, err := scanner.compositeScorer.CalculateCompositeScore(*rawFactors, *regimeData)
 	if err != nil {
 		return nil, fmt.Errorf("failed to calculate composite score: %w", err)
 	}
@@ -354,26 +385,26 @@ func (os *OfflineScanner) scanSymbol(ctx context.Context, symbol string, regimeD
 	}
 	
 	// Add attribution based on level
-	if os.config.AttributionLevel != AttributionMinimal {
-		result.Attribution = os.buildAttribution(score, rawFactors, time.Since(scanStart))
+	if scanner.config.AttributionLevel != AttributionMinimal {
+		result.Attribution = scanner.buildAttribution(score, rawFactors, time.Since(scanStart))
 	}
 	
 	return &result, nil
 }
 
 // buildAttribution creates attribution information based on configuration level
-func (os *OfflineScanner) buildAttribution(score *scoring.CompositeScore, rawFactors *factors.RawFactorRow, processingTime time.Duration) *Attribution {
+func (scanner *OfflineScanner) buildAttribution(score *scoring.CompositeScore, rawFactors *factors.RawFactorRow, processingTime time.Duration) *Attribution {
 	attribution := &Attribution{
 		DataSources:    score.ScoringMetadata.DataSources,
 		ProcessingTime: processingTime,
 	}
 	
-	if os.config.AttributionLevel == AttributionBasic || os.config.AttributionLevel == AttributionFull {
+	if scanner.config.AttributionLevel == AttributionBasic || scanner.config.AttributionLevel == AttributionFull {
 		// Add timing breakdowns
 		attribution.ScoringTime = processingTime // Simplified - would track individual timings
 	}
 	
-	if os.config.AttributionLevel == AttributionFull {
+	if scanner.config.AttributionLevel == AttributionFull {
 		// Add factor breakdowns
 		attribution.MomentumComponents = score.FactorBreakdown.MomentumComponents
 		attribution.TechnicalSources = score.FactorBreakdown.TechnicalSources
@@ -382,7 +413,7 @@ func (os *OfflineScanner) buildAttribution(score *scoring.CompositeScore, rawFac
 		attribution.SocialSources = score.FactorBreakdown.SocialSources
 	}
 	
-	if os.config.AttributionLevel == AttributionDebug {
+	if scanner.config.AttributionLevel == AttributionDebug {
 		// Add debug information
 		attribution.RawFactors = rawFactors
 		// attribution.OrthogonalizedFactors would be available from score
@@ -393,11 +424,11 @@ func (os *OfflineScanner) buildAttribution(score *scoring.CompositeScore, rawFac
 }
 
 // filterResults applies filtering criteria to scan results
-func (os *OfflineScanner) filterResults(results []ScanResult) []ScanResult {
+func (scanner *OfflineScanner) filterResults(results []ScanResult) []ScanResult {
 	filtered := []ScanResult{}
 	
 	for _, result := range results {
-		if result.FinalScore >= os.config.MinScore {
+		if result.FinalScore >= scanner.config.MinScore {
 			filtered = append(filtered, result)
 		}
 	}
@@ -406,12 +437,12 @@ func (os *OfflineScanner) filterResults(results []ScanResult) []ScanResult {
 }
 
 // sortResults sorts scan results according to configured criteria
-func (os *OfflineScanner) sortResults(results []ScanResult) []ScanResult {
+func (scanner *OfflineScanner) sortResults(results []ScanResult) []ScanResult {
 	sorted := make([]ScanResult, len(results))
 	copy(sorted, results)
 	
 	sort.Slice(sorted, func(i, j int) bool {
-		switch os.config.SortBy {
+		switch scanner.config.SortBy {
 		case SortByScore:
 			return sorted[i].FinalScore > sorted[j].FinalScore // Descending
 		case SortByMomentum:
@@ -431,7 +462,7 @@ func (os *OfflineScanner) sortResults(results []ScanResult) []ScanResult {
 }
 
 // calculateSummary generates scan summary statistics
-func (os *OfflineScanner) calculateSummary(symbols []string, results []ScanResult, errors []error, totalTime time.Duration) ScanSummary {
+func (scanner *OfflineScanner) calculateSummary(symbols []string, results []ScanResult, errors []error, totalTime time.Duration) ScanSummary {
 	summary := ScanSummary{
 		TotalSymbols:    len(symbols),
 		SuccessfulScans: len(results),
@@ -448,7 +479,7 @@ func (os *OfflineScanner) calculateSummary(symbols []string, results []ScanResul
 	}
 	
 	// Get cache hit rate from data facade
-	cacheStats := os.dataFacade.GetCacheStats()
+	cacheStats := scanner.dataFacade.GetCacheStats()
 	summary.CacheHitRate = cacheStats.HitRate
 	
 	return summary
@@ -462,27 +493,27 @@ type ScanOutput struct {
 }
 
 // WriteOutput writes scan results to the specified output format
-func (os *OfflineScanner) WriteOutput(output *ScanOutput, filename string) error {
-	if os.config.DryRun {
+func (scanner *OfflineScanner) WriteOutput(output *ScanOutput, filename string) error {
+	if scanner.config.DryRun {
 		fmt.Printf("DRY RUN: Would write %d results to %s\n", len(output.Results), filename)
 		return nil
 	}
 	
-	switch os.config.OutputFormat {
+	switch scanner.config.OutputFormat {
 	case OutputJSON:
-		return os.writeJSON(output, filename)
+		return scanner.writeJSON(output, filename)
 	case OutputCSV:
-		return os.writeCSV(output.Results, filename)
+		return scanner.writeCSV(output.Results, filename)
 	case OutputTSV:
-		return os.writeTSV(output.Results, filename)
+		return scanner.writeTSV(output.Results, filename)
 	default:
-		return fmt.Errorf("unsupported output format: %s", os.config.OutputFormat)
+		return fmt.Errorf("unsupported output format: %s", scanner.config.OutputFormat)
 	}
 }
 
 // writeJSON writes results as JSON
-func (os *OfflineScanner) writeJSON(output *ScanOutput, filename string) error {
-	file, err := os.createOutputFile(filename)
+func (scanner *OfflineScanner) writeJSON(output *ScanOutput, filename string) error {
+	file, err := scanner.createOutputFile(filename)
 	if err != nil {
 		return err
 	}
@@ -494,18 +525,18 @@ func (os *OfflineScanner) writeJSON(output *ScanOutput, filename string) error {
 }
 
 // writeCSV writes results as CSV
-func (os *OfflineScanner) writeCSV(results []ScanResult, filename string) error {
-	return os.writeDelimited(results, filename, ',')
+func (scanner *OfflineScanner) writeCSV(results []ScanResult, filename string) error {
+	return scanner.writeDelimited(results, filename, ',')
 }
 
 // writeTSV writes results as TSV
-func (os *OfflineScanner) writeTSV(results []ScanResult, filename string) error {
-	return os.writeDelimited(results, filename, '\t')
+func (scanner *OfflineScanner) writeTSV(results []ScanResult, filename string) error {
+	return scanner.writeDelimited(results, filename, '\t')
 }
 
 // writeDelimited writes results in delimited format (CSV/TSV)
-func (os *OfflineScanner) writeDelimited(results []ScanResult, filename string, delimiter rune) error {
-	file, err := os.createOutputFile(filename)
+func (scanner *OfflineScanner) writeDelimited(results []ScanResult, filename string, delimiter rune) error {
+	file, err := scanner.createOutputFile(filename)
 	if err != nil {
 		return err
 	}
@@ -516,7 +547,7 @@ func (os *OfflineScanner) writeDelimited(results []ScanResult, filename string, 
 	defer writer.Flush()
 	
 	// Write headers if requested
-	if os.config.IncludeHeaders {
+	if scanner.config.IncludeHeaders {
 		headers := []string{
 			"symbol", "timestamp", "final_score", "regime", "regime_confidence",
 			"momentum_core", "technical_residual", "volume_residual", "quality_residual", "social_capped",
@@ -565,7 +596,7 @@ func (os *OfflineScanner) writeDelimited(results []ScanResult, filename string, 
 }
 
 // createOutputFile creates the output file, handling stdout special case
-func (os *OfflineScanner) createOutputFile(filename string) (*os.File, error) {
+func (scanner *OfflineScanner) createOutputFile(filename string) (*os.File, error) {
 	if filename == "" || filename == "-" || filename == "stdout" {
 		return os.Stdout, nil
 	}

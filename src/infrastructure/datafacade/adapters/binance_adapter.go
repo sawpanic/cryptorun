@@ -8,7 +8,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-	nethttp "net/http"
 
 	"github.com/sawpanic/cryptorun/src/infrastructure/datafacade/http"
 	"github.com/sawpanic/cryptorun/src/infrastructure/datafacade/interfaces"
@@ -38,7 +37,7 @@ func NewBinanceAdapter(rateLimiter interfaces.RateLimiter, circuitBreaker interf
 		venue:          "binance",
 		baseURL:        "https://api.binance.com",
 		wsURL:          "wss://stream.binance.com:9443/ws",
-		httpClient:     &http.Client{Timeout: 30 * time.Second},
+		httpClient:     http.NewClient("https://api.binance.com", 30*time.Second),
 		wsConns:        make(map[string]*websocket.Conn),
 		rateLimiter:    rateLimiter,
 		circuitBreaker: circuitBreaker,
@@ -194,31 +193,25 @@ func (b *BinanceAdapter) FetchTrades(ctx context.Context, symbol string, limit i
 			return fmt.Errorf("rate limited: %w", err)
 		}
 		
-		url := fmt.Sprintf("%s/api/v3/trades?symbol=%s&limit=%d", 
-			b.baseURL, b.normalizeSymbol(symbol), limit)
+		endpoint := fmt.Sprintf("/api/v3/trades?symbol=%s&limit=%d", 
+			b.normalizeSymbol(symbol), limit)
 		
-		req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
-		if err != nil {
-			return fmt.Errorf("create request: %w", err)
-		}
-		
-		resp, err := b.httpClient.Do(req)
+		resp, rateLimitHeaders, err := b.httpClient.GetWithRateLimitHeaders(ctx, endpoint)
 		if err != nil {
 			return fmt.Errorf("http request: %w", err)
 		}
-		defer resp.Body.Close()
 		
 		// Process rate limit headers
-		if err := b.processRateLimitHeaders(resp.Header); err != nil {
+		if err := b.processRateLimitHeaders(rateLimitHeaders); err != nil {
 			return fmt.Errorf("process rate limit headers: %w", err)
 		}
 		
-		if resp.StatusCode != http.StatusOK {
-			return fmt.Errorf("http error: %d", resp.StatusCode)
+		if resp.StatusCode != 200 {
+			return fmt.Errorf("http error: %d - %s", resp.StatusCode, string(resp.Body))
 		}
 		
 		var rawTrades []binanceTradeResponse
-		if err := json.NewDecoder(resp.Body).Decode(&rawTrades); err != nil {
+		if err := json.Unmarshal(resp.Body, &rawTrades); err != nil {
 			return fmt.Errorf("decode response: %w", err)
 		}
 		
@@ -636,16 +629,8 @@ func (b *BinanceAdapter) parseFundingEvent(data []byte, outputChan interface{}) 
 	return nil
 }
 
-func (b *BinanceAdapter) processRateLimitHeaders(headers http.Header) error {
-	// Process Binance-specific rate limit headers
-	headersMap := make(map[string]string)
-	for key, values := range headers {
-		if len(values) > 0 {
-			headersMap[key] = values[0]
-		}
-	}
-	
-	return b.rateLimiter.ProcessRateLimitHeaders(b.venue, headersMap)
+func (b *BinanceAdapter) processRateLimitHeaders(headers map[string]string) error {
+	return b.rateLimiter.ProcessRateLimitHeaders(b.venue, headers)
 }
 
 func (b *BinanceAdapter) convertTrade(symbol string, raw binanceTradeResponse) interfaces.Trade {

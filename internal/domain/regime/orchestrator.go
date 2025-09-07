@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/sawpanic/cryptorun/internal/domain/factors"
+	regimeconfig "github.com/sawpanic/cryptorun/internal/config/regime"
 )
 
 // RegimeOrchestrator coordinates regime detection with factor processing
@@ -25,7 +26,19 @@ func NewRegimeOrchestrator(detector *RegimeDetector, weightMap RegimeWeightMap) 
 		return nil, fmt.Errorf("failed to convert regime weights: %w", err)
 	}
 
-	factorEngine, err := factors.NewUnifiedFactorEngine(detector.GetCurrentRegime().String(), currentWeights)
+	// Use default market data for initialization
+	defaultData := regimeconfig.MarketData{
+		Timestamp:     time.Now(),
+		CurrentPrice:  1.0,
+		MA20:         1.0,
+		RealizedVol7d: 0.2,
+		Prices:       []float64{1.0},
+	}
+	currentRegime, err := detector.GetCurrentRegime(defaultData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get current regime: %w", err)
+	}
+	factorEngine, err := factors.NewUnifiedFactorEngine(currentRegime.String(), currentWeights)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create factor engine: %w", err)
 	}
@@ -41,12 +54,19 @@ func NewRegimeOrchestrator(detector *RegimeDetector, weightMap RegimeWeightMap) 
 // ProcessFactorsWithRegimeAdaptation performs regime detection and factor processing
 func (ro *RegimeOrchestrator) ProcessFactorsWithRegimeAdaptation(
 	factorRows []factors.FactorRow,
-	marketInputs RegimeInputs,
+	marketData regimeconfig.MarketData,
 ) ([]factors.FactorRow, error) {
 
 	// Step 1: Update regime detection
-	previousRegime := ro.detector.GetCurrentRegime()
-	currentRegime := ro.detector.DetectRegime(marketInputs)
+	previousRegime, err := ro.detector.GetCurrentRegime(marketData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get previous regime: %w", err)
+	}
+	regimeDetection, err := ro.detector.DetectRegime(marketData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to detect regime: %w", err)
+	}
+	currentRegime := regimeDetection.CurrentRegime
 
 	// Step 2: Check if regime changed and update weights if necessary
 	if currentRegime != previousRegime || time.Since(ro.lastUpdate) > time.Hour {
@@ -66,7 +86,7 @@ func (ro *RegimeOrchestrator) ProcessFactorsWithRegimeAdaptation(
 }
 
 // updateFactorEngine updates the factor engine with new regime weights
-func (ro *RegimeOrchestrator) updateFactorEngine(regime RegimeType) error {
+func (ro *RegimeOrchestrator) updateFactorEngine(regime regimeconfig.RegimeType) error {
 	// Get weights for current regime
 	regimeWeights := ro.weightResolver.GetWeightsForRegime(regime)
 
@@ -163,9 +183,9 @@ func (ro *RegimeOrchestrator) GetRegimeHistory() []map[string]interface{} {
 }
 
 // ValidateMarketInputs validates regime detection inputs
-func (ro *RegimeOrchestrator) ValidateMarketInputs(inputs RegimeInputs) error {
+func (ro *RegimeOrchestrator) ValidateMarketInputs(inputs regimeconfig.RegimeInputs) error {
 	// Convert RegimeInputs to MarketData for validation
-	marketData := MarketData{
+	marketData := regimeconfig.MarketData{
 		Timestamp:     inputs.Timestamp,
 		CurrentPrice:  1.0, // Default values for validation
 		MA20:         1.0,

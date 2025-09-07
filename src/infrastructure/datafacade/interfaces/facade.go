@@ -195,6 +195,12 @@ type OpenInterest struct {
 	Timestamp     time.Time `json:"timestamp"`
 }
 
+// OpenInterestEvent represents streaming open interest updates
+type OpenInterestEvent struct {
+	OpenInterest
+	EventTime time.Time `json:"event_time"`
+}
+
 // SnapshotInfo contains metadata about a PIT snapshot
 type SnapshotInfo struct {
 	SnapshotID string                 `json:"snapshot_id"`

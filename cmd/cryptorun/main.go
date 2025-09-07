@@ -266,6 +266,38 @@ THE INTERACTIVE MENU IS THE PRIMARY INTERFACE
 
 	reportCmd.AddCommand(regimeReportCmd)
 
+	// Add gates command for entry gate analysis
+	gatesCmd := &cobra.Command{
+		Use:   "gates",
+		Short: "Entry gate analysis and debugging",
+		Long:  "Analyze entry gates (freshness, fatigue, late-fill, microstructure) with detailed explanations",
+	}
+
+	// Add explain subcommand for gates
+	gatesExplainCmd := &cobra.Command{
+		Use:   "explain --symbol SYMBOL [flags]",
+		Short: "Explain gate evaluation for a specific symbol",
+		Long:  "Detailed explanation of why a symbol passed or failed entry gates with metrics and reasoning",
+		RunE:  runGatesExplain,
+	}
+
+	gatesExplainCmd.Flags().String("symbol", "", "Symbol to analyze (required)")
+	gatesExplainCmd.Flags().String("at", "", "Timestamp for evaluation (RFC3339 format, defaults to now)")
+	gatesExplainCmd.Flags().Int("bars-age", 1, "Signal age in bars (freshness gate)")
+	gatesExplainCmd.Flags().Float64("price-change", 0.0, "Price change from signal (freshness gate)")
+	gatesExplainCmd.Flags().Float64("atr-1h", 100.0, "1-hour ATR value (freshness gate)")
+	gatesExplainCmd.Flags().Float64("momentum-24h", 0.0, "24-hour momentum percentage (fatigue gate)")
+	gatesExplainCmd.Flags().Float64("rsi-4h", 50.0, "4-hour RSI value (fatigue gate)")
+	gatesExplainCmd.Flags().Float64("acceleration", 0.0, "4-hour acceleration percentage (fatigue gate)")
+	gatesExplainCmd.Flags().String("signal-time", "", "Signal timestamp (RFC3339 format, defaults to 30s ago)")
+	gatesExplainCmd.Flags().String("execution-time", "", "Execution timestamp (RFC3339 format, defaults to now)")
+	gatesExplainCmd.Flags().Float64("spread-bps", -1, "Current spread in basis points (optional, -1 to skip)")
+	gatesExplainCmd.Flags().Float64("depth-usd", -1, "Current depth in USD (optional, -1 to skip)")
+	gatesExplainCmd.Flags().Float64("vadr", -1, "Current VADR value (optional, -1 to skip)")
+	gatesExplainCmd.Flags().Bool("json", false, "Output in JSON format")
+	
+	gatesCmd.AddCommand(gatesExplainCmd)
+
 	// Add probe command for data facade testing
 	probeCmd := &cobra.Command{
 		Use:   "probe",
@@ -374,6 +406,7 @@ THE INTERACTIVE MENU IS THE PRIMARY INTERFACE
 	// Add commands in Menu-first order
 	rootCmd.AddCommand(menuCmd)     // Menu first
 	rootCmd.AddCommand(scanCmd)     // Primary functionality
+	rootCmd.AddCommand(gatesCmd)    // Gate analysis
 	rootCmd.AddCommand(scheduleCmd) // Scheduled scanning
 	rootCmd.AddCommand(backtestCmd) // Backtesting
 	rootCmd.AddCommand(benchCmd)    // Benchmarking

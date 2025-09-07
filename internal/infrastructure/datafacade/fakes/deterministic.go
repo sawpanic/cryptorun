@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/sawpanic/cryptorun/internal/domain/microstructure"
-	"github.com/sawpanic/cryptorun/internal/domain/regime"
+	regimeconfig "github.com/sawpanic/cryptorun/internal/config/regime"
 )
 
 // DeterministicFakeProvider generates consistent fake data for testing
@@ -82,7 +82,7 @@ func (dfp *DeterministicFakeProvider) GetMicrostructureData(symbol string, times
 			Bids:      bidLevels,
 			Asks:      askLevels,
 			Timestamp: timestamp,
-			Sequence:  hash % 1000000,
+			Sequence:  int64(hash % 1000000),
 		},
 		RecentTrades:      trades,
 		Volume24h:         volume24h,
@@ -104,7 +104,7 @@ func (dfp *DeterministicFakeProvider) GetMicrostructureData(symbol string, times
 }
 
 // GetRegimeData generates deterministic market regime data
-func (dfp *DeterministicFakeProvider) GetRegimeData(timestamp time.Time) regime.MarketData {
+func (dfp *DeterministicFakeProvider) GetRegimeData(timestamp time.Time) regimeconfig.MarketData {
 	hasher := fnv.New32a()
 	hasher.Write([]byte(fmt.Sprintf("regime-%d", timestamp.Unix())))
 	hash := hasher.Sum32()
@@ -129,14 +129,14 @@ func (dfp *DeterministicFakeProvider) GetRegimeData(timestamp time.Time) regime.
 	breadthBase := 0.5
 	breadthVariation := math.Cos(float64(timestamp.Unix()) / 7200.0) * 0.3 // 2-hour cycle
 	
-	return regime.MarketData{
+	return regimeconfig.MarketData{
 		Symbol:        "BTC-USD", // Primary symbol for regime detection
 		Prices:        dfp.generatePriceSeries(currentPrice, timestamp, rng),
 		Volumes:       dfp.generateVolumeSeries(rng),
 		RealizedVol7d: realizedVol7d,
 		MA20:          ma20,
 		CurrentPrice:  currentPrice,
-		BreadthData: regime.BreadthData{
+		BreadthData: regimeconfig.BreadthData{
 			AdvanceDeclineRatio: math.Max(0, math.Min(1, breadthBase+breadthVariation)),
 			NewHighsNewLows:     math.Max(0, math.Min(1, breadthBase+breadthVariation*0.8)),
 			VolumeRatio:        math.Max(0, math.Min(1, breadthBase+breadthVariation*0.6)),

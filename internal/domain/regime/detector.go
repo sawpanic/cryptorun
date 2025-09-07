@@ -5,61 +5,25 @@ import (
 	"math"
 	"time"
 
-	"github.com/sawpanic/cryptorun/internal/application"
+	regimeconfig "github.com/sawpanic/cryptorun/internal/config/regime"
 )
 
-// RegimeType represents the current market regime
-type RegimeType string
+// Use types from config package to avoid duplication and import cycles
+type RegimeType = regimeconfig.RegimeType
+type MarketData = regimeconfig.MarketData
+type RegimeDetection = regimeconfig.RegimeDetection
+type RegimeIndicator = regimeconfig.RegimeIndicator
 
+// Constants for regime types
 const (
-	RegimeCalm     RegimeType = "calm"     // Low volatility, trending
-	RegimeNormal   RegimeType = "normal"   // Moderate volatility, mixed
-	RegimeVolatile RegimeType = "volatile" // High volatility, choppy
+	RegimeCalm     = regimeconfig.RegimeCalm
+	RegimeNormal   = regimeconfig.RegimeNormal
+	RegimeVolatile = regimeconfig.RegimeVolatile
 )
-
-// RegimeIndicator represents a single regime detection indicator
-type RegimeIndicator struct {
-	Name      string
-	Value     float64
-	Threshold float64
-	Vote      RegimeType
-	Weight    float64
-}
-
-// RegimeDetection contains the results of regime analysis
-type RegimeDetection struct {
-	CurrentRegime     RegimeType
-	Confidence        float64
-	Indicators        []RegimeIndicator
-	DetectionTime     time.Time
-	ValidUntil        time.Time
-	PreviousRegime    RegimeType
-	RegimeChangedAt   *time.Time
-}
-
-// MarketData contains the data needed for regime detection
-type MarketData struct {
-	Symbol               string
-	Prices               []float64         // Recent price series
-	Volumes              []float64         // Recent volume series
-	RealizedVol7d        float64           // 7-day realized volatility
-	MA20                 float64           // 20-period moving average
-	CurrentPrice         float64           // Current price
-	BreadthData          BreadthData       // Market breadth indicators
-	Timestamp            time.Time
-}
-
-// BreadthData contains market breadth indicators
-type BreadthData struct {
-	AdvanceDeclineRatio  float64  // Advancing vs declining issues
-	NewHighsNewLows      float64  // New highs minus new lows
-	VolumeRatio          float64  // Up volume vs down volume
-	Timestamp            time.Time
-}
 
 // RegimeDetector implements the 4-hour regime detection system
 type RegimeDetector struct {
-	config          application.WeightsConfig
+	config          regimeconfig.WeightsConfig
 	detectionWindow time.Duration
 	lastDetection   *RegimeDetection
 	
@@ -77,7 +41,7 @@ type RegimeDetector struct {
 }
 
 // NewRegimeDetector creates a new regime detector
-func NewRegimeDetector(config application.WeightsConfig) *RegimeDetector {
+func NewRegimeDetector(config regimeconfig.WeightsConfig) *RegimeDetector {
 	return &RegimeDetector{
 		config:          config,
 		detectionWindow: 4 * time.Hour, // 4h refresh cycle
@@ -292,25 +256,31 @@ func (rd *RegimeDetector) GetCurrentRegime(data MarketData) (RegimeType, error) 
 }
 
 // GetWeightsForRegime returns the weight configuration for a given regime
-func (rd *RegimeDetector) GetWeightsForRegime(regime RegimeType) (application.RegimeWeights, error) {
+func (rd *RegimeDetector) GetWeightsForRegime(regime RegimeType) (regimeconfig.DomainRegimeWeights, error) {
 	regimeStr := string(regime)
 	weights, exists := rd.config.Regimes[regimeStr]
 	if !exists {
-		// Fall back to default regime
-		defaultRegime := rd.config.DefaultRegime
-		if defaultRegime == "" {
-			defaultRegime = "normal"
-		}
+		// Fall back to default regime 
+		defaultRegime := "normal" // Default regime
 		weights, exists = rd.config.Regimes[defaultRegime]
 		if !exists {
-			return application.RegimeWeights{}, fmt.Errorf("no weights found for regime %s or default", regimeStr)
+			return regimeconfig.DomainRegimeWeights{}, fmt.Errorf("no weights found for regime %s or default", regimeStr)
 		}
 	}
-	return weights, nil
+	// Convert from config RegimeWeights to DomainRegimeWeights
+	domainWeights := regimeconfig.DomainRegimeWeights{
+		MomentumCore: weights.MomentumCore * 100, // Convert from 0-1 to 0-100
+		Technical:    weights.TechnicalResid * 100,
+		Volume:       weights.SupplyDemandBlock * 0.55 * 100, // 55% of supply/demand goes to volume
+		Quality:      weights.SupplyDemandBlock * 0.45 * 100, // 45% of supply/demand goes to quality
+		Social:       0, // Social is always applied separately outside the 100% allocation
+	}
+	
+	return domainWeights, nil
 }
 
-// ValidateRegimeWeights ensures weight configuration is valid
-func ValidateRegimeWeights(weights application.RegimeWeights, config application.WeightsConfig) error {
+// ValidateDomainRegimeWeights ensures weight configuration is valid (renamed to avoid conflict)
+func ValidateDomainRegimeWeights(weights regimeconfig.DomainRegimeWeights, config regimeconfig.WeightsConfig) error {
 	// Calculate total weight (excluding social which is capped separately)
 	total := weights.MomentumCore + weights.Technical + weights.Volume + weights.Quality
 	
@@ -320,16 +290,14 @@ func ValidateRegimeWeights(weights application.RegimeWeights, config application
 		return fmt.Errorf("weight sum %.3f outside tolerance %.3f of 1.0", total, tolerance)
 	}
 	
-	// Check minimum momentum weight
-	minMomentum := config.Validation.MinMomentumWeight
-	if weights.MomentumCore < minMomentum {
-		return fmt.Errorf("momentum weight %.3f below minimum %.3f", weights.MomentumCore, minMomentum)
+	// Check minimum momentum weight (hardcoded minimum)
+	if weights.MomentumCore < 0.20 {
+		return fmt.Errorf("momentum weight %.3f below minimum 0.20", weights.MomentumCore)
 	}
 	
-	// Check maximum social weight
-	maxSocial := config.Validation.MaxSocialWeight
-	if weights.Social > maxSocial {
-		return fmt.Errorf("social weight %.3f above maximum %.3f", weights.Social, maxSocial)
+	// Check maximum social weight (use SocialHardCap from validation)
+	if weights.Social > config.Validation.SocialHardCap {
+		return fmt.Errorf("social weight %.3f above maximum %.3f", weights.Social, config.Validation.SocialHardCap)
 	}
 	
 	// Ensure all weights are non-negative

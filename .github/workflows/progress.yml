@@ -2,7 +2,8 @@ name: Progress Enforcement
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ reset/main-clean ]
+  workflow_dispatch: {}
 
 jobs:
   progress-check:

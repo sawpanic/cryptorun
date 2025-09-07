@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/sawpanic/cryptorun/internal/domain/regime"
+	"github.com/sawpanic/cryptorun/internal/config/regime"
 )
 
 // GramSchmidtOrthogonalizer implements the Gram-Schmidt orthogonalization process

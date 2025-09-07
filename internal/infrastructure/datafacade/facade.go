@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/sawpanic/cryptorun/internal/domain/microstructure"
-	"github.com/sawpanic/cryptorun/internal/domain/regime"
+	regimeconfig "github.com/sawpanic/cryptorun/internal/config/regime"
 	"github.com/sawpanic/cryptorun/internal/infrastructure/datafacade/cache"
 	"github.com/sawpanic/cryptorun/internal/infrastructure/datafacade/fakes"
 )
@@ -36,7 +36,7 @@ type DataProvider interface {
 	GetName() string
 	IsHealthy() bool
 	GetMicrostructureData(ctx context.Context, symbol string) (*microstructure.MicrostructureData, error)
-	GetRegimeData(ctx context.Context) (*regime.MarketData, error)
+	GetRegimeData(ctx context.Context) (*regimeconfig.MarketData, error)
 	GetSupportedSymbols() []string
 }
 
@@ -102,11 +102,11 @@ func (df *DataFacade) RegisterProvider(provider DataProvider) {
 
 // GetMicrostructureData retrieves microstructure data with caching and fallbacks
 func (df *DataFacade) GetMicrostructureData(ctx context.Context, symbol string) (*microstructure.MicrostructureData, error) {
-	startTime := time.Now()
+	_ = time.Now() // startTime for potential metrics
 	
 	// Check cache first
 	cacheKey := cache.CacheKey("microstructure", symbol)
-	if cachedData, tier, found := df.cache.Get(cacheKey); found {
+	if cachedData, _, found := df.cache.Get(cacheKey); found {
 		if data, ok := cachedData.(*microstructure.MicrostructureData); ok {
 			// Verify data is not too stale
 			staleness := time.Since(data.Timestamp)
@@ -136,12 +136,12 @@ func (df *DataFacade) GetMicrostructureData(ctx context.Context, symbol string) 
 }
 
 // GetRegimeData retrieves market regime data with caching
-func (df *DataFacade) GetRegimeData(ctx context.Context) (*regime.MarketData, error) {
+func (df *DataFacade) GetRegimeData(ctx context.Context) (*regimeconfig.MarketData, error) {
 	// Use time-bucketed cache key (4-hour buckets for regime data)
 	cacheKey := cache.CacheKeyWithTimestamp(4*time.Hour, "regime", "market")
 	
-	if cachedData, tier, found := df.cache.Get(cacheKey); found {
-		if data, ok := cachedData.(*regime.MarketData); ok {
+	if cachedData, _, found := df.cache.Get(cacheKey); found {
+		if data, ok := cachedData.(*regimeconfig.MarketData); ok {
 			return data, nil
 		}
 	}
@@ -233,7 +233,7 @@ func (df *DataFacade) tryLiveProviders(ctx context.Context, symbol string) (*mic
 }
 
 // tryLiveProvidersForRegime attempts to get regime data from live providers
-func (df *DataFacade) tryLiveProvidersForRegime(ctx context.Context) (*regime.MarketData, error) {
+func (df *DataFacade) tryLiveProvidersForRegime(ctx context.Context) (*regimeconfig.MarketData, error) {
 	df.mu.RLock()
 	providers := make([]DataProvider, len(df.providers))
 	copy(providers, df.providers)

@@ -5,7 +5,7 @@ import (
 	"math"
 	"time"
 
-	"github.com/sawpanic/cryptorun/internal/domain/regime"
+	"github.com/sawpanic/cryptorun/internal/config/regime"
 	"github.com/sawpanic/cryptorun/internal/domain/indicators"
 )
 
@@ -220,27 +220,27 @@ func (fb *FactorBuilder) calculateMomentumCore(priceHistory []float64, currentPr
 }
 
 // calculateTechnicalFactor calculates technical indicator score
-func (fb *FactorBuilder) calculateTechnicalFactor(indicators indicators.TechnicalIndicators, currentPrice float64) (float64, TechnicalInputs) {
+func (fb *FactorBuilder) calculateTechnicalFactor(technicalIndicators indicators.TechnicalIndicators, currentPrice float64) (float64, TechnicalInputs) {
 	inputs := TechnicalInputs{}
 
-	if indicators.RSI.IsValid {
-		inputs.RSI = indicators.RSI.Value
+	if technicalIndicators.RSI.IsValid {
+		inputs.RSI = technicalIndicators.RSI.Value
 	}
 
-	if indicators.ADX.IsValid {
-		inputs.ADX = indicators.ADX.ADX
+	if technicalIndicators.ADX.IsValid {
+		inputs.ADX = technicalIndicators.ADX.ADX
 	}
 
-	if indicators.Hurst.IsValid {
-		inputs.HurstExp = indicators.Hurst.Exponent
+	if technicalIndicators.Hurst.IsValid {
+		inputs.HurstExp = technicalIndicators.Hurst.Exponent
 	}
 
-	if indicators.ATR.IsValid && currentPrice > 0 {
-		inputs.ATRPercent = (indicators.ATR.Value / currentPrice) * 100.0
+	if technicalIndicators.ATR.IsValid && currentPrice > 0 {
+		inputs.ATRPercent = (technicalIndicators.ATR.Value / currentPrice) * 100.0
 	}
 
 	// Get technical score from indicators package
-	inputs.RawScore = indicators.GetTechnicalScore(indicators, currentPrice)
+	inputs.RawScore = indicators.GetTechnicalScore(technicalIndicators, currentPrice)
 
 	return inputs.RawScore, inputs
 }

@@ -4,6 +4,40 @@
 
 Complete deployment guide for CryptoRun v3.2.1 covering containerization, Kubernetes, database setup, and production configuration with hardened security and monitoring.
 
+> **⚠️ IMPORTANT: Default Branch is `reset/main-clean`**
+> 
+> This repository uses `reset/main-clean` as the default branch instead of `main`. All workflows, deployment triggers, and branch protection rules are configured for `reset/main-clean`.
+
+## Workflow Trigger Matrix
+
+| Workflow | Trigger Type | Branch Filter | Manual Dispatch | Deploys |
+|----------|-------------|---------------|-----------------|---------|
+| `ci.yml` | Push + PR | Any branch | ❌ | No |
+| `progress.yml` | PR only | `reset/main-clean` | ✅ | No |
+| `ci-guard.yml` | PR only | `reset/main-clean` | ✅ | No |
+| `cr-pr-quality.yml` | PR any | Any PR | ❌ | No |
+| `cr-nightly-analyst.yml` | Schedule | N/A (cron) | ✅ | Artifacts only |
+
+## Force Rebuild Options
+
+When changes don't trigger workflows automatically:
+
+### Option 1: Manual Dispatch
+Navigate to GitHub Actions → Select workflow → "Run workflow" button
+
+### Option 2: Empty Commit  
+```bash
+git commit --allow-empty -m "trigger: force workflow rebuild"
+git push origin reset/main-clean
+```
+
+## Common Deployment Failure Modes
+
+1. **Wrong Branch Filter**: Workflows targeting `main` won't trigger on `reset/main-clean` pushes
+2. **Missing Manual Dispatch**: No way to manually retry failed deployments  
+3. **Protection Rules**: Branch protection may still reference old `main` branch checks
+4. **Stale Cache**: GitHub Actions cache may need invalidation after branch changes
+
 ## Deployment Hardening & Monitoring
 
 ### K8s Hardening Features

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/sawpanic/cryptorun/internal/domain/factors"
-	"github.com/sawpanic/cryptorun/internal/domain/regime"
+	"github.com/sawpanic/cryptorun/internal/config/regime"
 )
 
 // CompositeScore represents the final unified scoring result
@@ -31,7 +31,7 @@ type CompositeScore struct {
 	WeightedSocial    float64  // Social added outside 100% allocation
 	
 	// Weights used for this scoring
-	Weights           regime.RegimeWeights
+	Weights           regime.DomainRegimeWeights
 	
 	// Attribution and debugging
 	FactorBreakdown   FactorBreakdown
@@ -69,12 +69,12 @@ type ScoringMetadata struct {
 // CompositeScorer implements the unified scoring system
 type CompositeScorer struct {
 	config            regime.WeightsConfig
-	regimeDetector    *regime.RegimeDetector
+	regimeDetector    regime.RegimeDetector
 	orthogonalizer    *factors.GramSchmidtOrthogonalizer
 }
 
 // NewCompositeScorer creates a new unified composite scorer
-func NewCompositeScorer(config regime.WeightsConfig, regimeDetector *regime.RegimeDetector) *CompositeScorer {
+func NewCompositeScorer(config regime.WeightsConfig, regimeDetector regime.RegimeDetector) *CompositeScorer {
 	orthogonalizer := factors.NewGramSchmidtOrthogonalizer(config)
 	
 	return &CompositeScorer{
@@ -224,7 +224,7 @@ func (cs *CompositeScorer) CalculateBatchScores(rawFactorsMap map[string]factors
 		}
 		
 		orthRow := orthogonalizedRows[i]
-		rawRow := rawFactorRows[i]
+		_ = rawFactorRows[i] // rawRow for potential future use in debugging
 		
 		// Calculate weighted components
 		weightedMomentum := orthRow.MomentumCore * weights.MomentumCore

@@ -223,23 +223,6 @@ type QARequirements struct {
 	SocialMaximum       float64 `yaml:"social_maximum"`
 }
 
-// ValidateRegimeWeights checks if the weights configuration is valid
-func ValidateRegimeWeights(weights RegimeWeights, config WeightsConfig) error {
-	total := weights.MomentumCore + weights.Technical + weights.Volume + weights.Quality + weights.Social
-	if math.Abs(total-1.0) > config.Validation.WeightSumTolerance {
-		return fmt.Errorf("weights sum to %.6f, expected 1.0 ±%.3f", total, config.Validation.WeightSumTolerance)
-	}
-	
-	if weights.MomentumCore < config.Validation.MinMomentumWeight {
-		return fmt.Errorf("momentum weight %.3f below minimum %.3f", weights.MomentumCore, config.Validation.MinMomentumWeight)
-	}
-	
-	if weights.Social > config.Validation.MaxSocialWeight {
-		return fmt.Errorf("social weight %.3f above maximum %.3f", weights.Social, config.Validation.MaxSocialWeight)
-	}
-	
-	return nil
-}
 
 // ApplySocialCap applies the social media factor cap (+10 max) OUTSIDE the base scoring
 // This ensures social factors don't interfere with the core 100-point allocation

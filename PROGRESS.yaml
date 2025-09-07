@@ -2,8 +2,8 @@
 # Weighted milestone completion for enforcing measurable progress
 
 version: "3.2.1"
-last_updated: "2025-09-07T15:30:00Z"
-completion_note: "EPIC C - Provider & Data Source Expansion completed with Kraken exchange-native APIs, WebSocket streaming, derivatives integration, VADR calculation, and comprehensive aggregator ban enforcement"
+last_updated: "2025-09-07T20:15:00Z"
+completion_note: "EPIC A1.3 - Parquet Support completed with comprehensive cold tier implementation, PIT-safe time filtering, schema validation, compression support, and CLI integration"
 
 milestones:
   # Core Architecture (20% total weight - adjusted for provider expansion)
@@ -19,7 +19,7 @@ milestones:
     description: "Factor residualization with momentum protection"
     completion_date: "2025-01-10"
 
-  # Data Pipeline (25% total weight - increased due to provider expansion)
+  # Data Pipeline (33% total weight - increased due to provider expansion and multi-region replication)
   data_facade_hot_warm:
     weight: 8
     completed: true
@@ -37,6 +37,20 @@ milestones:
     weight: 9
     completed: true
     description: "Derivatives, DeFi, fallback providers with aggregator ban enforcement"
+    completion_date: "2025-09-07"
+    progress: 100
+    
+  multi_region_replication:
+    weight: 8
+    completed: true
+    description: "Multi-region replication with validation, anomaly detection, and automated failover"
+    completion_date: "2025-09-07"
+    progress: 100
+    
+  parquet_cold_tier_support:
+    weight: 3
+    completed: true
+    description: "Parquet format support for cold tier with PIT-safe time filtering, compression, and CLI integration"
     completion_date: "2025-09-07"
     progress: 100
 

@@ -2,7 +2,8 @@ name: CI Guard - Require Progress Delta
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ reset/main-clean ]
+  workflow_dispatch: {}
 
 jobs:
   ci-guard:
