@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"cryptorun/internal/data/venue/types"
+	"github.com/sawpanic/cryptorun/internal/data/venue/types"
 )
 
 // ProofGenerator handles creation and persistence of microstructure proof bundles

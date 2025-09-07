@@ -11,9 +11,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	httpContracts "cryptorun/internal/interfaces/http"
-	"cryptorun/internal/interfaces/http/endpoints"
-	"cryptorun/internal/metrics"
+	httpContracts "github.com/sawpanic/cryptorun/internal/interfaces/http"
+	"github.com/sawpanic/cryptorun/internal/interfaces/http/endpoints"
+	"github.com/sawpanic/cryptorun/internal/metrics"
 )
 
 func TestCandidatesHandler(t *testing.T) {

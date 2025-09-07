@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/infrastructure/websocket"
+	"github.com/sawpanic/cryptorun/internal/infrastructure/websocket"
 )
 
 // TestMicrostructureProcessor tests real-time microstructure calculations

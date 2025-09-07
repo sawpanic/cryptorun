@@ -26,13 +26,14 @@ type OrthogonalizedFactors struct {
 	TechnicalResid Factor `json:"technical_resid"`
 	VolumeResid    Factor `json:"volume_resid"`
 	QualityResid   Factor `json:"quality_resid"`
+	CatalystResid  Factor `json:"catalyst_resid"`
 }
 
 // Orthogonalize applies Gram-Schmidt orthogonalization with MomentumCore protection
-// Order: MomentumCore (protected) → Technical → Volume → Quality
+// Order: MomentumCore (protected) → Technical → Volume → Quality → Catalyst
 func (o *Orthogonalizer) Orthogonalize(factors []Factor) (*OrthogonalizedFactors, error) {
-	if len(factors) != 4 {
-		return nil, fmt.Errorf("expected 4 factors, got %d", len(factors))
+	if len(factors) != 5 {
+		return nil, fmt.Errorf("expected 5 factors, got %d", len(factors))
 	}
 
 	// Ensure first factor is momentum_core and protected
@@ -58,11 +59,19 @@ func (o *Orthogonalizer) Orthogonalize(factors []Factor) (*OrthogonalizedFactors
 	qualityMinusTechnical := o.subtractProjection(qualityMinusMomentum, technicalResid)
 	qualityResid := o.subtractProjection(qualityMinusTechnical, volumeResid)
 
+	// Step 5: Catalyst → Catalyst - all previous projections
+	catalyst := factors[4]
+	catalystMinusMomentum := o.subtractProjection(catalyst, momentumCore)
+	catalystMinusTechnical := o.subtractProjection(catalystMinusMomentum, technicalResid)
+	catalystMinusVolume := o.subtractProjection(catalystMinusTechnical, volumeResid)
+	catalystResid := o.subtractProjection(catalystMinusVolume, qualityResid)
+
 	return &OrthogonalizedFactors{
 		MomentumCore:   momentumCore,
 		TechnicalResid: technicalResid,
 		VolumeResid:    volumeResid,
 		QualityResid:   qualityResid,
+		CatalystResid:  catalystResid,
 	}, nil
 }
 
@@ -124,6 +133,7 @@ func (o *Orthogonalizer) ValidateOrthogonality(factors *OrthogonalizedFactors, t
 		factors.TechnicalResid,
 		factors.VolumeResid,
 		factors.QualityResid,
+		factors.CatalystResid,
 	}
 
 	// Check pairwise orthogonality
@@ -147,6 +157,7 @@ func (o *Orthogonalizer) GetOrthogonalityMatrix(factors *OrthogonalizedFactors) 
 		factors.TechnicalResid,
 		factors.VolumeResid,
 		factors.QualityResid,
+		factors.CatalystResid,
 	}
 
 	n := len(allFactors)
@@ -173,6 +184,7 @@ func (o *Orthogonalizer) ComputeResidualMagnitudes(factors *OrthogonalizedFactor
 		factors.TechnicalResid,
 		factors.VolumeResid,
 		factors.QualityResid,
+		factors.CatalystResid,
 	}
 
 	for _, factor := range allFactors {

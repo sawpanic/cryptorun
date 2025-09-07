@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/application"
+	"github.com/sawpanic/cryptorun/internal/application"
 )
 
 // TestUniverseBuilder_HashIntegrity tests universe hash generation and integrity

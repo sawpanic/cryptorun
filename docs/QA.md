@@ -76,16 +76,55 @@ cryptorun qa --resume --progress json --max-sample 20
 
 ## Phase Execution Order
 
-### Phase -1: No-Stub Gate (Optional)
-- **Trigger**: `--fail-on-stubs=true` (default)
+### Phase -1: No-Stub Gate (Mandatory in CI)
+- **Trigger**: `--fail-on-stubs=true` (default in CI)
 - **Purpose**: Scan repository for stub/scaffold patterns before network operations
 - **Patterns Detected**:
   - `panic("not implemented")` / `panic('not implemented')`
-  - `TODO`, `FIXME`, `STUB` comments
+  - `TODO`, `FIXME`, `STUB`, `XXX`, `PENDING` comments (case-insensitive)
   - `NotImplemented`, `dummy implementation`
   - `return nil // TODO`, `// TODO:`, `// FIXME:`
-- **Exclusions**: Test files (`*_test.go`), generated files, vendor directories
+- **Exclusions**: Test files (`*_test.go`), generated files, vendor directories, as defined in `scripts/qa/no_todo.allow`
 - **Failure**: Hard fail with `FAIL SCAFFOLDS_FOUND` before any network work
+
+#### Standalone No-TODO Scanner
+
+The No-TODO gate can be run independently of the full QA suite:
+
+**Shell Script Version:**
+```bash
+# Make executable (first time only)
+chmod +x scripts/qa/no_todo.sh
+
+# Run the scanner
+scripts/qa/no_todo.sh
+```
+
+**Go Version:**
+```bash
+# Run directly
+go run scripts/qa/scanner.go
+
+# Or build and run
+go build -o qa_scanner scripts/qa/scanner.go
+./qa_scanner
+```
+
+**CI Integration:**
+The gate runs as a separate job in GitHub Actions before the main build:
+- Fails fast if TODO/FIXME/STUB markers found
+- Uploads QA reports on failure
+- Blocks build pipeline until resolved
+
+**Custom Exemptions:**
+Add patterns to `scripts/qa/no_todo.allow`:
+```
+# Example exemptions
+docs/legacy/
+*.pb.go
+vendor/
+tests/fixtures/mock_data.go
+```
 
 ### Phases 0-6: Standard QA Suite
 Standard QA phases as defined in QA.MAX.50:

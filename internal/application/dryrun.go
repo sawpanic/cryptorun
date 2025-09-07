@@ -11,7 +11,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"cryptorun/internal/application/analyst"
+	"github.com/sawpanic/cryptorun/internal/application/analyst"
 )
 
 // DryrunResult contains the results of a dry run execution

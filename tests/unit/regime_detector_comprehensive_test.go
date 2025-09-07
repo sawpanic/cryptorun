@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"cryptorun/internal/domain/regime"
+	"github.com/sawpanic/cryptorun/internal/domain/regime"
 )
 
 // TestRegimeDetectorSyntheticInputs tests the core requirement:

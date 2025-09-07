@@ -9,11 +9,20 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// QARequirements defines quality assurance requirements
+type QARequirements struct {
+	MinCorrelationForOrthogonalization float64 `yaml:"min_correlation_for_orthogonalization"`
+	MaxFactorCorrelation               float64 `yaml:"max_factor_correlation"`
+	MinExplainedVariance              float64 `yaml:"min_explained_variance"`
+	CorrelationThreshold              float64 `yaml:"correlation_threshold"`
+}
+
 // WeightsConfig represents the regime weights configuration
 type WeightsConfig struct {
-	Regimes    map[string]RegimeWeights `yaml:"regimes"`
-	Social     SocialConfig             `yaml:"social"`
-	Validation ValidationConfig         `yaml:"validation"`
+	Regimes        map[string]RegimeWeights `yaml:"regimes"`
+	Social         SocialConfig             `yaml:"social"`
+	Validation     ValidationConfig         `yaml:"validation"`
+	QARequirements QARequirements           `yaml:"qa_requirements"`
 }
 
 // RegimeWeights defines the weight allocation for a market regime
@@ -35,6 +44,7 @@ type ValidationConfig struct {
 	WeightSumTolerance float64 `yaml:"weight_sum_tolerance"`
 	MinWeight          float64 `yaml:"min_weight"`
 	MaxWeight          float64 `yaml:"max_weight"`
+	SocialHardCap      float64 `yaml:"social_hard_cap"`
 }
 
 // WeightsLoader handles loading and validation of regime weights
@@ -101,6 +111,13 @@ func (wl *WeightsLoader) LoadDefault() error {
 			WeightSumTolerance: 0.01,
 			MinWeight:          0.05,
 			MaxWeight:          0.60,
+			SocialHardCap:      15.0,
+		},
+		QARequirements: QARequirements{
+			MinCorrelationForOrthogonalization: 0.3,
+			MaxFactorCorrelation:               0.8,
+			MinExplainedVariance:              0.05,
+			CorrelationThreshold:              0.6,
 		},
 	}
 

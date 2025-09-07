@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/algo/momentum"
+	"github.com/sawpanic/cryptorun/internal/algo/momentum"
 )
 
 func TestFatigueGuard(t *testing.T) {

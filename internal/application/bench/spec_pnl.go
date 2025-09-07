@@ -176,7 +176,7 @@ func (calc *SpecPnLCalculator) getPriceSeries(ctx context.Context, symbol string
 func (calc *SpecPnLCalculator) fetchExchangeNativeSeries(ctx context.Context, symbol string, signalTime time.Time, exchange string) ([]PriceBar, error) {
 	// Mock implementation - in production would call actual exchange APIs
 	startTime := signalTime.Add(-1 * time.Hour)
-	endTime := signalTime.Add(49 * time.Hour) // Cover 48h exit limit + buffer
+	_ = signalTime.Add(49 * time.Hour) // Cover 48h exit limit + buffer
 
 	var bars []PriceBar
 	basePrice := 100.0 // Mock base price
@@ -214,7 +214,7 @@ func (calc *SpecPnLCalculator) fetchAggregatorSeries(ctx context.Context, symbol
 	// Mock implementation - would fetch from aggregator APIs
 	// Note: Aggregator data lacks microstructure details
 	startTime := signalTime.Add(-1 * time.Hour)
-	endTime := signalTime.Add(49 * time.Hour)
+	_ = signalTime.Add(49 * time.Hour)
 
 	var bars []PriceBar
 	basePrice := 100.0

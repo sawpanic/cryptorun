@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	pipelineexec "cryptorun/internal/application/pipeline"
-	httpmetrics "cryptorun/internal/interfaces/http"
-	logprogress "cryptorun/internal/log"
+	pipelineexec "github.com/sawpanic/cryptorun/internal/application/pipeline"
+	httpmetrics "github.com/sawpanic/cryptorun/internal/interfaces/http"
+	logprogress "github.com/sawpanic/cryptorun/internal/log"
 )
 
 func TestProgressIndicatorBasicFunctionality(t *testing.T) {

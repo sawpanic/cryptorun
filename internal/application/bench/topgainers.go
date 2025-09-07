@@ -5,19 +5,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
-	"math"
 	"net/http"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 	"time"
 
 	"github.com/rs/zerolog/log"
 
-	"cryptorun/internal/application/pipeline"
-	"cryptorun/internal/scan/progress"
+	"github.com/sawpanic/cryptorun/internal/application/pipeline"
+	"github.com/sawpanic/cryptorun/internal/scan/progress"
 )
 
 // TopGainersConfig configures the top gainers benchmark
@@ -267,7 +264,7 @@ func (tgb *TopGainersBenchmark) fetchTopGainers(ctx context.Context, window stri
 	}
 
 	// Add user agent for API compliance
-	req.Header.Set("User-Agent", "CryptoRun/v3.2.1 Benchmark")
+	req.Header.Set("User-Agent", "github.com/sawpanic/cryptorun/v3.2.1 Benchmark")
 
 	resp, err := tgb.httpClient.Do(req)
 	if err != nil {
@@ -370,9 +367,11 @@ func (tgb *TopGainersBenchmark) generateMockScannerResults() []pipeline.Composit
 
 func (tgb *TopGainersBenchmark) emitProgress(percent int, message string) {
 	if tgb.progressBus != nil {
-		tgb.progressBus.Emit(progress.ScanProgress{
-			Percent: percent,
-			Message: message,
+		tgb.progressBus.ScanEvent(progress.ScanEvent{
+			Phase:    "benchmark",
+			Status:   "progress",
+			Progress: percent,
+			Message:  message,
 		})
 	}
 }

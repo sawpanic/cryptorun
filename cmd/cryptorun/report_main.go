@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
-	"cryptorun/internal/reports/regime"
+	"github.com/sawpanic/cryptorun/internal/reports/regime"
 )
 
 // runReportRegime generates weekly regime analysis report

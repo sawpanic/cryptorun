@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"cryptorun/internal/tune/opt"
-	"cryptorun/internal/tune/weights"
+	"github.com/sawpanic/cryptorun/internal/tune/opt"
+	"github.com/sawpanic/cryptorun/internal/tune/weights"
 )
 
 // ReportGenerator creates comprehensive tuning reports

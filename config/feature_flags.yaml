@@ -1,0 +1,99 @@
+# CryptoRun Feature Flags Configuration
+# Controls experimental features and system toggles
+
+experimental:
+  # Advanced/experimental features (use with caution)
+  enable_quantum_factors: false        # Quantum-inspired factor combinations
+  enable_ai_orthogonalization: false   # AI-driven orthogonalization
+  enable_predictive_guards: false      # ML-based predictive safety guards
+  enable_ml_regime_detection: false    # Machine learning regime detection
+  enable_advanced_caching: false       # Advanced multi-tier caching
+
+core:
+  # Core system functionality toggles
+  enable_regime_aware_weights: true    # Regime-adaptive weight switching
+  enable_adaptive_guards: true         # Dynamic guard threshold adjustment
+  enable_social_cap_override: false    # Allow social cap above +10 (DANGER)
+  enable_factor_validation: true       # Runtime factor validation
+  enable_correlation_checks: true      # Correlation matrix validation
+
+api:
+  # API and endpoint functionality
+  enable_debug_endpoints: true         # /debug/* endpoints for development
+  enable_metrics_export: true          # Prometheus metrics export
+  enable_health_checks: true           # Health check endpoints
+  enable_admin_endpoints: true         # Administrative endpoints
+  enable_real_time_streaming: false    # WebSocket streaming (experimental)
+
+monitoring:
+  # Observability and monitoring features
+  enable_performance_monitoring: true  # Detailed performance tracking
+  enable_detailed_tracing: false       # Comprehensive request tracing
+  enable_audit_logging: true           # Security and compliance logging
+  enable_alerts: true                  # Alert generation and routing
+  enable_metrics_collection: true      # System metrics collection
+
+safety:
+  # Safety and risk management features
+  enable_dry_run: true                 # Dry-run mode for testing
+  enable_guard_validation: true        # Strict guard enforcement
+  enable_safety_checks: true           # Comprehensive safety validation
+  enable_emergency_shutdown: true      # Emergency shutdown capability
+  enable_failsafes: true              # Automated failsafe mechanisms
+
+# Feature dependencies (features that require other features)
+dependencies:
+  enable_predictive_guards:
+    requires: 
+      - "core.factor_validation"
+      - "monitoring.performance_monitoring"
+  
+  enable_ai_orthogonalization:
+    requires:
+      - "core.correlation_checks"
+      - "experimental.advanced_caching"
+  
+  enable_ml_regime_detection:
+    requires:
+      - "monitoring.detailed_tracing"
+      - "core.regime_aware_weights"
+
+# Development environment overrides
+development:
+  override_safety_checks: false        # NEVER set to true in production
+  enable_test_endpoints: true          # Test-only endpoints
+  enable_mock_providers: true          # Mock data providers
+  enable_debug_logging: true           # Verbose debug logging
+  enable_hot_reload: false             # Configuration hot reload
+
+# Production environment lockdowns
+production:
+  force_safety_checks: true            # Force enable safety checks
+  disable_debug_endpoints: true        # Force disable debug endpoints
+  disable_experimental: true           # Force disable all experimental features
+  require_authentication: true         # Force enable authentication
+  enable_strict_validation: true       # Force enable strict validation
+
+# A/B testing configuration
+ab_testing:
+  enabled: false                       # A/B testing framework
+  cohort_assignment: "random"          # random, deterministic, manual
+  features:
+    new_regime_detector:
+      enabled: false
+      percentage: 0                    # 0-100% of users
+    enhanced_guards:
+      enabled: false
+      percentage: 0
+
+# Gradual rollout configuration
+rollout:
+  enabled: false                       # Gradual feature rollout
+  features:
+    ml_regime_detection:
+      stage: "disabled"                # disabled, canary, partial, full
+      percentage: 0                    # Current rollout percentage
+      success_criteria:
+        min_accuracy: 0.85
+        max_latency_ms: 100
+        min_uptime: 0.99

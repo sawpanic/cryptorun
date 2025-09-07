@@ -5,7 +5,7 @@ import (
 	"math"
 	"testing"
 
-	"cryptorun/internal/domain/scoring"
+	"github.com/sawpanic/cryptorun/internal/domain/scoring"
 )
 
 func TestNormalizeVolatilityScore(t *testing.T) {

@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"cryptorun/internal/algo/dip"
-	"cryptorun/internal/atomicio"
-	"cryptorun/internal/domain"
+	"github.com/sawpanic/cryptorun/internal/algo/dip"
+	"github.com/sawpanic/cryptorun/internal/atomicio"
+	"github.com/sawpanic/cryptorun/internal/domain"
 )
 
 // DipScanConfig contains pipeline configuration

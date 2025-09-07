@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"cryptorun/internal/microstructure/adapters"
+	"github.com/sawpanic/cryptorun/internal/microstructure/adapters"
 )
 
 func TestGuardAgainstAggregator(t *testing.T) {

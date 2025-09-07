@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/telemetry/latency"
+	"github.com/sawpanic/cryptorun/internal/telemetry/latency"
 )
 
 // MockClock provides controllable time for testing

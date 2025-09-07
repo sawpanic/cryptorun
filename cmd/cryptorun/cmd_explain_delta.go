@@ -10,7 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
-	"cryptorun/internal/explain/delta"
+	"github.com/sawpanic/cryptorun/internal/explain/delta"
 )
 
 // runExplainDelta executes the explain delta forensic analysis

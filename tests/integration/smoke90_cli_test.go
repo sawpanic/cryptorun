@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/backtest/smoke90"
+	"github.com/sawpanic/cryptorun/internal/backtest/smoke90"
 )
 
 func TestSmoke90CLIIntegration(t *testing.T) {

@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/application"
-	"cryptorun/internal/infrastructure/websocket"
+	"github.com/sawpanic/cryptorun/internal/application"
+	"github.com/sawpanic/cryptorun/internal/infrastructure/websocket"
 )
 
 // TestHotSetIntegration tests the integration between hot set and scanner

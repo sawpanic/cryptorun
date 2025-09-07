@@ -3,11 +3,10 @@ package endpoints
 import (
 	"encoding/json"
 	"net/http"
-	"path/filepath"
 	"strings"
 	"time"
 
-	httpContracts "cryptorun/internal/interfaces/http"
+	httpContracts "github.com/sawpanic/cryptorun/internal/interfaces/http"
 	"github.com/rs/zerolog/log"
 )
 

@@ -1,0 +1,120 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cryptorun-ingress
+  namespace: cryptorun
+  labels:
+    app: cryptorun
+    component: networking
+  annotations:
+    # NGINX Ingress Controller annotations
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    
+    # Rate limiting
+    nginx.ingress.kubernetes.io/rate-limit-rps: "100"
+    nginx.ingress.kubernetes.io/rate-limit-burst-multiplier: "5"
+    
+    # Security headers
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      add_header X-Frame-Options "SAMEORIGIN" always;
+      add_header X-Content-Type-Options "nosniff" always;
+      add_header X-XSS-Protection "1; mode=block" always;
+      add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+      add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';" always;
+    
+    # Timeouts
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "5"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "30"
+    
+    # Load balancing
+    nginx.ingress.kubernetes.io/load-balance: "ewma"
+    nginx.ingress.kubernetes.io/upstream-hash-by: "$remote_addr"
+    
+    # TLS configuration
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - api.cryptorun.io
+    - metrics.cryptorun.io
+    secretName: cryptorun-tls
+  rules:
+  # Main API endpoint
+  - host: api.cryptorun.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: cryptorun-service
+            port:
+              number: 8080
+  
+  # Metrics endpoint (restricted access)
+  - host: metrics.cryptorun.io
+    http:
+      paths:
+      - path: /metrics
+        pathType: Exact
+        backend:
+          service:
+            name: cryptorun-service
+            port:
+              number: 8081
+      - path: /health
+        pathType: Exact
+        backend:
+          service:
+            name: cryptorun-service
+            port:
+              number: 8082
+
+---
+# Internal ingress for cluster services (no external access)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cryptorun-internal-ingress
+  namespace: cryptorun
+  labels:
+    app: cryptorun
+    component: internal-networking
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # Restrict to internal cluster access only
+    nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+spec:
+  ingressClassName: nginx-internal
+  rules:
+  - host: cryptorun-internal.cluster.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: cryptorun-service
+            port:
+              number: 8080
+      - path: /metrics
+        pathType: Exact
+        backend:
+          service:
+            name: cryptorun-service
+            port:
+              number: 8081
+      - path: /health
+        pathType: Exact
+        backend:
+          service:
+            name: cryptorun-service
+            port:
+              number: 8082

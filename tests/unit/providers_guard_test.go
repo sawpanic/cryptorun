@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/infrastructure/httpclient"
-	"cryptorun/internal/infrastructure/providers"
+	"github.com/sawpanic/cryptorun/internal/infrastructure/httpclient"
+	"github.com/sawpanic/cryptorun/internal/infrastructure/providers"
 )
 
 func TestCoinGeckoProvider_BudgetEnforcement(t *testing.T) {

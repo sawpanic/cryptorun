@@ -94,3 +94,49 @@ $(($fileList | ForEach-Object { "# - $_" }) -join "`n")
 
 # Append to commit message
 $commitMsg + $patchFooter | Set-Content $CommitMsgFile -NoNewline
+
+# Changelog automation (D4.2 requirement)
+try {
+    # Check if commit message contains conventional commit format
+    if ($commitMsg -match '^(feat|fix|docs|style|refactor|perf|test|chore)(\(.+\))?: .+') {
+        # Extract conventional commit components
+        $type = $matches[1]
+        $scope = if ($matches[2]) { $matches[2] } else { "" }
+        $description = ($commitMsg -split '\n')[0]
+        
+        # Only auto-update changelog for release-worthy changes
+        if ($type -in @('feat', 'fix', 'perf')) {
+            $changelogPath = "CHANGELOG.md"
+            if (Test-Path $changelogPath) {
+                $changelog = Get-Content $changelogPath -Raw
+                $today = Get-Date -Format "yyyy-MM-dd"
+                
+                # Check if there's an unreleased section
+                if ($changelog -match '## \[Unreleased\]') {
+                    # Add to unreleased section
+                    $entryLine = "- **$type$scope**: $description"
+                    $changelog = $changelog -replace '(## \[Unreleased\]\s*\n)', "`$1$entryLine`n"
+                    Set-Content $changelogPath $changelog -NoNewline
+                    
+                    # Stage the changelog update
+                    git add $changelogPath 2>$null
+                } else {
+                    # Create unreleased section if it doesn't exist
+                    $unreleasedSection = @"
+## [Unreleased]
+- **$type$scope**: $description
+
+"@
+                    if ($changelog -match '^# ') {
+                        # Insert after main title
+                        $changelog = $changelog -replace '^(# .+\n\n)', "`$1$unreleasedSection"
+                        Set-Content $changelogPath $changelog -NoNewline
+                        git add $changelogPath 2>$null
+                    }
+                }
+            }
+        }
+    }
+} catch {
+    # Silently fail on changelog automation errors to not block commits
+}

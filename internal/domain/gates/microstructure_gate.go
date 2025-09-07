@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"cryptorun/internal/data/venue/binance"
-	"cryptorun/internal/data/venue/coinbase"
-	"cryptorun/internal/data/venue/okx"
-	"cryptorun/internal/domain/microstructure"
+	"github.com/sawpanic/cryptorun/internal/data/venue/binance"
+	"github.com/sawpanic/cryptorun/internal/data/venue/coinbase"
+	"github.com/sawpanic/cryptorun/internal/data/venue/okx"
+	"github.com/sawpanic/cryptorun/internal/domain/microstructure"
 )
 
 // MicrostructureGate validates exchange-native microstructure requirements

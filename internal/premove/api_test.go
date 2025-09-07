@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"cryptorun/internal/microstructure"
+	"github.com/sawpanic/cryptorun/internal/microstructure"
 )
 
 func TestPreMovementEngine_ListCandidates_FullPipeline(t *testing.T) {

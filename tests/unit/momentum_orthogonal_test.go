@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"cryptorun/internal/algo/momentum"
+	"github.com/sawpanic/cryptorun/internal/algo/momentum"
 )
 
 func TestGramSchmidtOrthogonalization(t *testing.T) {

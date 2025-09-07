@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/infrastructure/market"
+	"github.com/sawpanic/cryptorun/infrastructure/market"
 )
 
 func TestSnapshotJSONSchema(t *testing.T) {

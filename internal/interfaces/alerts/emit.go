@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"cryptorun/internal/domain/premove"
+	"github.com/sawpanic/cryptorun/internal/domain/premove"
 )
 
 type Emitter struct{}

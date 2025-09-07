@@ -11,8 +11,8 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"cryptorun/internal/infrastructure/httpclient"
-	"cryptorun/internal/telemetry/metrics"
+	"github.com/sawpanic/cryptorun/internal/infrastructure/httpclient"
+	"github.com/sawpanic/cryptorun/internal/telemetry/metrics"
 )
 
 type KrakenProvider struct {
@@ -39,7 +39,7 @@ func NewKrakenProvider(config KrakenConfig) *KrakenProvider {
 		MaxRetries:     config.MaxRetries,
 		BackoffBase:    time.Second,
 		BackoffMax:     15 * time.Second,
-		UserAgent:      "CryptoRun/3.2.1 (Exchange-Native)",
+		UserAgent:      "github.com/sawpanic/cryptorun/3.2.1 (Exchange-Native)",
 	}
 
 	return &KrakenProvider{

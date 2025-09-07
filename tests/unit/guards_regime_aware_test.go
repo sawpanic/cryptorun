@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/domain/guards"
+	"github.com/sawpanic/cryptorun/internal/domain/guards"
 )
 
 func TestRegimeAwareGuardsFeatureFlag(t *testing.T) {

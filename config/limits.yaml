@@ -1,0 +1,72 @@
+# CryptoRun System Limits Configuration
+# Defines system-wide limits and thresholds for all operations
+
+scanning:
+  max_pairs: 100                    # Maximum pairs to scan simultaneously
+  max_concurrent_scans: 10          # Maximum concurrent scanning operations
+  scan_timeout_seconds: 300         # 5-minute timeout for individual scans
+  min_score_threshold: 30.0         # Minimum composite score to consider
+  data_freshness_seconds: 120       # Maximum data staleness allowed (2 minutes)
+  cache_hit_rate_minimum: 0.85      # 85% minimum cache hit rate
+
+entry:
+  min_score: 75.0                   # Minimum composite score for entry
+  min_vadr: 1.8                     # Minimum VADR requirement
+  max_spread_bps: 50.0              # Maximum spread in basis points
+  min_depth_usd: 100000.0           # Minimum depth within ±2% ($100k)
+  min_funding_divergence_sigma: 2.0 # Minimum funding divergence threshold
+  min_volume_multiple: 1.75         # Minimum volume surge multiplier
+  min_adx: 25.0                     # Minimum ADX for trend strength
+  min_hurst: 0.55                   # Minimum Hurst exponent for persistence
+
+exit:
+  max_position_hours: 48            # Maximum position duration (48 hours)
+  stop_loss_percent: 5.0            # Hard stop loss percentage
+  trailing_stop_percent: 3.0        # Trailing stop percentage
+  profit_target_percent: 8.0        # Primary profit target
+  max_drawdown_percent: 2.0         # Maximum unrealized drawdown
+  venue_health_threshold: 0.95      # Minimum venue health for holding positions
+
+risk:
+  max_position_size_usd: 50000.0    # Maximum single position size
+  max_daily_loss_percent: 2.0       # Maximum daily portfolio loss
+  max_weekly_loss_percent: 5.0      # Maximum weekly portfolio loss
+  max_monthly_loss_percent: 10.0    # Maximum monthly portfolio loss
+  max_correlated_positions: 3       # Maximum highly correlated positions
+  max_leverage_ratio: 2.0           # Maximum effective leverage
+
+system:
+  max_memory_mb: 2048               # Maximum memory usage (2GB)
+  max_cpu_percent: 80               # Maximum CPU utilization
+  max_goroutines: 1000              # Maximum concurrent goroutines
+  p99_latency_max_ms: 300           # Maximum P99 latency target
+  max_requests_per_second: 100      # Maximum API requests per second
+  circuit_breaker_threshold: 5      # Circuit breaker failure threshold
+  health_check_interval_sec: 30     # Health check frequency
+
+# Regime-specific multipliers for dynamic limits
+regime_multipliers:
+  trending_bull:
+    min_score_multiplier: 0.9       # 10% lower score requirement in strong trends
+    max_position_hours_multiplier: 1.2  # 20% longer positions allowed
+    stop_loss_multiplier: 1.1       # 10% wider stops
+    
+  choppy:
+    min_score_multiplier: 1.1       # 10% higher score requirement
+    max_position_hours_multiplier: 0.8   # 20% shorter positions
+    stop_loss_multiplier: 0.9       # 10% tighter stops
+    
+  high_vol:
+    min_score_multiplier: 1.2       # 20% higher score requirement
+    max_position_hours_multiplier: 0.6   # 40% shorter positions
+    stop_loss_multiplier: 0.8       # 20% tighter stops
+    min_vadr_multiplier: 1.1        # 10% higher VADR requirement
+
+# Emergency limits for crisis conditions
+emergency_limits:
+  enabled: true
+  max_positions: 1                  # Maximum positions during emergencies
+  min_score: 85.0                   # Higher score requirement
+  max_position_size_usd: 10000.0    # Reduced position size
+  stop_loss_percent: 2.0            # Tighter stops
+  force_exit_drawdown: 3.0          # Force exit at 3% drawdown

@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"cryptorun/internal/application/analyst"
+	"github.com/sawpanic/cryptorun/internal/application/analyst"
 )
 
 // VerificationSweep provides read-only system verification

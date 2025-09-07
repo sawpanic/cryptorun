@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/domain/factors"
+	"github.com/sawpanic/cryptorun/internal/domain/factors"
 )
 
 func TestUnifiedFactorEngine_WeightNormalization(t *testing.T) {

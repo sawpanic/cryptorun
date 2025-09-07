@@ -114,16 +114,170 @@ fallbacks:
     recovery_timeout: 60     # Seconds before retry
     half_open_requests: 3    # Test requests in half-open state
 
+# Cold tier settings
+cold:
+  enable_parquet: true          # Enable Parquet format support
+  enable_csv: true              # Enable CSV format support
+  default_format: "parquet"     # Default format for new files
+  base_path: "data/cold"        # Base directory for cold storage
+  cache_expiry: "1h"            # Cache expiry duration
+  enable_cache: true            # Enable cold tier caching
+  
+  # Compression settings
+  compression:
+    enable: true                # Enable compression for cold files
+    algorithm: "gzip"           # Default algorithm: "gzip", "lz4", "none"
+    level: 6                    # Compression level (1-9 for gzip, 1-16 for lz4)
+    auto_detect: true           # Auto-detect compression from file extension
+    extensions:
+      gzip: [".gz", ".gzip"]    # File extensions for gzip compression
+      lz4: [".lz4"]             # File extensions for LZ4 compression
+      
+  # Streaming settings
+  streaming:
+    enable: true                # Enable streaming cold tier data
+    backend: "kafka"            # Backend: "kafka", "pulsar", "stub"
+    batch_size: 100             # Messages per batch
+    buffer_timeout: "5s"        # Max time to wait for batch
+    retry_attempts: 3           # Retry attempts for failed messages
+    enable_dlq: true            # Enable dead letter queue
+    topics:
+      historical_replay: "cryptorun-historical-replay"     # Topic for historical data replay
+      cold_tier_events: "cryptorun-cold-tier-events"       # Topic for cold tier events
+      dlq: "cryptorun-cold-dlq"                            # Dead letter queue topic
+      
+    # Multi-region replication settings
+    replication:
+      enable: true                # Enable multi-region replication
+      primary_region: "us-east-1" # Primary region identifier
+      secondary_regions:          # List of secondary regions
+        - "us-west-2"
+        - "eu-west-1"
+      
+      # Conflict resolution strategy
+      conflict_resolution: "timestamp_wins"  # "timestamp_wins", "region_priority", "merge"
+      region_priority: ["us-east-1", "us-west-2", "eu-west-1"]  # Priority order for conflicts
+      
+      # Replication policies
+      policies:
+        active_active:
+          topics: ["cryptorun-cold-tier-events", "cryptorun-historical-replay"]
+          lag_threshold_ms: 500     # Max acceptable replication lag
+          cutover_policy: "automatic"  # "automatic" or "manual"
+          
+        active_passive:
+          topics: ["cryptorun-cold-dlq"]
+          lag_threshold_ms: 5000    # Higher threshold for DLQ
+          cutover_policy: "manual"  # Manual cutover for sensitive topics
+      
+      # Health check settings
+      health_check:
+        interval: "30s"             # Health check interval
+        timeout: "10s"              # Health check timeout
+        failure_threshold: 3        # Failures before marking unhealthy
+        recovery_threshold: 2       # Successes needed for recovery
+        
+      # Failover settings
+      failover:
+        unhealthy_timeout: "60s"    # Time before triggering failover
+        error_rate_threshold: 0.05  # 5% error rate threshold
+        recovery_timeout: "300s"    # Time before considering rollback
+        operator_approval: true     # Require manual approval for failover
+
 # Data quality gates
 quality:
   # Freshness requirements
   max_staleness_seconds:
     hot: 10    # Hot data must be < 10s old
     warm: 60   # Warm data must be < 60s old
+    cold: 3600 # Cold data can be up to 1h old
     
   # Completeness requirements  
   min_completeness_percent: 80  # 80% of expected data points
+  expected_data_points:
+    hot: 60    # Expected points per minute for hot data
+    warm: 2    # Expected points per minute for warm data
+    cold: 1440 # Expected points per day for cold data
   
   # Consistency checks
   max_price_change_percent: 50  # Flag >50% price changes
   volume_spike_threshold: 10    # Flag >10x volume spikes
+  
+  # Anomaly detection settings
+  anomaly_detection:
+    enable: true              # Enable anomaly detection
+    window_size: 24           # Hours of historical data for baseline
+    sensitivity: 2.5          # Standard deviations for anomaly threshold
+    min_data_points: 20       # Minimum data points required for detection
+    
+    # Price anomalies
+    price_anomalies:
+      enable: true
+      max_deviation_percent: 25    # Max deviation from moving average
+      gap_threshold_percent: 15    # Max gap between consecutive prices
+      flatline_duration: 300      # Seconds of unchanged price = flatline
+      
+    # Volume anomalies  
+    volume_anomalies:
+      enable: true
+      spike_multiplier: 5          # Volume spike = 5x average
+      drought_threshold: 0.1       # Volume drought = 10% of average
+      zero_volume_tolerance: 60    # Seconds of zero volume allowed
+      
+    # Spread anomalies
+    spread_anomalies:
+      enable: true
+      max_spread_bps: 200          # Max spread in basis points
+      spread_spike_multiplier: 3   # Spread spike = 3x average
+      
+  # Validation gates
+  validation:
+    enable: true                # Enable validation gates
+    fail_fast: false           # Don't stop processing on first validation failure
+    quarantine_threshold: 5    # Failed validations before quarantine
+    recovery_threshold: 3      # Successful validations needed for recovery
+    
+    # Schema validation
+    schema:
+      require_ohlcv: true      # Require OHLCV fields
+      require_timestamp: true  # Require valid timestamp
+      require_venue: true      # Require venue identification
+      require_symbol: true     # Require symbol identification
+      
+    # Data type validation
+    types:
+      numeric_precision: 8     # Required decimal precision for prices
+      timestamp_format: "rfc3339"  # Required timestamp format
+      symbol_regex: "^[A-Z]{3,10}(USD|USDT|USDC)$"  # Valid symbol pattern
+      venue_whitelist: ["binance", "okx", "coinbase", "kraken"]
+      
+  # Quality scoring
+  scoring:
+    enable: true               # Enable quality scoring
+    weights:
+      freshness: 0.3          # Weight for freshness score
+      completeness: 0.3       # Weight for completeness score  
+      consistency: 0.2        # Weight for consistency score
+      anomaly_free: 0.2       # Weight for anomaly-free score
+      
+    # Quality thresholds
+    thresholds:
+      excellent: 95           # Excellent quality threshold (%)
+      good: 85               # Good quality threshold (%)
+      acceptable: 70         # Acceptable quality threshold (%)
+      poor: 50              # Poor quality threshold (%)
+      
+  # Alerting
+  alerting:
+    enable: true              # Enable quality alerting
+    channels: ["metrics"]     # Alert channels (metrics, logs, webhook)
+    
+    # Alert thresholds
+    quality_degradation: 75   # Alert when quality drops below this %
+    anomaly_burst: 10        # Alert when >10 anomalies in window
+    validation_failure_rate: 0.15  # Alert when >15% validation failures
+    
+    # Alert suppression
+    suppress_duplicates: true    # Suppress duplicate alerts
+    suppression_window: "5m"     # Window for duplicate suppression
+    escalation_threshold: 3      # Escalate after 3 consecutive alerts

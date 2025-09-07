@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"cryptorun/internal/application/analyst"
+	"github.com/sawpanic/cryptorun/internal/application/analyst"
 	"github.com/rs/zerolog/log"
 )
 

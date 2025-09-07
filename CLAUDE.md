@@ -201,7 +201,7 @@ Real-time **6–48h cryptocurrency momentum scanner** powered by free, keyless e
 **Unified Composite Scoring System**
 
 * **MomentumCore (Protected)**: Multi-timeframe momentum (1h/4h/12h/24h) that is NEVER orthogonalized
-* **Gram-Schmidt Residualization**: Technical → Volume → Quality → Social (in sequence)
+* **Gram-Schmidt Residualization**: Technical → Volume → Quality → Catalyst → Social (P4 AUDIT: 5-factor sequence)
 * **Regime-Adaptive Weights**: Three profiles (calm/normal/volatile) with automatic 4h switching
 * **Social Cap**: Strictly limited to +10 points, applied OUTSIDE the 100% weight allocation
 * **Entry Gates**: Hard requirements (Score≥75 + VADR≥1.8 + funding divergence≥2σ)
@@ -260,11 +260,15 @@ Real-time **6–48h cryptocurrency momentum scanner** powered by free, keyless e
 ✅ **Delayed Prompts Workflow**: Native OS scheduling system with Windows/POSIX command templates
 ✅ **Single Scheduler Demo**: Executed delayed run for SCORING_REGIME_MENU.txt in 15 minutes
 ✅ **Batch Scheduler**: YAML-based queue system with 3-job demo and machine-readable receipts
+✅ **P1: Catalyst+Compression Category**: Bollinger Band compression + time-decayed catalyst events as 5th factor
+✅ **P2: Isotonic Calibration Harness**: Pool-Adjacent-Violators algorithm with regime-aware calibration
+✅ **P3: Portfolio Caps in Scoring Stage**: Position sizing constraints and portfolio-aware scoring adjustments
+✅ **P4: Orthogonality Audit**: Factor sequence validation + social cap enforcement + Gram-Schmidt verification
 
 ❌ **Legacy FactorWeights**: Removed dual-path system - SINGLE PATH ONLY
 ❌ **Aggregator Dependencies**: Banned for microstructure data - venue-native only  
 
-**Completion:** ~85% core system, ~60% overall project
+**Completion:** ~92% core system, ~75% overall project
 
 ---
 

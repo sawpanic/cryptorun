@@ -8,9 +8,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"cryptorun/internal/data/derivs"
-	"cryptorun/internal/data/etf"
-	"cryptorun/internal/score/composite"
+	"github.com/sawpanic/cryptorun/internal/data/derivs"
+	"github.com/sawpanic/cryptorun/internal/data/etf"
+	"github.com/sawpanic/cryptorun/internal/score/composite"
 )
 
 // TestFeaturesWireEndToEnd tests the complete enhanced scoring pipeline

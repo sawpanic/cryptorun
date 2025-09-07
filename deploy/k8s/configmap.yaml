@@ -1,0 +1,111 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cryptorun-config
+  namespace: cryptorun
+  labels:
+    app: cryptorun
+    component: configuration
+data:
+  redis-addr: "cryptorun-redis:6379"
+  kraken-api-base: "https://api.kraken.com"
+  kraken-ws-url: "wss://ws.kraken.com"
+  log-level: "info"
+  scan-interval: "30s"
+  cache-ttl: "300s"
+  max-symbols: "50"
+  rate-limit-rps: "1.0"
+  
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cryptorun-config-files
+  namespace: cryptorun
+  labels:
+    app: cryptorun
+    component: configuration
+data:
+  data_sources.yaml: |
+    # Exchange-native sources for microstructure data
+    # CRITICAL: Only these sources allowed for depth/spread/order book data
+    exchanges:
+      binance:
+        name: "Binance"
+        websocket_url: "wss://stream.binance.com:9443/ws"
+        rest_url: "https://api.binance.com"
+        rate_limits:
+          ws_connections: 5
+          rest_requests_per_second: 10
+        data_types: ["trades", "depth", "klines", "funding", "open_interest"]
+        
+      okx:
+        name: "OKX"  
+        websocket_url: "wss://ws.okx.com:8443/ws/v5/public"
+        rest_url: "https://www.okx.com"
+        rate_limits:
+          ws_connections: 5
+          rest_requests_per_second: 20
+        data_types: ["trades", "depth", "klines", "funding", "open_interest"]
+        
+      coinbase:
+        name: "Coinbase Advanced"
+        websocket_url: "wss://advanced-trade-ws.coinbase.com"
+        rest_url: "https://api.exchange.coinbase.com"
+        rate_limits:
+          ws_connections: 3
+          rest_requests_per_second: 10
+        data_types: ["trades", "depth", "klines"]
+        
+      kraken:
+        name: "Kraken"
+        websocket_url: "wss://ws.kraken.com"
+        rest_url: "https://api.kraken.com"
+        rate_limits:
+          ws_connections: 3
+          rest_requests_per_second: 1
+        data_types: ["trades", "depth", "klines", "funding"]
+
+    # Source authority rules - defines which sources to use for what data
+    authority:
+      # Microstructure data - EXCHANGE-NATIVE ONLY
+      microstructure:
+        allowed_sources: ["binance", "okx", "coinbase", "kraken"]
+        banned_sources: ["coingecko", "coinpaprika"]  # Aggregators banned
+        primary: ["binance", "okx"]
+        fallback: ["coinbase", "kraken"]
+
+  cache.yaml: |
+    # Cache configuration for hot/warm/cold tiers
+    redis:
+      addr: "cryptorun-redis:6379"
+      password: ""
+      db: 0
+      max_retries: 3
+      retry_delay: "100ms"
+      pool_size: 10
+      
+    tiers:
+      hot:
+        ttl: "30s"
+        max_keys: 1000
+      warm:
+        ttl: "300s"  # 5 minutes
+        max_keys: 5000
+      cold:
+        ttl: "3600s"  # 1 hour
+        max_keys: 10000
+
+  circuits.yaml: |
+    # Circuit breaker configuration for external services
+    kraken:
+      failure_threshold: 5
+      recovery_timeout: "60s"
+      half_open_requests: 3
+      success_threshold: 2
+      
+    binance:
+      failure_threshold: 10
+      recovery_timeout: "30s"
+      half_open_requests: 5
+      success_threshold: 3

@@ -1,3 +1,6 @@
+//go:build ignore
+// +build ignore
+
 package main
 
 import (
@@ -12,9 +15,9 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	"cryptorun/internal/artifacts/compact"
-	"cryptorun/internal/artifacts/gc"
-	"cryptorun/internal/artifacts/manifest"
+	"github.com/sawpanic/cryptorun/internal/artifacts/compact"
+	"github.com/sawpanic/cryptorun/internal/artifacts/gc"
+	"github.com/sawpanic/cryptorun/internal/artifacts/manifest"
 )
 
 var artifactsCmd = &cobra.Command{

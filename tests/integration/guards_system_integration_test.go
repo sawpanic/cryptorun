@@ -177,7 +177,7 @@ package main
 import (
 	"fmt"
 	"testing"
-	"cryptorun/internal/application/guards/testkit"
+	"github.com/sawpanic/cryptorun/internal/application/guards/testkit"
 )
 
 func main() {

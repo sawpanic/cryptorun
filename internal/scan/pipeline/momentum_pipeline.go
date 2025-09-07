@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"cryptorun/internal/algo/momentum"
-	"cryptorun/internal/scan/progress"
+	"github.com/sawpanic/cryptorun/internal/algo/momentum"
+	"github.com/sawpanic/cryptorun/internal/scan/progress"
 )
 
 // MomentumPipeline orchestrates momentum scanning with explainability

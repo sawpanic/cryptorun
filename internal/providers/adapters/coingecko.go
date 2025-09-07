@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"cryptorun/internal/microstructure"
-	"cryptorun/internal/providers/guards"
+	microadapters "github.com/sawpanic/cryptorun/internal/microstructure/adapters"
+	"github.com/sawpanic/cryptorun/internal/providers/guards"
 )
 
 // CoinGeckoAdapter wraps CoinGecko API calls with provider guards
@@ -38,7 +38,7 @@ func NewCoinGeckoAdapter(config guards.ProviderConfig) *CoinGeckoAdapter {
 // WARNING: This method is BANNED for microstructure data per v3.2.1 constraints
 func (c *CoinGeckoAdapter) GetPrices(ctx context.Context, coins []string, vsCurrencies []string) (*PriceResponse, error) {
 	// COMPILE-TIME AGGREGATOR BAN ENFORCEMENT
-	if err := microstructure.GuardAgainstAggregator("coingecko"); err != nil {
+	if err := microadapters.GuardAgainstAggregator("coingecko"); err != nil {
 		return nil, fmt.Errorf("AGGREGATOR BAN: %w", err)
 	}
 	params := fmt.Sprintf("ids=%s&vs_currencies=%s",
@@ -69,7 +69,7 @@ func (c *CoinGeckoAdapter) GetPrices(ctx context.Context, coins []string, vsCurr
 // WARNING: This method is BANNED for microstructure data per v3.2.1 constraints
 func (c *CoinGeckoAdapter) GetMarketData(ctx context.Context, vsCurrency string, limit int) (*MarketDataResponse, error) {
 	// COMPILE-TIME AGGREGATOR BAN ENFORCEMENT
-	if err := microstructure.GuardAgainstAggregator("coingecko"); err != nil {
+	if err := microadapters.GuardAgainstAggregator("coingecko"); err != nil {
 		return nil, fmt.Errorf("AGGREGATOR BAN: %w", err)
 	}
 	params := fmt.Sprintf("vs_currency=%s&order=market_cap_desc&per_page=%d&page=1", vsCurrency, limit)

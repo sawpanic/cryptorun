@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/algo/momentum"
-	"cryptorun/internal/scan/pipeline"
+	"github.com/sawpanic/cryptorun/internal/algo/momentum"
+	"github.com/sawpanic/cryptorun/internal/scan/pipeline"
 )
 
 // MockDataProvider implements the DataProvider interface for testing

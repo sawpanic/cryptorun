@@ -10,7 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
-	"cryptorun/internal/qa"
+	"github.com/sawpanic/cryptorun/internal/qa"
 )
 
 func runQA(cmd *cobra.Command, args []string) error {

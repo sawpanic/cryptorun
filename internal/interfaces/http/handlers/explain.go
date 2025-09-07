@@ -7,7 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	httpContracts "cryptorun/internal/http"
+	httpContracts "github.com/sawpanic/cryptorun/internal/http"
 )
 
 // Explain handles GET /explain/{symbol} endpoint

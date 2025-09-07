@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	"cryptorun/internal/providers/guards"
+	"github.com/sawpanic/cryptorun/internal/providers/guards"
 )
 
 // CoinbaseAdapter wraps Coinbase API calls with provider guards

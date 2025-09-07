@@ -1,7 +1,7 @@
 package main
 
 import (
-	"cryptorun/internal/spec"
+	"github.com/sawpanic/cryptorun/internal/spec"
 	"github.com/spf13/cobra"
 )
 

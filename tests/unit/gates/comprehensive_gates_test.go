@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/data/derivs"
-	"cryptorun/internal/gates"
-	"cryptorun/internal/microstructure"
+	"github.com/sawpanic/cryptorun/internal/data/derivs"
+	"github.com/sawpanic/cryptorun/internal/gates"
+	"github.com/sawpanic/cryptorun/internal/microstructure"
 )
 
 // Mock providers for testing

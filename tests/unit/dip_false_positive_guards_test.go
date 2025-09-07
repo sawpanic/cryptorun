@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/algo/dip"
+	"github.com/sawpanic/cryptorun/internal/algo/dip"
 )
 
 func TestDipGuards_NewsShockGuard_SevereDropWithoutRebound(t *testing.T) {

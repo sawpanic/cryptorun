@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"cryptorun/internal/domain/premove"
-	"cryptorun/internal/interfaces/alerts"
+	"github.com/sawpanic/cryptorun/internal/domain/premove"
+	"github.com/sawpanic/cryptorun/internal/interfaces/alerts"
 )
 
 type PremoveLoop struct {

@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"cryptorun/internal/data"
+	"github.com/sawpanic/cryptorun/internal/data"
 )
 
 // BinanceWSClient implements WebSocket client for Binance

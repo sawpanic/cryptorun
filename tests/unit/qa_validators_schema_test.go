@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"cryptorun/internal/qa"
+	"github.com/sawpanic/cryptorun/internal/qa"
 )
 
 func TestValidateArtifacts_QAReport(t *testing.T) {

@@ -3,7 +3,7 @@ package spec
 import (
 	"testing"
 
-	"cryptorun/internal/spec"
+	"github.com/sawpanic/cryptorun/internal/spec"
 )
 
 // TestSpecificationCompliance runs the complete specification compliance suite

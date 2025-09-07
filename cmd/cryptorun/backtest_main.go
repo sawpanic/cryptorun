@@ -10,7 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
-	"cryptorun/internal/backtest/smoke90"
+	"github.com/sawpanic/cryptorun/internal/backtest/smoke90"
 )
 
 // runBacktestSmoke90 executes the 90-day smoke backtest

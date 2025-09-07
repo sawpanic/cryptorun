@@ -38,6 +38,32 @@ type MetricsRegistry struct {
 	RegimeDuration *prometheus.HistogramVec
 	ActiveRegime   prometheus.Gauge
 	RegimeHealth   *prometheus.GaugeVec
+
+	// Provider-specific metrics (EPIC D requirements)
+	ProviderRateLimit    *prometheus.GaugeVec
+	ProviderLatency      *prometheus.HistogramVec
+	ProviderErrors       *prometheus.CounterVec
+	ProviderHealth       *prometheus.GaugeVec
+	
+	// SSE throughput and latency metrics
+	SSEConnections       *prometheus.GaugeVec
+	SSEThroughput        *prometheus.CounterVec
+	SSELatency          *prometheus.HistogramVec
+	
+	// Performance metrics
+	PerformanceSharpe    *prometheus.GaugeVec
+	PerformanceDrawdown  *prometheus.GaugeVec
+	PerformanceHitRate   *prometheus.GaugeVec
+	
+	// Portfolio metrics
+	PortfolioValue       *prometheus.GaugeVec
+	PortfolioExposure    *prometheus.GaugeVec
+	PortfolioRisk        *prometheus.GaugeVec
+	
+	// Data quality metrics
+	DataFreshness        *prometheus.GaugeVec
+	DataConsensus        *prometheus.GaugeVec
+	DataOutliers         *prometheus.CounterVec
 }
 
 // NewMetricsRegistry creates a new metrics registry with all CryptoRun metrics
@@ -145,6 +171,141 @@ func NewMetricsRegistry() *MetricsRegistry {
 			},
 			[]string{"regime", "indicator"},
 		),
+
+		// Provider metrics (EPIC D requirements)
+		ProviderRateLimit: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "cryptorun_rate_limit_remaining",
+				Help: "Remaining rate limit capacity for providers",
+			},
+			[]string{"provider", "endpoint"},
+		),
+
+		ProviderLatency: prometheus.NewHistogramVec(
+			prometheus.HistogramOpts{
+				Name:    "cryptorun_provider_latency_seconds",
+				Help:    "Provider request latency in seconds",
+				Buckets: []float64{0.01, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0},
+			},
+			[]string{"provider", "endpoint"},
+		),
+
+		ProviderErrors: prometheus.NewCounterVec(
+			prometheus.CounterOpts{
+				Name: "cryptorun_provider_errors_total",
+				Help: "Total number of provider errors",
+			},
+			[]string{"provider", "error_type"},
+		),
+
+		ProviderHealth: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "cryptorun_provider_health",
+				Help: "Provider health status (1=healthy, 0=unhealthy)",
+			},
+			[]string{"provider"},
+		),
+
+		// SSE metrics
+		SSEConnections: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "cryptorun_sse_connections",
+				Help: "Number of active SSE connections",
+			},
+			[]string{"stream"},
+		),
+
+		SSEThroughput: prometheus.NewCounterVec(
+			prometheus.CounterOpts{
+				Name: "cryptorun_sse_throughput_total",
+				Help: "Total SSE messages sent",
+			},
+			[]string{"stream"},
+		),
+
+		SSELatency: prometheus.NewHistogramVec(
+			prometheus.HistogramOpts{
+				Name:    "cryptorun_sse_latency_seconds",
+				Help:    "SSE message latency in seconds",
+				Buckets: []float64{0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0},
+			},
+			[]string{"stream"},
+		),
+
+		// Performance metrics
+		PerformanceSharpe: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "cryptorun_performance_sharpe_ratio",
+				Help: "Portfolio Sharpe ratio",
+			},
+			[]string{"strategy", "timeframe"},
+		),
+
+		PerformanceDrawdown: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "cryptorun_performance_max_drawdown",
+				Help: "Maximum portfolio drawdown",
+			},
+			[]string{"strategy", "timeframe"},
+		),
+
+		PerformanceHitRate: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "cryptorun_performance_hit_rate",
+				Help: "Trading hit rate (percentage of winning trades)",
+			},
+			[]string{"strategy"},
+		),
+
+		// Portfolio metrics
+		PortfolioValue: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "cryptorun_portfolio_value",
+				Help: "Total portfolio value in USD",
+			},
+			[]string{"currency"},
+		),
+
+		PortfolioExposure: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "cryptorun_portfolio_exposure",
+				Help: "Portfolio exposure by type",
+			},
+			[]string{"type"}, // long, short, net, gross
+		),
+
+		PortfolioRisk: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "cryptorun_portfolio_risk",
+				Help: "Portfolio risk metrics",
+			},
+			[]string{"metric"}, // concentration, var, correlation
+		),
+
+		// Data quality metrics
+		DataFreshness: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "cryptorun_data_freshness_seconds",
+				Help: "Data freshness in seconds since last update",
+			},
+			[]string{"source", "symbol"},
+		),
+
+		DataConsensus: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "cryptorun_data_consensus",
+				Help: "Data consensus score across providers (0.0-1.0)",
+			},
+			[]string{"symbol", "metric_type"},
+		),
+
+		DataOutliers: prometheus.NewCounterVec(
+			prometheus.CounterOpts{
+				Name: "cryptorun_data_outliers_total",
+				Help: "Total number of data outliers detected",
+			},
+			[]string{"source", "metric_type"},
+		),
 	}
 
 	// Register all metrics with Prometheus
@@ -162,6 +323,23 @@ func NewMetricsRegistry() *MetricsRegistry {
 		registry.RegimeDuration,
 		registry.ActiveRegime,
 		registry.RegimeHealth,
+		// EPIC D metrics
+		registry.ProviderRateLimit,
+		registry.ProviderLatency,
+		registry.ProviderErrors,
+		registry.ProviderHealth,
+		registry.SSEConnections,
+		registry.SSEThroughput,
+		registry.SSELatency,
+		registry.PerformanceSharpe,
+		registry.PerformanceDrawdown,
+		registry.PerformanceHitRate,
+		registry.PortfolioValue,
+		registry.PortfolioExposure,
+		registry.PortfolioRisk,
+		registry.DataFreshness,
+		registry.DataConsensus,
+		registry.DataOutliers,
 	)
 
 	return registry
@@ -453,4 +631,79 @@ func regimeToGaugeValue(regime string) float64 {
 	default:
 		return -1.0 // Unknown/manual override
 	}
+}
+
+// EPIC D - Additional Metrics Methods
+
+// Provider Metrics Methods
+func (m *MetricsRegistry) SetProviderRateLimit(provider, endpoint string, remaining float64) {
+	m.ProviderRateLimit.WithLabelValues(provider, endpoint).Set(remaining)
+}
+
+func (m *MetricsRegistry) RecordProviderLatency(provider, endpoint string, duration time.Duration) {
+	m.ProviderLatency.WithLabelValues(provider, endpoint).Observe(duration.Seconds())
+}
+
+func (m *MetricsRegistry) IncProviderError(provider, errorType string) {
+	m.ProviderErrors.WithLabelValues(provider, errorType).Inc()
+}
+
+func (m *MetricsRegistry) SetProviderHealth(provider string, healthy bool) {
+	value := 0.0
+	if healthy {
+		value = 1.0
+	}
+	m.ProviderHealth.WithLabelValues(provider).Set(value)
+}
+
+// SSE Metrics Methods
+func (m *MetricsRegistry) SetSSEConnections(stream string, count float64) {
+	m.SSEConnections.WithLabelValues(stream).Set(count)
+}
+
+func (m *MetricsRegistry) IncSSEThroughput(stream string) {
+	m.SSEThroughput.WithLabelValues(stream).Inc()
+}
+
+func (m *MetricsRegistry) RecordSSELatency(stream string, duration time.Duration) {
+	m.SSELatency.WithLabelValues(stream).Observe(duration.Seconds())
+}
+
+// Performance Metrics Methods
+func (m *MetricsRegistry) SetPerformanceSharpe(strategy, timeframe string, value float64) {
+	m.PerformanceSharpe.WithLabelValues(strategy, timeframe).Set(value)
+}
+
+func (m *MetricsRegistry) SetPerformanceDrawdown(strategy, timeframe string, value float64) {
+	m.PerformanceDrawdown.WithLabelValues(strategy, timeframe).Set(value)
+}
+
+func (m *MetricsRegistry) SetPerformanceHitRate(strategy string, value float64) {
+	m.PerformanceHitRate.WithLabelValues(strategy).Set(value)
+}
+
+// Portfolio Metrics Methods
+func (m *MetricsRegistry) SetPortfolioValue(currency string, value float64) {
+	m.PortfolioValue.WithLabelValues(currency).Set(value)
+}
+
+func (m *MetricsRegistry) SetPortfolioExposure(exposureType string, value float64) {
+	m.PortfolioExposure.WithLabelValues(exposureType).Set(value)
+}
+
+func (m *MetricsRegistry) SetPortfolioRisk(metric string, value float64) {
+	m.PortfolioRisk.WithLabelValues(metric).Set(value)
+}
+
+// Data Quality Metrics Methods
+func (m *MetricsRegistry) SetDataFreshness(source, symbol string, seconds float64) {
+	m.DataFreshness.WithLabelValues(source, symbol).Set(seconds)
+}
+
+func (m *MetricsRegistry) SetDataConsensus(symbol, metricType string, score float64) {
+	m.DataConsensus.WithLabelValues(symbol, metricType).Set(score)
+}
+
+func (m *MetricsRegistry) IncDataOutlier(source, metricType string) {
+	m.DataOutliers.WithLabelValues(source, metricType).Inc()
 }

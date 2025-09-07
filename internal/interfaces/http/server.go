@@ -14,7 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 
-	"cryptorun/internal/interfaces/http/handlers"
+	"github.com/sawpanic/cryptorun/internal/interfaces/http/handlers"
 )
 
 // Server represents the read-only HTTP server

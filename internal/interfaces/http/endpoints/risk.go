@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"cryptorun/internal/application"
+	"github.com/sawpanic/cryptorun/internal/application"
 )
 
 // RiskEnvelopeHandler returns the risk envelope monitoring endpoint

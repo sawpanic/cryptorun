@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"cryptorun/internal/algo/dip"
-	"cryptorun/internal/scan/sim"
+	"github.com/sawpanic/cryptorun/internal/algo/dip"
+	"github.com/sawpanic/cryptorun/internal/scan/sim"
 )
 
 func TestDipCore_DebugUptrendScenario(t *testing.T) {

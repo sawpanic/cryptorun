@@ -3,19 +3,19 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
+	_ "os" // Unused in current build
 	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/rs/zerolog/log"
 
-	"cryptorun/internal/data/facade"
-	"cryptorun/internal/data/cache"
-	"cryptorun/internal/data/pit"
-	"cryptorun/internal/data/rl"
-	"cryptorun/internal/data/exchanges/kraken"
-	"cryptorun/internal/metrics"
+	"github.com/sawpanic/cryptorun/internal/data/facade"
+	"github.com/sawpanic/cryptorun/internal/data/cache"
+	"github.com/sawpanic/cryptorun/internal/data/pit"
+	"github.com/sawpanic/cryptorun/internal/data/rl"
+	"github.com/sawpanic/cryptorun/internal/data/exchanges/kraken"
+	"github.com/sawpanic/cryptorun/internal/metrics"
 )
 
 // runProbeData implements the data probe command
@@ -78,15 +78,15 @@ func initializeDataFacade() (facade.DataFacade, error) {
 	}
 	
 	// Create components
-	ttlCache := cache.NewTTLCache(cacheCfg.MaxEntries)
+	_ = cache.NewTTLCache(cacheCfg.MaxEntries) // ttlCache unused in stub
 	rateLimiter := rl.NewRateLimiter()
-	pitStore := pit.NewStore("artifacts/pit")
+	_ = pit.NewStore("artifacts/pit") // pitStore unused in stub
 	
 	// Create facade
 	df := facade.New(hotCfg, warmCfg, cacheCfg, rateLimiter)
 	
 	// Register exchange adapters
-	krakenAdapter := kraken.NewAdapter()
+	_ = kraken.NewAdapter() // krakenAdapter unused in stub
 	// Note: In full implementation, would register all exchange adapters
 	
 	log.Info().Msg("Data facade initialized")

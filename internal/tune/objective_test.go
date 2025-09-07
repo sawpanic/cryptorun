@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"cryptorun/internal/tune/data"
-	"cryptorun/internal/tune/weights"
+	"github.com/sawpanic/cryptorun/internal/tune/data"
+	"github.com/sawpanic/cryptorun/internal/tune/weights"
 )
 
 func TestObjectiveFunction_BasicEvaluation(t *testing.T) {

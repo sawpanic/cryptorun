@@ -3,7 +3,7 @@ package guards_test
 import (
 	"testing"
 
-	"cryptorun/internal/domain/guards"
+	"github.com/sawpanic/cryptorun/internal/domain/guards"
 )
 
 func TestFreshnessGuard_BaselineProfile(t *testing.T) {

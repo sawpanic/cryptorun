@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"cryptorun/internal/tune/weights"
+	"github.com/sawpanic/cryptorun/internal/tune/weights"
 )
 
 // TestConstraintSystemValidation tests the constraint validation system

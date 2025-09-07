@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"cryptorun/internal/micro"
+	"github.com/sawpanic/cryptorun/internal/micro"
 )
 
 // BinanceCollector implements exchange-native L1/L2 collection for Binance

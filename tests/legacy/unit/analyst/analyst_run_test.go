@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/application/analyst"
-	"cryptorun/internal/application/pipeline"
+	"github.com/sawpanic/cryptorun/internal/application/analyst"
+	"github.com/sawpanic/cryptorun/internal/application/pipeline"
 )
 
 func TestAnalystRunner_RunCoverageAnalysis(t *testing.T) {

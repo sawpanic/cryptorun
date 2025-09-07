@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"cryptorun/internal/config"
+	"github.com/sawpanic/cryptorun/internal/config"
 )
 
 func TestMenuGuardsIntegration(t *testing.T) {

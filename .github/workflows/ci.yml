@@ -1,0 +1,31 @@
+name: crypto-run-ci
+on: [push, pull_request]
+jobs:
+  qa-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run No-TODO QA Gate
+        run: |
+          chmod +x scripts/qa/no_todo.sh
+          scripts/qa/no_todo.sh
+      - name: Upload QA Report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-report
+          path: no_todo_report.txt
+          retention-days: 7
+
+  build:
+    runs-on: ubuntu-latest
+    needs: qa-gate
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+      - run: go mod tidy
+      - run: go vet ./...
+      - run: go test ./...
+      - run: go build ./...

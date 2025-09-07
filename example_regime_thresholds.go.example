@@ -1,0 +1,135 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"github.com/sawpanic/cryptorun/internal/gates"
+	"github.com/sawpanic/cryptorun/internal/microstructure"
+	"github.com/sawpanic/cryptorun/internal/data/derivs"
+)
+
+// Mock implementations for the example
+type mockMicroEvaluator struct{}
+
+func (m *mockMicroEvaluator) EvaluateSnapshot(symbol string) (microstructure.EvaluationResult, error) {
+	return microstructure.EvaluationResult{
+		VADR:            1.9,  // Passes trending (1.6), fails choppy (2.0)
+		SpreadBps:       52.0, // Fails default (50), passes trending (55)
+		DepthUSD:        120000.0,
+		DailyVolumeUSD:  750000.0,
+		BarCount:        25,
+		ADX:             28.0,
+		Hurst:           0.58,
+		BarsFromTrigger: 1,
+		LateFillDelay:   10000000000, // 10 seconds
+		Healthy:         true,
+	}, nil
+}
+
+func (m *mockMicroEvaluator) EvaluateGates(ctx context.Context, symbol, venue string, orderbook *microstructure.OrderBookSnapshot, adv float64) (*microstructure.GateReport, error) {
+	return nil, fmt.Errorf("not implemented in mock")
+}
+
+func (m *mockMicroEvaluator) GetLiquidityTier(adv float64) *microstructure.LiquidityTier {
+	return nil
+}
+
+func (m *mockMicroEvaluator) UpdateVenueHealth(venue string, health microstructure.VenueHealthStatus) error {
+	return fmt.Errorf("not implemented in mock")
+}
+
+func (m *mockMicroEvaluator) GetVenueHealth(venue string) (*microstructure.VenueHealthStatus, error) {
+	return nil, fmt.Errorf("not implemented in mock")
+}
+
+type mockFundingProvider struct{}
+
+func (m *mockFundingProvider) GetFundingSnapshot(ctx context.Context, symbol string) (*derivs.FundingSnapshot, error) {
+	return &derivs.FundingSnapshot{
+		Symbol:                   symbol,
+		MaxVenueDivergence:       2.5,
+		FundingDivergencePresent: true,
+	}, nil
+}
+
+type mockOIProvider struct{}
+
+func (m *mockOIProvider) GetOpenInterestSnapshot(ctx context.Context, symbol string, priceChange float64) (*derivs.OpenInterestSnapshot, error) {
+	return &derivs.OpenInterestSnapshot{
+		Symbol:     symbol,
+		OIResidual: 1500000.0,
+	}, nil
+}
+
+type mockETFProvider struct{}
+
+func (m *mockETFProvider) GetETFFlowSnapshot(ctx context.Context, symbol string) (*derivs.ETFFlowSnapshot, error) {
+	return &derivs.ETFFlowSnapshot{
+		Symbol:    symbol,
+		FlowTint:  0.5,
+		ETFList:   []string{"IBIT", "GBTC"},
+	}, nil
+}
+
+func main() {
+	// Create an entry gate evaluator with regime-aware thresholds
+	evaluator := gates.NewEntryGateEvaluator(
+		&mockMicroEvaluator{},
+		&mockFundingProvider{},
+		&mockOIProvider{},
+		&mockETFProvider{},
+	)
+
+	symbol := "BTCUSD"
+	compositeScore := 80.0
+	priceChange24h := 8.0
+	adv := 1000000.0
+
+	// Test different regimes to show different threshold behavior
+	regimes := []string{"trending", "choppy", "high_vol", "unknown"}
+
+	for _, regime := range regimes {
+		fmt.Printf("\n=== Testing %s regime ===\n", regime)
+		
+		// Show the thresholds for this regime
+		thresholdSummary := evaluator.GetRegimeThresholdSummary(regime)
+		fmt.Printf("Thresholds: %s\n", thresholdSummary)
+
+		// Evaluate entry gates
+		result, err := evaluator.EvaluateEntry(context.Background(), symbol, compositeScore, priceChange24h, regime, adv)
+		if err != nil {
+			log.Printf("Error evaluating entry for %s regime: %v", regime, err)
+			continue
+		}
+
+		// Display results
+		fmt.Printf("Overall Result: %s\n", result.GetGateSummary())
+		
+		// Show specific gate results for microstructure gates
+		if vadrGate := result.GateResults["vadr"]; vadrGate != nil {
+			status := "✅"
+			if !vadrGate.Passed {
+				status = "❌"
+			}
+			fmt.Printf("  %s VADR Gate: %s\n", status, vadrGate.Description)
+		}
+
+		if spreadGate := result.GateResults["spread"]; spreadGate != nil {
+			status := "✅"
+			if !spreadGate.Passed {
+				status = "❌"
+			}
+			fmt.Printf("  %s Spread Gate: %s\n", status, spreadGate.Description)
+		}
+
+		if depthGate := result.GateResults["depth"]; depthGate != nil {
+			status := "✅"
+			if !depthGate.Passed {
+				status = "❌"
+			}
+			fmt.Printf("  %s Depth Gate: %s\n", status, depthGate.Description)
+		}
+	}
+}

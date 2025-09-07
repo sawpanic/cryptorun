@@ -7,7 +7,7 @@ import (
 	"sort"
 	"time"
 
-	"cryptorun/internal/microstructure"
+	"github.com/sawpanic/cryptorun/internal/microstructure"
 )
 
 // GateEvaluator implements Pre-Movement v3.3 2-of-3 confirmation logic with tiered microstructure

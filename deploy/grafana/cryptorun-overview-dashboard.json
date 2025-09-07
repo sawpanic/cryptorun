@@ -1,0 +1,338 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "CryptoRun Overview Dashboard",
+    "tags": ["cryptorun", "monitoring", "trading"],
+    "style": "dark",
+    "timezone": "browser",
+    "refresh": "30s",
+    "schemaVersion": 30,
+    "version": 1,
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": ["5s", "10s", "30s", "1m", "5m", "15m", "30m", "1h", "2h", "1d"],
+      "time_options": ["5m", "15m", "1h", "6h", "12h", "24h", "2d", "7d", "30d"]
+    },
+    "templating": {
+      "list": [
+        {
+          "name": "instance",
+          "type": "query",
+          "query": "label_values(cryptorun_system_health, instance)",
+          "current": {
+            "value": "All",
+            "text": "All"
+          },
+          "options": [],
+          "includeAll": true,
+          "allValue": ".*",
+          "multi": false,
+          "refresh": 1
+        }
+      ]
+    },
+    "panels": [
+      {
+        "title": "System Health Overview",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "avg(cryptorun_system_health{instance=~\"$instance\"})",
+            "legendFormat": "System Health"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 0.5},
+                {"color": "green", "value": 0.9}
+              ]
+            },
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "title": "Active Scans",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "cryptorun_active_scans{instance=~\"$instance\"}",
+            "legendFormat": "Active Scans"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "short"
+          }
+        },
+        "gridPos": {"h": 4, "w": 3, "x": 6, "y": 0}
+      },
+      {
+        "title": "Total Scans",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "increase(cryptorun_scans_total{instance=~\"$instance\"}[1h])",
+            "legendFormat": "Scans/Hour"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "short"
+          }
+        },
+        "gridPos": {"h": 4, "w": 3, "x": 9, "y": 0}
+      },
+      {
+        "title": "Current Regime",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "cryptorun_active_regime{instance=~\"$instance\"}",
+            "legendFormat": "Regime"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {"options": {"0": {"text": "Choppy"}}, "type": "value"},
+              {"options": {"1": {"text": "Bull Trend"}}, "type": "value"},
+              {"options": {"2": {"text": "High Vol"}}, "type": "value"}
+            ],
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "orange", "value": 0},
+                {"color": "green", "value": 1},
+                {"color": "red", "value": 2}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0}
+      },
+      {
+        "title": "Portfolio Value",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "cryptorun_portfolio_value{currency=\"USD\",instance=~\"$instance\"}",
+            "legendFormat": "Portfolio Value"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "currencyUSD"
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0}
+      },
+      {
+        "title": "Performance Metrics",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "cryptorun_performance_sharpe_ratio{instance=~\"$instance\"}",
+            "legendFormat": "Sharpe Ratio - {{strategy}}"
+          },
+          {
+            "expr": "cryptorun_performance_hit_rate{instance=~\"$instance\"}",
+            "legendFormat": "Hit Rate - {{strategy}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear",
+              "lineWidth": 2,
+              "fillOpacity": 0.1
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 6, "y": 4}
+      },
+      {
+        "title": "Provider Health Status",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "cryptorun_provider_health{instance=~\"$instance\"}",
+            "legendFormat": "{{provider}}",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "displayMode": "color-background",
+              "filterable": false
+            },
+            "mappings": [
+              {"options": {"0": {"text": "Unhealthy", "color": "red"}}, "type": "value"},
+              {"options": {"1": {"text": "Healthy", "color": "green"}}, "type": "value"}
+            ]
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 18, "y": 4}
+      },
+      {
+        "title": "Cache Performance",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "cryptorun_cache_hit_ratio{instance=~\"$instance\"}",
+            "legendFormat": "Hit Ratio"
+          },
+          {
+            "expr": "rate(cryptorun_cache_hits_total{instance=~\"$instance\"}[5m])",
+            "legendFormat": "Hits/sec - {{cache_type}}"
+          },
+          {
+            "expr": "rate(cryptorun_cache_misses_total{instance=~\"$instance\"}[5m])",
+            "legendFormat": "Misses/sec - {{cache_type}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "percentunit"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12}
+      },
+      {
+        "title": "Pipeline Step Duration",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(cryptorun_step_duration_seconds_bucket{instance=~\"$instance\"}[5m]))",
+            "legendFormat": "P95 - {{step}}"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(cryptorun_step_duration_seconds_bucket{instance=~\"$instance\"}[5m]))",
+            "legendFormat": "P50 - {{step}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "s"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12}
+      },
+      {
+        "title": "Provider Latency",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(cryptorun_provider_latency_seconds_bucket{instance=~\"$instance\"}[5m]))",
+            "legendFormat": "P95 - {{provider}}"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(cryptorun_provider_latency_seconds_bucket{instance=~\"$instance\"}[5m]))",
+            "legendFormat": "P50 - {{provider}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "s",
+            "custom": {
+              "thresholdsStyle": {"mode": "line"},
+              "thresholds": [
+                {"color": "red", "value": 2.0}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 20}
+      },
+      {
+        "title": "Error Rates",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(cryptorun_pipeline_errors_total{instance=~\"$instance\"}[5m])",
+            "legendFormat": "Pipeline Errors - {{step}}"
+          },
+          {
+            "expr": "rate(cryptorun_provider_errors_total{instance=~\"$instance\"}[5m])",
+            "legendFormat": "Provider Errors - {{provider}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "reqps"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 20}
+      },
+      {
+        "title": "SSE Connection Status",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "cryptorun_sse_connections{instance=~\"$instance\"}",
+            "legendFormat": "Connections - {{stream}}"
+          },
+          {
+            "expr": "rate(cryptorun_sse_throughput_total{instance=~\"$instance\"}[1m])",
+            "legendFormat": "Messages/sec - {{stream}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "short"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 28}
+      },
+      {
+        "title": "Data Quality Metrics",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "cryptorun_data_consensus{instance=~\"$instance\"}",
+            "legendFormat": "Consensus - {{symbol}}"
+          },
+          {
+            "expr": "cryptorun_data_freshness_seconds{instance=~\"$instance\"}/60",
+            "legendFormat": "Freshness (min) - {{source}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "short",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 28}
+      }
+    ]
+  }
+}

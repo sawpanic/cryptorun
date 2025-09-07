@@ -10,8 +10,8 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/rs/zerolog/log"
 
-	"cryptorun/internal/domain"
-	"cryptorun/internal/metrics"
+	"github.com/sawpanic/cryptorun/internal/domain"
+	"github.com/sawpanic/cryptorun/internal/metrics"
 )
 
 // HotSetManager manages real-time WebSocket connections for top USD pairs

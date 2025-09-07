@@ -1,0 +1,218 @@
+groups:
+  - name: cryptorun-critical
+    rules:
+      - alert: ServiceDown
+        expr: up{job="cryptorun"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: cryptorun
+        annotations:
+          summary: "CryptoRun service is down"
+          description: "CryptoRun service has been down for more than 30 seconds"
+          runbook_url: "https://docs.cryptorun.com/alerts/service-down"
+
+      - alert: HighMemoryUsage
+        expr: (go_memstats_alloc_bytes / go_memstats_sys_bytes) > 0.9
+        for: 5m
+        labels:
+          severity: critical
+          service: cryptorun
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is above 90% for more than 5 minutes"
+          threshold: "90%"
+
+      - alert: NoHealthyProviders
+        expr: sum(cryptorun_provider_healthy) == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: cryptorun
+        annotations:
+          summary: "No healthy exchange providers available"
+          description: "All exchange providers are unhealthy - trading will be impacted"
+
+  - name: cryptorun-provider-alerts
+    rules:
+      - alert: ProviderDown
+        expr: cryptorun_provider_healthy == 0
+        for: 2m
+        labels:
+          severity: warning
+          service: cryptorun
+          component: provider
+        annotations:
+          summary: "Exchange provider {{ $labels.venue }} is down"
+          description: "Provider {{ $labels.venue }} has been unhealthy for more than 2 minutes"
+          venue: "{{ $labels.venue }}"
+
+      - alert: ProviderHighErrorRate
+        expr: cryptorun_provider_success_rate < 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: cryptorun
+          component: provider
+        annotations:
+          summary: "High error rate for provider {{ $labels.venue }}"
+          description: "Provider {{ $labels.venue }} has success rate below 80% for 5+ minutes (current: {{ $value | humanizePercentage }})"
+          venue: "{{ $labels.venue }}"
+          threshold: "80%"
+
+      - alert: ProviderSlowResponse
+        expr: cryptorun_provider_response_time_seconds > 2.0
+        for: 3m
+        labels:
+          severity: warning
+          service: cryptorun
+          component: provider
+        annotations:
+          summary: "Slow response time for provider {{ $labels.venue }}"
+          description: "Provider {{ $labels.venue }} response time is above 2 seconds (current: {{ $value }}s)"
+          venue: "{{ $labels.venue }}"
+          threshold: "2s"
+
+  - name: cryptorun-circuit-breaker
+    rules:
+      - alert: CircuitBreakerOpen
+        expr: cryptorun_circuit_breaker_state == 2
+        for: 1m
+        labels:
+          severity: warning
+          service: cryptorun
+          component: circuit-breaker
+        annotations:
+          summary: "Circuit breaker {{ $labels.name }} is open"
+          description: "Circuit breaker for {{ $labels.name }} has been open for more than 1 minute"
+
+      - alert: CircuitBreakerHighFailureRate
+        expr: cryptorun_circuit_breaker_failure_rate > 0.5
+        for: 2m
+        labels:
+          severity: warning
+          service: cryptorun
+          component: circuit-breaker
+        annotations:
+          summary: "High failure rate for circuit breaker {{ $labels.name }}"
+          description: "Failure rate for {{ $labels.name }} is above 50% (current: {{ $value | humanizePercentage }})"
+          threshold: "50%"
+
+  - name: cryptorun-performance
+    rules:
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, rate(cryptorun_step_duration_seconds_bucket[5m])) > 1.0
+        for: 5m
+        labels:
+          severity: warning
+          service: cryptorun
+          component: performance
+        annotations:
+          summary: "High P95 latency detected"
+          description: "P95 latency for {{ $labels.step }} is above 1 second (current: {{ $value }}s)"
+          threshold: "1s"
+
+      - alert: PipelineErrors
+        expr: rate(cryptorun_pipeline_errors_total[5m]) > 0.1
+        for: 3m
+        labels:
+          severity: warning
+          service: cryptorun
+          component: pipeline
+        annotations:
+          summary: "High pipeline error rate"
+          description: "Pipeline errors for {{ $labels.step }} exceed 0.1/sec (current: {{ $value }}/sec)"
+          step: "{{ $labels.step }}"
+          error_type: "{{ $labels.error_type }}"
+
+      - alert: LowCacheHitRate
+        expr: cryptorun_cache_hit_ratio < 0.7
+        for: 10m
+        labels:
+          severity: warning
+          service: cryptorun
+          component: cache
+        annotations:
+          summary: "Low cache hit rate"
+          description: "Cache hit rate is below 70% for more than 10 minutes (current: {{ $value | humanizePercentage }})"
+          threshold: "70%"
+
+  - name: cryptorun-system
+    rules:
+      - alert: HighGoroutineCount
+        expr: go_goroutines > 1000
+        for: 5m
+        labels:
+          severity: warning
+          service: cryptorun
+          component: system
+        annotations:
+          summary: "High number of goroutines"
+          description: "Goroutine count is above 1000 (current: {{ $value }})"
+          threshold: "1000"
+
+      - alert: HighGCPressure
+        expr: rate(go_memstats_gc_total[5m]) > 2
+        for: 5m
+        labels:
+          severity: warning
+          service: cryptorun
+          component: system
+        annotations:
+          summary: "High garbage collection pressure"
+          description: "GC rate is above 2/sec indicating memory pressure (current: {{ $value }}/sec)"
+          threshold: "2/sec"
+
+  - name: cryptorun-regime-health
+    rules:
+      - alert: RegimeDetectionStale
+        expr: time() - cryptorun_last_update_timestamp > 3600
+        for: 5m
+        labels:
+          severity: warning
+          service: cryptorun
+          component: regime
+        annotations:
+          summary: "Regime detection data is stale"
+          description: "Regime indicators haven't been updated for more than 1 hour"
+          threshold: "1h"
+
+      - alert: FrequentRegimeSwitches
+        expr: increase(cryptorun_regime_switches_total[1h]) > 5
+        for: 0m
+        labels:
+          severity: info
+          service: cryptorun
+          component: regime
+        annotations:
+          summary: "Frequent regime switches detected"
+          description: "More than 5 regime switches in the last hour - market volatility detected"
+          threshold: "5 switches/hour"
+
+  - name: cryptorun-websocket
+    rules:
+      - alert: HighWebSocketLatency
+        expr: histogram_quantile(0.95, rate(cryptorun_ws_latency_ms_bucket[5m])) > 500
+        for: 3m
+        labels:
+          severity: warning
+          service: cryptorun
+          component: websocket
+        annotations:
+          summary: "High WebSocket latency for {{ $labels.exchange }}"
+          description: "P95 WebSocket latency for {{ $labels.exchange }} is above 500ms (current: {{ $value }}ms)"
+          exchange: "{{ $labels.exchange }}"
+          endpoint: "{{ $labels.endpoint }}"
+          threshold: "500ms"
+
+      - alert: WebSocketConnectionLoss
+        expr: rate(cryptorun_pipeline_errors_total{error_type="websocket_disconnect"}[5m]) > 0.01
+        for: 1m
+        labels:
+          severity: warning
+          service: cryptorun
+          component: websocket
+        annotations:
+          summary: "Frequent WebSocket disconnections"
+          description: "WebSocket disconnection rate is above 0.01/sec (current: {{ $value }}/sec)"
+          threshold: "0.01/sec"

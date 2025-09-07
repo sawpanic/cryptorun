@@ -1,8 +1,8 @@
 # CryptoRun Production Scheduler Configuration
-# Manages hot/warm momentum scanning and regime refresh cycles
+# MVP Scheduler backbone: hot/warm scan loops, provider guards, premove hourly sweep
 
 global:
-  artifacts_dir: "artifacts/signals"
+  artifacts_dir: "artifacts"
   log_level: "info"
   timezone: "UTC"
 
@@ -11,43 +11,71 @@ jobs:
   - name: "scan.hot"
     schedule: "*/15 * * * *"  # Every 15 minutes
     type: "scan.hot"
-    description: "Hot momentum + premove scan for top-30 ADV universe"
+    description: "Hot momentum + premove scans with regime-aware weights on top30 ADV"
     enabled: true
     config:
       universe: "top30"
       venues: ["kraken", "okx", "coinbase"]
       max_sample: 30
-      ttl: 300
-      top_n: 20
+      ttl: 300  # 5 minute cache TTL
+      top_n: 10
       premove: true
-      output_dir: "artifacts/signals"
+      regime_aware: true
+      output_dir: "signals"
 
   # Warm scan: Remaining universe with cached sources every 2 hours
   - name: "scan.warm"
     schedule: "0 */2 * * *"   # Every 2 hours at minute 0
     type: "scan.warm"
-    description: "Warm scan for remaining universe with cached sources"
+    description: "Warm scan with cached sources on remaining universe, lower QPS"
     enabled: true
     config:
       universe: "remaining"
-      venues: ["kraken"]
+      venues: ["kraken", "okx"]
       max_sample: 100
-      ttl: 1800
-      top_n: 50
+      ttl: 1800  # 30 minute cache TTL for warm scan
+      top_n: 20
       premove: false
-      output_dir: "artifacts/signals"
+      output_dir: "warm_signals"
 
   # Regime refresh: Detect market regime every 4 hours
   - name: "regime.refresh"
     schedule: "0 */4 * * *"   # Every 4 hours at minute 0
     type: "regime.refresh"
-    description: "Refresh market regime detection (realized_vol_7d, %>20MA, breadth thrust)"
+    description: "Refresh regime with realized_vol_7d, %>20MA, breadth thrust; majority vote → cached regime + weight blend"
     enabled: true
     config:
-      universe: "all"
+      universe: "top100"
+      venues: ["kraken", "coinbase"]
+      max_sample: 100
+      ttl: 3600  # 1 hour cache for regime indicators
+      output_dir: "regime"
+
+  # Provider health monitoring: Every 5 minutes
+  - name: "providers.health"
+    schedule: "*/5 * * * *"   # Every 5 minutes
+    type: "providers.health"
+    description: "Monitor provider health, rate-limits, circuit breakers, fallbacks; double cache_ttl on degradation"
+    enabled: true
+    config:
+      venues: ["kraken", "okx", "coinbase", "binance"]
+      ttl: 300  # 5 minute health check TTL
+      output_dir: "health"
+
+  # Premove hourly sweep: Every hour with 2-of-3 gate enforcement
+  - name: "premove.hourly"
+    schedule: "0 * * * *"     # Every hour at minute 0
+    type: "premove.hourly"
+    description: "Hourly premove sweep with 2-of-3 gate enforcement; require volume confirm in risk_off/btc_driven"
+    enabled: true
+    config:
+      universe: "top50"
       venues: ["kraken", "okx", "coinbase"]
-      max_sample: 200
-      ttl: 3600
-      top_n: 100
-      premove: false
-      output_dir: "artifacts/regime"
+      max_sample: 50
+      ttl: 600  # 10 minute cache TTL
+      top_n: 15
+      output_dir: "premove"
+      require_gates: ["funding_divergence", "supply_squeeze", "whale_accumulation"]
+      min_gates_passed: 2  # 2-of-3 gate enforcement
+      regime_aware: true
+      volume_confirm: true  # Require volume confirmation in risk_off/btc_driven regime

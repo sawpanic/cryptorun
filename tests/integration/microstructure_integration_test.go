@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/data/venue/types"
-	"cryptorun/internal/domain/microstructure"
+	"github.com/sawpanic/cryptorun/internal/data/venue/types"
+	"github.com/sawpanic/cryptorun/internal/domain/microstructure"
 )
 
 func TestMicrostructureWithRealFixtures(t *testing.T) {

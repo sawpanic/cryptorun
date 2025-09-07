@@ -1,7 +1,7 @@
 package unit
 
 import (
-	d "cryptorun/internal/domain"
+	d "github.com/sawpanic/cryptorun/internal/domain"
 	"testing"
 )
 

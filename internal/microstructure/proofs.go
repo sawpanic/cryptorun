@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
 
-	"cryptorun/internal/data/venue/types"
+	"github.com/sawpanic/cryptorun/internal/data/venue/types"
 )
 
 // ProofGenerator creates validation proof artifacts

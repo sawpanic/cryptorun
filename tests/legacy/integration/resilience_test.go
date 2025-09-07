@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/application/analyst"
-	"cryptorun/exchanges/kraken"
+	"github.com/sawpanic/cryptorun/internal/application/analyst"
+	"github.com/sawpanic/cryptorun/exchanges/kraken"
 )
 
 // TestTimeoutResilience tests that the system handles API timeouts gracefully

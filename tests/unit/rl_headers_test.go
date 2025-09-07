@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/data/rl"
+	"github.com/sawpanic/cryptorun/internal/data/rl"
 )
 
 func TestRateLimiterHeaders(t *testing.T) {

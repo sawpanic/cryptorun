@@ -1,0 +1,43 @@
+# Regime-Aware Gate Thresholds Configuration
+# Microstructure requirements adapt based on market regime
+
+# Default thresholds (fallback for unknown regimes)
+default:
+  spread_max_bps: 50.0      # ≤50 basis points
+  depth_min_usd: 100000.0   # ≥$100k within ±2%
+  vadr_min: 1.75            # ≥1.75× volume-adjusted drift ratio
+
+# Trending/Bull regime: more lenient thresholds  
+# (trending moves allow slightly wider spreads and lower depth requirements)
+trending:
+  spread_max_bps: 55.0      # ≤55 basis points (5 bps more lenient)
+  depth_min_usd: 100000.0   # ≥$100k within ±2% (unchanged)
+  vadr_min: 1.6             # ≥1.6× VADR (0.15 more lenient)
+
+# Choppy regime: tighter thresholds
+# (choppy markets require better microstructure to confirm signals)  
+choppy:
+  spread_max_bps: 40.0      # ≤40 basis points (10 bps tighter)
+  depth_min_usd: 150000.0   # ≥$150k within ±2% ($50k more)
+  vadr_min: 2.0             # ≥2.0× VADR (0.25 tighter)
+
+# High volatility regime: strictest thresholds
+# (high-vol periods require excellent liquidity to avoid slippage)
+high_vol:
+  spread_max_bps: 35.0      # ≤35 basis points (15 bps tighter) 
+  depth_min_usd: 175000.0   # ≥$175k within ±2% ($75k more)
+  vadr_min: 2.1             # ≥2.1× VADR (0.35 tighter)
+
+# Risk-off regime: most conservative thresholds
+# (flight to quality requires pristine microstructure)
+risk_off:
+  spread_max_bps: 30.0      # ≤30 basis points (20 bps tighter)
+  depth_min_usd: 200000.0   # ≥$200k within ±2% ($100k more) 
+  vadr_min: 2.2             # ≥2.2× VADR (0.45 tighter)
+
+# Universal constants (apply to all regimes)
+universal:
+  depth_range_pct: 2.0      # ±2% range for depth calculation
+  freshness_max_bars: 2     # ≤2 bars from trigger
+  late_fill_max_seconds: 30 # ≤30 seconds after bar close
+  min_daily_volume_usd: 500000.0  # ≥$500k daily volume

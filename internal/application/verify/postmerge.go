@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"cryptorun/internal/application/bench"
+	"github.com/sawpanic/cryptorun/internal/application/bench"
 )
 
 // PostmergeOptions configures post-merge verification

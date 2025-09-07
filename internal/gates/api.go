@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"cryptorun/internal/exits"
+	"github.com/sawpanic/cryptorun/internal/exits"
 )
 
 // GateOrchestrator provides unified entry/exit gate evaluation

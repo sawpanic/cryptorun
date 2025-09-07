@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"cryptorun/internal/metrics"
+	"github.com/sawpanic/cryptorun/internal/metrics"
 )
 
 // HealthResponse represents the health check response

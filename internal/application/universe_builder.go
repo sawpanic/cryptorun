@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"cryptorun/internal/atomicio"
+	"github.com/sawpanic/cryptorun/internal/atomicio"
 	"github.com/rs/zerolog/log"
 )
 

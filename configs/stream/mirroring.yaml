@@ -1,0 +1,152 @@
+# Multi-region mirroring configuration for CryptoRun event streaming
+
+# Mirror topology
+topology:
+  primary_region: "us-east-1"
+  secondary_regions:
+    - "us-west-2"
+    - "eu-west-1"
+    - "ap-southeast-1"
+
+# Mirroring policies
+policies:
+  # Active-active configuration for critical topics
+  active_active:
+    topics:
+      - "cryptorun-market-prices"
+      - "cryptorun-market-trades"
+      - "cryptorun-signals"
+    lag_threshold_ms: 500
+    cutover_policy: "automatic"
+    conflict_resolution: "timestamp_wins"
+    
+  # Active-passive configuration for analysis topics
+  active_passive:
+    topics:
+      - "cryptorun-momentum-scores"
+      - "cryptorun-regime-detection"
+      - "cryptorun-gate-evaluations"
+      - "cryptorun-metrics"
+    lag_threshold_ms: 5000
+    cutover_policy: "manual"
+    backup_regions: ["us-west-2", "eu-west-1"]
+
+# Region-specific configurations
+regions:
+  us-east-1:
+    kafka_brokers:
+      - "kafka-use1-01.cryptorun.local:9092"
+      - "kafka-use1-02.cryptorun.local:9092"
+      - "kafka-use1-03.cryptorun.local:9092"
+    pulsar_brokers:
+      - "pulsar://pulsar-use1-01.cryptorun.local:6650"
+      - "pulsar://pulsar-use1-02.cryptorun.local:6650"
+    priority: 1
+    
+  us-west-2:
+    kafka_brokers:
+      - "kafka-usw2-01.cryptorun.local:9092"
+      - "kafka-usw2-02.cryptorun.local:9092"
+      - "kafka-usw2-03.cryptorun.local:9092"
+    pulsar_brokers:
+      - "pulsar://pulsar-usw2-01.cryptorun.local:6650"
+      - "pulsar://pulsar-usw2-02.cryptorun.local:6650"
+    priority: 2
+    
+  eu-west-1:
+    kafka_brokers:
+      - "kafka-euw1-01.cryptorun.local:9092"
+      - "kafka-euw1-02.cryptorun.local:9092"
+    pulsar_brokers:
+      - "pulsar://pulsar-euw1-01.cryptorun.local:6650"
+    priority: 3
+    
+  ap-southeast-1:
+    kafka_brokers:
+      - "kafka-apse1-01.cryptorun.local:9092"
+      - "kafka-apse1-02.cryptorun.local:9092"
+    pulsar_brokers:
+      - "pulsar://pulsar-apse1-01.cryptorun.local:6650"
+    priority: 4
+
+# Monitoring and alerting
+monitoring:
+  lag_check_interval: "30s"
+  health_check_interval: "10s"
+  metrics_topics:
+    - "cryptorun-mirror-lag"
+    - "cryptorun-mirror-health"
+  alert_thresholds:
+    lag_warning_ms: 1000
+    lag_critical_ms: 5000
+    connection_failures: 3
+    replication_errors: 5
+
+# Cutover procedures
+cutover:
+  automatic_conditions:
+    - "primary_region_unhealthy_duration > 60s"
+    - "replication_lag > lag_threshold_ms"
+    - "error_rate > 5%"
+  
+  manual_triggers:
+    - "operator_initiated"
+    - "maintenance_window"
+    - "disaster_recovery_drill"
+  
+  rollback_conditions:
+    - "primary_region_healthy_duration > 300s"
+    - "replication_sync_complete"
+    - "operator_approval"
+
+# Data consistency
+consistency:
+  # Conflict resolution strategies
+  resolution_strategies:
+    timestamp_wins:
+      description: "Message with latest timestamp wins"
+      applicable_topics: ["cryptorun-market-prices", "cryptorun-market-trades"]
+      
+    region_priority:
+      description: "Primary region always wins"
+      applicable_topics: ["cryptorun-signals", "cryptorun-notifications"]
+      
+    merge_strategy:
+      description: "Custom merge logic for complex data"
+      applicable_topics: ["cryptorun-momentum-scores"]
+  
+  # Synchronization settings
+  sync_settings:
+    batch_size: 1000
+    flush_interval: "5s"
+    compression: "lz4"
+    checksum_validation: true
+
+# Security
+security:
+  inter_region_encryption: true
+  authentication_method: "mutual_tls"
+  certificate_authority: "/etc/cryptorun/ca/mirror-ca.pem"
+  client_certificates:
+    us-east-1: "/etc/cryptorun/certs/use1-client.pem"
+    us-west-2: "/etc/cryptorun/certs/usw2-client.pem"
+    eu-west-1: "/etc/cryptorun/certs/euw1-client.pem"
+    ap-southeast-1: "/etc/cryptorun/certs/apse1-client.pem"
+
+# Testing and validation
+testing:
+  chaos_engineering:
+    enabled: false  # Enable for disaster recovery testing
+    scenarios:
+      - "network_partition"
+      - "broker_failure"
+      - "region_outage"
+  
+  validation_topics:
+    - "cryptorun-mirror-test"
+    - "cryptorun-chaos-test"
+  
+  test_intervals:
+    connectivity: "5m"
+    end_to_end: "15m"
+    full_disaster_recovery: "weekly"

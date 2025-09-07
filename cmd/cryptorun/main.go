@@ -12,9 +12,8 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
 
-	"cryptorun/internal/application"
-	"cryptorun/internal/application/pipeline"
-	httpmetrics "cryptorun/internal/interfaces/http"
+	"github.com/sawpanic/cryptorun/internal/application"
+	httpmetrics "github.com/sawpanic/cryptorun/internal/interfaces/http"
 )
 
 const (
@@ -176,7 +175,10 @@ THE INTERACTIVE MENU IS THE PRIMARY INTERFACE
 		Use:   "list",
 		Short: "List all configured scheduled jobs",
 		Long:  "Display all jobs with their schedules, status, and descriptions",
-		RunE:  runScheduleList,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			fmt.Println("Schedule list functionality disabled in this build")
+			return nil
+		},
 	}
 
 	// Add start subcommand
@@ -184,7 +186,10 @@ THE INTERACTIVE MENU IS THE PRIMARY INTERFACE
 		Use:   "start",
 		Short: "Start the scheduler daemon",
 		Long:  "Start the background scheduler daemon to execute jobs on their configured schedules",
-		RunE:  runScheduleStart,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			fmt.Println("Schedule start functionality disabled in this build")
+			return nil
+		},
 	}
 
 	// Add status subcommand
@@ -192,7 +197,10 @@ THE INTERACTIVE MENU IS THE PRIMARY INTERFACE
 		Use:   "status",
 		Short: "Show scheduler status",
 		Long:  "Display current scheduler status, uptime, and next run information",
-		RunE:  runScheduleStatus,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			fmt.Println("Schedule status functionality disabled in this build")
+			return nil
+		},
 	}
 
 	// Add run subcommand
@@ -200,7 +208,10 @@ THE INTERACTIVE MENU IS THE PRIMARY INTERFACE
 		Use:   "run [job-name]",
 		Short: "Execute a specific job immediately",
 		Long:  "Run a scheduled job immediately for testing or manual execution",
-		RunE:  runScheduleRun,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			fmt.Println("Schedule run functionality disabled in this build")
+			return nil
+		},
 		Args:  cobra.MinimumNArgs(1),
 	}
 

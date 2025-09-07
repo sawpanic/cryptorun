@@ -19,7 +19,7 @@ type API struct {
 
 // NewAPI creates a new regime detection API
 func NewAPI(inputs DetectorInputs) *API {
-	detector := NewDetector(inputs)
+	detector := NewDetectorWithInputs(inputs)
 	weightManager := NewWeightManager()
 
 	return &API{

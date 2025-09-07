@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"cryptorun/internal/data"
+	"github.com/sawpanic/cryptorun/internal/data"
 )
 
 // ParquetReader handles reading historical data from Parquet files

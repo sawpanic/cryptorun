@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/providers/guards"
+	"github.com/sawpanic/cryptorun/internal/providers/guards"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -38,7 +38,7 @@ func TestTierFallbackIntegration(t *testing.T) {
 		},
 	})
 
-	cold, err := NewColdData(ColdConfig{
+	cold, err := NewColdData(ColdDataConfig{
 		BasePath:    tmpDir,
 		CacheExpiry: "1h",
 		EnableCache: true,
@@ -132,7 +132,7 @@ func TestColdTierIntegration(t *testing.T) {
 	require.NoError(t, err)
 
 	// Setup cold data
-	cold, err := NewColdData(ColdConfig{
+	cold, err := NewColdData(ColdDataConfig{
 		BasePath:    tmpDir,
 		CacheExpiry: "1h",
 		EnableCache: true,

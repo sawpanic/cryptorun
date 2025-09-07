@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/microstructure/adapters"
+	"github.com/sawpanic/cryptorun/internal/microstructure/adapters"
 )
 
 // MockMicrostructureAdapter for testing

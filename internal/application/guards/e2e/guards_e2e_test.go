@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/application/guards/testkit"
+	"github.com/sawpanic/cryptorun/internal/application/guards/testkit"
 )
 
 // TestFatigueGuardCalmRegime tests fatigue guard behavior in calm market conditions

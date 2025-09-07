@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"cryptorun/internal/regime"
+	"github.com/sawpanic/cryptorun/internal/regime"
 	"github.com/rs/zerolog/log"
 )
 
@@ -22,7 +22,7 @@ type RegimeDetectorService struct {
 func NewRegimeDetectorService() *RegimeDetectorService {
 	// Initialize with mock inputs - in production this would use real market data
 	inputs := regime.NewMockDetectorInputs()
-	detector := regime.NewDetector(inputs)
+	detector := regime.NewDetectorWithInputs(inputs)
 	weightManager := regime.NewWeightManager()
 
 	return &RegimeDetectorService{
@@ -34,7 +34,7 @@ func NewRegimeDetectorService() *RegimeDetectorService {
 
 // NewRegimeDetectorServiceWithInputs creates a service with custom inputs (for testing)
 func NewRegimeDetectorServiceWithInputs(inputs regime.DetectorInputs) *RegimeDetectorService {
-	detector := regime.NewDetector(inputs)
+	detector := regime.NewDetectorWithInputs(inputs)
 	weightManager := regime.NewWeightManager()
 
 	return &RegimeDetectorService{

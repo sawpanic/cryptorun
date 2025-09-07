@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/tune/data"
+	"github.com/sawpanic/cryptorun/internal/tune/data"
 )
 
 func TestObjectiveFunction_Evaluate(t *testing.T) {

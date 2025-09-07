@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"cryptorun/internal/domain/regime"
+	"github.com/sawpanic/cryptorun/internal/domain/regime"
 )
 
 func TestFactorWeights_Validation(t *testing.T) {

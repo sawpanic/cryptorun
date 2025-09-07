@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"cryptorun/internal/microstructure"
-	"cryptorun/internal/premove"
+	"github.com/sawpanic/cryptorun/internal/microstructure"
+	"github.com/sawpanic/cryptorun/internal/premove"
 )
 
 // TestPreMovementV33_RiskFilters tests system-wide risk controls and abort conditions

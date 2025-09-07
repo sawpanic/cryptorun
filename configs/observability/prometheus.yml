@@ -1,0 +1,67 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'cryptorun'
+    env: 'production'
+
+rule_files:
+  - "alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # CryptoRun application metrics
+  - job_name: 'cryptorun'
+    static_configs:
+      - targets: ['cryptorun:9090']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    scheme: http
+    params:
+      format: ['prometheus']
+
+  # System metrics from CryptoRun health endpoint
+  - job_name: 'cryptorun-health'
+    static_configs:
+      - targets: ['cryptorun:8080']
+    scrape_interval: 60s
+    metrics_path: /health
+    scheme: http
+
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+
+  # Grafana metrics (optional)
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana:3000']
+    scrape_interval: 60s
+    metrics_path: /metrics
+
+  # Redis metrics (if using redis_exporter)
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    scrape_interval: 30s
+    # Note: Would need redis_exporter sidecar for actual metrics
+
+  # External exchange status monitoring (optional)
+  - job_name: 'exchange-health'
+    static_configs:
+      - targets: 
+        - 'api.kraken.com'
+        - 'api.binance.com'
+        - 'api.coinbase.com'
+        - 'www.okx.com'
+    scrape_interval: 300s  # 5 minutes
+    metrics_path: /ping
+    scheme: https
+    scrape_timeout: 10s
