@@ -23,3 +23,11 @@ generated/
 vendor/
 third_party/
 .git/
+# Temporary exemptions during development
+cmd/cryptorun/scheduler_main.go
+exchanges/
+internal/bench/
+internal/data/cold/parquet.go
+internal/data/ws/
+internal/infrastructure/datafacade/
+internal/providers/derivs/

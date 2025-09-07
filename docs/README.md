@@ -1,75 +1,115 @@
-# CryptoRun
+# CryptoRun Documentation Index
 
 ## UX MUST — Live Progress & Explainability
 
-Real-time gate evaluation with comprehensive reporting: depth within ±2%, spread caps by tier, VADR precedence, and venue health monitoring with live progress indicators and full explainability.
+Comprehensive documentation index with organized sections, live progress indicators, and full explainability for all CryptoRun v3.2.1 features and operations.
 
-## 🏃‍♂️ Real-time Cryptocurrency Momentum Scanner
+## Quick Navigation
 
-**CryptoRun** is a real-time **6–48h cryptocurrency momentum scanner** powered by free, keyless exchange-native APIs. Designed to deliver **explainable trading signals** with strong safeguards: freshness, fatigue, and late-fill guards, microstructure validation, regime awareness, and strict conformance tests.
+### 📚 Core Documentation
+- **[BUILD.md](BUILD.md)** - Build instructions, prerequisites, and development setup
+- **[USAGE.md](USAGE.md)** - Complete CLI command reference and usage examples  
+- **[API_INTEGRATION.md](API_INTEGRATION.md)** - Exchange APIs, rate limiting, and provider integration
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Production deployment with Docker and Kubernetes
+- **[MONITORING.md](MONITORING.md)** - Prometheus metrics, Grafana dashboards, and alerting
 
-### Promise
+### 🏗️ Architecture & Design
+- **[CLAUDE.md](CLAUDE.md)** - Development guidelines and build commands
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Development workflow and contribution guidelines
+- **[SECURITY.md](../SECURITY.md)** - Security policies, vulnerability reporting, and best practices
 
-* *Never chase late entries* → freshness & late-fill guards.
-* *Never size what can't be exited* → depth/spread/VADR enforcement.
-* *Never let hype outrank price/volume* → capped social factor.
-* *Never break under load* → provider-aware rate limits + circuit breakers.
-* *Always transparent* → attribution fields in outputs.
+### ⚙️ Feature Documentation
 
-### Quick Start
+#### Scanning & Scoring
+- **[SCORING.md](SCORING.md)** - 100-point composite scoring system
+- **[SCORING_MODEL.md](SCORING_MODEL.md)** - Mathematical models and factor weights
+- **[FACTORS.md](FACTORS.md)** - Factor definitions and calculations
+- **[GATES.md](GATES.md)** - Entry gates and filtering criteria
+- **[GUARDS.md](GUARDS.md)** - Fatigue, freshness, and late-fill guards
 
-```bash
-# Build
-go build ./src/cmd/cryptorun
+#### Market Analysis
+- **[REGIME.md](REGIME.md)** - Market regime detection and adaptive weighting
+- **[REGIMES.md](REGIMES.md)** - Regime definitions and switching logic
+- **[MICROSTRUCTURE.md](MICROSTRUCTURE.md)** - Order book analysis and liquidity gates
+- **[MICROSTRUCTURE_GATES.md](MICROSTRUCTURE_GATES.md)** - Spread, depth, and VADR validation
 
-# Scan for momentum opportunities
-./cryptorun scan --exchange kraken --pairs USD-only --dry-run
+#### Pre-Movement Detection
+- **[PREMOVE.md](PREMOVE.md)** - Pre-Movement Detector v3.3 specification
+- **[PREMOVE_V33.md](PREMOVE_V33.md)** - Implementation details and configuration
+- **[PREMOVE_IMPLEMENTATION_PLAN_V3.3.md](PREMOVE_IMPLEMENTATION_PLAN_V3.3.md)** - Development roadmap
 
-# Monitor system health
-./cryptorun monitor
+### 🔧 Operations & Infrastructure
 
-# Run self-diagnostics
-./cryptorun selftest
+#### Data & Providers
+- **[DATA_SOURCES.md](DATA_SOURCES.md)** - Data source catalog and requirements
+- **[DATA_FACADE.md](DATA_FACADE.md)** - Data access layer architecture
+- **[PROVIDERS.md](PROVIDERS.md)** - Exchange provider implementations
+- **[KRAKEN_INTEGRATION.md](KRAKEN_INTEGRATION.md)** - Kraken API integration details
 
-# Generate performance digest
-./cryptorun digest --date 2025-09-01
-```
+#### System Operations
+- **[HTTP_API.md](HTTP_API.md)** - REST API endpoints and responses
+- **[CLI.md](CLI.md)** - Interactive CLI menu system
+- **[MENU.md](MENU.md)** - Menu navigation and features
+- **[SCHEDULER.md](SCHEDULER.md)** - Job scheduling and automation
 
-### Architecture
+#### Quality & Testing
+- **[TEST_STRATEGY.md](TEST_STRATEGY.md)** - Testing approach and coverage
+- **[QA.md](QA.md)** - Quality assurance processes
+- **[CONFORMANCE.md](CONFORMANCE.md)** - Architectural conformance testing
+- **[VERIFY.md](VERIFY.md)** - System verification and validation
 
-Built in Go with a clean layered architecture:
+### 📊 Analysis & Reporting
+- **[EXPLAINABILITY.md](EXPLAINABILITY.md)** - Signal explanation and attribution
+- **[SIGNALS_OUTPUT.md](SIGNALS_OUTPUT.md)** - Output formats and interpretation
+- **[REPORTS.md](REPORTS.md)** - Performance reports and analysis
+- **[BACKTEST_MAR_AUG.md](BACKTEST_MAR_AUG.md)** - Historical backtesting results
 
-- **`domain/`**: Business logic (scoring, gates, orthogonalization, regime detection)
-- **`application/`**: Use cases (universe builders, factor builders, snapshot store)
-- **`infrastructure/`**: External integrations (Kraken APIs, circuit breakers, rate limiting)
-- **`interfaces/`**: HTTP endpoints (`/health`, `/metrics`, `/decile`)
-- **`cmd/cryptorun/`**: CLI entry point with commands: scan, backtest, monitor, health
+### 🚀 Advanced Features
+- **[CALIBRATION.md](CALIBRATION.md)** - Score calibration and probability mapping
+- **[CATALYSTS.md](CATALYSTS.md)** - Catalyst event detection and scoring
+- **[SOCIAL_INPUTS.md](SOCIAL_INPUTS.md)** - Social sentiment analysis
+- **[STREAMING.md](STREAMING.md)** - Real-time data streaming architecture
 
-### Key Features
+## Documentation Categories
 
-- **6-48 hour momentum scanner**: Not HFT, not buy-and-hold
-- **Exchange-native only**: Never use aggregators for depth/spread data
-- **Kraken USD pairs only**: Primary data source with rate limiting
-- **Regime-adaptive**: Weights change based on market conditions
-- **Orthogonal factors**: Gram-Schmidt orthogonalization to avoid correlation
-- **Circuit breakers**: Provider-aware fallbacks and rate limit handling
+### For New Users
+1. **[BUILD.md](BUILD.md)** - Get started building CryptoRun
+2. **[USAGE.md](USAGE.md)** - Learn basic commands and operations
+3. **[API_INTEGRATION.md](API_INTEGRATION.md)** - Understand data sources
+4. **[MONITORING.md](MONITORING.md)** - Set up system monitoring
 
-### Documentation
+### For Developers
+1. **[CLAUDE.md](CLAUDE.md)** - Development environment setup
+2. **[CONTRIBUTING.md](CONTRIBUTING.md)** - Development workflow
+3. **[TEST_STRATEGY.md](TEST_STRATEGY.md)** - Testing requirements
+4. **[CONFORMANCE.md](CONFORMANCE.md)** - Architecture constraints
 
-- [Build Instructions](docs/BUILD.md)
-- [API Integration](docs/API_INTEGRATION.md) 
-- [Deployment Guide](docs/DEPLOYMENT.md)
-- [Monitoring Setup](docs/MONITORING.md)
-- [Usage Examples](docs/USAGE.md)
+### For Operators
+1. **[DEPLOYMENT.md](DEPLOYMENT.md)** - Production deployment
+2. **[MONITORING.md](MONITORING.md)** - Operations monitoring
+3. **[SECURITY.md](../SECURITY.md)** - Security considerations
+4. **[OPERATIONS.md](OPERATIONS.md)** - Day-to-day operations
 
-### Development
+### For Researchers
+1. **[SCORING_MODEL.md](SCORING_MODEL.md)** - Mathematical foundations
+2. **[FACTORS.md](FACTORS.md)** - Factor research and definitions
+3. **[REGIME.md](REGIME.md)** - Market regime analysis
+4. **[BACKTEST_MAR_AUG.md](BACKTEST_MAR_AUG.md)** - Historical analysis
 
-See [CLAUDE.md](CLAUDE.md) for detailed development guidelines and commands.
+## Recent Updates
 
-## Naming History
+- **September 2025**: Pre-Movement Detector v3.3 completed
+- **September 2025**: Deployment infrastructure finalized  
+- **September 2025**: Documentation comprehensive review completed
+- **September 2025**: API integration guide expanded
 
-This project was previously known as "CProtocol" in older documentation and changelog entries dated before 2025-09-01. Historical references to "CProtocol" in pre-2025-09-01 changelog entries and legacy documents are preserved for historical accuracy.
+## Quick Links
+
+- **Project Root**: [../README.md](../README.md)
+- **Changelog**: [../CHANGELOG.md](../CHANGELOG.md)  
+- **Roadmap**: [../ROADMAP.md](../ROADMAP.md)
+- **Security**: [../SECURITY.md](../SECURITY.md)
 
 ---
 
-**CryptoRun** - Real-time cryptocurrency momentum scanning with explainable signals.
+For the most up-to-date information, always refer to the specific documentation files. This index is updated regularly but individual documents may contain more recent changes.

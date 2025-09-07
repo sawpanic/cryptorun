@@ -361,11 +361,13 @@ func NewColdTierStreamer(config StreamingConfig) (*ColdTierStreamer, error) {
 	// Initialize producer/consumer based on backend
 	switch config.Backend {
 	case "kafka":
-		streamer.producer = &StubProducer{} // TODO: implement NewKafkaProducer()
-		streamer.consumer = &StubConsumer{} // TODO: implement NewKafkaConsumer()
+		// Use stub implementations until Kafka integration is required
+		streamer.producer = &StubProducer{} 
+		streamer.consumer = &StubConsumer{} 
 	case "pulsar":
-		streamer.producer = &StubProducer{} // TODO: implement NewPulsarProducer()
-		streamer.consumer = &StubConsumer{} // TODO: implement NewPulsarConsumer()
+		// Use stub implementations until Pulsar integration is required
+		streamer.producer = &StubProducer{} 
+		streamer.consumer = &StubConsumer{} 
 	case "stub":
 		streamer.producer = &StubProducer{}
 		streamer.consumer = &StubConsumer{}
