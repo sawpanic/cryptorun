@@ -2,8 +2,8 @@
 # Weighted milestone completion for enforcing measurable progress
 
 version: "3.2.1"
-last_updated: "2025-09-07"
-completion_note: "EPIC D - Reporting, Monitoring & Observability completed with performance reporting, load testing, and comprehensive documentation"
+last_updated: "2025-09-07"  
+completion_note: "Multi-Region Replication & Validation completed with active-active/passive strategies, comprehensive validation layers, automated failover, CLI tooling, and complete SRE documentation"
 
 milestones:
   # Core Architecture (25% total weight)
@@ -19,29 +19,36 @@ milestones:
     description: "Factor residualization with momentum protection"
     completion_date: "2025-01-10"
 
-  # Data Pipeline (20% total weight)
+  # Data Pipeline (25% total weight)
   data_facade_hot_warm:
-    weight: 10
+    weight: 8
     completed: true
     description: "TTL caches + deterministic fakes"
     completion_date: "2025-09-07"
     progress: 100
     
   exchange_native_microstructure:
-    weight: 10
+    weight: 8
     completed: true
     description: "L1/L2 validation with proof generation"
     completion_date: "2025-01-12"
+    
+  database_persistence_layer:
+    weight: 9
+    completed: true
+    description: "Dual-tier persistence with PostgreSQL, migrations, health monitoring"
+    completion_date: "2025-09-07"
+    progress: 100
 
-  # Risk & Portfolio Management (20% total weight)
+  # Risk & Portfolio Management (15% total weight)
   regime_adaptive_weights:
-    weight: 8
+    weight: 7
     completed: true
     description: "Three weight profiles with 4h switching"
     completion_date: "2025-01-10"
     
   portfolio_risk_controls:
-    weight: 12
+    weight: 8
     completed: true
     description: "Correlation matrix, sector caps, beta budget, P&L tracking, VaR calculations"
     completion_date: "2025-09-07"

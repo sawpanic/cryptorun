@@ -25,7 +25,14 @@ func NewRegimeOrchestrator(detector *RegimeDetector, weightMap RegimeWeightMap) 
 		return nil, fmt.Errorf("failed to convert regime weights: %w", err)
 	}
 
-	factorEngine, err := factors.NewUnifiedFactorEngine(detector.GetCurrentRegime().String(), currentWeights)
+	// Use default market data for initialization
+	defaultData := MarketData{Timestamp: time.Now()}
+	currentRegime, err := detector.GetCurrentRegime(defaultData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get current regime: %w", err)
+	}
+	
+	factorEngine, err := factors.NewUnifiedFactorEngine(currentRegime.String(), currentWeights)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create factor engine: %w", err)
 	}
@@ -45,8 +52,22 @@ func (ro *RegimeOrchestrator) ProcessFactorsWithRegimeAdaptation(
 ) ([]factors.FactorRow, error) {
 
 	// Step 1: Update regime detection
-	previousRegime := ro.detector.GetCurrentRegime()
-	currentRegime := ro.detector.DetectRegime(marketInputs)
+	// Convert RegimeInputs to MarketData
+	marketData := MarketData{
+		Timestamp: marketInputs.Timestamp,
+		// Add other fields as needed based on available data
+	}
+	
+	previousRegime, err := ro.detector.GetCurrentRegime(marketData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get current regime: %w", err)
+	}
+	
+	detection, err := ro.detector.DetectRegime(marketData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to detect regime: %w", err)
+	}
+	currentRegime := detection.CurrentRegime
 
 	// Step 2: Check if regime changed and update weights if necessary
 	if currentRegime != previousRegime || time.Since(ro.lastUpdate) > time.Hour {

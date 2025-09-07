@@ -236,7 +236,7 @@ func (pc *PerfCalculator) calculatePnLMetrics(trades []TradeRecord, metrics *Per
 	}
 	
 	// Calculate P&L for each symbol (simplified FIFO)
-	for symbol, symbolTrades := range positions {
+	for symbolName, symbolTrades := range positions {
 		symbolPnL := 0.0
 		var longQueue, shortQueue []TradeRecord
 		

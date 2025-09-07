@@ -249,4 +249,222 @@ cryptorun replication failover --tier warm --promote us-east --demote eu-central
 - **Storage**: 3x replication factor increases storage requirements  
 - **Latency**: Cross-region reads add 50-150ms vs local reads
 
+## Validation & Data Quality
+
+CryptoRun includes comprehensive validation layers to ensure data integrity during replication:
+
+### Schema Validation
+- **Required Fields**: Validates presence and types of critical fields (timestamp, price, volume)
+- **Field Patterns**: Regex validation for structured fields (e.g., symbol format: BTC-USD)
+- **Range Validation**: Ensures numeric fields fall within expected ranges
+- **Configuration**: See `internal/data/validate/schema.go`
+
+### Staleness Detection
+- **Tier-Specific Thresholds**: Hot (5s), Warm (60s), Cold (5m)
+- **Clock Skew Tolerance**: Configurable tolerance for distributed systems
+- **Multiple Timestamp Support**: Fallback to alternative timestamp fields
+- **Configuration**: See `internal/data/validate/staleness.go`
+
+### Anomaly Detection
+- **MAD-based Scoring**: Uses Median Absolute Deviation for robust outlier detection
+- **Spike Detection**: Volume surge detection with configurable thresholds
+- **Corruption Detection**: Identifies NaN, infinite, or invalid values
+- **Quarantine System**: Automatic quarantine of critical anomalies
+- **Configuration**: See `internal/data/validate/anomaly.go`
+
+## Troubleshooting Guide
+
+### Common Issues
+
+#### High Replication Lag
+```bash
+# Check current lag
+cryptorun replication status --tier warm --all
+
+# Identify bottlenecks
+cryptorun replication status --format prometheus | grep lag
+
+# Simulate recovery plan
+cryptorun replication simulate --from primary --to lagging-region --tier warm
+```
+
+**Root Causes:**
+- Network congestion between regions
+- Target region resource constraints
+- Large data volumes during peak hours
+- Failed validation checks blocking replication
+
+**Resolution:**
+1. Check network connectivity between regions
+2. Verify target region disk space and CPU
+3. Review validation error counts: `cryptorun replication status --format json`
+4. Consider temporary tier-specific threshold adjustments
+
+#### Split-Brain Detection
+**Symptoms:**
+- Cross-region RTT metrics showing timeouts
+- Conflicting data between regions
+- Health checks failing inconsistently
+
+**Response:**
+1. **Immediate**: Continue local operations with conflict markers
+2. **Assessment**: `cryptorun replication status --all` to assess scope
+3. **Resolution**: Manual conflict resolution after network recovery
+4. **Recovery**: Run anti-entropy reconciliation
+
+#### Validation Errors Spike
+```bash
+# Check validation error breakdown
+cryptorun replication status --format json | jq '.consistency_errors'
+
+# Monitor quarantine status
+cryptorun replication status --all | grep -i quarantine
+```
+
+**Common Validation Issues:**
+- **Schema Errors**: Missing required fields, type mismatches
+- **Staleness**: Clock drift, ingestion delays
+- **Anomalies**: Market volatility, data source issues
+
+**Resolution Steps:**
+1. Identify error category (schema/staleness/anomaly)
+2. Review data source health and configuration
+3. Consider temporary validation threshold adjustments
+4. Investigate quarantined data for systematic issues
+
+### Emergency Procedures
+
+#### Regional Outage Response
+1. **Assessment** (0-5 minutes):
+   ```bash
+   cryptorun replication status --region us-east-1 --all
+   ```
+
+2. **Failover Decision** (5-15 minutes):
+   ```bash
+   # Dry run first
+   cryptorun replication failover --tier warm --promote us-west-2 --dry-run
+   
+   # Execute if dry run passes
+   cryptorun replication failover --tier warm --promote us-west-2 --validate
+   ```
+
+3. **Validation** (15-30 minutes):
+   - Verify replication lag drops below SLO
+   - Check data consistency metrics
+   - Monitor application health endpoints
+
+4. **Communication**:
+   - Update incident status
+   - Notify downstream systems
+   - Document timeline and decisions
+
+#### Data Corruption Response
+1. **Immediate Isolation**:
+   ```bash
+   # Check quarantine status
+   cryptorun replication status --all | grep quarantine
+   
+   # Review corruption scope
+   cryptorun replication status --format json | jq '.consistency_errors.corrupt'
+   ```
+
+2. **Source Investigation**:
+   - Identify affected time windows
+   - Check exchange API health
+   - Review ingestion pipeline logs
+
+3. **Recovery**:
+   ```bash
+   # Simulate clean data backfill
+   cryptorun replication simulate --from clean-region --to affected-region --window TIME_RANGE
+   
+   # Execute recovery
+   cryptorun replication failover --tier affected --promote clean-region --force
+   ```
+
+## Testing & Validation
+
+### Integration Test Suite
+Run comprehensive failover testing:
+```bash
+go test ./tests/integration/multiregion_failover_test.go -v
+```
+
+**Test Coverage:**
+- Warm tier failover with lag recovery
+- Cold tier disaster recovery
+- Hot tier active-active scenarios
+- Validation layer integration
+- Metrics collection accuracy
+
+### Unit Test Coverage
+```bash
+go test ./tests/unit/validate_*_test.go -v
+```
+
+**Validation Components:**
+- Schema validation: Field types, patterns, ranges
+- Staleness detection: Multi-format timestamps, tier thresholds
+- Anomaly detection: MAD scoring, spike detection, corruption handling
+
+### Performance Benchmarks
+```bash
+# Validation performance
+go test ./tests/unit/validate_*_test.go -bench=BenchmarkValidation -benchmem
+
+# Replication simulation
+go test ./tests/integration/ -bench=BenchmarkReplication -benchmem
+```
+
+**Performance Targets:**
+- Schema validation: <100µs per record
+- Staleness check: <10µs per record  
+- Anomaly detection: <100µs per record
+- Replication planning: <1s for 1000 steps
+
+## Monitoring & Alerting
+
+### Key Metrics Dashboard
+```prometheus
+# Replication lag by tier
+cryptorun_replication_lag_seconds{tier="warm", region="us-east-1"} > 90
+
+# Data consistency errors
+rate(cryptorun_data_consistency_errors_total[5m]) > 0.1
+
+# Quarantine rate
+rate(cryptorun_quarantine_total[5m]) > 0.01
+
+# Regional health
+cryptorun_region_health_score < 0.7
+```
+
+### Alert Thresholds
+
+| Metric | Warning | Critical | Action |
+|--------|---------|----------|--------|
+| Replication Lag (Hot) | >1s | >5s | Check WebSocket health |
+| Replication Lag (Warm) | >90s | >300s | Consider failover |
+| Replication Lag (Cold) | >10m | >30m | Investigate storage |
+| Consistency Errors | >5/min | >20/min | Review validation config |
+| Quarantine Rate | >1% | >5% | Investigate data sources |
+| Region Health | <0.8 | <0.5 | Prepare failover |
+
+### SRE Runbook Integration
+
+This multi-region system integrates with CryptoRun's broader operational framework:
+
+- **Health Checks**: `/health` endpoint includes replication status
+- **Metrics Export**: `/metrics` exposes all replication and validation metrics
+- **Logging**: Structured logs with correlation IDs for incident tracking
+- **Circuit Breakers**: Integration with existing provider health checks
+
+## Related Documentation
+
+- [Data Facade Architecture](DATA_FACADE.md) - Core data layer design
+- [CLAUDE.md](../CLAUDE.md) - Development commands and architecture
+- [Performance Testing](../tests/load/) - Load testing procedures
+- [Circuit Breaker Configuration](../config/circuits.yaml) - Provider reliability
+
 This architecture ensures CryptoRun maintains high availability and data integrity across geographic regions while respecting regulatory requirements and operational constraints.

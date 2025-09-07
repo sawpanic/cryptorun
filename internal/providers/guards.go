@@ -75,7 +75,7 @@ func (g *ExchangeNativeGuard) ValidateDataSource(source string, dataType DataTyp
 // ValidateProvider checks if a provider interface violates exchange-native requirements
 func (g *ExchangeNativeGuard) ValidateProvider(provider interface{}) error {
 	providerType := reflect.TypeOf(provider)
-	providerValue := reflect.ValueOf(provider)
+	_ = reflect.ValueOf(provider) // Currently unused but available for future validation
 	
 	if providerType == nil {
 		return fmt.Errorf("provider is nil")

@@ -1,0 +1,190 @@
+# CryptoRun Universe Configuration
+# Defines the cryptocurrency universe for momentum scanning
+
+universe:
+  name: "top100_usd_pairs"
+  description: "Top 100 USD trading pairs across supported exchanges"
+  last_updated: "2025-09-07"
+  
+  # Universe filtering criteria
+  filters:
+    min_market_cap_usd: 100000000      # $100M minimum market cap
+    min_daily_volume_usd: 5000000      # $5M minimum daily volume  
+    max_spread_bps: 100                # 100bps maximum spread
+    min_depth_usd: 50000               # $50k minimum depth
+    exchanges: ["kraken", "binance", "coinbase", "okx"]
+    quote_currencies: ["USD", "USDT", "USDC"]
+    
+  # Exchange preferences (primary -> fallback)
+  exchange_routing:
+    primary: "kraken"
+    fallback_chain: ["binance", "coinbase", "okx"]
+    
+  # Rate limiting coordination  
+  global_limits:
+    max_concurrent_requests: 10
+    inter_request_delay_ms: 200
+    batch_size: 20
+    
+# Symbol definitions by exchange
+symbols:
+  
+  # Kraken USD pairs (native USD, highest priority)
+  kraken:
+    tier1: # Major pairs - highest liquidity
+      - symbol: "BTCUSD"
+        kraken_pair: "XXBTZUSD" 
+        market_cap_rank: 1
+        priority: 1
+      - symbol: "ETHUSD"
+        kraken_pair: "XETHZUSD"
+        market_cap_rank: 2  
+        priority: 1
+      - symbol: "SOLUSD"
+        kraken_pair: "SOLUSD"
+        market_cap_rank: 5
+        priority: 1
+      - symbol: "ADAUSD" 
+        kraken_pair: "ADAUSD"
+        market_cap_rank: 8
+        priority: 1
+      - symbol: "AVAXUSD"
+        kraken_pair: "AVAXUSD"
+        market_cap_rank: 12
+        priority: 1
+        
+    tier2: # Mid-cap pairs
+      - symbol: "LINKUSD"
+        kraken_pair: "LINKUSD"
+        market_cap_rank: 15
+        priority: 2
+      - symbol: "DOTUSD"
+        kraken_pair: "DOTUSD" 
+        market_cap_rank: 18
+        priority: 2
+      - symbol: "MATICUSD"
+        kraken_pair: "MATICUSD"
+        market_cap_rank: 20
+        priority: 2
+      - symbol: "UNIUSD"
+        kraken_pair: "UNIUSD"
+        market_cap_rank: 22
+        priority: 2
+      - symbol: "LTCUSD"
+        kraken_pair: "XLTCZUSD"
+        market_cap_rank: 25
+        priority: 2
+      - symbol: "XRPUSD"
+        kraken_pair: "XXRPZUSD" 
+        market_cap_rank: 7
+        priority: 2
+
+  # Binance USDT pairs (fallback for broader universe)        
+  binance:
+    tier1:
+      - symbol: "BNBUSD"
+        binance_pair: "BNBUSDT"
+        market_cap_rank: 4
+        priority: 3
+      - symbol: "XRPUSD"
+        binance_pair: "XRPUSDT"  
+        market_cap_rank: 7
+        priority: 3
+      - symbol: "DOGEUSD"
+        binance_pair: "DOGEUSDT"
+        market_cap_rank: 9
+        priority: 3
+      - symbol: "TONUSD"
+        binance_pair: "TONUSDT"
+        market_cap_rank: 10
+        priority: 3
+      - symbol: "TRXUSD"
+        binance_pair: "TRXUSDT"
+        market_cap_rank: 11
+        priority: 3
+        
+    tier2:
+      - symbol: "SHIBUSD"
+        binance_pair: "SHIBUSDT"
+        market_cap_rank: 13
+        priority: 4
+      - symbol: "APTUSD"
+        binance_pair: "APTUSDT"
+        market_cap_rank: 16
+        priority: 4
+      - symbol: "NEARUSD"
+        binance_pair: "NEARUSDT"
+        market_cap_rank: 17
+        priority: 4
+      - symbol: "ICPUSD"
+        binance_pair: "ICPUSDT"
+        market_cap_rank: 19
+        priority: 4
+      - symbol: "RENDERUSD"
+        binance_pair: "RENDERUSDT"
+        market_cap_rank: 21
+        priority: 4
+
+    tier3: # Extended universe
+      - symbol: "ATOMUSD"
+        binance_pair: "ATOMUSDT"
+        market_cap_rank: 26
+        priority: 5
+      - symbol: "HBARUSD"
+        binance_pair: "HBARUSDT" 
+        market_cap_rank: 27
+        priority: 5
+      - symbol: "FILUSD"
+        binance_pair: "FILUSDT"
+        market_cap_rank: 28
+        priority: 5
+      - symbol: "VETUSD"
+        binance_pair: "VETUSDT"
+        market_cap_rank: 29
+        priority: 5
+      - symbol: "MANAUSD"
+        binance_pair: "MANAUSDT"
+        market_cap_rank: 30
+        priority: 5
+
+# Scanning strategies by universe size
+scanning_strategies:
+  
+  quick_scan: # 15 symbols, 30 seconds
+    max_symbols: 15
+    tiers: ["tier1"]
+    exchanges: ["kraken"]
+    timeout_seconds: 30
+    
+  standard_scan: # 50 symbols, 2 minutes  
+    max_symbols: 50
+    tiers: ["tier1", "tier2"]
+    exchanges: ["kraken", "binance"]
+    timeout_seconds: 120
+    
+  comprehensive_scan: # 100 symbols, 5 minutes
+    max_symbols: 100 
+    tiers: ["tier1", "tier2", "tier3"]
+    exchanges: ["kraken", "binance", "coinbase", "okx"]
+    timeout_seconds: 300
+    
+  extended_scan: # 200+ symbols, 10 minutes
+    max_symbols: 200
+    tiers: ["tier1", "tier2", "tier3", "tier4"]
+    exchanges: ["kraken", "binance", "coinbase", "okx"]
+    timeout_seconds: 600
+
+# Performance monitoring thresholds    
+performance:
+  latency_targets:
+    p50_ms: 150
+    p95_ms: 500
+    p99_ms: 1000
+  
+  success_rates:
+    min_success_rate: 0.90
+    fallback_trigger_rate: 0.85
+    
+  resource_limits:
+    max_memory_mb: 512
+    max_cpu_percent: 50

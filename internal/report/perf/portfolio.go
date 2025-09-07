@@ -106,7 +106,7 @@ func (pc *PortfolioCalculator) calculateNetPosition(symbol string, trades []pers
 			firstTradeTime = trade.Timestamp
 		}
 
-		quantity := trade.Quantity
+		quantity := trade.Qty
 		if trade.Side == "sell" {
 			quantity = -quantity
 		}
@@ -281,21 +281,8 @@ func (pc *PortfolioCalculator) calculateSectorAllocation(portfolio *PortfolioMet
 func (pc *PortfolioCalculator) calculatePerformanceAttribution(portfolio *PortfolioMetrics) {
 	attribution := make([]AttributionEntry, 0, len(portfolio.Positions))
 
-	portfolioReturn := 0.0
-	if portfolio.TotalValue > 0 {
-		// Calculate portfolio return from positions
-		totalUnrealizedPnL := 0.0
-		totalCostBasis := 0.0
-		
-		for _, position := range portfolio.Positions {
-			totalUnrealizedPnL += position.UnrealizedPnL
-			totalCostBasis += position.CostBasis * math.Abs(position.Quantity)
-		}
-		
-		if totalCostBasis > 0 {
-			portfolioReturn = totalUnrealizedPnL / totalCostBasis
-		}
-	}
+	// Portfolio return calculation available but currently unused
+	// Could be used for portfolio-level attribution in the future
 
 	for _, position := range portfolio.Positions {
 		// Calculate position contribution to portfolio return

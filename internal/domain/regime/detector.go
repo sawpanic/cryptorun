@@ -17,6 +17,21 @@ const (
 	RegimeVolatile RegimeType = "volatile" // High volatility, choppy
 )
 
+// String returns the string representation of the RegimeType
+func (rt RegimeType) String() string {
+	return string(rt)
+}
+
+// RegimeInputs contains the input data for regime detection
+type RegimeInputs struct {
+	RealizedVol7d    float64   `json:"realized_vol_7d"`    // 7-day realized volatility
+	PctAbove20MA     float64   `json:"pct_above_20ma"`     // Percentage above 20-day MA
+	BreadthThrust    float64   `json:"breadth_thrust"`     // Market breadth indicator
+	VolumeProfile    float64   `json:"volume_profile"`     // Recent volume characteristics
+	Timestamp        time.Time `json:"timestamp"`          // When this data was captured
+}
+
+
 // RegimeIndicator represents a single regime detection indicator
 type RegimeIndicator struct {
 	Name      string
@@ -292,8 +307,8 @@ func (rd *RegimeDetector) GetCurrentRegime(data MarketData) (RegimeType, error) 
 }
 
 // GetWeightsForRegime returns the weight configuration for a given regime
-func (rd *RegimeDetector) GetWeightsForRegime(regime RegimeType) (regime.RegimeWeights, error) {
-	regimeStr := string(regime)
+func (rd *RegimeDetector) GetWeightsForRegime(regimeType RegimeType) (regime.RegimeWeights, error) {
+	regimeStr := string(regimeType)
 	weights, exists := rd.config.Regimes[regimeStr]
 	if !exists {
 		// Fall back to default regime
@@ -309,49 +324,6 @@ func (rd *RegimeDetector) GetWeightsForRegime(regime RegimeType) (regime.RegimeW
 	return weights, nil
 }
 
-// ValidateRegimeWeights ensures weight configuration is valid
-func ValidateRegimeWeights(weights regime.RegimeWeights, config regime.WeightsConfig) error {
-	// Calculate total weight (excluding social which is capped separately)
-	total := weights.MomentumCore + weights.Technical + weights.Volume + weights.Quality
-	
-	// Check weight sum tolerance
-	tolerance := config.Validation.WeightSumTolerance
-	if math.Abs(total-1.0) > tolerance {
-		return fmt.Errorf("weight sum %.3f outside tolerance %.3f of 1.0", total, tolerance)
-	}
-	
-	// Check minimum momentum weight
-	minMomentum := config.Validation.MinMomentumWeight
-	if weights.MomentumCore < minMomentum {
-		return fmt.Errorf("momentum weight %.3f below minimum %.3f", weights.MomentumCore, minMomentum)
-	}
-	
-	// Check maximum social weight
-	maxSocial := config.Validation.MaxSocialWeight
-	if weights.Social > maxSocial {
-		return fmt.Errorf("social weight %.3f above maximum %.3f", weights.Social, maxSocial)
-	}
-	
-	// Ensure all weights are non-negative
-	allWeights := []struct {
-		name   string
-		weight float64
-	}{
-		{"momentum_core", weights.MomentumCore},
-		{"technical", weights.Technical},
-		{"volume", weights.Volume},
-		{"quality", weights.Quality},
-		{"social", weights.Social},
-	}
-	
-	for _, w := range allWeights {
-		if w.weight < 0 {
-			return fmt.Errorf("%s weight cannot be negative: %.3f", w.name, w.weight)
-		}
-	}
-	
-	return nil
-}
 
 // FormatRegimeReport creates a human-readable regime report
 func FormatRegimeReport(detection *RegimeDetection) string {

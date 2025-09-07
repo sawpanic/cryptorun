@@ -23,6 +23,7 @@ type WeightsConfig struct {
 	Social         SocialConfig             `yaml:"social"`
 	Validation     ValidationConfig         `yaml:"validation"`
 	QARequirements QARequirements           `yaml:"qa_requirements"`
+	DefaultRegime  string                   `yaml:"default_regime"`
 }
 
 // RegimeWeights defines the weight allocation for a market regime
@@ -45,6 +46,8 @@ type ValidationConfig struct {
 	MinWeight          float64 `yaml:"min_weight"`
 	MaxWeight          float64 `yaml:"max_weight"`
 	SocialHardCap      float64 `yaml:"social_hard_cap"`
+	MinMomentumWeight  float64 `yaml:"min_momentum_weight"`
+	MaxSocialWeight    float64 `yaml:"max_social_weight"`
 }
 
 // WeightsLoader handles loading and validation of regime weights
@@ -112,6 +115,8 @@ func (wl *WeightsLoader) LoadDefault() error {
 			MinWeight:          0.05,
 			MaxWeight:          0.60,
 			SocialHardCap:      15.0,
+			MinMomentumWeight:  0.3,
+			MaxSocialWeight:    15.0,
 		},
 		QARequirements: QARequirements{
 			MinCorrelationForOrthogonalization: 0.3,
@@ -119,6 +124,7 @@ func (wl *WeightsLoader) LoadDefault() error {
 			MinExplainedVariance:              0.05,
 			CorrelationThreshold:              0.6,
 		},
+		DefaultRegime: "normal",
 	}
 
 	if err := wl.validateConfig(config); err != nil {
