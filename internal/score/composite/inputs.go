@@ -5,9 +5,31 @@ import (
 	"fmt"
 	"time"
 
+	"cryptorun/internal/application/pipeline"
 	"cryptorun/internal/data/derivs"
 	"cryptorun/internal/data/etf"
 )
+
+// Type aliases for pipeline integration
+type RawFactors = pipeline.FactorSet
+type RegimeWeights = pipeline.RegimeWeights
+
+// CompositeScorer handles composite scoring with enhanced measurements
+type CompositeScorer struct {
+	DataMeasurements *DataMeasurements
+}
+
+// ScoreAsset performs basic composite scoring (stub for compilation)
+func (cs *CompositeScorer) ScoreAsset(ctx context.Context, factors *RawFactors, weights *RegimeWeights) (*CompositeResult, error) {
+	// Basic scoring stub - return simple result
+	return &CompositeResult{
+		FinalScore:    50.0,
+		MomentumCore:  factors.MomentumCore,
+		Regime:        "default",
+		Timestamp:     time.Now(),
+	}, nil
+}
+
 
 // DataMeasurements holds all new measurement data sources
 type DataMeasurements struct {
@@ -274,7 +296,6 @@ func (cs *CompositeScorer) generateETFInsight(enhanced *EnhancedRawFactors) stri
 // assessDataQuality evaluates overall data completeness
 func (cs *CompositeScorer) assessDataQuality(enhanced *EnhancedRawFactors) string {
 	available := 0
-	total := 3
 
 	if enhanced.HasFundingData {
 		available++

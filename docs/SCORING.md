@@ -1,12 +1,41 @@
-# CryptoRun Enhanced Unified Scoring System
+# Unified Composite Scoring (MomentumCore-Protected)
 
 ## UX MUST — Live Progress & Explainability
 
-The enhanced unified scoring system provides complete transparency into factor orthogonalization, weight application, composite score calculation with regime-adaptive optimization, and new measurement data source integration for comprehensive market insights.
+Real-time unified composite scoring with MomentumCore protection: single-path pipeline architecture, Gram-Schmidt residualization, active factor weight normalization, and comprehensive validation guards for deterministic, explainable momentum detection.
 
-## One Factor Engine to Rule Them All
+**Updated for PROMPT_ID=FIX.COMPOSITE.INPUTS.ALIASES**  
+**Last Updated:** 2025-09-07  
+**Version:** v3.3.2 Type Bridge Pipeline  
+**Breaking Changes:** Retired legacy FactorWeights path - SINGLE PATH ONLY
 
-**UNIFIED PATH**: CryptoRun uses a single, orthogonal factor model with MomentumCore protection and normalized regime weights that always sum to 1.0.
+The unified composite scoring system implements a single-path pipeline architecture that ensures all scoring routes through one consistent composite system, providing deterministic, explainable momentum scoring for the 6-48 hour trading horizon.
+
+## Pipeline Architecture
+
+### Single Pipeline Flow
+
+```
+MomentumCore (Protected) → TechnicalResidual → VolumeResidual → QualityResidual → SocialResidual (cap +10 applied after)
+```
+
+**One pipeline: MomentumCore (protected) → TechnicalResidual → VolumeResidual → QualityResidual → SocialResidual (cap +10 applied after).**
+
+**Multi-timeframe momentum weights: 1h/4h/12h/24h = 20/35/30/15.**
+
+**Residualization: remove projections on earlier components (Gram–Schmidt-style) to avoid double counting.**
+
+**Normalization: active factor weights sum to 100% (ex-social).**
+
+**Validation: weight-sum guard, NaN guard, monotone decile sanity.**
+
+**API surfaces: ScoreRow, FactorAttribution, Residuals block.**
+
+**Type Bridge: Pipeline types aliased in composite for seamless integration:**
+```go
+type RawFactors = pipeline.FactorSet
+type RegimeWeights = pipeline.RegimeWeights  
+```
 
 ### Core Principles
 

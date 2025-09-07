@@ -83,15 +83,6 @@ type ScoringInput struct {
 	DataSources map[string]string
 }
 
-// RegimeWeights defines scoring weights for different market regimes
-type RegimeWeights struct {
-	MomentumCore      float64 `yaml:"momentum_core"`       // 40-50%, protected in Gram-Schmidt
-	TechnicalResidual float64 `yaml:"technical_residual"`  // 15-25%, post-momentum residual
-	SupplyDemandBlock float64 `yaml:"supply_demand_block"` // 20-22%, split between volume/quality
-	VolumeWeight      float64 `yaml:"volume_weight"`       // % of supply_demand_block (55%)
-	QualityWeight     float64 `yaml:"quality_weight"`      // % of supply_demand_block (45%)
-	// Social applied AFTER normalization, capped at +10
-}
 
 // UnifiedScorer implements the simplified unified composite scoring model
 type UnifiedScorer struct {
@@ -176,12 +167,22 @@ func (us *UnifiedScorer) calculateMomentumCore(input ScoringInput) float64 {
 	var weights map[string]float64
 
 	switch input.Regime {
+	case "trending_bull":
+		// Bull: 24h 10-15%, 7d 5-10%
+		weights = map[string]float64{"1h": 0.20, "4h": 0.35, "12h": 0.30, "24h": 0.12, "7d": 0.08}
+	case "choppy":
+		// Choppy: 24h 5-8%, 7d ≤2%
+		weights = map[string]float64{"1h": 0.15, "4h": 0.30, "12h": 0.40, "24h": 0.07, "7d": 0.02}
+	case "high_vol":
+		// High vol: tighter focus on shorter timeframes
+		weights = map[string]float64{"1h": 0.25, "4h": 0.40, "12h": 0.25, "24h": 0.10, "7d": 0.00}
+	// Legacy regime mappings
 	case "calm":
-		weights = map[string]float64{"1h": 0.15, "4h": 0.30, "12h": 0.35, "24h": 0.15, "7d": 0.05}
+		weights = map[string]float64{"1h": 0.15, "4h": 0.30, "12h": 0.40, "24h": 0.07, "7d": 0.02}
 	case "volatile":
 		weights = map[string]float64{"1h": 0.25, "4h": 0.40, "12h": 0.25, "24h": 0.10, "7d": 0.00}
 	default: // normal
-		weights = map[string]float64{"1h": 0.20, "4h": 0.35, "12h": 0.30, "24h": 0.10, "7d": 0.05}
+		weights = map[string]float64{"1h": 0.20, "4h": 0.35, "12h": 0.30, "24h": 0.12, "7d": 0.08}
 	}
 
 	return weights["1h"]*input.Momentum1h +
