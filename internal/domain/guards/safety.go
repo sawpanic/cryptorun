@@ -8,8 +8,8 @@ import (
 	"github.com/sawpanic/cryptorun/internal/domain/indicators"
 )
 
-// GuardResult represents the result of a safety guard check
-type GuardResult struct {
+// SafetyGuardResult represents the result of a safety guard check (renamed to avoid conflict)
+type SafetyGuardResult struct {
 	Passed      bool      `json:"passed"`
 	GuardName   string    `json:"guard_name"`
 	Reason      string    `json:"reason"`
@@ -47,13 +47,13 @@ func NewSafetyGuards(config application.GuardsConfig) *SafetyGuards {
 }
 
 // EvaluateAllGuards runs all safety guards for the given regime and candidate
-func (sg *SafetyGuards) EvaluateAllGuards(regime string, candidate CandidateData) ([]GuardResult, error) {
+func (sg *SafetyGuards) EvaluateAllGuards(regime string, candidate CandidateData) ([]SafetyGuardResult, error) {
 	guardSettings, err := sg.config.GetActiveGuardSettings(regime)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get guard settings for regime %s: %w", regime, err)
 	}
 
-	var results []GuardResult
+	var results []SafetyGuardResult
 
 	// 1. Fatigue Guard - prevents chasing overextended moves
 	fatigueResult := sg.evaluateFatigueGuard(candidate, guardSettings.Fatigue)
@@ -71,8 +71,8 @@ func (sg *SafetyGuards) EvaluateAllGuards(regime string, candidate CandidateData
 }
 
 // evaluateFatigueGuard checks if the move is overextended
-func (sg *SafetyGuards) evaluateFatigueGuard(candidate CandidateData, config application.FatigueGuardConfig) GuardResult {
-	result := GuardResult{
+func (sg *SafetyGuards) evaluateFatigueGuard(candidate CandidateData, config application.FatigueGuardConfig) SafetyGuardResult {
+	result := SafetyGuardResult{
 		GuardName: "FatigueGuard",
 		Timestamp: time.Now(),
 		Threshold: config.Threshold24h,
@@ -120,8 +120,8 @@ func (sg *SafetyGuards) evaluateFatigueGuard(candidate CandidateData, config app
 }
 
 // evaluateFreshnessGuard ensures signal is recent and within acceptable price range
-func (sg *SafetyGuards) evaluateFreshnessGuard(candidate CandidateData, config application.FreshnessGuardConfig) GuardResult {
-	result := GuardResult{
+func (sg *SafetyGuards) evaluateFreshnessGuard(candidate CandidateData, config application.FreshnessGuardConfig) SafetyGuardResult {
+	result := SafetyGuardResult{
 		GuardName: "FreshnessGuard",
 		Timestamp: time.Now(),
 		Threshold: float64(config.MaxBarsAge),
@@ -162,8 +162,8 @@ func (sg *SafetyGuards) evaluateFreshnessGuard(candidate CandidateData, config a
 }
 
 // evaluateLateFillGuard prevents execution delays that could impact performance
-func (sg *SafetyGuards) evaluateLateFillGuard(candidate CandidateData, config application.LateFillGuardConfig) GuardResult {
-	result := GuardResult{
+func (sg *SafetyGuards) evaluateLateFillGuard(candidate CandidateData, config application.LateFillGuardConfig) SafetyGuardResult {
+	result := SafetyGuardResult{
 		GuardName: "LateFillGuard",
 		Timestamp: time.Now(),
 		Confidence: 0.95, // Very high confidence in timing checks
@@ -225,13 +225,13 @@ type GuardSummary struct {
 	BlockingIssues int          `json:"blocking_issues"`
 	Warnings       int          `json:"warnings"`
 	TotalGuards    int          `json:"total_guards"`
-	Results        []GuardResult `json:"results"`
+	Results        []SafetyGuardResult `json:"results"`
 	Recommendation string       `json:"recommendation"`
 	OverallScore   float64      `json:"overall_score"` // 0-100 score based on guard results
 }
 
 // GetGuardSummary analyzes guard results and provides trading recommendation
-func GetGuardSummary(results []GuardResult) GuardSummary {
+func GetGuardSummary(results []SafetyGuardResult) GuardSummary {
 	summary := GuardSummary{
 		Results:     results,
 		TotalGuards: len(results),
@@ -281,7 +281,7 @@ func GetGuardSummary(results []GuardResult) GuardSummary {
 }
 
 // IsTradeAllowed returns true if all blocking guards pass (warnings are allowed)
-func IsTradeAllowed(results []GuardResult) bool {
+func IsTradeAllowed(results []SafetyGuardResult) bool {
 	for _, result := range results {
 		if !result.Passed && !result.IsWarning {
 			return false

@@ -227,7 +227,7 @@ func (p *Pipeline[T]) processItem(ctx context.Context, item T, workerID int) {
 	}()
 	
 	// Process through each stage
-	for i, stage := range p.stages {
+	for _, stage := range p.stages {
 		stageStart := time.Now()
 		
 		// Create stage-specific context with timeout

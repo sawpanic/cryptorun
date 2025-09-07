@@ -14,16 +14,17 @@ import (
 	"github.com/sawpanic/cryptorun/internal/config/regime"
 	domainregime "github.com/sawpanic/cryptorun/internal/domain/regime"
 	"github.com/sawpanic/cryptorun/internal/domain/scoring"
+	"github.com/sawpanic/cryptorun/internal/domain/microstructure"
 	"github.com/sawpanic/cryptorun/internal/infrastructure/datafacade"
 )
 
 // OfflineScanner performs offline cryptocurrency momentum scanning
 type OfflineScanner struct {
-	dataFacade     *datafacade.DataFacade
-	factorBuilder  *factors.FactorBuilder
-	regimeDetector *regime.RegimeDetector
+	dataFacade      *datafacade.DataFacade
+	factorBuilder   *factors.FactorBuilder
+	regimeDetector  regime.RegimeDetector
 	compositeScorer *scoring.CompositeScorer
-	config         ScanConfig
+	config          ScanConfig
 }
 
 // ScanConfig configures the offline scanning behavior
@@ -245,7 +246,7 @@ func NewOfflineScanner(dataFacade *datafacade.DataFacade, config ScanConfig) *Of
 	return &OfflineScanner{
 		dataFacade:      dataFacade,
 		factorBuilder:   factorBuilder,
-		regimeDetector:  regime.RegimeDetector(regimeDetector),
+		regimeDetector:  regimeDetector,
 		compositeScorer: compositeScorer,
 		config:        config,
 	}
@@ -343,14 +344,31 @@ func (scanner *OfflineScanner) scanSymbol(ctx context.Context, symbol string, re
 		return nil, fmt.Errorf("failed to get microstructure data: %w", err)
 	}
 	
-	// Build raw factors
-	rawFactors, err := scanner.factorBuilder.BuildFactorRow(symbol, microData, time.Now())
+	// Build raw factors - derive current price from bid/ask spread
+	currentPrice := (microData.BestBid + microData.BestAsk) / 2.0
+	
+	factorData := factors.FactorData{
+		Symbol:        symbol,
+		CurrentPrice:  currentPrice,
+		PriceHistory:  extractPricesFromTrades(microData.RecentTrades),
+		VolumeHistory: extractVolumesFromTrades(microData.RecentTrades),
+		// OHLCHistory and TechnicalData would need to be computed from microData
+		FundingRate:   0.0, // Not available in basic microstructure data
+		OpenInterest:  0.0, // Not available in basic microstructure data
+		SocialScore:   0.0, // Would need social data provider
+		QualityScore:  0.0, // Would need fundamental data
+		MarketCap:     microData.MarketCap,
+		Volume24h:     microData.Volume24h,
+		Timestamp:     time.Now(),
+	}
+	
+	rawFactors, err := scanner.factorBuilder.BuildRawFactorRow(factorData)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build factors: %w", err)
 	}
 	
 	// Calculate composite score
-	score, err := scanner.compositeScorer.CalculateCompositeScore(*rawFactors, *regimeData)
+	score, err := scanner.compositeScorer.CalculateCompositeScore(rawFactors, *regimeData)
 	if err != nil {
 		return nil, fmt.Errorf("failed to calculate composite score: %w", err)
 	}
@@ -386,7 +404,7 @@ func (scanner *OfflineScanner) scanSymbol(ctx context.Context, symbol string, re
 	
 	// Add attribution based on level
 	if scanner.config.AttributionLevel != AttributionMinimal {
-		result.Attribution = scanner.buildAttribution(score, rawFactors, time.Since(scanStart))
+		result.Attribution = scanner.buildAttribution(score, &rawFactors, time.Since(scanStart))
 	}
 	
 	return &result, nil
@@ -613,6 +631,32 @@ func contains(slice []string, item string) bool {
 		}
 	}
 	return false
+}
+
+// extractPricesFromTrades extracts price history from recent trades
+func extractPricesFromTrades(trades []microstructure.Trade) []float64 {
+	if len(trades) == 0 {
+		return []float64{}
+	}
+	
+	prices := make([]float64, len(trades))
+	for i, trade := range trades {
+		prices[i] = trade.Price
+	}
+	return prices
+}
+
+// extractVolumesFromTrades extracts volume history from recent trades  
+func extractVolumesFromTrades(trades []microstructure.Trade) []float64 {
+	if len(trades) == 0 {
+		return []float64{}
+	}
+	
+	volumes := make([]float64, len(trades))
+	for i, trade := range trades {
+		volumes[i] = trade.Size
+	}
+	return volumes
 }
 
 // DefaultScanConfig returns a reasonable default scan configuration

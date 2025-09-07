@@ -30,6 +30,7 @@ type DeFiMetrics struct {
 	DataSource       string    `json:"data_source"`      // Source API (thegraph, etc.)
 	ConfidenceScore  float64   `json:"confidence_score"` // Quality score 0.0-1.0
 	PITShift         int       `json:"pit_shift"`        // Point-in-time shift applied
+	TVLRank          int       `json:"tvl_rank"`         // TVL ranking position
 }
 
 // DeFiProvider defines the interface for DeFi metrics providers
@@ -119,6 +120,9 @@ type AggregatedDeFiMetrics struct {
 	TVLConsensus         float64                   `json:"tvl_consensus"`         // 0.0-1.0 agreement score
 	DataQuality          float64                   `json:"data_quality"`          // Composite quality score
 	OutlierProtocols     []string                  `json:"outlier_protocols"`     // Protocols with outlier data
+	VenueCount           int                       `json:"venue_count"`           // Number of venues
+	VenueMetrics         map[string]*DeFiMetrics   `json:"venue_metrics"`         // Per-venue metrics
+	OutlierVenues        []string                  `json:"outlier_venues"`        // Venues with outlier data
 }
 
 // ConsistencyReport analyzes data consistency across DeFi sources
@@ -140,6 +144,7 @@ type ConsistencyReport struct {
 	InsufficientData     bool                   `json:"insufficient_data"`
 	StaleDataDetected    bool                   `json:"stale_data_detected"`
 	HighVarianceWarning  bool                   `json:"high_variance_warning"`
+	VenueCount           int                    `json:"venue_count"`
 	
 	Recommendations      []string               `json:"recommendations"`
 }

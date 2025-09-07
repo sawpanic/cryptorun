@@ -1,13 +1,94 @@
-# Provider Runtime System
+# Provider Interface & Live Connector System
 
 ## UX MUST — Live Progress & Explainability
 
-Real-time provider health monitoring, rate limit management, and circuit breaker protection: transparent fallback chains, adaptive cache TTLs, and comprehensive degradation handling for reliable multi-provider cryptocurrency data access.
+Complete provider interface system with live connectors, capability-based routing, provenance tracking, and real-time health monitoring via the `cryptorun providers probe` command. Full transparency into provider performance, fallback chains, and data attribution.
 
-**Updated for PROMPT_ID=PROVIDERS.GUARDS.RATELIMITS**  
+**Updated for EPIC G1.0 — Provider Interfaces & Live Connector Skeletons**  
 **Last Updated:** 2025-09-07  
-**Version:** v3.2.1 Provider Runtime  
-**Status:** Implemented
+**Version:** v3.2.1 Provider Interface System  
+**Status:** Implemented - EPIC G1.0 Complete
+
+## Provider Interface Architecture (EPIC G1.0)
+
+### Capability-Based Provider System
+
+The new provider system implements a comprehensive interface with capability-based routing:
+
+```go
+type Provider interface {
+    Name() string
+    HasCapability(cap Capability) bool
+    Probe(ctx context.Context) (*ProbeResult, error)
+    
+    // Core capabilities
+    GetFundingHistory(ctx context.Context, req *FundingRequest) (*FundingResponse, error)
+    GetSpotTrades(ctx context.Context, req *SpotTradesRequest) (*SpotTradesResponse, error)
+    GetOrderBookL2(ctx context.Context, req *OrderBookRequest) (*OrderBookResponse, error)
+    GetKlineData(ctx context.Context, req *KlineRequest) (*KlineResponse, error)
+    GetSupplyReserves(ctx context.Context, req *SupplyRequest) (*SupplyResponse, error)
+    GetWhaleDetection(ctx context.Context, req *WhaleRequest) (*WhaleResponse, error)
+    GetCVD(ctx context.Context, req *CVDRequest) (*CVDResponse, error)
+}
+```
+
+### Live Provider Capabilities
+
+| Provider  | Funding | Spot Trades | OrderBook L2 | Kline Data | Supply/Reserves | Status |
+|-----------|---------|-------------|--------------|------------|-----------------|--------|
+| **Binance** | ✅      | ✅          | ✅           | ✅         | ❌              | Live |
+| **OKX**     | ✅      | ✅          | ✅           | ✅         | ❌              | Live |
+| **Coinbase** | ❌     | ✅          | ✅           | ✅         | ❌              | Live |
+| **Kraken**  | ❌      | ✅          | ✅           | ✅         | ❌              | Live |
+| **CoinGecko** | ❌    | ❌          | ❌           | ❌         | ✅              | Live |
+
+### Provider Probe Command
+
+Real-time provider health and capability testing:
+
+```bash
+# Basic probe - test all providers
+cryptorun providers probe
+
+# Verbose output with detailed capability matrix  
+cryptorun providers probe --verbose
+
+# JSON output for automation
+cryptorun providers probe --format=json --timeout=10s
+
+# Custom configuration file
+cryptorun providers probe --config=config/providers.yaml
+```
+
+**Example Probe Output**:
+```
+Provider Capability Report (Generated: 2025-09-07T21:14:29Z)
+
+Provider   Status  Latency  Capabilities
+--------   ------  -------  ------------
+binance    ✅ UP    342ms    4/4 available
+coinbase   ✅ UP    299ms    3/3 available
+coingecko  ✅ UP    1314ms   1/1 available
+kraken     ❌ DOWN  0ms      0/3 available
+okx        ✅ UP    353ms    4/4 available
+```
+
+### Provenance Tracking
+
+Every data response includes comprehensive provenance information:
+
+```json
+{
+  "data": [{"symbol": "BTCUSDT", "price": 43500.50}],
+  "provenance": {
+    "venue": "binance",
+    "endpoint": "/api/v3/trades", 
+    "window": 100,
+    "latency_ms": 245,
+    "timestamp": "2025-09-07T21:14:29Z"
+  }
+}
+```
 
 ## Provider Configuration Matrix
 

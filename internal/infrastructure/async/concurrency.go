@@ -291,7 +291,12 @@ func (tb *TokenBucket) TakeToken(ctx context.Context) bool {
 	
 	if elapsed >= tb.refillRate {
 		tokensToAdd := int64(elapsed / tb.refillRate)
-		tb.tokens = min(tb.tokens+tokensToAdd, tb.maxTokens)
+		newTokens := tb.tokens + tokensToAdd
+		if newTokens > tb.maxTokens {
+			tb.tokens = tb.maxTokens
+		} else {
+			tb.tokens = newTokens
+		}
 		tb.lastRefill = now
 	}
 	

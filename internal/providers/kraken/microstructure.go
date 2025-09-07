@@ -340,12 +340,9 @@ func (me *MicrostructureExtractor) calculateVADR(ctx context.Context, pair strin
 		return 0, fmt.Errorf("data facade or VADR calculator not available")
 	}
 	
-	// Get 24h historical OHLCV data for VADR calculation
-	endTime := time.Now()
-	startTime := endTime.Add(-24 * time.Hour)
-	
+	// Get 24h historical OHLCV data for VADR calculation (24 hours worth of 1h bars)
 	// Fetch historical klines from data facade
-	klines, err := me.dataFacade.GetKlines(ctx, pair, "1h", startTime, endTime)
+	klines, err := me.dataFacade.GetKlines(ctx, "kraken", pair, "1h", 24)
 	if err != nil {
 		return 0, fmt.Errorf("failed to get historical klines for VADR: %w", err)
 	}
@@ -359,7 +356,7 @@ func (me *MicrostructureExtractor) calculateVADR(ctx context.Context, pair strin
 	// Calculate average daily volume for tier determination
 	var totalVolume float64
 	for _, kline := range klines {
-		totalVolume += kline.VolumeUSD
+		totalVolume += kline.QuoteVol
 	}
 	avgVolume := totalVolume / float64(len(klines)) * 24 // Scale to daily
 	
@@ -388,11 +385,8 @@ func (me *MicrostructureExtractor) GetVADRMetrics(ctx context.Context, pair stri
 		return nil, fmt.Errorf("data facade or VADR calculator not available")
 	}
 	
-	// Get 24h historical data
-	endTime := time.Now()
-	startTime := endTime.Add(-24 * time.Hour)
-	
-	klines, err := me.dataFacade.GetKlines(ctx, pair, "1h", startTime, endTime)
+	// Get 24h historical data (24 hours worth of 1h bars)
+	klines, err := me.dataFacade.GetKlines(ctx, "kraken", pair, "1h", 24)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get historical klines: %w", err)
 	}
@@ -400,7 +394,7 @@ func (me *MicrostructureExtractor) GetVADRMetrics(ctx context.Context, pair stri
 	// Calculate average daily volume
 	var totalVolume float64
 	for _, kline := range klines {
-		totalVolume += kline.VolumeUSD
+		totalVolume += kline.QuoteVol
 	}
 	avgVolume := totalVolume / float64(len(klines)) * 24
 	

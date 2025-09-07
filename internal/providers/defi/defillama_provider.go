@@ -7,18 +7,18 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"strconv"
 	"strings"
 	"time"
 	
 	"github.com/sawpanic/cryptorun/internal/providers"
+	"github.com/sawpanic/cryptorun/internal/providers/derivs"
 )
 
 // DeFiLlamaProvider implements DeFi metrics using DeFiLlama API (free tier)
 type DeFiLlamaProvider struct {
 	config      DeFiProviderConfig
 	client      *http.Client
-	rateLimiter providers.RateLimiter
+	rateLimiter derivs.RateLimiter
 	guard       *providers.ExchangeNativeGuard
 }
 
@@ -47,10 +47,7 @@ func NewDeFiLlamaProvider(config DeFiProviderConfig) (*DeFiLlamaProvider, error)
 		Timeout: config.RequestTimeout,
 	}
 	
-	rateLimiter, err := providers.NewTokenBucketLimiter(config.RateLimitRPS, 5)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create rate limiter: %w", err)
-	}
+	rateLimiter := derivs.NewTokenBucketLimiter(config.RateLimitRPS)
 	
 	return &DeFiLlamaProvider{
 		config:      config,
@@ -68,7 +65,7 @@ func (p *DeFiLlamaProvider) GetProtocolTVL(ctx context.Context, protocol string,
 	}
 	
 	// Apply rate limiting
-	if err := p.rateLimiter.Allow(); err != nil {
+	if err := p.rateLimiter.Wait(ctx); err != nil {
 		return nil, fmt.Errorf("rate limit exceeded: %w", err)
 	}
 	
@@ -102,7 +99,7 @@ func (p *DeFiLlamaProvider) GetPoolMetrics(ctx context.Context, protocol string,
 	}
 	
 	// Apply rate limiting
-	if err := p.rateLimiter.Allow(); err != nil {
+	if err := p.rateLimiter.Wait(ctx); err != nil {
 		return nil, fmt.Errorf("rate limit exceeded: %w", err)
 	}
 	
@@ -123,7 +120,7 @@ func (p *DeFiLlamaProvider) GetLendingMetrics(ctx context.Context, protocol stri
 	}
 	
 	// Apply rate limiting
-	if err := p.rateLimiter.Allow(); err != nil {
+	if err := p.rateLimiter.Wait(ctx); err != nil {
 		return nil, fmt.Errorf("rate limit exceeded: %w", err)
 	}
 	
@@ -134,7 +131,7 @@ func (p *DeFiLlamaProvider) GetLendingMetrics(ctx context.Context, protocol stri
 // GetTopTVLTokens returns tokens by TVL (USD pairs only)
 func (p *DeFiLlamaProvider) GetTopTVLTokens(ctx context.Context, limit int) ([]DeFiMetrics, error) {
 	// Apply rate limiting
-	if err := p.rateLimiter.Allow(); err != nil {
+	if err := p.rateLimiter.Wait(ctx); err != nil {
 		return nil, fmt.Errorf("rate limit exceeded: %w", err)
 	}
 	
@@ -290,10 +287,15 @@ func (p *DeFiLlamaProvider) parseProtocolTVLResponse(resp map[string]interface{}
 }
 
 func (p *DeFiLlamaProvider) parseTopProtocolsResponse(resp map[string]interface{}, limit int) ([]DeFiMetrics, error) {
-	// DeFiLlama returns an array of protocols directly
-	protocols, ok := resp.([]interface{})
+	// DeFiLlama returns an array of protocols in the response
+	protocols, ok := resp["protocols"].([]interface{})
 	if !ok {
-		return nil, fmt.Errorf("invalid protocols response format")
+		// Try direct array format as fallback
+		protocolsArr, ok := resp["data"].([]interface{})
+		if !ok {
+			return nil, fmt.Errorf("invalid protocols response format - expected protocols or data array")
+		}
+		protocols = protocolsArr
 	}
 	
 	var metrics []DeFiMetrics

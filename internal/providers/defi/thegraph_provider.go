@@ -10,13 +10,14 @@ import (
 	"time"
 	
 	"github.com/sawpanic/cryptorun/internal/providers"
+	"github.com/sawpanic/cryptorun/internal/providers/derivs"
 )
 
 // TheGraphProvider implements DeFi metrics using The Graph Protocol (free tier)
 type TheGraphProvider struct {
 	config     DeFiProviderConfig
 	client     *http.Client
-	rateLimiter providers.RateLimiter
+	rateLimiter derivs.RateLimiter
 	guard      *providers.ExchangeNativeGuard
 }
 
@@ -45,10 +46,7 @@ func NewTheGraphProvider(config DeFiProviderConfig) (*TheGraphProvider, error) {
 		Timeout: config.RequestTimeout,
 	}
 	
-	rateLimiter, err := providers.NewTokenBucketLimiter(config.RateLimitRPS, 10)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create rate limiter: %w", err)
-	}
+	rateLimiter := derivs.NewTokenBucketLimiter(config.RateLimitRPS)
 	
 	return &TheGraphProvider{
 		config:      config,
@@ -66,7 +64,7 @@ func (p *TheGraphProvider) GetProtocolTVL(ctx context.Context, protocol string, 
 	}
 	
 	// Apply rate limiting
-	if err := p.rateLimiter.Allow(); err != nil {
+	if err := p.rateLimiter.Wait(ctx); err != nil {
 		return nil, fmt.Errorf("rate limit exceeded: %w", err)
 	}
 	
@@ -105,7 +103,7 @@ func (p *TheGraphProvider) GetPoolMetrics(ctx context.Context, protocol string, 
 	}
 	
 	// Apply rate limiting
-	if err := p.rateLimiter.Allow(); err != nil {
+	if err := p.rateLimiter.Wait(ctx); err != nil {
 		return nil, fmt.Errorf("rate limit exceeded: %w", err)
 	}
 	
@@ -143,7 +141,7 @@ func (p *TheGraphProvider) GetLendingMetrics(ctx context.Context, protocol strin
 	}
 	
 	// Apply rate limiting
-	if err := p.rateLimiter.Allow(); err != nil {
+	if err := p.rateLimiter.Wait(ctx); err != nil {
 		return nil, fmt.Errorf("rate limit exceeded: %w", err)
 	}
 	
@@ -171,7 +169,7 @@ func (p *TheGraphProvider) GetLendingMetrics(ctx context.Context, protocol strin
 // GetTopTVLTokens returns tokens by TVL (USD pairs only)
 func (p *TheGraphProvider) GetTopTVLTokens(ctx context.Context, limit int) ([]DeFiMetrics, error) {
 	// Apply rate limiting
-	if err := p.rateLimiter.Allow(); err != nil {
+	if err := p.rateLimiter.Wait(ctx); err != nil {
 		return nil, fmt.Errorf("rate limit exceeded: %w", err)
 	}
 	

@@ -6,6 +6,18 @@ Real-time implementation progress tracking with comprehensive change documentati
 
 ## Unreleased
 
+### feat(providers): complete EPIC G1.0 - Provider Interfaces & Live Connector Skeletons
+- **Provider Registry System**: Comprehensive `ProviderRegistry` with capability-based routing and config-driven fallback chains
+- **Live Connectors**: Full implementations for Binance, OKX, Coinbase, Kraken, CoinGecko using free/keyless endpoints only
+- **Capability Framework**: 7 defined capabilities (funding, spot trades, orderbook L2, kline data, supply/reserves, whale detection, CVD)
+- **Provenance Tracking**: Complete data attribution with venue, endpoint, latency, and timestamp for all responses
+- **CLI Probe Command**: `cryptorun providers probe` with table, JSON, and CSV output formats plus verbose capability matrix
+- **Rate Limiting**: Token bucket implementation with per-provider burst limits and sustained rates from config
+- **Golden File Tests**: Comprehensive test suite with recorded API responses for deterministic testing
+- **Symbol Conversion**: Automatic format conversion between CryptoRun standard and each exchange's native format
+- **Circuit Breaker Integration**: Health monitoring and automatic failover with probe latency tracking
+- **Config-Driven**: All providers initialized from `config/providers.yaml` with priority-based fallback ordering
+
 ### feat(gates): integrate EvaluateAllGates orchestration + CLI explain; add boundary tests
 - Implement unified `EvaluateAllGates()` in `internal/domain/gates/evaluate.go` with comprehensive reason codes and metrics
 - Add CLI command `cryptorun gates explain --symbol SYMBOL` for deterministic gate evaluation with human-readable explanations  

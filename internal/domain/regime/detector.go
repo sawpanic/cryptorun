@@ -385,13 +385,13 @@ func (rd *RegimeDetector) GetDetectorStatus() map[string]interface{} {
 }
 
 // GetRegimeHistory returns the recent regime detection history
-func (rd *RegimeDetector) GetRegimeHistory(limit int) []*RegimeDetection {
+func (rd *RegimeDetector) GetRegimeHistory(limit int) []RegimeDetection {
 	// For now, just return the current detection
 	// In a full implementation, this would maintain a history buffer
 	if rd.lastDetection == nil {
-		return []*RegimeDetection{}
+		return []RegimeDetection{}
 	}
-	return []*RegimeDetection{rd.lastDetection}
+	return []RegimeDetection{*rd.lastDetection}
 }
 
 // ValidateInputs checks if the market data is valid for regime detection

@@ -240,7 +240,6 @@ func (fhs *FactorHierarchySpec) createCorrelatedFactorData(symbols []string) []p
 			Technical:    6.0 + base*1.2,   // Somewhat correlated with momentum
 			Volume:       5.0 + base*1.5,   // Partially correlated with technical
 			Quality:      20.0 - base*1.2,  // Negatively correlated with momentum
-			Catalyst:     8.0 + base*0.9,   // P1: New catalyst factor, moderate correlation
 		}
 
 		data = append(data, factorSet)
