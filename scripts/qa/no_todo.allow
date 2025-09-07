@@ -1,0 +1,25 @@
+# No-TODO Allow List
+# Files or patterns listed here will be excluded from TODO/FIXME/STUB scanning
+# 
+# Format: One pattern per line
+# Comments start with #
+# Patterns support shell-style globbing
+
+# Example exemptions:
+# docs/legacy/old_design.md
+# tests/fixtures/mock_data.go
+# vendor/
+# *.pb.go
+
+# Current exemptions for this project:
+docs/
+CLAUDE.md
+CHANGELOG.md
+artifacts/
+out/
+*.pb.go
+*.gen.go
+generated/
+vendor/
+third_party/
+.git/

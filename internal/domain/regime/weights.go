@@ -183,6 +183,55 @@ func NormalizeWeights(weights FactorWeights) FactorWeights {
 	}
 }
 
+// RegimeWeights defines factor weights for a specific market regime (used in composite scoring)
+type RegimeWeights struct {
+	Description    string  `yaml:"description"`
+	MomentumCore   float64 `yaml:"momentum_core"`
+	Technical      float64 `yaml:"technical"`
+	Volume         float64 `yaml:"volume"`
+	Quality        float64 `yaml:"quality"`
+	Social         float64 `yaml:"social"`
+}
+
+// WeightsConfig defines the unified factor weights configuration
+type WeightsConfig struct {
+	DefaultRegime string `yaml:"default_regime"`
+	Validation    struct {
+		WeightSumTolerance float64 `yaml:"weight_sum_tolerance"`
+		MinMomentumWeight  float64 `yaml:"min_momentum_weight"`
+		MaxSocialWeight    float64 `yaml:"max_social_weight"`
+		SocialHardCap      float64 `yaml:"social_hard_cap"`
+	} `yaml:"validation"`
+	Regimes         map[string]RegimeWeights `yaml:"regimes"`
+	QARequirements  QARequirements           `yaml:"qa_requirements"`
+}
+
+// QARequirements defines quality assurance thresholds
+type QARequirements struct {
+	CorrelationThreshold float64 `yaml:"correlation_threshold"`
+	WeightSumExact      float64 `yaml:"weight_sum_exact"`
+	MomentumMinimum     float64 `yaml:"momentum_minimum"`
+	SocialMaximum       float64 `yaml:"social_maximum"`
+}
+
+// ValidateRegimeWeights checks if the weights configuration is valid
+func ValidateRegimeWeights(weights RegimeWeights, config WeightsConfig) error {
+	total := weights.MomentumCore + weights.Technical + weights.Volume + weights.Quality + weights.Social
+	if math.Abs(total-1.0) > config.Validation.WeightSumTolerance {
+		return fmt.Errorf("weights sum to %.6f, expected 1.0 ±%.3f", total, config.Validation.WeightSumTolerance)
+	}
+	
+	if weights.MomentumCore < config.Validation.MinMomentumWeight {
+		return fmt.Errorf("momentum weight %.3f below minimum %.3f", weights.MomentumCore, config.Validation.MinMomentumWeight)
+	}
+	
+	if weights.Social > config.Validation.MaxSocialWeight {
+		return fmt.Errorf("social weight %.3f above maximum %.3f", weights.Social, config.Validation.MaxSocialWeight)
+	}
+	
+	return nil
+}
+
 // ApplySocialCap applies the social media factor cap (+10 max) OUTSIDE the base scoring
 // This ensures social factors don't interfere with the core 100-point allocation
 func ApplySocialCap(baseScore float64, socialSignal float64) float64 {

@@ -1,0 +1,117 @@
+{
+  "version": "1.0.0",
+  "entity": "envelope",
+  "fields": [
+    {
+      "name": "timestamp",
+      "type": "timestamp",
+      "optional": false
+    },
+    {
+      "name": "venue",
+      "type": "string",
+      "optional": false
+    },
+    {
+      "name": "symbol",
+      "type": "string",
+      "optional": false
+    },
+    {
+      "name": "tier",
+      "type": "string",
+      "optional": false
+    },
+    {
+      "name": "original_source",
+      "type": "string",
+      "optional": false
+    },
+    {
+      "name": "confidence_score",
+      "type": "float64",
+      "optional": false
+    },
+    {
+      "name": "processing_delay_ms",
+      "type": "int64",
+      "optional": true,
+      "default": 0
+    },
+    {
+      "name": "best_bid_price",
+      "type": "float64",
+      "optional": false
+    },
+    {
+      "name": "best_ask_price",
+      "type": "float64",
+      "optional": false
+    },
+    {
+      "name": "best_bid_qty",
+      "type": "float64",
+      "optional": false
+    },
+    {
+      "name": "best_ask_qty",
+      "type": "float64",
+      "optional": false
+    },
+    {
+      "name": "mid_price",
+      "type": "float64",
+      "optional": false
+    },
+    {
+      "name": "spread_bps",
+      "type": "float64",
+      "optional": false
+    },
+    {
+      "name": "row_count",
+      "type": "int64",
+      "optional": true
+    },
+    {
+      "name": "min_timestamp_unix",
+      "type": "int64",
+      "optional": true
+    },
+    {
+      "name": "max_timestamp_unix",
+      "type": "int64",
+      "optional": true
+    },
+    {
+      "name": "schema_version",
+      "type": "string",
+      "optional": true,
+      "default": "1.0.0"
+    }
+  ],
+  "required": [
+    "timestamp",
+    "venue",
+    "symbol",
+    "tier",
+    "original_source",
+    "confidence_score",
+    "best_bid_price",
+    "best_ask_price",
+    "best_bid_qty",
+    "best_ask_qty",
+    "mid_price",
+    "spread_bps"
+  ],
+  "constraints": {
+    "confidence_score": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "spread_bps": {
+      "min": 0.0
+    }
+  },
+  "created_at": "2025-09-07T14:00:00Z"
+}

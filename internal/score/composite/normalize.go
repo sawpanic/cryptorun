@@ -114,7 +114,7 @@ func (n *Normalizer) LoadRegimeWeights(configWeights map[string]map[string]float
 
 // validateWeights ensures weights are valid and sum to approximately 1.0
 func (n *Normalizer) validateWeights(weights map[string]float64) error {
-	requiredKeys := []string{"momentum_core", "technical_resid", "supply_demand_block"}
+	requiredKeys := []string{"momentum_core", "technical_resid", "supply_demand_block", "catalyst_block"}
 
 	// Check required keys exist
 	for _, key := range requiredKeys {
@@ -128,7 +128,7 @@ func (n *Normalizer) validateWeights(weights map[string]float64) error {
 	}
 
 	// Check sum is approximately 1.0 (allowing for floating point precision)
-	sum := weights["momentum_core"] + weights["technical_resid"] + weights["supply_demand_block"]
+	sum := weights["momentum_core"] + weights["technical_resid"] + weights["supply_demand_block"] + weights["catalyst_block"]
 
 	if math.Abs(sum-1.0) > 0.01 {
 		return fmt.Errorf("weights sum to %f, expected ~1.0", sum)
@@ -234,6 +234,7 @@ func (n *Normalizer) GetWeightSummary(regime string) (string, error) {
 	summary += fmt.Sprintf("  TechnicalResid: %.1f%%\n", weights["technical_resid"]*100)
 	summary += fmt.Sprintf("  VolumeResid: %.1f%% (%.1f%% × 55%%)\n", volumeWeight*100, supplyDemand*100)
 	summary += fmt.Sprintf("  QualityResid: %.1f%% (%.1f%% × 45%%)\n", qualityWeight*100, supplyDemand*100)
+	summary += fmt.Sprintf("  CatalystResid: %.1f%%\n", weights["catalyst_block"]*100)
 	summary += fmt.Sprintf("  SocialResid: +10 max (outside 100%%)\n")
 
 	return summary, nil

@@ -6,18 +6,21 @@ import (
 	"math"
 	"time"
 
+	"github.com/sawpanic/cryptorun/internal/catalyst"
 	"github.com/sawpanic/cryptorun/internal/data/derivs"
 	"github.com/sawpanic/cryptorun/internal/data/etf"
+	"github.com/sawpanic/cryptorun/internal/score/factors"
 )
 
 // CompositeScore represents the unified scoring result
 type CompositeScore struct {
 	// Raw components
-	MomentumCore   float64           `json:"momentum_core"`
-	TechnicalResid float64           `json:"technical_resid"`
-	VolumeResid    VolumeComponents  `json:"volume_resid"`
-	QualityResid   QualityComponents `json:"quality_resid"`
-	SocialResid    float64           `json:"social_resid_capped"`
+	MomentumCore   float64             `json:"momentum_core"`
+	TechnicalResid float64             `json:"technical_resid"`
+	VolumeResid    VolumeComponents    `json:"volume_resid"`
+	QualityResid   QualityComponents   `json:"quality_resid"`
+	CatalystResid  CatalystComponents  `json:"catalyst_resid"`
+	SocialResid    float64             `json:"social_resid_capped"`
 
 	// Final scores
 	Internal0to100  float64 `json:"internal_0_100"`    // Normalized before social
@@ -43,6 +46,15 @@ type QualityComponents struct {
 	ETFTint     float64 `json:"etf_tint"`     // ETF flow tint
 	VenueHealth float64 `json:"venue_health"` // Venue-specific health
 	Combined    float64 `json:"combined"`     // Weighted combination
+}
+
+// CatalystComponents breaks down catalyst-related scoring
+type CatalystComponents struct {
+	Compression    float64 `json:"compression"`     // BB width compression score (0-1)
+	InSqueeze      bool    `json:"in_squeeze"`      // Bollinger Band / Keltner squeeze state
+	CatalystWeight float64 `json:"catalyst_weight"` // Time-decayed catalyst events weight
+	TierSignal     float64 `json:"tier_signal"`     // Weighted tier signal from events
+	Combined       float64 `json:"combined"`        // Final catalyst score: 0.6*compression + 0.4*catalyst
 }
 
 // ScoringInput contains all raw factors for scoring
@@ -72,6 +84,14 @@ type ScoringInput struct {
 	ETFFlows     float64
 	VenueHealth  float64
 
+	// Catalyst Compression factors
+	PriceHigh        []float64 // High prices for ATR and BB/Keltner calculations
+	PriceLow         []float64 // Low prices for ATR calculations  
+	PriceClose       []float64 // Close prices for BB calculations
+	PriceTypical     []float64 // Typical price (H+L+C)/3 for Keltner channels
+	Volume           []float64 // Volume data
+	CatalystEvents   []string  // Event IDs for catalyst weighting
+
 	// Social factors (applied after normalization)
 	SocialScore float64
 	BrandScore  float64
@@ -85,21 +105,28 @@ type ScoringInput struct {
 
 // UnifiedScorer implements the simplified unified composite scoring model
 type UnifiedScorer struct {
-	orthogonalizer  *Orthogonalizer
-	normalizer      *Normalizer
-	fundingProvider *derivs.FundingProvider
-	oiProvider      *derivs.OpenInterestProvider
-	etfProvider     *etf.ETFFlowProvider
+	orthogonalizer     *Orthogonalizer
+	normalizer         *Normalizer
+	fundingProvider    *derivs.FundingProvider
+	oiProvider         *derivs.OpenInterestProvider
+	etfProvider        *etf.ETFFlowProvider
+	catalystCalculator *factors.CatalystCompressionCalculator
+	catalystRegistry   *catalyst.EventRegistry
 }
 
 // NewUnifiedScorer creates a new unified composite scorer
 func NewUnifiedScorer() *UnifiedScorer {
+	catalystConfig := factors.DefaultCatalystCompressionConfig()
+	registryConfig := catalyst.DefaultRegistryConfig()
+	
 	return &UnifiedScorer{
-		orthogonalizer:  NewOrthogonalizer(),
-		normalizer:      NewNormalizer(),
-		fundingProvider: derivs.NewFundingProvider(),
-		oiProvider:      derivs.NewOpenInterestProvider(),
-		etfProvider:     etf.NewETFFlowProvider(),
+		orthogonalizer:     NewOrthogonalizer(),
+		normalizer:         NewNormalizer(),
+		fundingProvider:    derivs.NewFundingProvider(),
+		oiProvider:         derivs.NewOpenInterestProvider(),
+		etfProvider:        etf.NewETFFlowProvider(),
+		catalystCalculator: factors.NewCatalystCompressionCalculator(catalystConfig),
+		catalystRegistry:   catalyst.NewEventRegistry(registryConfig),
 	}
 }
 
@@ -114,6 +141,7 @@ func (us *UnifiedScorer) Score(input ScoringInput) CompositeScore {
 		{Name: "technical", Values: us.calculateTechnicalFactors(input)},
 		{Name: "volume", Values: us.calculateVolumeFactors(input)},
 		{Name: "quality", Values: us.calculateQualityFactors(input)},
+		{Name: "catalyst", Values: us.calculateCatalystFactors(input)},
 	}
 
 	// Step 3: Orthogonalize using Gram-Schmidt
@@ -127,14 +155,20 @@ func (us *UnifiedScorer) Score(input ScoringInput) CompositeScore {
 	technicalResid := us.extractScalar(orthogonalFactors.TechnicalResid)
 	volumeResid := us.extractVolumeComponents(orthogonalFactors.VolumeResid, input)
 	qualityResid := us.extractQualityComponents(orthogonalFactors.QualityResid, input)
+	catalystResid := us.extractCatalystComponents(orthogonalFactors.CatalystResid, input)
 
 	// Step 5: Apply regime weights to compute 0-100 score
 	weights, _ := us.normalizer.GetRegimeWeights(input.Regime)
 
+	// Split supply_demand_block between volume and quality (as per normalizer logic)
+	volumeWeight := 0.55 * weights["supply_demand_block"]  // 55% of supply/demand to volume
+	qualityWeight := 0.45 * weights["supply_demand_block"] // 45% of supply/demand to quality
+	
 	internal0to100 := weights["momentum_core"]*momentumCore +
-		weights["technical_residual"]*technicalResid +
-		(weights["supply_demand_block"]*weights["volume_weight"])*volumeResid.Combined +
-		(weights["supply_demand_block"]*weights["quality_weight"])*qualityResid.Combined
+		weights["technical_resid"]*technicalResid +
+		volumeWeight*volumeResid.Combined +
+		qualityWeight*qualityResid.Combined +
+		weights["catalyst_block"]*catalystResid.Combined
 
 	// Normalize to 0-100 scale
 	internal0to100 = math.Max(0, math.Min(100, internal0to100))
@@ -151,6 +185,7 @@ func (us *UnifiedScorer) Score(input ScoringInput) CompositeScore {
 		TechnicalResid:  technicalResid,
 		VolumeResid:     volumeResid,
 		QualityResid:    qualityResid,
+		CatalystResid:   catalystResid,
 		SocialResid:     socialCapped,
 		Internal0to100:  internal0to100,
 		FinalWithSocial: finalWithSocial,
@@ -218,6 +253,47 @@ func (us *UnifiedScorer) calculateQualityFactors(input ScoringInput) []float64 {
 	}
 }
 
+// calculateCatalystFactors computes catalyst compression and event factors
+func (us *UnifiedScorer) calculateCatalystFactors(input ScoringInput) []float64 {
+	// Validate input data for catalyst calculations
+	if len(input.PriceClose) == 0 || len(input.PriceHigh) == 0 || len(input.PriceLow) == 0 {
+		// Return zeros if insufficient price data
+		return []float64{0.0, 0.0, 0.0}
+	}
+
+	// Prepare catalyst compression input
+	compressionInput := factors.CatalystCompressionInput{
+		Close:        input.PriceClose,
+		TypicalPrice: input.PriceTypical,
+		High:         input.PriceHigh,
+		Low:          input.PriceLow,
+		Volume:       input.Volume,
+		Timestamp:    []int64{input.Timestamp.Unix()}, // Convert to Unix timestamp
+	}
+
+	// Calculate catalyst compression
+	compressionResult, err := us.catalystCalculator.Calculate(compressionInput)
+	if err != nil {
+		// Return moderate values if calculation fails
+		return []float64{0.5, 0.0, 0.5} // compression, squeeze, catalyst_weight
+	}
+
+	// Get catalyst events for this symbol at current time
+	catalystSignal := us.catalystRegistry.GetCatalystSignal(input.Symbol, input.Timestamp)
+	
+	// Normalize squeeze to 0/1 float
+	squeezeFloat := 0.0
+	if compressionResult.InSqueeze {
+		squeezeFloat = 1.0
+	}
+
+	return []float64{
+		compressionResult.CompressionScore, // BB width compression (0-1)
+		squeezeFloat,                       // Squeeze state (0 or 1)
+		catalystSignal.Signal,              // Time-decayed catalyst signal (0-1)
+	}
+}
+
 // extractScalar extracts a single scalar from a factor
 func (us *UnifiedScorer) extractScalar(factor Factor) float64 {
 	if len(factor.Values) == 0 {
@@ -270,6 +346,32 @@ func (us *UnifiedScorer) extractQualityComponents(factor Factor, input ScoringIn
 	}
 }
 
+// extractCatalystComponents creates catalyst breakdown from orthogonalized factor
+func (us *UnifiedScorer) extractCatalystComponents(factor Factor, input ScoringInput) CatalystComponents {
+	if len(factor.Values) < 3 {
+		return CatalystComponents{Combined: us.extractScalar(factor)}
+	}
+
+	// Extract individual components
+	compression := factor.Values[0]    // BB width compression score
+	squeezeFloat := factor.Values[1]   // Squeeze state (0 or 1)
+	catalystWeight := factor.Values[2] // Time-decayed catalyst signal
+
+	// Convert squeeze float back to bool for component breakdown
+	inSqueeze := squeezeFloat > 0.5
+
+	// Weight: 60% compression, 40% catalyst events (as per CatalystCompressionResult.FinalScore)
+	combined := 0.6*compression + 0.4*catalystWeight
+
+	return CatalystComponents{
+		Compression:    compression,
+		InSqueeze:      inSqueeze,
+		CatalystWeight: catalystWeight,
+		TierSignal:     catalystWeight, // Use same value as tier signal for now
+		Combined:       combined,
+	}
+}
+
 // fallbackScore provides scoring when orthogonalization fails
 func (us *UnifiedScorer) fallbackScore(input ScoringInput) CompositeScore {
 	// Simple fallback scoring without orthogonalization
@@ -281,6 +383,7 @@ func (us *UnifiedScorer) fallbackScore(input ScoringInput) CompositeScore {
 		TechnicalResid:  0,
 		VolumeResid:     VolumeComponents{Combined: 0},
 		QualityResid:    QualityComponents{Combined: 0},
+		CatalystResid:   CatalystComponents{Combined: 0},
 		SocialResid:     social,
 		Internal0to100:  momentum * 100, // Simple fallback
 		FinalWithSocial: math.Min(110, momentum*100+social),

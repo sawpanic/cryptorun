@@ -1,0 +1,176 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cryptorun
+  namespace: cryptorun
+  labels:
+    app: cryptorun
+    version: v3.2.1
+    component: application
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: cryptorun
+      component: application
+  template:
+    metadata:
+      labels:
+        app: cryptorun
+        component: application
+        version: v3.2.1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8081"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: cryptorun
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: cryptorun
+        image: cryptorun:v3.2.1
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 65532
+          runAsGroup: 65532
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: true
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        - name: metrics
+          containerPort: 8081
+          protocol: TCP
+        - name: health
+          containerPort: 8082
+          protocol: TCP
+        env:
+        - name: REDIS_ADDR
+          valueFrom:
+            configMapKeyRef:
+              name: cryptorun-config
+              key: redis-addr
+        - name: PG_DSN
+          valueFrom:
+            secretKeyRef:
+              name: cryptorun-secrets
+              key: postgres-dsn
+        - name: METRICS_ADDR
+          value: ":8081"
+        - name: HEALTH_ADDR
+          value: ":8082"
+        - name: KRAKEN_API_BASE
+          valueFrom:
+            configMapKeyRef:
+              name: cryptorun-config
+              key: kraken-api-base
+        - name: KRAKEN_WS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: cryptorun-config
+              key: kraken-ws-url
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: cryptorun-config
+              key: log-level
+        - name: ENV
+          value: "production"
+        volumeMounts:
+        - name: config
+          mountPath: /etc/cryptorun/config
+          readOnly: true
+        - name: tmp
+          mountPath: /tmp
+        - name: artifacts
+          mountPath: /tmp/artifacts
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+            ephemeral-storage: 1Gi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+            ephemeral-storage: 2Gi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: health
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: health
+            scheme: HTTP
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /health
+            port: health
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 12
+      volumes:
+      - name: config
+        configMap:
+          name: cryptorun-config-files
+          defaultMode: 0444
+      - name: tmp
+        emptyDir:
+          sizeLimit: 1Gi
+      - name: artifacts
+        emptyDir:
+          sizeLimit: 2Gi
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - cryptorun
+              topologyKey: kubernetes.io/hostname
+      tolerations:
+      - key: "node.kubernetes.io/not-ready"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 300
+      - key: "node.kubernetes.io/unreachable"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 300

@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/rs/zerolog/log"
-	"github.com/sawpanic/cryptorun/internal/data/facade"
+	"github.com/sawpanic/cryptorun/internal/data/interfaces"
 )
 
-// RateLimiter implements facade.RateLimiter with venue-specific rate limiting
+// RateLimiter implements interfaces.RateLimiter with venue-specific rate limiting
 // and budget guards for free-tier API usage
 type RateLimiter struct {
 	mu       sync.RWMutex
@@ -199,7 +199,7 @@ func (rl *RateLimiter) Handle429Response(venue string) {
 }
 
 // Status returns the current rate limit status for a venue
-func (rl *RateLimiter) Status(venue string) facade.RateLimitStatus {
+func (rl *RateLimiter) Status(venue string) interfaces.RateLimitStatus {
 	rl.mu.RLock()
 	defer rl.mu.RUnlock()
 	
@@ -211,7 +211,7 @@ func (rl *RateLimiter) Status(venue string) facade.RateLimitStatus {
 		backoffTime = state.backoffUntil.Sub(time.Now())
 	}
 	
-	return facade.RateLimitStatus{
+	return interfaces.RateLimitStatus{
 		Venue:       venue,
 		Remaining:   budget.monthlyLimit - budget.used,
 		ResetTime:   budget.resetDate,

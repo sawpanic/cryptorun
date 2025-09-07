@@ -14,7 +14,7 @@ type Scanner struct {
 	compositeScorer *composite.Scorer
 	entryGates     *gates.EntryGateEvaluator
 	guards         *guards.Manager
-	microstructure *microstructure.Evaluator
+	microstructure microstructure.Evaluator
 }
 
 type ScanResults struct {

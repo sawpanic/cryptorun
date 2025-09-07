@@ -160,6 +160,82 @@ cacheCfg := facade.CacheConfig{
 }
 ```
 
+## Cold Tier Formats
+
+The cold tier provides historical data storage with compression and point-in-time (PIT) integrity validation.
+
+### Storage Format Matrix
+
+| Format | Compression | Use Case | CLI Support |
+|--------|-------------|----------|-------------|
+| Parquet | gzip, lz4, zstd, snappy | Production storage | Yes |
+| CSV | none | Development/debugging | Yes |
+| JSON | gzip | Metadata/config | Planned |
+
+### Parquet Configuration
+
+```go
+config := cold.ParquetStoreConfig{
+    Compression:    cold.CompressionGzip,  // gzip, lz4, zstd, snappy, none
+    BatchSize:      1000,                  // Records per batch
+    ValidateSchema: true,                  // Enable schema validation
+    SchemaVersion:  "1.0.0",              // Schema version
+    MemoryLimit:    512,                   // Memory limit in MB
+}
+```
+
+### CLI Usage
+
+Convert between formats:
+```bash
+# CSV to Parquet with gzip compression
+cryptorun cold convert --in data.csv --out data.parquet --format parquet --compression gzip
+
+# Parquet to CSV
+cryptorun cold convert --in data.parquet --out data.csv --format csv
+
+# Batch directory conversion
+cryptorun cold convert --in batch/ --out converted/ --format parquet --compression lz4
+```
+
+### Schema Validation
+
+Cold tier uses JSON schema validation for data integrity:
+
+```json
+{
+  "version": "1.0.0",
+  "entity": "envelope",
+  "required": [
+    "timestamp", "venue", "symbol", "tier",
+    "original_source", "confidence_score",
+    "best_bid_price", "best_ask_price",
+    "best_bid_qty", "best_ask_qty",
+    "mid_price", "spread_bps"
+  ],
+  "constraints": {
+    "confidence_score": {"min": 0.0, "max": 1.0},
+    "spread_bps": {"min": 0.0}
+  }
+}
+```
+
+### Point-in-Time (PIT) Integrity
+
+All cold tier files include PIT metadata:
+- Row count validation
+- Timestamp range verification
+- Schema version tracking
+- Checksum validation
+
+```go
+// Validate PIT integrity
+err := parquetStore.ValidatePIT("historical_data.parquet")
+if err != nil {
+    log.Fatalf("PIT integrity violation: %v", err)
+}
+```
+
 ## Usage Patterns
 
 ### 1. Streaming Data Consumption

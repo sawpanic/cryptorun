@@ -1,17 +1,8 @@
 package bench
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"math"
-	"os"
-	"path/filepath"
-	"sort"
 	"strings"
-	"time"
-
-	"github.com/rs/zerolog/log"
 
 	"github.com/sawpanic/cryptorun/internal/application/pipeline"
 )

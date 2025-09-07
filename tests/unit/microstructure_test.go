@@ -2,351 +2,244 @@ package unit
 
 import (
 	"context"
+	"strings"
 	"testing"
 	"time"
 
-	"github.com/sawpanic/cryptorun/internal/data/venue/types"
 	"github.com/sawpanic/cryptorun/internal/domain/microstructure"
 )
 
-func TestCheckerValidateOrderBook(t *testing.T) {
-	checker := microstructure.NewChecker(nil) // Use default config
+func TestMicrostructureValidation(t *testing.T) {
+	validator := microstructure.NewMicrostructureValidator(microstructure.DefaultRequirementThresholds())
+
+	// Test data that should pass all validations
+	validData := createValidMicrostructureData()
+	result := validator.ValidateMicrostructure(validData)
+
+	if !result.Passed {
+		t.Errorf("Valid data should pass validation. Failures: %v", result.FailureReasons)
+	}
+
+	if result.ConfidenceScore < 95 {
+		t.Errorf("Expected high confidence for valid data, got %.1f", result.ConfidenceScore)
+	}
+
+	// Check metrics calculation
+	if result.Metrics.SpreadBps <= 0 {
+		t.Error("Spread should be calculated and positive")
+	}
+
+	if result.Metrics.TotalDepth <= 0 {
+		t.Error("Total depth should be calculated and positive")
+	}
+}
+
+func TestMicrostructureValidationFailures(t *testing.T) {
+	validator := microstructure.NewMicrostructureValidator(microstructure.DefaultRequirementThresholds())
 
 	tests := []struct {
-		name        string
-		orderBook   *types.OrderBook
-		vadr        float64
-		adv         float64
-		expectValid bool
-		description string
+		name           string
+		modifyData     func(*microstructure.MicrostructureData)
+		expectFailure  bool
+		expectedReason string
 	}{
 		{
-			name: "Valid orderbook - all requirements met",
-			orderBook: &types.OrderBook{
-				Symbol:                "BTCUSDT",
-				Venue:                 "binance",
-				TimestampMono:         time.Now(),
-				SpreadBPS:             35.0,   // < 50 bps ✓
-				DepthUSDPlusMinus2Pct: 150000, // >= $100k ✓
+			name: "wide spread",
+			modifyData: func(data *microstructure.MicrostructureData) {
+				data.BestAsk = 50300.0 // Wide spread > 50 bps limit
 			},
-			vadr:        2.1, // >= 1.75x ✓
-			adv:         500000,
-			expectValid: true,
-			description: "Should pass all microstructure requirements",
+			expectFailure:  true,
+			expectedReason: "Spread too wide",
 		},
 		{
-			name: "Invalid spread - too wide",
-			orderBook: &types.OrderBook{
-				Symbol:                "ALTUSDT",
-				Venue:                 "okx",
-				TimestampMono:         time.Now(),
-				SpreadBPS:             65.0,   // > 50 bps ❌
-				DepthUSDPlusMinus2Pct: 150000, // >= $100k ✓
+			name: "insufficient depth",
+			modifyData: func(data *microstructure.MicrostructureData) {
+				// Clear order book to have no depth
+				data.OrderBook.Bids = []microstructure.OrderLevel{}
+				data.OrderBook.Asks = []microstructure.OrderLevel{}
 			},
-			vadr:        2.1, // >= 1.75x ✓
-			adv:         500000,
-			expectValid: false,
-			description: "Should fail due to excessive spread",
+			expectFailure:  true,
+			expectedReason: "Insufficient depth",
 		},
 		{
-			name: "Invalid depth - insufficient liquidity",
-			orderBook: &types.OrderBook{
-				Symbol:                "LOWLIQ",
-				Venue:                 "coinbase",
-				TimestampMono:         time.Now(),
-				SpreadBPS:             35.0,  // < 50 bps ✓
-				DepthUSDPlusMinus2Pct: 75000, // < $100k ❌
+			name: "stale data",
+			modifyData: func(data *microstructure.MicrostructureData) {
+				data.Metadata.Staleness = 120.0 // 2 minutes > 60s limit
 			},
-			vadr:        2.1, // >= 1.75x ✓
-			adv:         500000,
-			expectValid: false,
-			description: "Should fail due to insufficient depth",
+			expectFailure:  true,
+			expectedReason: "Data too stale",
 		},
 		{
-			name: "Invalid VADR - low volatility",
-			orderBook: &types.OrderBook{
-				Symbol:                "STABLE",
-				Venue:                 "binance",
-				TimestampMono:         time.Now(),
-				SpreadBPS:             35.0,   // < 50 bps ✓
-				DepthUSDPlusMinus2Pct: 150000, // >= $100k ✓
+			name: "non-exchange-native",
+			modifyData: func(data *microstructure.MicrostructureData) {
+				data.Metadata.IsExchangeNative = false
 			},
-			vadr:        1.5, // < 1.75x ❌
-			adv:         500000,
-			expectValid: false,
-			description: "Should fail due to low VADR",
+			expectFailure:  true,
+			expectedReason: "not exchange-native",
 		},
 		{
-			name: "Multiple violations",
-			orderBook: &types.OrderBook{
-				Symbol:                "BADPAIR",
-				Venue:                 "okx",
-				TimestampMono:         time.Now(),
-				SpreadBPS:             85.0,  // > 50 bps ❌
-				DepthUSDPlusMinus2Pct: 50000, // < $100k ❌
+			name: "banned aggregator",
+			modifyData: func(data *microstructure.MicrostructureData) {
+				data.Metadata.APIEndpoint = "https://api.dexscreener.com/data"
 			},
-			vadr:        1.2, // < 1.75x ❌
-			adv:         100000,
-			expectValid: false,
-			description: "Should fail with multiple violations",
+			expectFailure:  true,
+			expectedReason: "Banned aggregator",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ctx := context.Background()
-			metrics := checker.ValidateOrderBook(ctx, tt.orderBook, tt.vadr, tt.adv)
-
-			if metrics.OverallValid != tt.expectValid {
-				t.Errorf("Expected OverallValid=%v, got %v - %s",
-					tt.expectValid, metrics.OverallValid, tt.description)
-			}
-
-			// Verify individual validations
-			expectedSpreadValid := tt.orderBook.SpreadBPS < 50.0
-			if metrics.SpreadValid != expectedSpreadValid {
-				t.Errorf("Expected SpreadValid=%v, got %v (spread=%.1f bps)",
-					expectedSpreadValid, metrics.SpreadValid, tt.orderBook.SpreadBPS)
-			}
-
-			expectedDepthValid := tt.orderBook.DepthUSDPlusMinus2Pct >= 100000
-			if metrics.DepthValid != expectedDepthValid {
-				t.Errorf("Expected DepthValid=%v, got %v (depth=$%.0f)",
-					expectedDepthValid, metrics.DepthValid, tt.orderBook.DepthUSDPlusMinus2Pct)
-			}
-
-			expectedVADRValid := tt.vadr >= 1.75
-			if metrics.VADRValid != expectedVADRValid {
-				t.Errorf("Expected VADRValid=%v, got %v (VADR=%.2fx)",
-					expectedVADRValid, metrics.VADRValid, tt.vadr)
-			}
-
-			// Verify metadata
-			if metrics.Symbol != tt.orderBook.Symbol {
-				t.Errorf("Expected Symbol=%s, got %s", tt.orderBook.Symbol, metrics.Symbol)
-			}
-			if metrics.Venue != tt.orderBook.Venue {
-				t.Errorf("Expected Venue=%s, got %s", tt.orderBook.Venue, metrics.Venue)
+			data := createValidMicrostructureData()
+			tt.modifyData(&data)
+			
+			result := validator.ValidateMicrostructure(data)
+			
+			if tt.expectFailure {
+				if result.Passed {
+					t.Error("Expected validation to fail but it passed")
+				}
+				
+				found := false
+				for _, reason := range result.FailureReasons {
+					if strings.Contains(reason, tt.expectedReason) {
+						found = true
+						break
+					}
+				}
+				
+				if !found {
+					t.Errorf("Expected failure reason containing '%s', got: %v", 
+						tt.expectedReason, result.FailureReasons)
+				}
 			}
 		})
 	}
 }
 
-func TestCheckerGenerateProof(t *testing.T) {
-	checker := microstructure.NewChecker(nil)
-
-	orderBook := &types.OrderBook{
-		Symbol:                "TESTCOIN",
-		Venue:                 "binance",
-		TimestampMono:         time.Now(),
-		SpreadBPS:             45.0,
-		DepthUSDPlusMinus2Pct: 120000,
-	}
-
+func TestKrakenAdapter(t *testing.T) {
+	adapter := microstructure.NewKrakenAdapter()
 	ctx := context.Background()
-	metrics := checker.ValidateOrderBook(ctx, orderBook, 2.0, 500000)
-	proof := checker.GenerateProof(ctx, orderBook, metrics)
 
-	// Verify proof structure
-	if proof.AssetSymbol != orderBook.Symbol {
-		t.Errorf("Expected AssetSymbol=%s, got %s", orderBook.Symbol, proof.AssetSymbol)
+	// Test basic properties
+	if adapter.GetName() != "kraken" {
+		t.Errorf("Expected name 'kraken', got '%s'", adapter.GetName())
 	}
 
-	if proof.VenueUsed != orderBook.Venue {
-		t.Errorf("Expected VenueUsed=%s, got %s", orderBook.Venue, proof.VenueUsed)
+	// Test supported symbols
+	if !adapter.IsSupported("BTC-USD") {
+		t.Error("BTC-USD should be supported by Kraken adapter")
 	}
 
-	if proof.ProvenValid != metrics.OverallValid {
-		t.Errorf("Expected ProvenValid=%v, got %v", metrics.OverallValid, proof.ProvenValid)
+	if adapter.IsSupported("INVALID-PAIR") {
+		t.Error("Invalid pair should not be supported")
 	}
 
-	// Verify spread proof
-	if proof.SpreadProof.Metric != "spread_bps" {
-		t.Errorf("Expected SpreadProof.Metric='spread_bps', got '%s'", proof.SpreadProof.Metric)
-	}
-	if proof.SpreadProof.ActualValue != orderBook.SpreadBPS {
-		t.Errorf("Expected SpreadProof.ActualValue=%.1f, got %.1f",
-			orderBook.SpreadBPS, proof.SpreadProof.ActualValue)
-	}
-	if proof.SpreadProof.RequiredValue != 50.0 {
-		t.Errorf("Expected SpreadProof.RequiredValue=50.0, got %.1f", proof.SpreadProof.RequiredValue)
-	}
-	if proof.SpreadProof.Operator != "<" {
-		t.Errorf("Expected SpreadProof.Operator='<', got '%s'", proof.SpreadProof.Operator)
-	}
-
-	// Verify depth proof
-	if proof.DepthProof.Metric != "depth_usd_plus_minus_2pct" {
-		t.Errorf("Expected DepthProof.Metric='depth_usd_plus_minus_2pct', got '%s'", proof.DepthProof.Metric)
-	}
-	if proof.DepthProof.ActualValue != orderBook.DepthUSDPlusMinus2Pct {
-		t.Errorf("Expected DepthProof.ActualValue=%.0f, got %.0f",
-			orderBook.DepthUSDPlusMinus2Pct, proof.DepthProof.ActualValue)
-	}
-	if proof.DepthProof.RequiredValue != 100000 {
-		t.Errorf("Expected DepthProof.RequiredValue=100000, got %.0f", proof.DepthProof.RequiredValue)
-	}
-	if proof.DepthProof.Operator != ">=" {
-		t.Errorf("Expected DepthProof.Operator='>=', got '%s'", proof.DepthProof.Operator)
-	}
-
-	// Verify VADR proof
-	if proof.VADRProof.Metric != "vadr" {
-		t.Errorf("Expected VADRProof.Metric='vadr', got '%s'", proof.VADRProof.Metric)
-	}
-	if proof.VADRProof.ActualValue != 2.0 {
-		t.Errorf("Expected VADRProof.ActualValue=2.0, got %.2f", proof.VADRProof.ActualValue)
-	}
-	if proof.VADRProof.RequiredValue != 1.75 {
-		t.Errorf("Expected VADRProof.RequiredValue=1.75, got %.2f", proof.VADRProof.RequiredValue)
-	}
-}
-
-func TestCheckerCustomConfig(t *testing.T) {
-	// Test with custom configuration
-	customConfig := &microstructure.Config{
-		MaxSpreadBPS:     75.0,  // Relaxed spread
-		MinDepthUSD:      50000, // Reduced depth requirement
-		MinVADR:          1.5,   // Lower VADR requirement
-		RequireAllVenues: true,  // Stricter venue requirement
-	}
-
-	checker := microstructure.NewChecker(customConfig)
-
-	orderBook := &types.OrderBook{
-		Symbol:                "TESTCOIN",
-		Venue:                 "okx",
-		TimestampMono:         time.Now(),
-		SpreadBPS:             60.0,  // Would fail default (>50) but passes custom (<75)
-		DepthUSDPlusMinus2Pct: 75000, // Would fail default (<100k) but passes custom (>50k)
-	}
-
-	ctx := context.Background()
-	metrics := checker.ValidateOrderBook(ctx, orderBook, 1.6, 200000) // VADR would fail default (<1.75) but passes custom (>1.5)
-
-	if !metrics.OverallValid {
-		t.Errorf("Expected custom config to pass relaxed requirements, but validation failed")
-	}
-	if !metrics.SpreadValid {
-		t.Errorf("Expected spread validation to pass with custom config (%.1f < %.1f)",
-			orderBook.SpreadBPS, customConfig.MaxSpreadBPS)
-	}
-	if !metrics.DepthValid {
-		t.Errorf("Expected depth validation to pass with custom config ($%.0f >= $%.0f)",
-			orderBook.DepthUSDPlusMinus2Pct, customConfig.MinDepthUSD)
-	}
-	if !metrics.VADRValid {
-		t.Errorf("Expected VADR validation to pass with custom config (%.2fx >= %.2fx)",
-			1.6, customConfig.MinVADR)
-	}
-}
-
-// MockVenueClient for testing CheckAssetEligibility
-type MockVenueClient struct {
-	orderBook *types.OrderBook
-	err       error
-}
-
-func (m *MockVenueClient) FetchOrderBook(ctx context.Context, symbol string) (*types.OrderBook, error) {
-	if m.err != nil {
-		return nil, m.err
-	}
-	return m.orderBook, nil
-}
-
-func TestCheckerCheckAssetEligibility(t *testing.T) {
-	checker := microstructure.NewChecker(nil)
-
-	// Create mock venue clients
-	goodOrderBook := &types.OrderBook{
-		Symbol:                "BTCUSDT",
-		Venue:                 "binance",
-		TimestampMono:         time.Now(),
-		SpreadBPS:             35.0,
-		DepthUSDPlusMinus2Pct: 150000,
-	}
-
-	badOrderBook := &types.OrderBook{
-		Symbol:                "BTCUSDT",
-		Venue:                 "okx",
-		TimestampMono:         time.Now(),
-		SpreadBPS:             85.0,  // Too wide
-		DepthUSDPlusMinus2Pct: 50000, // Too shallow
-	}
-
-	venueClients := map[string]microstructure.VenueClient{
-		"binance":  &MockVenueClient{orderBook: goodOrderBook},
-		"okx":      &MockVenueClient{orderBook: badOrderBook},
-		"coinbase": &MockVenueClient{err: fmt.Errorf("connection timeout")},
-	}
-
-	ctx := context.Background()
-	result, err := checker.CheckAssetEligibility(ctx, "BTCUSDT", venueClients)
-
+	// Test microstructure data retrieval
+	data, err := adapter.GetMicrostructureData(ctx, "BTC-USD")
 	if err != nil {
-		t.Fatalf("Unexpected error: %v", err)
+		t.Fatalf("GetMicrostructureData failed: %v", err)
 	}
 
-	// Should be eligible because binance passes (any venue sufficient)
-	if !result.OverallEligible {
-		t.Errorf("Expected asset to be eligible (binance passes), but got ineligible")
+	if data.Symbol != "BTC-USD" {
+		t.Errorf("Expected symbol 'BTC-USD', got '%s'", data.Symbol)
 	}
 
-	if len(result.EligibleVenues) != 1 {
-		t.Errorf("Expected 1 eligible venue, got %d", len(result.EligibleVenues))
+	if data.Exchange != "kraken" {
+		t.Errorf("Expected exchange 'kraken', got '%s'", data.Exchange)
 	}
 
-	if result.EligibleVenues[0] != "binance" {
-		t.Errorf("Expected binance to be eligible venue, got %s", result.EligibleVenues[0])
-	}
-
-	// Should have venue error for coinbase
-	if len(result.VenueErrors) != 1 {
-		t.Errorf("Expected 1 venue error, got %d", len(result.VenueErrors))
+	if !data.Metadata.IsExchangeNative {
+		t.Error("Kraken data should be marked as exchange-native")
 	}
 }
 
-func TestCheckerRequireAllVenues(t *testing.T) {
-	// Test config requiring all venues to pass
-	config := &microstructure.Config{
-		MaxSpreadBPS:     50.0,
-		MinDepthUSD:      100000,
-		MinVADR:          1.75,
-		RequireAllVenues: true, // All must pass
-	}
-
-	checker := microstructure.NewChecker(config)
-
-	goodOrderBook := &types.OrderBook{
-		Symbol:                "BTCUSDT",
-		Venue:                 "binance",
-		TimestampMono:         time.Now(),
-		SpreadBPS:             35.0,
-		DepthUSDPlusMinus2Pct: 150000,
-	}
-
-	badOrderBook := &types.OrderBook{
-		Symbol:                "BTCUSDT",
-		Venue:                 "okx",
-		TimestampMono:         time.Now(),
-		SpreadBPS:             85.0, // Fails
-		DepthUSDPlusMinus2Pct: 150000,
-	}
-
-	venueClients := map[string]microstructure.VenueClient{
-		"binance": &MockVenueClient{orderBook: goodOrderBook},
-		"okx":     &MockVenueClient{orderBook: badOrderBook},
-	}
-
+func TestBinanceAdapter(t *testing.T) {
+	adapter := microstructure.NewBinanceAdapter()
 	ctx := context.Background()
-	result, err := checker.CheckAssetEligibility(ctx, "BTCUSDT", venueClients)
 
-	if err != nil {
-		t.Fatalf("Unexpected error: %v", err)
+	if adapter.GetName() != "binance" {
+		t.Errorf("Expected name 'binance', got '%s'", adapter.GetName())
 	}
 
-	// Should NOT be eligible because okx fails and all venues required
-	if result.OverallEligible {
-		t.Errorf("Expected asset to be ineligible (okx fails, all required), but got eligible")
+	data, err := adapter.GetMicrostructureData(ctx, "BTC-USD")
+	if err != nil {
+		t.Fatalf("GetMicrostructureData failed: %v", err)
+	}
+
+	if data.Exchange != "binance" {
+		t.Errorf("Expected exchange 'binance', got '%s'", data.Exchange)
+	}
+
+	if !data.Metadata.IsExchangeNative {
+		t.Error("Binance data should be marked as exchange-native")
+	}
+}
+
+func TestExchangeManager(t *testing.T) {
+	manager := microstructure.NewExchangeManager()
+	ctx := context.Background()
+
+	// Test getting data for supported symbol
+	data, err := manager.GetMicrostructureData(ctx, "BTC-USD")
+	if err != nil {
+		t.Fatalf("GetMicrostructureData failed: %v", err)
+	}
+
+	if data.Symbol != "BTC-USD" {
+		t.Errorf("Expected symbol 'BTC-USD', got '%s'", data.Symbol)
+	}
+
+	// Should prefer Kraken (primary exchange)
+	if data.Exchange != "kraken" {
+		t.Errorf("Expected primary exchange 'kraken', got '%s'", data.Exchange)
+	}
+
+	// Test best exchange selection
+	bestExchange := manager.GetBestExchangeForSymbol("BTC-USD")
+	if bestExchange != "kraken" {
+		t.Errorf("Expected best exchange 'kraken', got '%s'", bestExchange)
+	}
+}
+
+// Helper functions for tests
+func createValidMicrostructureData() microstructure.MicrostructureData {
+	return microstructure.MicrostructureData{
+		Symbol:    "BTC-USD",
+		Exchange:  "kraken",
+		Timestamp: time.Now(),
+		BestBid:   50000.0,
+		BestAsk:   50020.0,
+		BidSize:   2.0,
+		AskSize:   1.5,
+		OrderBook: microstructure.OrderBook{
+			Bids: []microstructure.OrderLevel{
+				{Price: 50000.0, Size: 2.0, SizeUSD: 100000.0, OrderCount: 3},
+				{Price: 49990.0, Size: 3.0, SizeUSD: 149970.0, OrderCount: 5},
+			},
+			Asks: []microstructure.OrderLevel{
+				{Price: 50020.0, Size: 1.5, SizeUSD: 75030.0, OrderCount: 2},
+				{Price: 50030.0, Size: 2.5, SizeUSD: 125075.0, OrderCount: 4},
+			},
+			Timestamp: time.Now(),
+			Sequence:  12345,
+		},
+		RecentTrades: []microstructure.Trade{
+			{Price: 50010.0, Size: 0.5, Side: "buy", Timestamp: time.Now().Add(-30 * time.Second), TradeID: "t1"},
+		},
+		Volume24h:         50000000.0,
+		MarketCap:         1000000000000.0,
+		CirculatingSupply: 19500000.0,
+		Metadata: microstructure.MicrostructureMetadata{
+			DataSource:       "kraken_native_api",
+			LastUpdate:       time.Now(),
+			Staleness:        5.0,
+			IsExchangeNative: true,
+			APIEndpoint:      "https://api.kraken.com/0/public/Depth",
+			RateLimit: microstructure.RateLimit{
+				RequestsUsed:      10,
+				RequestsRemaining: 170,
+				ResetTimestamp:    time.Now().Add(time.Minute).Unix(),
+			},
+		},
 	}
 }

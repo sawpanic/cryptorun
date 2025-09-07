@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
+	_ "os" // Unused in current build
 	"strings"
 	"time"
 
@@ -78,15 +78,15 @@ func initializeDataFacade() (facade.DataFacade, error) {
 	}
 	
 	// Create components
-	ttlCache := cache.NewTTLCache(cacheCfg.MaxEntries)
+	_ = cache.NewTTLCache(cacheCfg.MaxEntries) // ttlCache unused in stub
 	rateLimiter := rl.NewRateLimiter()
-	pitStore := pit.NewStore("artifacts/pit")
+	_ = pit.NewStore("artifacts/pit") // pitStore unused in stub
 	
 	// Create facade
 	df := facade.New(hotCfg, warmCfg, cacheCfg, rateLimiter)
 	
 	// Register exchange adapters
-	krakenAdapter := kraken.NewAdapter()
+	_ = kraken.NewAdapter() // krakenAdapter unused in stub
 	// Note: In full implementation, would register all exchange adapters
 	
 	log.Info().Msg("Data facade initialized")

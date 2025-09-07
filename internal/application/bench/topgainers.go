@@ -5,12 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
-	"math"
 	"net/http"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 	"time"
 
@@ -370,9 +367,11 @@ func (tgb *TopGainersBenchmark) generateMockScannerResults() []pipeline.Composit
 
 func (tgb *TopGainersBenchmark) emitProgress(percent int, message string) {
 	if tgb.progressBus != nil {
-		tgb.progressBus.Emit(progress.ScanProgress{
-			Percent: percent,
-			Message: message,
+		tgb.progressBus.ScanEvent(progress.ScanEvent{
+			Phase:    "benchmark",
+			Status:   "progress",
+			Progress: percent,
+			Message:  message,
 		})
 	}
 }

@@ -3,7 +3,6 @@ package endpoints
 import (
 	"encoding/json"
 	"net/http"
-	"path/filepath"
 	"strings"
 	"time"
 

@@ -1,0 +1,173 @@
+version: '3.8'
+
+services:
+  # CryptoRun application service
+  cryptorun:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: cryptorun-app
+    ports:
+      - "8080:8080"  # Main HTTP API
+      - "8081:8081"  # Metrics endpoint
+      - "8082:8082"  # Health endpoint
+    environment:
+      - REDIS_ADDR=redis:6379
+      - PG_DSN=postgres://cryptorun:cryptorun@postgres:5432/cryptorun?sslmode=disable
+      - METRICS_ADDR=:8081
+      - HEALTH_ADDR=:8082
+      - KRAKEN_API_BASE=https://api.kraken.com
+      - KRAKEN_WS_URL=wss://ws.kraken.com
+      - LOG_LEVEL=info
+      - ENV=development
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - cryptorun-network
+    volumes:
+      - ./config:/etc/cryptorun/config:ro
+      - ./artifacts:/tmp/artifacts
+    healthcheck:
+      test: ["/usr/local/bin/cryptorun", "health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  # PostgreSQL database with TimescaleDB extension
+  postgres:
+    image: timescale/timescaledb:latest-pg15
+    container_name: cryptorun-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=cryptorun
+      - POSTGRES_USER=cryptorun
+      - POSTGRES_PASSWORD=cryptorun
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/migrations:/docker-entrypoint-initdb.d:ro
+    networks:
+      - cryptorun-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cryptorun -d cryptorun"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Redis for caching and pub/sub
+  redis:
+    image: redis:7-alpine
+    container_name: cryptorun-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    networks:
+      - cryptorun-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  # Kafka for streaming (optional, can be disabled)
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: cryptorun-kafka
+    ports:
+      - "9092:9092"
+      - "9997:9997"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      KAFKA_JMX_PORT: 9997
+      KAFKA_JMX_OPTS: -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=kafka -Dcom.sun.management.jmxremote.rmi.port=9997
+    depends_on:
+      - zookeeper
+    networks:
+      - cryptorun-network
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    profiles:
+      - streaming
+
+  # Zookeeper for Kafka coordination
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: cryptorun-zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - cryptorun-network
+    healthcheck:
+      test: ["CMD", "echo", "ruok", "|", "nc", "localhost", "2181"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    profiles:
+      - streaming
+
+  # Grafana for observability (development only)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: cryptorun-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./deploy/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./deploy/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - cryptorun-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    profiles:
+      - observability
+
+# Named volumes for data persistence
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+# Custom network for service communication
+networks:
+  cryptorun-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

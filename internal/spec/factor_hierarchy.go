@@ -17,7 +17,7 @@ func (fhs *FactorHierarchySpec) Name() string {
 
 // Description returns the section description
 func (fhs *FactorHierarchySpec) Description() string {
-	return "Momentum protected; residuals orthogonal (|ρ|<0.10)"
+	return "P4 AUDIT: MomentumCore → Technical → Volume → Quality → Catalyst → Social; |ρ|<0.10"
 }
 
 // RunSpecs executes all factor hierarchy specification tests
@@ -95,9 +95,10 @@ func (fhs *FactorHierarchySpec) testOrthogonalResiduals(testData []pipeline.Fact
 	// Compute correlation matrix for orthogonalized factors
 	corrMatrix := ortho.ComputeCorrelationMatrix(orthogonalSets)
 
-	// Check all non-momentum correlations are below threshold
+	// P4 AUDIT: Check all non-momentum correlations are below threshold
 	threshold := 0.10
-	factorNames := []string{"volume", "social", "volatility"}
+	// Updated factor list to include P1 Catalyst factor
+	factorNames := []string{"technical", "volume", "quality", "catalyst", "social"}
 	violationCount := 0
 	maxCorrelation := 0.0
 
@@ -189,8 +190,8 @@ func (fhs *FactorHierarchySpec) testCorrelationMatrix(testData []pipeline.Factor
 	// Compute correlation matrix
 	corrMatrix := ortho.ComputeCorrelationMatrix(testData)
 
-	// Verify matrix properties
-	expectedFactors := []string{"momentum_core", "volume", "social", "volatility"}
+	// P4 AUDIT: Verify matrix properties with new 5-factor sequence
+	expectedFactors := []string{"momentum_core", "technical", "volume", "quality", "catalyst"}
 
 	// Check all expected factors present
 	for _, factor := range expectedFactors {
@@ -221,7 +222,7 @@ func (fhs *FactorHierarchySpec) testCorrelationMatrix(testData []pipeline.Factor
 		}
 	}
 
-	return spec.WithDetails(fmt.Sprintf("4x4 correlation matrix validated"))
+	return spec.WithDetails(fmt.Sprintf("5x5 correlation matrix validated (P4 AUDIT)"))
 }
 
 // createCorrelatedFactorData creates test data with deliberate correlation structure
@@ -230,15 +231,16 @@ func (fhs *FactorHierarchySpec) createCorrelatedFactorData(symbols []string) []p
 	data := make([]pipeline.FactorSet, 0, len(symbols))
 
 	for i, symbol := range symbols {
-		// Create factors with some correlation
+		// P4 AUDIT: Create factors with some correlation (5-factor model)
 		base := float64(i + 1)
 
 		factorSet := pipeline.FactorSet{
 			Symbol:       symbol,
-			MomentumCore: 10.0 + base*2.0, // Momentum varies independently
-			Volume:       5.0 + base*1.5,  // Somewhat correlated with momentum
-			Social:       3.0 + base*0.8,  // Partially correlated with volume
-			Quality:      20.0 - base*1.2, // Negatively correlated with momentum
+			MomentumCore: 10.0 + base*2.0,  // Momentum varies independently (protected)
+			Technical:    6.0 + base*1.2,   // Somewhat correlated with momentum
+			Volume:       5.0 + base*1.5,   // Partially correlated with technical
+			Quality:      20.0 - base*1.2,  // Negatively correlated with momentum
+			Catalyst:     8.0 + base*0.9,   // P1: New catalyst factor, moderate correlation
 		}
 
 		data = append(data, factorSet)

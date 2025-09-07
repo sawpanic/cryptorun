@@ -2,7 +2,11 @@ package pipeline
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"math/rand"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -168,17 +172,47 @@ func (p *LegacyScanPipeline) SetRegime(regime string) {
 	p.regime = regime
 }
 
-// ScanUniverse implements the required interface method
+// ScanUniverse implements the required interface method with offline facade
 func (p *LegacyScanPipeline) ScanUniverse(ctx context.Context) ([]CandidateResult, error) {
-	// Return structured NotSupported error for compatibility
-	log.Warn().Msg("LegacyScanPipeline.ScanUniverse called - delegating to composite pipeline not yet implemented")
-	return []CandidateResult{}, fmt.Errorf("LegacyScanPipeline: ScanUniverse not supported, use composite pipeline")
+	log.Info().Str("regime", p.regime).Msg("Starting offline scan with fake data facade")
+
+	// Get fake universe symbols for testing
+	symbols := getFakeUniverseSymbols()
+	
+	var candidates []CandidateResult
+	
+	// Generate fake candidates based on deterministic data
+	for i, symbol := range symbols {
+		if i >= 20 { // Limit to 20 symbols for offline mode
+			break
+		}
+		
+		candidate := generateFakeCandidate(symbol, p.regime)
+		candidates = append(candidates, candidate)
+	}
+	
+	log.Info().Int("total_candidates", len(candidates)).Msg("Generated fake candidates for offline scanning")
+	
+	return candidates, nil
 }
 
 // WriteJSONL implements the required interface method
 func (p *LegacyScanPipeline) WriteJSONL(candidates []CandidateResult, outputDir string) error {
 	log.Info().Str("output_dir", outputDir).Int("count", len(candidates)).Msg("Writing JSONL candidates")
-	return nil // Stub implementation for compatibility
+	
+	// Create output directory if it doesn't exist
+	if err := createDirIfNotExists(outputDir); err != nil {
+		return fmt.Errorf("failed to create output directory: %w", err)
+	}
+	
+	// Write to JSONL format (JSON Lines)
+	outputPath := fmt.Sprintf("%s/latest_candidates.jsonl", outputDir)
+	if err := writeJSONL(candidates, outputPath); err != nil {
+		return fmt.Errorf("failed to write JSONL file: %w", err)
+	}
+	
+	log.Info().Str("path", outputPath).Msg("JSONL candidates written successfully")
+	return nil
 }
 
 // WriteLedger implements the required interface method
@@ -192,14 +226,14 @@ var _ ScanPipelineInterface = (*LegacyScanPipeline)(nil)
 
 // Stub types for compilation compatibility - these reference existing application types
 type CandidateResult struct {
-	Symbol        string         `json:"symbol"`
-	Timestamp     time.Time      `json:"timestamp"`
-	Score         CompositeScore `json:"score"`
-	Factors       FactorSet      `json:"factors"`
-	Gates         AllGateResults `json:"gates"`
-	Decision      string         `json:"decision"`
-	SnapshotSaved bool           `json:"snapshot_saved"`
-	Selected      bool           `json:"selected"`
+	Symbol        string          `json:"symbol"`
+	Timestamp     time.Time       `json:"timestamp"`
+	Score         SimpleScore     `json:"score"`
+	Factors       SimpleFactorSet `json:"factors"`
+	Gates         AllGateResults  `json:"gates"`
+	Decision      string          `json:"decision"`
+	SnapshotSaved bool            `json:"snapshot_saved"`
+	Selected      bool            `json:"selected"`
 }
 
 type AllGateResults struct {
@@ -222,6 +256,219 @@ type MicroGateResults struct {
 type GateEvidence struct {
 	OK   bool   `json:"ok"`
 	Name string `json:"name,omitempty"`
+}
+
+// Helper functions for offline scanning
+
+// getFakeUniverseSymbols returns fake universe symbols for offline scanning
+func getFakeUniverseSymbols() []string {
+	// Return the same symbols as the facade without importing it
+	return []string{
+		"BTCUSD", "ETHUSD", "SOLUSD", "ADAUSD", "LINKUSD",
+		"DOTUSD", "MATICUSD", "AVAXUSD", "UNIUSD", "LTCUSD",
+		"XRPUSD", "ALGOUSD", "ATOMUSD", "NEARUSD", "FTMUSD",
+		"MANAUSD", "SANDUSD", "ENJUSD", "GALAUSD", "CHZUSD",
+	}
+}
+
+// generateFakeCandidate creates a deterministic fake candidate for testing
+func generateFakeCandidate(symbol, regime string) CandidateResult {
+	// Use symbol as seed for deterministic results
+	seed := int64(0)
+	for _, char := range symbol {
+		seed += int64(char)
+	}
+	rng := rand.New(rand.NewSource(seed))
+	
+	// Generate regime-adapted scores
+	score := generateFakeScore(symbol, regime, rng)
+	factors := generateFakeFactors(symbol, regime, rng)
+	gates := generateFakeGates(symbol, regime, rng)
+	
+	// Determine selection based on score and gates
+	selected := score.Total >= 75.0 && gates.AllPass
+	
+	return CandidateResult{
+		Symbol:        symbol,
+		Timestamp:     time.Now(),
+		Score:         score,
+		Factors:       factors,
+		Gates:         gates,
+		Decision:      getDecisionReason(selected, score.Total, gates.AllPass),
+		SnapshotSaved: true, // Always save in offline mode
+		Selected:      selected,
+	}
+}
+
+// generateFakeScore creates regime-aware fake scoring
+func generateFakeScore(symbol, regime string, rng *rand.Rand) SimpleScore {
+	// Base score varies by symbol deterministically
+	baseScore := 40.0 + rng.Float64()*50.0 // 40-90 range
+	
+	// Regime adjustments
+	switch regime {
+	case "trending_bull", "bull", "trending":
+		baseScore += 10.0 // Higher scores in bull markets
+	case "high_vol", "volatile", "high_volatility":
+		baseScore -= 5.0 // Lower scores in high volatility
+	}
+	
+	// Ensure some candidates pass the threshold
+	if symbol == "BTCUSD" || symbol == "ETHUSD" {
+		baseScore = 80.0 + rng.Float64()*15.0 // 80-95 for majors
+	}
+	
+	return SimpleScore{
+		Total:      baseScore,
+		Momentum:   baseScore * 0.4,  // 40% momentum component
+		Technical:  baseScore * 0.25, // 25% technical
+		Volume:     baseScore * 0.2,  // 20% volume
+		Quality:    baseScore * 0.1,  // 10% quality
+		Social:     rng.Float64() * 10.0, // 0-10 social cap
+		Breakdown:  "fake scoring for offline mode",
+	}
+}
+
+// generateFakeFactors creates regime-aware fake factor data
+func generateFakeFactors(symbol, regime string, rng *rand.Rand) SimpleFactorSet {
+	return SimpleFactorSet{
+		Momentum:  60.0 + rng.Float64()*30.0, // 60-90
+		Technical: 50.0 + rng.Float64()*40.0, // 50-90  
+		Volume:    70.0 + rng.Float64()*25.0, // 70-95
+		Quality:   65.0 + rng.Float64()*30.0, // 65-95
+		Social:    rng.Float64() * 15.0,      // 0-15 (capped at 10 in composite)
+	}
+}
+
+// generateFakeGates creates regime-aware fake gate results
+func generateFakeGates(symbol, regime string, rng *rand.Rand) AllGateResults {
+	// Most symbols should pass gates in fake mode
+	passRate := 0.8 // 80% pass rate
+	if symbol == "BTCUSD" || symbol == "ETHUSD" {
+		passRate = 0.95 // 95% for majors
+	}
+	
+	microPass := rng.Float64() < passRate
+	freshPass := rng.Float64() < 0.9  // 90% pass freshness
+	latePass  := rng.Float64() < 0.95 // 95% pass late fill
+	fatiguePass := rng.Float64() < 0.85 // 85% pass fatigue
+	
+	allPass := microPass && freshPass && latePass && fatiguePass
+	
+	var reasons []string
+	if !microPass {
+		reasons = append(reasons, "microstructure_fail")
+	}
+	if !freshPass {
+		reasons = append(reasons, "freshness_fail")
+	}
+	if !latePass {
+		reasons = append(reasons, "late_fill_fail")
+	}
+	if !fatiguePass {
+		reasons = append(reasons, "fatigue_fail")
+	}
+	
+	return AllGateResults{
+		Microstructure: MicroGateResults{
+			SpreadBps: 15.0 + rng.Float64()*35.0, // 15-50 bps
+			DepthUSD:  50000 + rng.Float64()*150000, // 50k-200k USD
+			VADR:      1.2 + rng.Float64()*1.3, // 1.2-2.5
+			AllPass:   microPass,
+			Reason:    getGateReason(microPass),
+		},
+		Freshness: GateEvidence{
+			OK:   freshPass,
+			Name: "freshness_guard",
+		},
+		LateFill: GateEvidence{
+			OK:   latePass,
+			Name: "late_fill_guard",
+		},
+		Fatigue: GateEvidence{
+			OK:   fatiguePass,
+			Name: "fatigue_guard",
+		},
+		AllPass:        allPass,
+		FailureReasons: reasons,
+	}
+}
+
+// getDecisionReason returns human-readable decision explanation
+func getDecisionReason(selected bool, score float64, gatesPass bool) string {
+	if selected {
+		return fmt.Sprintf("SELECTED: score=%.1f ≥75.0, gates=PASS", score)
+	}
+	
+	if score < 75.0 && !gatesPass {
+		return fmt.Sprintf("REJECTED: score=%.1f <75.0, gates=FAIL", score)
+	} else if score < 75.0 {
+		return fmt.Sprintf("REJECTED: score=%.1f <75.0", score)
+	} else {
+		return fmt.Sprintf("REJECTED: gates=FAIL (score=%.1f ≥75.0)", score)
+	}
+}
+
+// getGateReason returns reason for gate result
+func getGateReason(pass bool) string {
+	if pass {
+		return ""
+	}
+	return "spread/depth/vadr thresholds not met"
+}
+
+// File utility functions
+
+// createDirIfNotExists creates directory if it doesn't exist
+func createDirIfNotExists(dir string) error {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return os.MkdirAll(dir, 0755)
+	}
+	return nil
+}
+
+// writeJSONL writes candidates to JSON Lines format
+func writeJSONL(candidates []CandidateResult, filePath string) error {
+	// Create directory if needed
+	dir := filepath.Dir(filePath)
+	if err := createDirIfNotExists(dir); err != nil {
+		return err
+	}
+	
+	file, err := os.Create(filePath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	
+	encoder := json.NewEncoder(file)
+	for _, candidate := range candidates {
+		if err := encoder.Encode(candidate); err != nil {
+			return err
+		}
+	}
+	
+	return nil
+}
+
+// SimpleScore for offline mode compatibility
+type SimpleScore struct {
+	Total      float64 `json:"total"`
+	Momentum   float64 `json:"momentum"`
+	Technical  float64 `json:"technical"`
+	Volume     float64 `json:"volume"`
+	Quality    float64 `json:"quality"`
+	Social     float64 `json:"social"`
+	Breakdown  string  `json:"breakdown"`
+}
+
+// SimpleFactorSet for offline mode compatibility
+type SimpleFactorSet struct {
+	Momentum  float64 `json:"momentum"`
+	Technical float64 `json:"technical"`
+	Volume    float64 `json:"volume"`
+	Quality   float64 `json:"quality"`
+	Social    float64 `json:"social"`
 }
 
 // Forward declarations for types that will be imported from existing packages

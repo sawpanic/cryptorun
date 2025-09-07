@@ -1,15 +1,15 @@
 package main
 
 import (
-	"context"
+	_ "context" // Unused in current build
 	"fmt"
 	"time"
 
 	"github.com/sawpanic/cryptorun/internal/data/facade"
 	"github.com/sawpanic/cryptorun/internal/data/cache"
-	"github.com/sawpanic/cryptorun/internal/data/pit"
+	_ "github.com/sawpanic/cryptorun/internal/data/pit" // Unused in current build
 	"github.com/sawpanic/cryptorun/internal/data/rl"
-	"github.com/sawpanic/cryptorun/internal/data/exchanges/kraken"
+	_ "github.com/sawpanic/cryptorun/internal/data/exchanges/kraken" // Unused in current build
 )
 
 // DataFacadeStatus displays comprehensive data facade status in the menu
@@ -54,7 +54,7 @@ func initializeDataFacadeForMenu() (facade.DataFacade, error) {
 		MaxEntries:  10000,
 	}
 	
-	ttlCache := cache.NewTTLCache(cacheCfg.MaxEntries)
+	_ = cache.NewTTLCache(cacheCfg.MaxEntries) // ttlCache unused
 	rateLimiter := rl.NewRateLimiter()
 	
 	df := facade.New(hotCfg, warmCfg, cacheCfg, rateLimiter)

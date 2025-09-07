@@ -25,10 +25,16 @@ func (m *mockMicroEvaluator) EvaluateSnapshot(symbol string) (microstructure.Eva
 		return microstructure.EvaluationResult{}, m.err
 	}
 	return microstructure.EvaluationResult{
-		VADR:      m.vadr,
-		SpreadBps: m.spreadBps,
-		DepthUSD:  m.depthUSD,
-		Healthy:   m.vadr >= 1.75 && m.spreadBps < 50.0 && m.depthUSD > 100000.0,
+		VADR:            m.vadr,
+		SpreadBps:       m.spreadBps,
+		DepthUSD:        m.depthUSD,
+		DailyVolumeUSD:  750000.0, // Default good value
+		BarCount:        25,        // Default good value
+		ADX:             28.0,      // Default good value
+		Hurst:           0.58,      // Default good value
+		BarsFromTrigger: 1,         // Default good value
+		LateFillDelay:   10 * time.Second, // Default good value
+		Healthy:         m.vadr >= 1.75 && m.spreadBps < 50.0 && m.depthUSD > 100000.0,
 	}, nil
 }
 
@@ -105,33 +111,33 @@ func (m *mockETFProvider) GetETFFlowSnapshot(ctx context.Context, symbol string)
 
 // Test helper function
 func createTestEvaluator(vadr, spreadBps, depthUSD float64, hasSignificantFunding bool, fundingDiv float64) *EntryGateEvaluator {
-	return &EntryGateEvaluator{
-		microEvaluator: &mockMicroEvaluator{
+	return NewEntryGateEvaluatorWithThresholds(
+		&mockMicroEvaluator{
 			vadr:      vadr,
 			spreadBps: spreadBps,
 			depthUSD:  depthUSD,
 		},
-		fundingProvider: &mockFundingProvider{
+		&mockFundingProvider{
 			hasSignificant: hasSignificantFunding,
 			maxDivergence:  fundingDiv,
 			venue:          "binance",
 			zScore:         fundingDiv,
 		},
-		oiProvider: &mockOIProvider{
+		&mockOIProvider{
 			oiResidual: 1500000.0, // Above threshold
 		},
-		etfProvider: &mockETFProvider{
+		&mockETFProvider{
 			flowTint: 0.5, // Above threshold
 			etfList:  []string{"IBIT", "GBTC"},
 		},
-		config: DefaultEntryGateConfig(),
-	}
+		"", // Use default thresholds
+	)
 }
 
 func TestEntryGateEvaluator_AllGatesPass(t *testing.T) {
 	evaluator := createTestEvaluator(2.0, 30.0, 150000.0, true, 2.5)
 
-	result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING")
+	result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING", 1000000.0)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -158,7 +164,7 @@ func TestEntryGateEvaluator_AllGatesPass(t *testing.T) {
 func TestEntryGateEvaluator_ScoreGateFails(t *testing.T) {
 	evaluator := createTestEvaluator(2.0, 30.0, 150000.0, true, 2.5)
 
-	result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 70.0, 8.0, "TRENDING") // Score below 75
+	result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 70.0, 8.0, "TRENDING", 1000000.0) // Score below 75
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -180,7 +186,7 @@ func TestEntryGateEvaluator_ScoreGateFails(t *testing.T) {
 func TestEntryGateEvaluator_VADRGateFails(t *testing.T) {
 	evaluator := createTestEvaluator(1.5, 30.0, 150000.0, true, 2.5) // VADR below 1.8
 
-	result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING")
+	result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING", 1000000.0)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -198,7 +204,7 @@ func TestEntryGateEvaluator_VADRGateFails(t *testing.T) {
 func TestEntryGateEvaluator_SpreadGateFails(t *testing.T) {
 	evaluator := createTestEvaluator(2.0, 60.0, 150000.0, true, 2.5) // Spread above 50bps
 
-	result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING")
+	result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING", 1000000.0)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -216,7 +222,7 @@ func TestEntryGateEvaluator_SpreadGateFails(t *testing.T) {
 func TestEntryGateEvaluator_DepthGateFails(t *testing.T) {
 	evaluator := createTestEvaluator(2.0, 30.0, 50000.0, true, 2.5) // Depth below $100k
 
-	result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING")
+	result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING", 1000000.0)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -234,7 +240,7 @@ func TestEntryGateEvaluator_DepthGateFails(t *testing.T) {
 func TestEntryGateEvaluator_FundingGateFails(t *testing.T) {
 	evaluator := createTestEvaluator(2.0, 30.0, 150000.0, false, 1.5) // No significant funding divergence
 
-	result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING")
+	result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING", 1000000.0)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -250,28 +256,28 @@ func TestEntryGateEvaluator_FundingGateFails(t *testing.T) {
 }
 
 func TestEntryGateEvaluator_OptionalGatesHandleMissingData(t *testing.T) {
-	evaluator := &EntryGateEvaluator{
-		microEvaluator: &mockMicroEvaluator{
+	evaluator := NewEntryGateEvaluatorWithThresholds(
+		&mockMicroEvaluator{
 			vadr:      2.0,
 			spreadBps: 30.0,
 			depthUSD:  150000.0,
 		},
-		fundingProvider: &mockFundingProvider{
+		&mockFundingProvider{
 			hasSignificant: true,
 			maxDivergence:  2.5,
 			venue:          "binance",
 			zScore:         2.5,
 		},
-		oiProvider: &mockOIProvider{
+		&mockOIProvider{
 			err: fmt.Errorf("OI data unavailable"),
 		},
-		etfProvider: &mockETFProvider{
+		&mockETFProvider{
 			err: fmt.Errorf("ETF data unavailable"),
 		},
-		config: DefaultEntryGateConfig(),
-	}
+		"", // Use default thresholds
+	)
 
-	result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING")
+	result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING", 1000000.0)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -296,26 +302,26 @@ func TestEntryGateEvaluator_OptionalGatesHandleMissingData(t *testing.T) {
 }
 
 func TestEntryGateEvaluator_FundingDataUnavailable(t *testing.T) {
-	evaluator := &EntryGateEvaluator{
-		microEvaluator: &mockMicroEvaluator{
+	evaluator := NewEntryGateEvaluatorWithThresholds(
+		&mockMicroEvaluator{
 			vadr:      2.0,
 			spreadBps: 30.0,
 			depthUSD:  150000.0,
 		},
-		fundingProvider: &mockFundingProvider{
+		&mockFundingProvider{
 			err: fmt.Errorf("funding data unavailable"),
 		},
-		oiProvider: &mockOIProvider{
+		&mockOIProvider{
 			oiResidual: 1500000.0,
 		},
-		etfProvider: &mockETFProvider{
+		&mockETFProvider{
 			flowTint: 0.5,
 			etfList:  []string{"IBIT", "GBTC"},
 		},
-		config: DefaultEntryGateConfig(),
-	}
+		"", // Use default thresholds
+	)
 
-	result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING")
+	result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING", 1000000.0)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -338,7 +344,7 @@ func TestEntryGateEvaluator_FundingDataUnavailable(t *testing.T) {
 func TestEntryGateEvaluator_Summary(t *testing.T) {
 	evaluator := createTestEvaluator(2.0, 30.0, 150000.0, true, 2.5)
 
-	result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING")
+	result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING", 1000000.0)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -370,7 +376,7 @@ func TestEntryGateEvaluator_MultipleFailures(t *testing.T) {
 	// Create evaluator with multiple failing conditions
 	evaluator := createTestEvaluator(1.0, 80.0, 30000.0, false, 1.0) // Multiple failures
 
-	result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 60.0, 8.0, "TRENDING") // Score also fails
+	result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 60.0, 8.0, "TRENDING", 1000000.0) // Score also fails
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -415,7 +421,7 @@ func TestEntryGateEvaluator_MovementThresholdGates(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, tt.priceChange, tt.regime)
+			result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, tt.priceChange, tt.regime, 1000000.0)
 			if err != nil {
 				t.Fatalf("Expected no error, got %v", err)
 			}
@@ -451,7 +457,7 @@ func TestEntryGateEvaluator_VolumeSurgeGate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			evaluator := createTestEvaluatorWithBarCount(tt.vadr, 30.0, 150000.0, true, 2.5, tt.barCount)
 
-			result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING")
+			result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING", 1000000.0)
 			if err != nil {
 				t.Fatalf("Expected no error, got %v", err)
 			}
@@ -485,7 +491,7 @@ func TestEntryGateEvaluator_LiquidityGate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			evaluator := createTestEvaluatorWithVolume(2.0, 30.0, 150000.0, true, 2.5, tt.dailyVolumeUSD)
 
-			result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING")
+			result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING", 1000000.0)
 			if err != nil {
 				t.Fatalf("Expected no error, got %v", err)
 			}
@@ -523,7 +529,7 @@ func TestEntryGateEvaluator_TrendQualityGate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			evaluator := createTestEvaluatorWithTrendQuality(2.0, 30.0, 150000.0, true, 2.5, tt.adx, tt.hurst)
 
-			result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING")
+			result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING", 1000000.0)
 			if err != nil {
 				t.Fatalf("Expected no error, got %v", err)
 			}
@@ -561,7 +567,7 @@ func TestEntryGateEvaluator_FreshnessGate(t *testing.T) {
 			evaluator := createTestEvaluatorWithFreshness(2.0, 30.0, 150000.0, true, 2.5,
 				tt.barsFromTrigger, time.Duration(tt.lateFillSecondsAgo)*time.Second)
 
-			result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING")
+			result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, "TRENDING", 1000000.0)
 			if err != nil {
 				t.Fatalf("Expected no error, got %v", err)
 			}
@@ -584,7 +590,7 @@ func TestEntryGateEvaluator_AllNewGatesPass(t *testing.T) {
 	evaluator := createTestEvaluatorWithAllNewGates(2.0, 30.0, 150000.0, true, 2.5,
 		25, 750000.0, 28.0, 0.58, 1, 10*time.Second)
 
-	result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 3.5, "TRENDING")
+	result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 3.5, "TRENDING", 1000000.0)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -606,59 +612,59 @@ func TestEntryGateEvaluator_AllNewGatesPass(t *testing.T) {
 
 // Test helper functions for the new tests
 func createTestEvaluatorWithBarCount(vadr, spreadBps, depthUSD float64, hasSignificantFunding bool, fundingDiv float64, barCount int) *EntryGateEvaluator {
-	return &EntryGateEvaluator{
-		microEvaluator: &mockMicroEvaluatorExtended{
+	return NewEntryGateEvaluatorWithThresholds(
+		&mockMicroEvaluatorExtended{
 			vadr:      vadr,
 			spreadBps: spreadBps,
 			depthUSD:  depthUSD,
 			barCount:  barCount,
 		},
-		fundingProvider: &mockFundingProvider{
+		&mockFundingProvider{
 			hasSignificant: hasSignificantFunding,
 			maxDivergence:  fundingDiv,
 			venue:          "binance",
 			zScore:         fundingDiv,
 		},
-		oiProvider: &mockOIProvider{
+		&mockOIProvider{
 			oiResidual: 1500000.0,
 		},
-		etfProvider: &mockETFProvider{
+		&mockETFProvider{
 			flowTint: 0.5,
 			etfList:  []string{"IBIT", "GBTC"},
 		},
-		config: DefaultEntryGateConfig(),
-	}
+		"", // Use default thresholds
+	)
 }
 
 func createTestEvaluatorWithVolume(vadr, spreadBps, depthUSD float64, hasSignificantFunding bool, fundingDiv, dailyVolumeUSD float64) *EntryGateEvaluator {
-	return &EntryGateEvaluator{
-		microEvaluator: &mockMicroEvaluatorExtended{
+	return NewEntryGateEvaluatorWithThresholds(
+		&mockMicroEvaluatorExtended{
 			vadr:           vadr,
 			spreadBps:      spreadBps,
 			depthUSD:       depthUSD,
 			dailyVolumeUSD: dailyVolumeUSD,
 			barCount:       25,
 		},
-		fundingProvider: &mockFundingProvider{
+		&mockFundingProvider{
 			hasSignificant: hasSignificantFunding,
 			maxDivergence:  fundingDiv,
 			venue:          "binance",
 			zScore:         fundingDiv,
 		},
-		oiProvider: &mockOIProvider{
+		&mockOIProvider{
 			oiResidual: 1500000.0,
 		},
-		etfProvider: &mockETFProvider{
+		&mockETFProvider{
 			flowTint: 0.5,
 			etfList:  []string{"IBIT", "GBTC"},
 		},
-		config: DefaultEntryGateConfig(),
-	}
+		"", // Use default thresholds
+	)
 }
 
 func createTestEvaluatorWithTrendQuality(vadr, spreadBps, depthUSD float64, hasSignificantFunding bool, fundingDiv, adx, hurst float64) *EntryGateEvaluator {
-	return &EntryGateEvaluator{
-		microEvaluator: &mockMicroEvaluatorExtended{
+	return NewEntryGateEvaluatorWithThresholds(
+		&mockMicroEvaluatorExtended{
 			vadr:           vadr,
 			spreadBps:      spreadBps,
 			depthUSD:       depthUSD,
@@ -667,27 +673,27 @@ func createTestEvaluatorWithTrendQuality(vadr, spreadBps, depthUSD float64, hasS
 			adx:            adx,
 			hurst:          hurst,
 		},
-		fundingProvider: &mockFundingProvider{
+		&mockFundingProvider{
 			hasSignificant: hasSignificantFunding,
 			maxDivergence:  fundingDiv,
 			venue:          "binance",
 			zScore:         fundingDiv,
 		},
-		oiProvider: &mockOIProvider{
+		&mockOIProvider{
 			oiResidual: 1500000.0,
 		},
-		etfProvider: &mockETFProvider{
+		&mockETFProvider{
 			flowTint: 0.5,
 			etfList:  []string{"IBIT", "GBTC"},
 		},
-		config: DefaultEntryGateConfig(),
-	}
+		"", // Use default thresholds
+	)
 }
 
 func createTestEvaluatorWithFreshness(vadr, spreadBps, depthUSD float64, hasSignificantFunding bool, fundingDiv float64,
 	barsFromTrigger int, lateFillDelay time.Duration) *EntryGateEvaluator {
-	return &EntryGateEvaluator{
-		microEvaluator: &mockMicroEvaluatorExtended{
+	return NewEntryGateEvaluatorWithThresholds(
+		&mockMicroEvaluatorExtended{
 			vadr:            vadr,
 			spreadBps:       spreadBps,
 			depthUSD:        depthUSD,
@@ -698,27 +704,27 @@ func createTestEvaluatorWithFreshness(vadr, spreadBps, depthUSD float64, hasSign
 			barsFromTrigger: barsFromTrigger,
 			lateFillDelay:   lateFillDelay,
 		},
-		fundingProvider: &mockFundingProvider{
+		&mockFundingProvider{
 			hasSignificant: hasSignificantFunding,
 			maxDivergence:  fundingDiv,
 			venue:          "binance",
 			zScore:         fundingDiv,
 		},
-		oiProvider: &mockOIProvider{
+		&mockOIProvider{
 			oiResidual: 1500000.0,
 		},
-		etfProvider: &mockETFProvider{
+		&mockETFProvider{
 			flowTint: 0.5,
 			etfList:  []string{"IBIT", "GBTC"},
 		},
-		config: DefaultEntryGateConfig(),
-	}
+		"", // Use default thresholds
+	)
 }
 
 func createTestEvaluatorWithAllNewGates(vadr, spreadBps, depthUSD float64, hasSignificantFunding bool, fundingDiv float64,
 	barCount int, dailyVolumeUSD, adx, hurst float64, barsFromTrigger int, lateFillDelay time.Duration) *EntryGateEvaluator {
-	return &EntryGateEvaluator{
-		microEvaluator: &mockMicroEvaluatorExtended{
+	return NewEntryGateEvaluatorWithThresholds(
+		&mockMicroEvaluatorExtended{
 			vadr:            vadr,
 			spreadBps:       spreadBps,
 			depthUSD:        depthUSD,
@@ -729,21 +735,21 @@ func createTestEvaluatorWithAllNewGates(vadr, spreadBps, depthUSD float64, hasSi
 			barsFromTrigger: barsFromTrigger,
 			lateFillDelay:   lateFillDelay,
 		},
-		fundingProvider: &mockFundingProvider{
+		&mockFundingProvider{
 			hasSignificant: hasSignificantFunding,
 			maxDivergence:  fundingDiv,
 			venue:          "binance",
 			zScore:         fundingDiv,
 		},
-		oiProvider: &mockOIProvider{
+		&mockOIProvider{
 			oiResidual: 1500000.0,
 		},
-		etfProvider: &mockETFProvider{
+		&mockETFProvider{
 			flowTint: 0.5,
 			etfList:  []string{"IBIT", "GBTC"},
 		},
-		config: DefaultEntryGateConfig(),
-	}
+		"", // Use default thresholds
+	)
 }
 
 // Extended mock microstructure evaluator with new fields
@@ -765,10 +771,16 @@ func (m *mockMicroEvaluatorExtended) EvaluateSnapshot(symbol string) (microstruc
 		return microstructure.EvaluationResult{}, m.err
 	}
 	return microstructure.EvaluationResult{
-		VADR:      m.vadr,
-		SpreadBps: m.spreadBps,
-		DepthUSD:  m.depthUSD,
-		Healthy:   m.vadr >= 1.75 && m.spreadBps < 50.0 && m.depthUSD > 100000.0,
+		VADR:            m.vadr,
+		SpreadBps:       m.spreadBps,
+		DepthUSD:        m.depthUSD,
+		DailyVolumeUSD:  m.dailyVolumeUSD,
+		BarCount:        m.barCount,
+		ADX:             m.adx,
+		Hurst:           m.hurst,
+		BarsFromTrigger: m.barsFromTrigger,
+		LateFillDelay:   m.lateFillDelay,
+		Healthy:         m.vadr >= 1.75 && m.spreadBps < 50.0 && m.depthUSD > 100000.0,
 	}, nil
 }
 
@@ -787,6 +799,110 @@ func (m *mockMicroEvaluatorExtended) UpdateVenueHealth(venue string, health micr
 
 func (m *mockMicroEvaluatorExtended) GetVenueHealth(venue string) (*microstructure.VenueHealthStatus, error) {
 	return nil, fmt.Errorf("not implemented in mock")
+}
+
+// Test regime-aware threshold functionality
+func TestEntryGateEvaluator_RegimeAwareThresholds(t *testing.T) {
+	tests := []struct {
+		name               string
+		regime             string
+		vadr               float64
+		spreadBps          float64
+		depthUSD           float64
+		shouldPass         bool
+		expectedThresholds string
+	}{
+		{
+			name:      "TRENDING regime - relaxed thresholds",
+			regime:    "trending",
+			vadr:      1.7,  // Above trending threshold (1.6) but below default (1.75)
+			spreadBps: 52.0, // Above trending threshold (55) but below default (50)
+			depthUSD:  100000.0,
+			shouldPass: true,
+			expectedThresholds: "trending regime",
+		},
+		{
+			name:      "CHOPPY regime - stricter thresholds",
+			regime:    "choppy",
+			vadr:      1.9,  // Below choppy threshold (2.0)
+			spreadBps: 45.0, // Below choppy threshold (40)
+			depthUSD:  140000.0, // Below choppy threshold (150k)
+			shouldPass: false,
+			expectedThresholds: "choppy regime",
+		},
+		{
+			name:      "HIGH_VOL regime - strictest thresholds",
+			regime:    "high_vol",
+			vadr:      2.15, // Above high_vol threshold (2.1)
+			spreadBps: 30.0, // Below high_vol threshold (35)
+			depthUSD:  180000.0, // Above high_vol threshold (175k)
+			shouldPass: true,
+			expectedThresholds: "high_vol regime",
+		},
+		{
+			name:      "Unknown regime - uses default thresholds",
+			regime:    "unknown",
+			vadr:      1.8,  // Above default threshold (1.75)
+			spreadBps: 45.0, // Below default threshold (50)
+			depthUSD:  120000.0, // Above default threshold (100k)
+			shouldPass: true,
+			expectedThresholds: "unknown regime",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			evaluator := createTestEvaluator(tt.vadr, tt.spreadBps, tt.depthUSD, true, 2.5)
+
+			result, err := evaluator.EvaluateEntry(context.Background(), "BTCUSD", 80.0, 8.0, tt.regime, 1000000.0)
+			if err != nil {
+				t.Fatalf("Expected no error, got %v", err)
+			}
+
+			// Check VADR gate with regime-specific thresholds
+			vadrGate := result.GateResults["vadr"]
+			if vadrGate == nil {
+				t.Fatalf("Expected VADR gate to exist")
+			}
+
+			// Verify the description contains regime information
+			if !strings.Contains(vadrGate.Description, tt.expectedThresholds) {
+				t.Errorf("Expected VADR description to contain %s, got: %s", tt.expectedThresholds, vadrGate.Description)
+			}
+
+			// Check spread gate with regime-specific thresholds
+			spreadGate := result.GateResults["spread"]
+			if spreadGate == nil {
+				t.Fatalf("Expected spread gate to exist")
+			}
+
+			// Verify the description contains regime information
+			if !strings.Contains(spreadGate.Description, tt.expectedThresholds) {
+				t.Errorf("Expected spread description to contain %s, got: %s", tt.expectedThresholds, spreadGate.Description)
+			}
+
+			// Check depth gate with regime-specific thresholds
+			depthGate := result.GateResults["depth"]
+			if depthGate == nil {
+				t.Fatalf("Expected depth gate to exist")
+			}
+
+			// Verify the description contains regime information
+			if !strings.Contains(depthGate.Description, tt.expectedThresholds) {
+				t.Errorf("Expected depth description to contain %s, got: %s", tt.expectedThresholds, depthGate.Description)
+			}
+
+			// Test the threshold summary method
+			summary := evaluator.GetRegimeThresholdSummary(tt.regime)
+			if summary == "" {
+				t.Error("Expected non-empty threshold summary")
+			}
+			
+			if !strings.Contains(summary, "Regime:") {
+				t.Errorf("Expected summary to contain regime info, got: %s", summary)
+			}
+		})
+	}
 }
 
 // Helper function

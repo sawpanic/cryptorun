@@ -1,0 +1,133 @@
+# Topic configurations for CryptoRun event streaming
+
+# Core market data topics
+market_data:
+  - name: "cryptorun-market-prices"
+    partitions: 12
+    replication_factor: 3
+    retention_time: "24h"
+    compaction_enabled: false
+    max_message_size: 1048576  # 1MB
+    description: "Real-time price updates from exchanges"
+    
+  - name: "cryptorun-market-trades"
+    partitions: 24
+    replication_factor: 3
+    retention_time: "168h"  # 7 days
+    compaction_enabled: false
+    max_message_size: 524288  # 512KB
+    description: "Trade execution data"
+    
+  - name: "cryptorun-market-orderbook"
+    partitions: 12
+    replication_factor: 3
+    retention_time: "24h"
+    compaction_enabled: true  # Keep latest state
+    max_message_size: 2097152  # 2MB
+    description: "Order book L2 snapshots"
+
+# Analysis and scoring topics  
+analysis:
+  - name: "cryptorun-momentum-scores"
+    partitions: 6
+    replication_factor: 3
+    retention_time: "72h"
+    compaction_enabled: false
+    max_message_size: 262144  # 256KB
+    description: "Calculated momentum scores"
+    
+  - name: "cryptorun-regime-detection"
+    partitions: 3
+    replication_factor: 3
+    retention_time: "168h"
+    compaction_enabled: true
+    max_message_size: 131072  # 128KB
+    description: "Market regime classifications"
+    
+  - name: "cryptorun-gate-evaluations"
+    partitions: 6
+    replication_factor: 3
+    retention_time: "48h"
+    compaction_enabled: false
+    max_message_size: 524288
+    description: "Entry/exit gate evaluation results"
+
+# Alert and notification topics
+alerts:
+  - name: "cryptorun-signals"
+    partitions: 6
+    replication_factor: 3
+    retention_time: "168h"
+    compaction_enabled: false
+    max_message_size: 131072
+    description: "Trading signals and alerts"
+    
+  - name: "cryptorun-notifications"
+    partitions: 3
+    replication_factor: 3
+    retention_time: "72h"
+    compaction_enabled: false
+    max_message_size: 65536  # 64KB
+    description: "User notifications and system alerts"
+
+# System and monitoring topics
+system:
+  - name: "cryptorun-metrics"
+    partitions: 3
+    replication_factor: 2
+    retention_time: "168h"
+    compaction_enabled: false
+    max_message_size: 262144
+    description: "Application metrics and monitoring data"
+    
+  - name: "cryptorun-health-checks"
+    partitions: 1
+    replication_factor: 3
+    retention_time: "24h"
+    compaction_enabled: true
+    max_message_size: 65536
+    description: "System health status updates"
+    
+  - name: "cryptorun-audit-log"
+    partitions: 6
+    replication_factor: 3
+    retention_time: "2160h"  # 90 days
+    compaction_enabled: false
+    max_message_size: 524288
+    description: "Audit trail and compliance logging"
+
+# Dead letter queues
+dlq:
+  - name: "cryptorun-dlq"
+    partitions: 6
+    replication_factor: 3
+    retention_time: "168h"
+    compaction_enabled: false
+    max_message_size: 1048576
+    description: "Dead letter queue for failed messages"
+    
+  - name: "cryptorun-retry"
+    partitions: 6
+    replication_factor: 3
+    retention_time: "24h"
+    compaction_enabled: false
+    max_message_size: 1048576
+    description: "Retry queue for transient failures"
+
+# Schema registry topics (for Kafka Schema Registry)
+schema:
+  - name: "_schemas"
+    partitions: 1
+    replication_factor: 3
+    retention_time: "never"  # Keep schemas forever
+    compaction_enabled: true
+    max_message_size: 1048576
+    description: "Schema registry storage"
+    
+  - name: "_schema_ids"
+    partitions: 1
+    replication_factor: 3
+    retention_time: "never"
+    compaction_enabled: true
+    max_message_size: 65536
+    description: "Schema ID mappings"

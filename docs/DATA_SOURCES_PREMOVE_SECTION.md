@@ -12,4 +12,5 @@
 - Deribit (options skew/term)
 - CoinGecko/Paprika (context only)
 - CoinMarketCal, DefiLlama unlocks (catalysts)
+- **Cold tier:** Historical data with Parquet compression and PIT integrity
 
