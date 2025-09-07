@@ -2,8 +2,6 @@ package conformance
 
 import (
 	"fmt"
-	"reflect"
-	"strings"
 	"testing"
 
 	"github.com/spf13/cobra"

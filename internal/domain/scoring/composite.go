@@ -1,3 +1,18 @@
+// Package scoring provides the SINGLE AUTHORITATIVE COMPOSITE SCORING SYSTEM
+// This is the ONLY scoring implementation used by CryptoRun - all other scorers are deprecated.
+//
+// UNIFIED COMPOSITE SCORING PIPELINE:
+// 1. MomentumCore calculation (multi-timeframe, protected from orthogonalization)  
+// 2. Gram-Schmidt orthogonalization (TechnicalResidual → VolumeResidual → QualityResidual → SocialResidual)
+// 3. Social hard cap application (+10 max, applied LAST)
+// 4. Regime-adaptive weight application (sum to 100% excluding social)
+// 5. Final composite score = weighted core factors + social adjustment
+//
+// CONFORMANCE REQUIREMENTS:
+// - MomentumCore NEVER residualized (protected factor)
+// - Factor hierarchy strictly enforced via Gram-Schmidt ordering
+// - Social cap applied outside 100% base allocation
+// - All scoring routes through CompositeScorer.CalculateCompositeScore()
 package scoring
 
 import (
@@ -107,9 +122,15 @@ func (cs *CompositeScorer) CalculateCompositeScore(rawFactors factors.RawFactorR
 	}
 	
 	// Step 4: Apply Gram-Schmidt orthogonalization (protects MomentumCore)
+	// The Gram-Schmidt process residualizes factors in the following protected order:
+	// 1. MomentumCore (protected - never residualized)
+	// 2. TechnicalResidual (residualized against MomentumCore)
+	// 3. VolumeResidual (residualized against MomentumCore + TechnicalResidual)
+	// 4. QualityResidual (residualized against all previous factors)
+	// 5. SocialResidual (residualized against all factors, then hard-capped at +10)
 	orthogonalizedRows, err := cs.orthogonalizer.OrthogonalizeBatch([]factors.RawFactorRow{rawFactors})
 	if err != nil {
-		return nil, fmt.Errorf("orthogonalization failed: %w", err)
+		return nil, fmt.Errorf("Gram-Schmidt orthogonalization failed: %w", err)
 	}
 	
 	if len(orthogonalizedRows) != 1 {
@@ -126,7 +147,8 @@ func (cs *CompositeScorer) CalculateCompositeScore(rawFactors factors.RawFactorR
 		return nil, fmt.Errorf("social cap not properly applied: |%.3f| > %.1f", socialCapped, socialCapValue)
 	}
 	
-	// Step 6: Calculate weighted components
+	// Step 6: Calculate weighted components according to protected factor hierarchy
+	// MomentumCore (protected) → TechnicalResidual → VolumeResidual → QualityResidual → SocialResidual (capped)
 	weightedMomentum := orthogonalizedRow.MomentumCore * weights.MomentumCore
 	weightedTechnical := orthogonalizedRow.TechnicalResidual * weights.Technical  
 	weightedVolume := orthogonalizedRow.VolumeResidual * weights.Volume
