@@ -382,7 +382,6 @@ func (rd *RegimeDetector) GetDetectorStatus() map[string]interface{} {
 		"cache_valid": cacheValid,
 		"valid_until": rd.lastDetection.ValidUntil.Format(time.RFC3339),
 	}
-	return "Stale (needs refresh)"
 }
 
 // GetRegimeHistory returns the recent regime detection history
