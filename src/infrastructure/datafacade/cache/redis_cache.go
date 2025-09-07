@@ -98,7 +98,7 @@ func (r *RedisCache) Clear(ctx context.Context, pattern string) error {
 
 // GetStats returns cache statistics
 func (r *RedisCache) GetStats(ctx context.Context) (*interfaces.CacheStats, error) {
-	info, err := r.client.Info(ctx, "stats").Result()
+	_, err := r.client.Info(ctx, "stats").Result()
 	if err != nil {
 		return nil, fmt.Errorf("redis info: %w", err)
 	}

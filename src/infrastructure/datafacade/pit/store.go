@@ -259,7 +259,7 @@ func (s *FileBasedPITStore) loadSnapshotFromFile(snapshotID string) error {
 	snapshotsDir := filepath.Join(s.basePath, "snapshots")
 	
 	var foundPath string
-	err := filepath.Walk(snapshotsDir, func(path string, info os.FileInfo, err error) error {
+	_ = filepath.Walk(snapshotsDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return nil
 		}

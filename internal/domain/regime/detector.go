@@ -358,14 +358,29 @@ func (rd *RegimeDetector) GetLastUpdate() time.Time {
 }
 
 // GetDetectorStatus returns the current status of the detector
-func (rd *RegimeDetector) GetDetectorStatus() string {
+func (rd *RegimeDetector) GetDetectorStatus() map[string]interface{} {
 	if rd.lastDetection == nil {
-		return "Not initialized"
+		return map[string]interface{}{
+			"status": "Not initialized",
+			"last_detection": nil,
+			"cache_valid": false,
+		}
 	}
 	
 	now := time.Now()
-	if now.Before(rd.lastDetection.ValidUntil) {
-		return "Active (cached result)"
+	cacheValid := now.Before(rd.lastDetection.ValidUntil)
+	status := "Active (cached result)"
+	if !cacheValid {
+		status = "Stale (needs refresh)"
+	}
+	
+	return map[string]interface{}{
+		"status": status,
+		"last_detection": rd.lastDetection.DetectionTime.Format(time.RFC3339),
+		"current_regime": rd.lastDetection.CurrentRegime.String(),
+		"confidence": rd.lastDetection.Confidence,
+		"cache_valid": cacheValid,
+		"valid_until": rd.lastDetection.ValidUntil.Format(time.RFC3339),
 	}
 	return "Stale (needs refresh)"
 }
