@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"cryptorun/internal/bench"
+	"github.com/sawpanic/cryptorun/internal/bench"
 )
 
 // TestSymbolOverlap tests symbol overlap calculation

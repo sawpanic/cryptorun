@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"time"
 
-	"cryptorun/internal/config"
-	"cryptorun/internal/net/budget"
-	"cryptorun/internal/net/circuit"
-	"cryptorun/internal/net/ratelimit"
+	"github.com/sawpanic/cryptorun/internal/config"
+	"github.com/sawpanic/cryptorun/internal/net/budget"
+	"github.com/sawpanic/cryptorun/internal/net/circuit"
+	"github.com/sawpanic/cryptorun/internal/net/ratelimit"
 )
 
 // WrapperConfig configures the HTTP client wrapper
@@ -44,7 +44,7 @@ func NewWrapper(config WrapperConfig, transport http.RoundTripper) *Wrapper {
 	return &Wrapper{
 		config:    config,
 		transport: transport,
-		userAgent: "CryptoRun/3.2.1 (Free-tier; respect-robots.txt)",
+		userAgent: "github.com/sawpanic/cryptorun/3.2.1 (Free-tier; respect-robots.txt)",
 	}
 }
 

@@ -8,7 +8,7 @@ import (
 	"sort"
 	"time"
 
-	"cryptorun/internal/domain/scoring"
+	"github.com/sawpanic/cryptorun/internal/domain/scoring"
 	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
 )

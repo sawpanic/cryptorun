@@ -9,7 +9,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
-	"cryptorun/internal/application/bench"
+	"github.com/sawpanic/cryptorun/internal/application/bench"
 )
 
 // runBenchTopGainers runs the top gainers benchmark via unified entry point

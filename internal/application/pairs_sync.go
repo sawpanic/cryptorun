@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	atomicio "cryptorun/internal/io"
+	atomicio "github.com/sawpanic/cryptorun/internal/io"
 )
 
 type PairsSyncConfig struct {

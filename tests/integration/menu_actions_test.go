@@ -8,9 +8,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"cryptorun/internal/application/bench"
-	"cryptorun/internal/application/metrics"
-	"cryptorun/internal/application/pipeline"
+	"github.com/sawpanic/cryptorun/internal/application/bench"
+	"github.com/sawpanic/cryptorun/internal/application/metrics"
+	"github.com/sawpanic/cryptorun/internal/application/pipeline"
 )
 
 // TestMenuActionsCallUnifiedPipelines ensures menu actions route to the same functions as CLI

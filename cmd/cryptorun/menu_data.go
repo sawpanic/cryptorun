@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"cryptorun/internal/data/facade"
-	"cryptorun/internal/data/cache"
-	"cryptorun/internal/data/pit"
-	"cryptorun/internal/data/rl"
-	"cryptorun/internal/data/exchanges/kraken"
+	"github.com/sawpanic/cryptorun/internal/data/facade"
+	"github.com/sawpanic/cryptorun/internal/data/cache"
+	"github.com/sawpanic/cryptorun/internal/data/pit"
+	"github.com/sawpanic/cryptorun/internal/data/rl"
+	"github.com/sawpanic/cryptorun/internal/data/exchanges/kraken"
 )
 
 // DataFacadeStatus displays comprehensive data facade status in the menu

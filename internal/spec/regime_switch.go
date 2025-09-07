@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math"
 
-	"cryptorun/internal/domain"
+	"github.com/sawpanic/cryptorun/internal/domain"
 )
 
 // RegimeSwitchSpec tests regime switching compliance

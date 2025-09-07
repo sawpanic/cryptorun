@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/micro"
+	"github.com/sawpanic/cryptorun/internal/micro"
 )
 
 func TestCalculateSpreadBps(t *testing.T) {

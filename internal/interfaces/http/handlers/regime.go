@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	httpContracts "cryptorun/internal/http"
+	httpContracts "github.com/sawpanic/cryptorun/internal/http"
 )
 
 // Regime handles GET /regime endpoint

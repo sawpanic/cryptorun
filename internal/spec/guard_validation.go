@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"cryptorun/internal/application/pipeline"
+	"github.com/sawpanic/cryptorun/internal/application/pipeline"
 )
 
 // GuardSpec validates gate enforcement compliance

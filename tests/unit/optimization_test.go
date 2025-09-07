@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/application/optimization"
+	"github.com/sawpanic/cryptorun/internal/application/optimization"
 )
 
 // TestMomentumParameterValidation tests momentum parameter validation

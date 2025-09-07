@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/exits"
+	"github.com/sawpanic/cryptorun/internal/exits"
 )
 
 func TestExitEvaluator_NoExit(t *testing.T) {

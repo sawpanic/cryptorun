@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"cryptorun/internal/adapters"
+	"github.com/sawpanic/cryptorun/internal/adapters"
 )
 
 // Config represents smoke90 backtest configuration

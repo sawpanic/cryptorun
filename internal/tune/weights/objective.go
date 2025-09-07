@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math"
 
-	"cryptorun/internal/tune/data"
+	"github.com/sawpanic/cryptorun/internal/tune/data"
 )
 
 // ObjectiveConfig defines the configuration for the objective function

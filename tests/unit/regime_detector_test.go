@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/domain/regime"
+	"github.com/sawpanic/cryptorun/internal/domain/regime"
 )
 
 func TestRegimeDetector_DefaultThresholds(t *testing.T) {

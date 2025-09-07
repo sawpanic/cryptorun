@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"cryptorun/internal/application/pipeline"
-	"cryptorun/internal/data/derivs"
-	"cryptorun/internal/data/etf"
+	"github.com/sawpanic/cryptorun/internal/application/pipeline"
+	"github.com/sawpanic/cryptorun/internal/data/derivs"
+	"github.com/sawpanic/cryptorun/internal/data/etf"
 )
 
 // Type aliases for pipeline integration

@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"cryptorun/internal/score/composite"
+	"github.com/sawpanic/cryptorun/internal/score/composite"
 )
 
 // TestOrthogonalizationResidualizationSanity tests the core requirement:

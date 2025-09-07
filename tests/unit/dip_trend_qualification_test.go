@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/algo/dip"
+	"github.com/sawpanic/cryptorun/internal/algo/dip"
 )
 
 func TestDipCore_QualifyTrend_StrongUptrend(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"cryptorun/internal/bench/diagnostics"
+	"github.com/sawpanic/cryptorun/internal/bench/diagnostics"
 )
 
 func TestDiagnosticsUsesSpecCompliantPnL(t *testing.T) {

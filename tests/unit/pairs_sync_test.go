@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/application"
+	"github.com/sawpanic/cryptorun/internal/application"
 )
 
 var mockKrakenAssetPairsResponse = `{

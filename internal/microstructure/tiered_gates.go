@@ -7,7 +7,7 @@ import (
 	"sort"
 	"time"
 
-	"cryptorun/internal/microstructure/adapters"
+	"github.com/sawpanic/cryptorun/internal/microstructure/adapters"
 )
 
 // TieredGateCalculator implements venue-native tiered microstructure gates

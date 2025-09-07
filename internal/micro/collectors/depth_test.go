@@ -3,7 +3,7 @@ package collectors
 import (
 	"testing"
 
-	"cryptorun/internal/micro"
+	"github.com/sawpanic/cryptorun/internal/micro"
 )
 
 func TestBinanceCalculateDepthUSD(t *testing.T) {

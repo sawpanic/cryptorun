@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/domain/guards"
+	"github.com/sawpanic/cryptorun/internal/domain/guards"
 )
 
 func TestGuardEvaluator_AllGuardsPass(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"cryptorun/internal/data/venue/types"
+	"github.com/sawpanic/cryptorun/internal/data/venue/types"
 )
 
 // Checker validates microstructure requirements for exchange-native assets

@@ -11,7 +11,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"cryptorun/internal/application/pipeline"
+	"github.com/sawpanic/cryptorun/internal/application/pipeline"
 )
 
 // loadFromCache attempts to load data from cache file

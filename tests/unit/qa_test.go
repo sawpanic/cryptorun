@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/qa"
+	"github.com/sawpanic/cryptorun/internal/qa"
 )
 
 func TestQARunner_BasicFlow(t *testing.T) {

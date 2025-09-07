@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/application"
+	"github.com/sawpanic/cryptorun/internal/application"
 )
 
 // TestAlertManager_Throttling tests the throttling logic

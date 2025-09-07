@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	httpContracts "cryptorun/internal/http"
+	httpContracts "github.com/sawpanic/cryptorun/internal/http"
 )
 
 // Handlers manages all HTTP endpoint handlers

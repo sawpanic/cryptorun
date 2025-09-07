@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"cryptorun/internal/atomicio"
+	"github.com/sawpanic/cryptorun/internal/atomicio"
 )
 
 func TestWriteFile(t *testing.T) {

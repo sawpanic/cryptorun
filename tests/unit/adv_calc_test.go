@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"cryptorun/internal/application"
+	"github.com/sawpanic/cryptorun/internal/application"
 )
 
 func TestCalculateADV(t *testing.T) {

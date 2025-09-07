@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"cryptorun/internal/metrics"
+	"github.com/sawpanic/cryptorun/internal/metrics"
 )
 
 // LatencyMonitor tracks end-to-end latency metrics for the hot set system

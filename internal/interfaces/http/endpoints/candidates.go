@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	httpContracts "cryptorun/internal/interfaces/http"
-	"cryptorun/internal/metrics"
+	httpContracts "github.com/sawpanic/cryptorun/internal/interfaces/http"
+	"github.com/sawpanic/cryptorun/internal/metrics"
 	"github.com/rs/zerolog/log"
 )
 

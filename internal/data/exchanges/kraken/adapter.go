@@ -13,7 +13,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/rs/zerolog/log"
 
-	"cryptorun/internal/data/facade"
+	"github.com/sawpanic/cryptorun/internal/data/facade"
 )
 
 // Adapter implements facade.Exchange for Kraken

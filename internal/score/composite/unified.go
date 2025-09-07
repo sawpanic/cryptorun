@@ -6,8 +6,8 @@ import (
 	"math"
 	"time"
 
-	"cryptorun/internal/data/derivs"
-	"cryptorun/internal/data/etf"
+	"github.com/sawpanic/cryptorun/internal/data/derivs"
+	"github.com/sawpanic/cryptorun/internal/data/etf"
 )
 
 // CompositeScore represents the unified scoring result

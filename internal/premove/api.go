@@ -6,7 +6,7 @@ import (
 	"sort"
 	"time"
 
-	"cryptorun/internal/microstructure"
+	"github.com/sawpanic/cryptorun/internal/microstructure"
 )
 
 // PreMovementEngine orchestrates the complete Pre-Movement v3.3 system

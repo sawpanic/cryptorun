@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"cryptorun/internal/regime"
+	"github.com/sawpanic/cryptorun/internal/regime"
 )
 
 func TestRegimeWeightsSnapshot(t *testing.T) {

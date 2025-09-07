@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"cryptorun/internal/atomicio"
+	"github.com/sawpanic/cryptorun/internal/atomicio"
 )
 
 // Hit represents a stub detection hit

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math"
 
-	"cryptorun/internal/application/pipeline"
+	"github.com/sawpanic/cryptorun/internal/application/pipeline"
 )
 
 // FactorHierarchySpec tests factor hierarchy compliance

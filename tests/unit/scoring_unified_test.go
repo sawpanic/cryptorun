@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"cryptorun/internal/application/pipeline"
+	"github.com/sawpanic/cryptorun/internal/application/pipeline"
 )
 
 // TestWeightValidation tests weight sum and boundary validations

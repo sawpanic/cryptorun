@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/bench"
+	"github.com/sawpanic/cryptorun/internal/bench"
 )
 
 // TestTopGainersBenchmark tests the complete top gainers benchmark flow

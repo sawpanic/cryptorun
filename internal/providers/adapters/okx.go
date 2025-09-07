@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	"cryptorun/internal/providers/guards"
+	"github.com/sawpanic/cryptorun/internal/providers/guards"
 )
 
 // OKXAdapter wraps OKX API calls with provider guards

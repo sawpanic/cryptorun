@@ -208,7 +208,7 @@ func (miv *MenuIntegrityValidator) analyzeCommandFile(name, filePath string) Com
 	lines := strings.Split(fileContent, "\n")
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
-		if strings.HasPrefix(line, "\"cryptorun/internal/") {
+		if strings.HasPrefix(line, "\"github.com/sawpanic/cryptorun/internal/") {
 			// Extract package name
 			pkg := strings.Trim(line, "\"")
 			parts := strings.Split(pkg, "/")

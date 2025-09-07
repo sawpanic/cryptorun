@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/data/derivs"
-	"cryptorun/internal/microstructure"
+	"github.com/sawpanic/cryptorun/internal/data/derivs"
+	"github.com/sawpanic/cryptorun/internal/microstructure"
 )
 
 // Mock implementations for testing

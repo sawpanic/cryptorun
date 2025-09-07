@@ -10,9 +10,9 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"cryptorun/internal/data/facade"
-	"cryptorun/internal/data/cache"
-	"cryptorun/internal/data/rl"
+	"github.com/sawpanic/cryptorun/internal/data/facade"
+	"github.com/sawpanic/cryptorun/internal/data/cache"
+	"github.com/sawpanic/cryptorun/internal/data/rl"
 )
 
 var upgrader = websocket.Upgrader{

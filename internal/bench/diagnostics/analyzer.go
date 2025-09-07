@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	// "cryptorun/internal/domain/momentum"
-	// "cryptorun/internal/domain/regime"
+	// "github.com/sawpanic/cryptorun/internal/domain/momentum"
+	// "github.com/sawpanic/cryptorun/internal/domain/regime"
 	"github.com/sawpanic/cryptorun/internal/bench/sources"
 )
 

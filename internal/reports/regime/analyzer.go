@@ -6,7 +6,7 @@ import (
 	"sort"
 	"time"
 
-	regimeDomain "cryptorun/internal/domain/regime"
+	regimeDomain "github.com/sawpanic/cryptorun/internal/domain/regime"
 	"github.com/rs/zerolog/log"
 )
 

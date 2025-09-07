@@ -5,7 +5,7 @@ import (
 	"math"
 	"time"
 
-	"cryptorun/internal/tune/weights"
+	"github.com/sawpanic/cryptorun/internal/tune/weights"
 )
 
 // OptimizerConfig defines the configuration for coordinate descent optimization

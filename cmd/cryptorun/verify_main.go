@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 
-	"cryptorun/internal/application"
+	"github.com/sawpanic/cryptorun/internal/application"
 )
 
 // handleVerificationSweep handles the verification sweep (read-only)

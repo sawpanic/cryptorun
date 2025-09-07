@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"cryptorun/internal/micro"
+	"github.com/sawpanic/cryptorun/internal/micro"
 )
 
 // BaseCollector provides common functionality for all venue collectors

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"cryptorun/internal/domain"
+	"github.com/sawpanic/cryptorun/internal/domain"
 )
 
 // VolumeConfig contains volume-based quality signal parameters

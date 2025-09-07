@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"cryptorun/internal/application"
+	"github.com/sawpanic/cryptorun/internal/application"
 )
 
 // handleDryrun handles the dry-run menu option

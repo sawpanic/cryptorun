@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/ops"
+	"github.com/sawpanic/cryptorun/internal/ops"
 )
 
 func TestOpsIntegration_ProviderBreakerScenario(t *testing.T) {

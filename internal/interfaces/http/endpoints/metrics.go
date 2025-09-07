@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"cryptorun/internal/metrics"
+	"github.com/sawpanic/cryptorun/internal/metrics"
 )
 
 // MetricsResponse represents the complete metrics response

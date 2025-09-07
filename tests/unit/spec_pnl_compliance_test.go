@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/application/bench"
+	"github.com/sawpanic/cryptorun/internal/application/bench"
 )
 
 // TestSpecPnLComplianceEnforcement ensures recommendations use only spec-compliant P&L

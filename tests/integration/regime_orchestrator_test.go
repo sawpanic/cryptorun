@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/domain/factors"
-	"cryptorun/internal/domain/regime"
+	"github.com/sawpanic/cryptorun/internal/domain/factors"
+	"github.com/sawpanic/cryptorun/internal/domain/regime"
 )
 
 func TestRegimeOrchestrator_EndToEndIntegration(t *testing.T) {

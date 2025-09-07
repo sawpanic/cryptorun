@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/application/guards/testkit"
+	"github.com/sawpanic/cryptorun/internal/application/guards/testkit"
 )
 
 // MockMenuUI provides a testable menu interface

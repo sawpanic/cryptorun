@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"cryptorun/internal/metrics"
+	"github.com/sawpanic/cryptorun/internal/metrics"
 )
 
 // DecileResponse represents the decile analysis endpoint response

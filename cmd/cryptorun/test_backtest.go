@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/backtest/smoke90"
+	"github.com/sawpanic/cryptorun/internal/backtest/smoke90"
 )
 
 // TestBacktestSmoke90Integration tests the smoke90 integration without requiring the full CLI

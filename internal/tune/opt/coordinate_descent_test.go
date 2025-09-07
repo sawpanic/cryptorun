@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/tune/data"
-	"cryptorun/internal/tune/weights"
+	"github.com/sawpanic/cryptorun/internal/tune/data"
+	"github.com/sawpanic/cryptorun/internal/tune/weights"
 )
 
 func TestCoordinateDescent_OptimizeDeterministic(t *testing.T) {

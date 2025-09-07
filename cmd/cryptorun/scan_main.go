@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
-	pipelineexec "cryptorun/internal/application/pipeline"
+	pipelineexec "github.com/sawpanic/cryptorun/internal/application/pipeline"
 )
 
 // runScanMomentum runs the momentum scanning pipeline via unified entry point

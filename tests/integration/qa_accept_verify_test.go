@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"cryptorun/internal/qa"
+	"github.com/sawpanic/cryptorun/internal/qa"
 )
 
 func TestAcceptanceValidator_ValidFixtures(t *testing.T) {

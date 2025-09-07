@@ -1,7 +1,7 @@
 package regime
 
 import (
-	regimeDomain "cryptorun/internal/domain/regime"
+	regimeDomain "github.com/sawpanic/cryptorun/internal/domain/regime"
 	"time"
 )
 

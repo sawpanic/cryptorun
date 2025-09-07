@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/data/venue/types"
+	"github.com/sawpanic/cryptorun/internal/data/venue/types"
 )
 
 func TestChecker_ValidateAsset(t *testing.T) {

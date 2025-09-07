@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/algo/momentum"
+	"github.com/sawpanic/cryptorun/internal/algo/momentum"
 )
 
 func TestMomentumCore_Calculate(t *testing.T) {

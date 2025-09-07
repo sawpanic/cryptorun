@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/providers/guards"
+	"github.com/sawpanic/cryptorun/internal/providers/guards"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

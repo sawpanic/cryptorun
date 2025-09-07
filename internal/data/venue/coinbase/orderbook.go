@@ -11,7 +11,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"cryptorun/internal/data/venue/types"
+	"github.com/sawpanic/cryptorun/internal/data/venue/types"
 )
 
 // OrderBookClient fetches L1/L2 data from Coinbase exchange-native API

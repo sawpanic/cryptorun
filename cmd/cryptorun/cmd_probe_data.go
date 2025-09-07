@@ -10,12 +10,12 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/rs/zerolog/log"
 
-	"cryptorun/internal/data/facade"
-	"cryptorun/internal/data/cache"
-	"cryptorun/internal/data/pit"
-	"cryptorun/internal/data/rl"
-	"cryptorun/internal/data/exchanges/kraken"
-	"cryptorun/internal/metrics"
+	"github.com/sawpanic/cryptorun/internal/data/facade"
+	"github.com/sawpanic/cryptorun/internal/data/cache"
+	"github.com/sawpanic/cryptorun/internal/data/pit"
+	"github.com/sawpanic/cryptorun/internal/data/rl"
+	"github.com/sawpanic/cryptorun/internal/data/exchanges/kraken"
+	"github.com/sawpanic/cryptorun/internal/metrics"
 )
 
 // runProbeData implements the data probe command

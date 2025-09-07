@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"cryptorun/internal/score/composite"
+	"github.com/sawpanic/cryptorun/internal/score/composite"
 )
 
 func main() {

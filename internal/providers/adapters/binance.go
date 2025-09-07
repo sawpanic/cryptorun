@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"cryptorun/internal/providers/guards"
+	"github.com/sawpanic/cryptorun/internal/providers/guards"
 )
 
 // BinanceAdapter wraps Binance API calls with provider guards

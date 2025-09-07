@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"cryptorun/internal/data/derivs"
-	"cryptorun/internal/microstructure"
+	"github.com/sawpanic/cryptorun/internal/data/derivs"
+	"github.com/sawpanic/cryptorun/internal/microstructure"
 )
 
 // Interfaces for dependency injection and testing

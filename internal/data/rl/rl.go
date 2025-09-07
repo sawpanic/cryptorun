@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/rs/zerolog/log"
-	"cryptorun/internal/data/facade"
+	"github.com/sawpanic/cryptorun/internal/data/facade"
 )
 
 // RateLimiter implements facade.RateLimiter with venue-specific rate limiting

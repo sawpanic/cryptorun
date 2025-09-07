@@ -3,7 +3,7 @@ package pipeline
 import (
 	"math"
 
-	"cryptorun/internal/domain"
+	"github.com/sawpanic/cryptorun/internal/domain"
 	"github.com/rs/zerolog/log"
 )
 

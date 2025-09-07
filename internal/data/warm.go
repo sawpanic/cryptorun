@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	"cryptorun/internal/providers/guards"
+	"github.com/sawpanic/cryptorun/internal/providers/guards"
 )
 
 // WarmData implements REST API + cache data tier
@@ -172,7 +172,7 @@ func (w *WarmData) buildOrderBookURL(venue, symbol string) string {
 // buildHeaders constructs HTTP headers for venue
 func (w *WarmData) buildHeaders(venue string) map[string]string {
 	headers := map[string]string{
-		"User-Agent":   "CryptoRun/3.2.1",
+		"User-Agent":   "github.com/sawpanic/cryptorun/3.2.1",
 		"Accept":       "application/json",
 		"Content-Type": "application/json",
 	}

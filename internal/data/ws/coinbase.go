@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"cryptorun/internal/data"
+	"github.com/sawpanic/cryptorun/internal/data"
 )
 
 // CoinbaseWSClient implements WebSocket client for Coinbase

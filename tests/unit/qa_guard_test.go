@@ -3,7 +3,7 @@ package unit
 import (
 	"testing"
 
-	"cryptorun/internal/qa"
+	"github.com/sawpanic/cryptorun/internal/qa"
 )
 
 // TestNoStubGate ensures the repository is free of scaffold patterns

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/score/composite"
+	"github.com/sawpanic/cryptorun/internal/score/composite"
 )
 
 // TestOrthogonality validates Gram-Schmidt orthogonalization

@@ -5,7 +5,7 @@ import (
 	"math"
 	"time"
 
-	"cryptorun/internal/domain/regime"
+	"github.com/sawpanic/cryptorun/internal/domain/regime"
 )
 
 // MTW represents Multi-TimeFrame Weights normalized to 1.0 within active set

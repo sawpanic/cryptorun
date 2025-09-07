@@ -5,8 +5,8 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"cryptorun/internal/domain"
-	"cryptorun/internal/infrastructure/websocket"
+	"github.com/sawpanic/cryptorun/internal/domain"
+	"github.com/sawpanic/cryptorun/internal/infrastructure/websocket"
 )
 
 // HotSetIntegration manages the integration between hot set WebSocket data and scanner

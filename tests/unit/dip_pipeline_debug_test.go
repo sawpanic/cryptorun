@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"cryptorun/internal/algo/dip"
-	"cryptorun/internal/scan/pipeline"
-	"cryptorun/internal/scan/sim"
+	"github.com/sawpanic/cryptorun/internal/algo/dip"
+	"github.com/sawpanic/cryptorun/internal/scan/pipeline"
+	"github.com/sawpanic/cryptorun/internal/scan/sim"
 )
 
 func TestDipPipeline_GenerateExplainabilityOutput(t *testing.T) {

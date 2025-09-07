@@ -16,13 +16,13 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
-	"cryptorun/internal/application/pipeline"
-	"cryptorun/internal/config"
-	"cryptorun/internal/gates"
-	"cryptorun/internal/microstructure"
-	providerrt "cryptorun/internal/providers/runtime"
-	"cryptorun/internal/regime"
-	"cryptorun/internal/score/composite"
+	"github.com/sawpanic/cryptorun/internal/application/pipeline"
+	"github.com/sawpanic/cryptorun/internal/config"
+	"github.com/sawpanic/cryptorun/internal/gates"
+	"github.com/sawpanic/cryptorun/internal/microstructure"
+	providerrt "github.com/sawpanic/cryptorun/internal/providers/runtime"
+	"github.com/sawpanic/cryptorun/internal/regime"
+	"github.com/sawpanic/cryptorun/internal/score/composite"
 )
 
 // MenuUI provides the canonical interactive interface for CryptoRun

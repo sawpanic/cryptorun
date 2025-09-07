@@ -3,7 +3,7 @@ package regime
 import (
 	"testing"
 
-	"cryptorun/internal/tune/weights"
+	"github.com/sawpanic/cryptorun/internal/tune/weights"
 )
 
 func TestWeightsSumTo100_AllRegimes(t *testing.T) {

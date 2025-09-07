@@ -12,9 +12,9 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
 
-	"cryptorun/internal/application"
-	"cryptorun/internal/application/pipeline"
-	httpmetrics "cryptorun/internal/interfaces/http"
+	"github.com/sawpanic/cryptorun/internal/application"
+	"github.com/sawpanic/cryptorun/internal/application/pipeline"
+	httpmetrics "github.com/sawpanic/cryptorun/internal/interfaces/http"
 )
 
 const (

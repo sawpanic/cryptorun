@@ -13,7 +13,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"cryptorun/internal/application/pipeline"
+	"github.com/sawpanic/cryptorun/internal/application/pipeline"
 )
 
 // calculateAlignment computes alignment metrics between top gainers and scanner results

@@ -7,8 +7,8 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	httpmetrics "cryptorun/internal/interfaces/http"
-	logprogress "cryptorun/internal/log"
+	httpmetrics "github.com/sawpanic/cryptorun/internal/interfaces/http"
+	logprogress "github.com/sawpanic/cryptorun/internal/log"
 )
 
 // PipelineExecutor manages the execution of CryptoRun scanning pipelines

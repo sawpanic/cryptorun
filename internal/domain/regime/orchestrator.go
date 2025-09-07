@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"cryptorun/internal/domain/factors"
+	"github.com/sawpanic/cryptorun/internal/domain/factors"
 )
 
 // RegimeOrchestrator coordinates regime detection with factor processing

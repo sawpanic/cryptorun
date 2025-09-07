@@ -13,9 +13,9 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
-	"cryptorun/internal/application"
-	"cryptorun/internal/interfaces/http/endpoints"
-	"cryptorun/internal/metrics"
+	"github.com/sawpanic/cryptorun/internal/application"
+	"github.com/sawpanic/cryptorun/internal/interfaces/http/endpoints"
+	"github.com/sawpanic/cryptorun/internal/metrics"
 )
 
 // runMonitor starts the monitoring HTTP server

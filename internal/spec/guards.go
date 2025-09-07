@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"cryptorun/internal/domain"
+	"github.com/sawpanic/cryptorun/internal/domain"
 )
 
 // GuardsSpec tests trading guards compliance

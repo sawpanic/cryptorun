@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/rs/zerolog/log"
-	"cryptorun/internal/data/facade"
+	"github.com/sawpanic/cryptorun/internal/data/facade"
 )
 
 // VADR (Volume-Adjusted Daily Range) calculation with freeze logic

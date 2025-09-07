@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"cryptorun/internal/application/pipeline"
+	"github.com/sawpanic/cryptorun/internal/application/pipeline"
 )
 
 func TestComputeScores(t *testing.T) {

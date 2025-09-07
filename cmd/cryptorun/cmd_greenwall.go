@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"cryptorun/internal/verify/greenwall"
+	"github.com/sawpanic/cryptorun/internal/verify/greenwall"
 	"github.com/spf13/cobra"
 )
 

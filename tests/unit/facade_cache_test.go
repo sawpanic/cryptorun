@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/data/cache"
+	"github.com/sawpanic/cryptorun/internal/data/cache"
 )
 
 func TestTTLCacheBasicOperations(t *testing.T) {

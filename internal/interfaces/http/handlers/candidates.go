@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	httpContracts "cryptorun/internal/http"
+	httpContracts "github.com/sawpanic/cryptorun/internal/http"
 )
 
 // Candidates handles GET /candidates endpoint with pagination

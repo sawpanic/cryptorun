@@ -7,10 +7,10 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"cryptorun/internal/data/venue/binance"
-	"cryptorun/internal/data/venue/coinbase"
-	"cryptorun/internal/data/venue/okx"
-	"cryptorun/internal/data/venue/types"
+	"github.com/sawpanic/cryptorun/internal/data/venue/binance"
+	"github.com/sawpanic/cryptorun/internal/data/venue/coinbase"
+	"github.com/sawpanic/cryptorun/internal/data/venue/okx"
+	"github.com/sawpanic/cryptorun/internal/data/venue/types"
 )
 
 // Checker validates microstructure requirements across exchange-native venues

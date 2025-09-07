@@ -8,7 +8,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"cryptorun/internal/domain"
+	"github.com/sawpanic/cryptorun/internal/domain"
 )
 
 // MicrostructureProcessor calculates real-time microstructure metrics

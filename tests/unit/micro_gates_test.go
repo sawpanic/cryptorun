@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"cryptorun/internal/domain"
+	"github.com/sawpanic/cryptorun/internal/domain"
 )
 
 func TestSpreadGateBorderlineCases(t *testing.T) {

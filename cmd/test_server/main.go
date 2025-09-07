@@ -12,8 +12,8 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	"cryptorun/internal/interfaces/http/endpoints"
-	"cryptorun/internal/metrics"
+	"github.com/sawpanic/cryptorun/internal/interfaces/http/endpoints"
+	"github.com/sawpanic/cryptorun/internal/metrics"
 )
 
 func main() {

@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	"cryptorun/internal/ops"
+	"github.com/sawpanic/cryptorun/internal/ops"
 )
 
 var opsStatusCmd = &cobra.Command{

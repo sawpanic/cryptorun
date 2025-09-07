@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"cryptorun/internal/qa"
+	"github.com/sawpanic/cryptorun/internal/qa"
 )
 
 func TestNoStubGate_DetectsStubs(t *testing.T) {

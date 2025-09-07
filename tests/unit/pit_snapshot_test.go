@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"cryptorun/internal/data/facade"
-	"cryptorun/internal/data/pit"
+	"github.com/sawpanic/cryptorun/internal/data/facade"
+	"github.com/sawpanic/cryptorun/internal/data/pit"
 )
 
 func TestPITStoreBasicOperations(t *testing.T) {

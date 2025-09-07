@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"cryptorun/internal/data"
+	"github.com/sawpanic/cryptorun/internal/data"
 )
 
 // CSVReader handles reading historical data from CSV files

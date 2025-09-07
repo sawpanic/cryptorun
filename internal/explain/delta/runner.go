@@ -11,8 +11,8 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"cryptorun/internal/application"
-	"cryptorun/internal/application/universe"
+	"github.com/sawpanic/cryptorun/internal/application"
+	"github.com/sawpanic/cryptorun/internal/application/universe"
 )
 
 // Runner executes delta analysis against baselines

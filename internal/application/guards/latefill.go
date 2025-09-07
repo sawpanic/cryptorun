@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"cryptorun/internal/telemetry/latency"
+	"github.com/sawpanic/cryptorun/internal/telemetry/latency"
 )
 
 // LateFillGuard implements late-fill protection with p99 latency-based relaxation

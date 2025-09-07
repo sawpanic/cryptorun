@@ -6,8 +6,8 @@ import (
 	"math"
 	"time"
 
-	"cryptorun/internal/algo/dip"
-	"cryptorun/internal/domain"
+	"github.com/sawpanic/cryptorun/internal/algo/dip"
+	"github.com/sawpanic/cryptorun/internal/domain"
 )
 
 // FixtureDataProvider provides deterministic test data for dip pipeline testing
