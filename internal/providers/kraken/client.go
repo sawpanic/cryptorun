@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/sawpanic/cryptorun/internal/providers"
 )
 
 // Client provides Kraken API access with rate limiting and circuit breaking
@@ -189,7 +190,7 @@ func (c *Client) GetServerTime(ctx context.Context) (*ServerTimeResponse, error)
 func (c *Client) GetTicker(ctx context.Context, pairs []string) (map[string]*TickerInfo, error) {
 	// Validate USD-only pairs (exchange-native requirement)
 	for _, pair := range pairs {
-		if !isUSDPair(pair) {
+		if !providers.IsUSDPair(pair) {
 			return nil, fmt.Errorf("non-USD pair not allowed: %s - USD pairs only", pair)
 		}
 	}
@@ -259,7 +260,7 @@ func (c *Client) GetTicker(ctx context.Context, pairs []string) (map[string]*Tic
 
 // GetOrderBook retrieves L2 order book for exchange-native microstructure analysis
 func (c *Client) GetOrderBook(ctx context.Context, pair string, count int) (*OrderBookResponse, error) {
-	if !isUSDPair(pair) {
+	if !providers.IsUSDPair(pair) {
 		return nil, fmt.Errorf("non-USD pair not allowed: %s - USD pairs only", pair)
 	}
 
@@ -364,13 +365,9 @@ func (c *Client) isWebSocketHealthy() bool {
 	return err == nil
 }
 
-// isUSDPair validates that the pair is USD-denominated (exchange-native requirement)
+// isUSDPair is a local alias for providers.IsUSDPair for backward compatibility
 func isUSDPair(pair string) bool {
-	upperPair := strings.ToUpper(pair)
-	return strings.HasSuffix(upperPair, "USD") || 
-		   strings.HasSuffix(upperPair, "ZUSD") || // Kraken format
-		   strings.Contains(upperPair, "USD/") ||
-		   strings.Contains(upperPair, "/USD")
+	return providers.IsUSDPair(pair)
 }
 
 // normalizePairName converts Kraken pair names to standard format

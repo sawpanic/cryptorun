@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"math"
 	"time"
+	
+	"github.com/sawpanic/cryptorun/internal/data/facade"
+	"github.com/sawpanic/cryptorun/internal/metrics"
+	"github.com/sawpanic/cryptorun/internal/providers"
 )
 
 // MicrostructureData represents exchange-native L1/L2 order book analysis
@@ -44,6 +48,8 @@ type MicrostructureExtractor struct {
 	lastSequenceID int64
 	healthWindow   []MicrostructureData
 	maxHealthWindow int
+	vadrCalculator *metrics.VADRCalculator
+	dataFacade     facade.DataFacade  // For historical data access
 }
 
 // NewMicrostructureExtractor creates a new microstructure analyzer
@@ -52,12 +58,24 @@ func NewMicrostructureExtractor(client *Client) *MicrostructureExtractor {
 		client:          client,
 		healthWindow:    make([]MicrostructureData, 0),
 		maxHealthWindow: 100, // Keep last 100 samples for health analysis
+		vadrCalculator:  metrics.NewVADRCalculator(),
+	}
+}
+
+// NewMicrostructureExtractorWithFacade creates a new extractor with data facade for VADR
+func NewMicrostructureExtractorWithFacade(client *Client, dataFacade facade.DataFacade) *MicrostructureExtractor {
+	return &MicrostructureExtractor{
+		client:          client,
+		healthWindow:    make([]MicrostructureData, 0),
+		maxHealthWindow: 100,
+		vadrCalculator:  metrics.NewVADRCalculator(),
+		dataFacade:      dataFacade,
 	}
 }
 
 // ExtractMicrostructure performs comprehensive L1/L2 analysis for a USD pair
 func (me *MicrostructureExtractor) ExtractMicrostructure(ctx context.Context, pair string) (*MicrostructureData, error) {
-	if !isUSDPair(pair) {
+	if !providers.IsUSDPair(pair) {
 		return nil, fmt.Errorf("non-USD pair rejected: %s - exchange-native USD pairs only", pair)
 	}
 	
@@ -127,6 +145,14 @@ func (me *MicrostructureExtractor) ExtractMicrostructure(ctx context.Context, pa
 		TotalDepthUSD2Pct: totalDepth,
 		Staleness:         time.Since(start),
 		DataQuality:       me.calculateDataQuality(ticker, bestBid, bestAsk),
+	}
+	
+	// Calculate VADR if data facade is available
+	if me.dataFacade != nil && me.vadrCalculator != nil {
+		vadr, err := me.calculateVADR(ctx, pair)
+		if err == nil && vadr > 0 {
+			microData.VADR = vadr
+		}
 	}
 	
 	// Add to health window for monitoring
@@ -306,4 +332,79 @@ type HealthSignals struct {
 	StalenessRate    float64   `json:"staleness_rate"`
 	SequenceGapRate  float64   `json:"sequence_gap_rate"`
 	LastUpdate       time.Time `json:"last_update"`
+}
+
+// calculateVADR computes VADR for the given pair using historical data
+func (me *MicrostructureExtractor) calculateVADR(ctx context.Context, pair string) (float64, error) {
+	if me.dataFacade == nil || me.vadrCalculator == nil {
+		return 0, fmt.Errorf("data facade or VADR calculator not available")
+	}
+	
+	// Get 24h historical OHLCV data for VADR calculation
+	endTime := time.Now()
+	startTime := endTime.Add(-24 * time.Hour)
+	
+	// Fetch historical klines from data facade
+	klines, err := me.dataFacade.GetKlines(ctx, pair, "1h", startTime, endTime)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get historical klines for VADR: %w", err)
+	}
+	
+	if len(klines) < 20 {
+		return 0, fmt.Errorf("insufficient historical data for VADR: got %d bars, need 20+", len(klines))
+	}
+	
+	// Convert to facade.Kline format (assuming GetKlines returns this format)
+	
+	// Calculate average daily volume for tier determination
+	var totalVolume float64
+	for _, kline := range klines {
+		totalVolume += kline.VolumeUSD
+	}
+	avgVolume := totalVolume / float64(len(klines)) * 24 // Scale to daily
+	
+	// Calculate VADR with tier precedence
+	vadr, frozen, err := me.vadrCalculator.CalculateWithPrecedence(klines, 1.75) // Default tier min
+	if err != nil {
+		return 0, fmt.Errorf("VADR calculation failed: %w", err)
+	}
+	
+	if frozen {
+		return 0, fmt.Errorf("VADR calculation frozen due to insufficient data")
+	}
+	
+	// Validate VADR against tier requirements
+	passes, tier, reason := metrics.ValidateVADR(vadr, frozen, avgVolume)
+	if !passes {
+		return 0, fmt.Errorf("VADR validation failed: %s (tier: %s)", reason, tier.Name)
+	}
+	
+	return vadr, nil
+}
+
+// GetVADRMetrics returns comprehensive VADR analysis for the pair
+func (me *MicrostructureExtractor) GetVADRMetrics(ctx context.Context, pair string) (*metrics.VADRMetrics, error) {
+	if me.dataFacade == nil || me.vadrCalculator == nil {
+		return nil, fmt.Errorf("data facade or VADR calculator not available")
+	}
+	
+	// Get 24h historical data
+	endTime := time.Now()
+	startTime := endTime.Add(-24 * time.Hour)
+	
+	klines, err := me.dataFacade.GetKlines(ctx, pair, "1h", startTime, endTime)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get historical klines: %w", err)
+	}
+	
+	// Calculate average daily volume
+	var totalVolume float64
+	for _, kline := range klines {
+		totalVolume += kline.VolumeUSD
+	}
+	avgVolume := totalVolume / float64(len(klines)) * 24
+	
+	// Get comprehensive VADR metrics
+	vadrMetrics := me.vadrCalculator.GetVADRMetrics(klines, avgVolume, 24*time.Hour)
+	return &vadrMetrics, nil
 }

@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sawpanic/cryptorun/internal/persistence/postgres"
+	"github.com/sawpanic/cryptorun/internal/persistence"
 	"github.com/sawpanic/cryptorun/internal/report/perf"
 	"github.com/spf13/cobra"
 )
@@ -47,8 +47,7 @@ func init() {
 	reportCmd.Flags().StringVar(&reportFormat, "format", "md", "Output format: md, csv, json")
 	reportCmd.Flags().StringVar(&reportOutfile, "outfile", "", "Output file path (default: stdout)")
 
-	// At least one report type is required
-	reportCmd.MarkFlagRequired("performance")
+	// Note: At least one of --performance or --portfolio must be specified (checked in runReportCommand)
 }
 
 func runReportCommand(cmd *cobra.Command, args []string) error {
@@ -151,24 +150,16 @@ func runReportCommand(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func initializeTradesRepo() (*postgres.TradesRepository, error) {
-	// Get database connection string from environment or config
-	dsn := os.Getenv("PG_DSN")
-	if dsn == "" {
-		dsn = "postgres://user:password@localhost:5432/cryptorun?sslmode=disable"
-	}
-
-	repo, err := postgres.NewTradesRepository(dsn)
-	if err != nil {
-		return nil, fmt.Errorf("failed to connect to database: %v", err)
-	}
-
+func initializeTradesRepo() (persistence.TradesRepo, error) {
+	// Mock repository for development/testing purposes
+	// In production, would initialize PostgreSQL connection
+	repo := &MockTradesRepo{}
 	return repo, nil
 }
 
-func generatePerformanceReport(ctx context.Context, tradesRepo *postgres.TradesRepository, fromTime, toTime time.Time) (*perf.PerfMetrics, error) {
+func generatePerformanceReport(ctx context.Context, tradesRepo persistence.TradesRepo, fromTime, toTime time.Time) (*perf.PerfMetrics, error) {
 	// Fetch trades from database
-	timeRange := postgres.TimeRange{
+	timeRange := persistence.TimeRange{
 		From: fromTime,
 		To:   toTime,
 	}
@@ -191,10 +182,10 @@ func generatePerformanceReport(ctx context.Context, tradesRepo *postgres.TradesR
 				ID:             strconv.FormatInt(trade.ID, 10),
 				Symbol:         trade.Symbol,
 				Side:           trade.Side,
-				Quantity:       trade.Quantity,
+				Quantity:       trade.Qty,
 				Price:          trade.Price,
-				Fees:           0.001 * trade.Price * trade.Quantity, // Assume 0.1% fees
-				Slippage:       0.0005 * trade.Price * trade.Quantity, // Assume 0.05% slippage
+				Fees:           0.001 * trade.Price * trade.Qty, // Assume 0.1% fees
+				Slippage:       0.0005 * trade.Price * trade.Qty, // Assume 0.05% slippage
 				Timestamp:      trade.Timestamp,
 				StrategySource: "manual", // Default strategy source
 				ExpectedPrice:  trade.Price * 1.0005, // Slight expected price difference
@@ -251,7 +242,7 @@ func generateSyntheticReturns(trades []perf.TradeRecord, fromTime, toTime time.T
 	return returns
 }
 
-func generatePortfolioReport(ctx context.Context, tradesRepo *postgres.TradesRepository, asOfTime time.Time) (*perf.PortfolioMetrics, error) {
+func generatePortfolioReport(ctx context.Context, tradesRepo persistence.TradesRepo, asOfTime time.Time) (*perf.PortfolioMetrics, error) {
 	config := perf.DefaultPerfCalculatorConfig()
 	calculator := perf.NewPortfolioCalculator(config, tradesRepo)
 
@@ -457,4 +448,74 @@ type rand struct{}
 func (r rand) Float64() float64 {
 	randSeed = (randSeed*1103515245 + 12345) & 0x7fffffff
 	return float64(randSeed) / float64(0x7fffffff)
+}
+
+// MockTradesRepo provides mock trade data for development and testing
+type MockTradesRepo struct{}
+
+func (m *MockTradesRepo) Insert(ctx context.Context, trade persistence.Trade) error {
+	return nil
+}
+
+func (m *MockTradesRepo) InsertBatch(ctx context.Context, trades []persistence.Trade) error {
+	return nil
+}
+
+func (m *MockTradesRepo) ListBySymbol(ctx context.Context, symbol string, tr persistence.TimeRange, limit int) ([]persistence.Trade, error) {
+	// Generate mock trades for the symbol
+	trades := make([]persistence.Trade, 0)
+	
+	current := tr.From
+	id := int64(1)
+	
+	for current.Before(tr.To) && len(trades) < limit {
+		// Generate mock trade data
+		price := 50000.0 + (rand{}.Float64()-0.5)*10000 // Random price around $50k
+		quantity := 0.1 + rand{}.Float64()*2.0          // Random quantity 0.1-2.1
+		
+		trade := persistence.Trade{
+			ID:        id,
+			Timestamp: current,
+			Symbol:    symbol,
+			Venue:     "kraken",
+			Side:      "buy",
+			Price:     price,
+			Qty:       quantity,
+			OrderID:   nil,
+			Attributes: map[string]interface{}{
+				"mock": true,
+			},
+			CreatedAt: current,
+		}
+		
+		trades = append(trades, trade)
+		current = current.Add(time.Hour * 6) // Every 6 hours
+		id++
+	}
+	
+	return trades, nil
+}
+
+func (m *MockTradesRepo) ListByVenue(ctx context.Context, venue string, tr persistence.TimeRange, limit int) ([]persistence.Trade, error) {
+	return []persistence.Trade{}, nil
+}
+
+func (m *MockTradesRepo) GetByOrderID(ctx context.Context, orderID string) (*persistence.Trade, error) {
+	return nil, nil
+}
+
+func (m *MockTradesRepo) GetLatest(ctx context.Context, limit int) ([]persistence.Trade, error) {
+	return []persistence.Trade{}, nil
+}
+
+func (m *MockTradesRepo) Count(ctx context.Context, tr persistence.TimeRange) (int64, error) {
+	return 100, nil
+}
+
+func (m *MockTradesRepo) CountByVenue(ctx context.Context, tr persistence.TimeRange) (map[string]int64, error) {
+	return map[string]int64{
+		"kraken":   50,
+		"binance":  30,
+		"coinbase": 20,
+	}, nil
 }

@@ -75,7 +75,6 @@ func (g *ExchangeNativeGuard) ValidateDataSource(source string, dataType DataTyp
 // ValidateProvider checks if a provider interface violates exchange-native requirements
 func (g *ExchangeNativeGuard) ValidateProvider(provider interface{}) error {
 	providerType := reflect.TypeOf(provider)
-	providerValue := reflect.ValueOf(provider)
 	
 	if providerType == nil {
 		return fmt.Errorf("provider is nil")
@@ -237,6 +236,17 @@ func (g *ExchangeNativeGuard) GetBannedSources() []string {
 func (g *ExchangeNativeGuard) IsExchangeNative(source string) bool {
 	sourceLower := strings.ToLower(source)
 	return g.allowedExchanges[sourceLower] && !g.bannedSources[sourceLower]
+}
+
+// IsUSDPair validates that the pair is USD-denominated (exchange-native requirement)
+func IsUSDPair(pair string) bool {
+	upperPair := strings.ToUpper(pair)
+	return strings.HasSuffix(upperPair, "USD") || 
+		   strings.HasSuffix(upperPair, "ZUSD") || // Kraken format
+		   strings.Contains(upperPair, "USD/") ||
+		   strings.Contains(upperPair, "/USD") ||
+		   strings.HasSuffix(upperPair, "USDT") ||
+		   strings.HasSuffix(upperPair, "USDC")
 }
 
 // DataType represents different types of market data

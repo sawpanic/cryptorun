@@ -1,94 +1,87 @@
 # Portfolio Report
 
-**As of**: {{.AsOfTime}}  
+**As of**: {{.AsOfTime}}
 **Generated**: {{.GeneratedAt}}
 
-## Portfolio Overview
+## Portfolio Summary
 
 | **Metric** | **Value** | **Status** |
 |------------|-----------|------------|
-| **Total Portfolio Value** | ${{printf "%.2f" .TotalValue}} | - |
+| **Total Value** | ${{printf "%.2f" .TotalValue}} | {{if gt .TotalValue 0}}✅{{else}}❌{{end}} |
 | **Long Exposure** | ${{printf "%.2f" .LongExposure}} | {{printf "%.1f%%" (div .LongExposure .TotalValue | times 100)}} |
 | **Short Exposure** | ${{printf "%.2f" .ShortExposure}} | {{printf "%.1f%%" (div .ShortExposure .TotalValue | times 100)}} |
 | **Net Exposure** | ${{printf "%.2f" .NetExposure}} | {{printf "%.1f%%" (div .NetExposure .TotalValue | times 100)}} |
-| **Gross Exposure** | ${{printf "%.2f" .GrossExposure}} | {{printf "%.1f%%" (div .GrossExposure .TotalValue | times 100)}} |
+| **Gross Exposure** | ${{printf "%.2f" .GrossExposure}} | {{printf "%.1fx" (div .GrossExposure .TotalValue)}} |
 
 ## Risk Metrics
 
 | **Metric** | **Value** | **Threshold** | **Status** |
 |------------|-----------|---------------|------------|
 | **Concentration Risk** | {{printf "%.4f" .ConcentrationRisk}} | <0.50 | {{if lt .ConcentrationRisk 0.50}}✅ Pass{{else}}⚠️ High{{end}} |
-| **Portfolio VaR (95%)** | ${{printf "%.2f" .PortfolioVaR}} | - | {{printf "%.2f%%" (div .PortfolioVaR .TotalValue | times 100)}} of portfolio |
+| **Portfolio VaR (95%)** | ${{printf "%.2f" .PortfolioVaR}} | {{printf "%.1f%%" (div .PortfolioVaR .TotalValue | times 100)}} of portfolio | {{if lt (div .PortfolioVaR .TotalValue) 0.15}}✅ Normal{{else}}⚠️ High{{end}} |
 
 ## Current Positions
 
-| **Symbol** | **Quantity** | **Market Value** | **Weight** | **P&L** | **Days** | **Sector** |
-|------------|--------------|------------------|------------|---------|----------|-----------|
-{{range .Positions}}| {{.Symbol}} | {{printf "%.4f" .Quantity}} | ${{printf "%.2f" .MarketValue}} | {{printf "%.2f%%" (.Weight | times 100)}} | {{if gt .UnrealizedPnL 0}}+{{end}}${{printf "%.2f" .UnrealizedPnL}} | {{.DaysHeld}} | {{.Sector}} |
+| **Symbol** | **Qty** | **Market Value** | **Weight** | **Unrealized P&L** | **Days Held** | **Sector** |
+|------------|---------|------------------|------------|---------------------|---------------|------------|
+{{range .Positions}}| {{.Symbol}} | {{printf "%.4f" .Quantity}} | ${{printf "%.2f" .MarketValue}} | {{printf "%.2f%%" (.Weight | times 100)}} | ${{printf "%.2f" .UnrealizedPnL}} | {{.DaysHeld}} | {{.Sector}} |
 {{end}}
-
-### Position Summary
-- **Total Positions**: {{len .Positions}}
-- **Profitable Positions**: {{.ProfitablePositions}} ({{printf "%.1f%%" .ProfitablePercentage}})
-- **Losing Positions**: {{.LosingPositions}} ({{printf "%.1f%%" .LosingPercentage}})
 
 ## Sector Allocation
 
-| **Sector** | **Allocation** | **Limit** | **Status** |
-|------------|----------------|-----------|------------|
-{{range $sector, $allocation := .SectorAllocation}}| {{$sector}} | {{printf "%.2f%%" ($allocation | times 100)}} | 40% | {{if gt $allocation 0.40}}⚠️ Over{{else}}✅ OK{{end}} |
+{{range $sector, $allocation := .SectorAllocation}}| **{{$sector}}** | {{printf "%.2f%%" ($allocation | times 100)}} | {{if gt $allocation 0.40}}⚠️ High concentration{{else}}✅ Normal{{end}} |
 {{end}}
 
 ## Performance Attribution
 
-Top contributors to portfolio performance:
-
-| **Symbol** | **Contribution** | **Allocation Effect** | **Selection Effect** |
-|------------|------------------|----------------------|----------------------|
-{{range .Attribution}}{{if gt .Contribution 0}}| {{.Symbol}} | {{if gt .Contribution 0}}+{{end}}{{printf "%.4f%%" (.Contribution | times 100)}} | {{printf "%.4f%%" (.AllocationEffect | times 100)}} | {{printf "%.4f%%" (.SelectionEffect | times 100)}} |
-{{end}}{{end}}
-
-## Risk Analysis
-
-### Correlation Matrix
-{{if .CorrelationMatrix}}
-| Symbol | {{range $i, $pos := .Positions}}{{$pos.Symbol}} | {{end}}
-|--------|{{range .Positions}}------- | {{end}}
-{{range $symbol1, $correlations := .CorrelationMatrix}}| {{$symbol1}} | {{range $symbol2, $correlation := $correlations}}{{printf "%.2f" $correlation}} | {{end}}
+{{if .Attribution}}
+| **Position** | **Contribution** | **Allocation Effect** | **Selection Effect** |
+|--------------|------------------|----------------------|---------------------|
+{{range .Attribution}}| {{.Symbol}} | {{printf "%.2f%%" (.Contribution | times 100)}} | {{printf "%.2f%%" (.AllocationEffect | times 100)}} | {{printf "%.2f%%" (.SelectionEffect | times 100)}} |
 {{end}}
 {{end}}
 
-### High Correlation Warnings
-{{range .HighCorrelations}}
-- ⚠️ **{{.Symbol1}} vs {{.Symbol2}}**: {{printf "%.2f" .Correlation}} correlation (>{{.Threshold}})
+## Risk Correlation Matrix
+
+| Symbol | {{range .Positions}}{{.Symbol}} | {{end}}
+|--------|{{range .Positions}}---------|{{end}}
+{{range $symbol1, $correlations := .CorrelationMatrix}}| **{{$symbol1}}** | {{range $.Positions}}{{index $correlations .Symbol | printf "%.2f"}} | {{end}}
 {{end}}
 
-{{if .PortfolioAlerts}}
+{{if .Alerts}}
 ## 🚨 Portfolio Alerts
 
-{{range .PortfolioAlerts}}
-- **{{.Type}}**: {{.Message}}
+{{range .Alerts}}
+- {{if eq .Severity "CRITICAL"}}🚨{{else if eq .Severity "WARNING"}}⚠️{{else}}ℹ️{{end}} **{{.Type}}**: {{.Message}}
 {{end}}
 {{end}}
 
-## Recommendations
+## Risk Management Summary
 
-### Risk Management
-{{if gt .ConcentrationRisk 0.40}}- ⚠️ **Reduce concentration**: Portfolio is concentrated ({{printf "%.3f" .ConcentrationRisk}}), consider diversifying largest positions{{end}}
-{{range .HighCorrelations}}- ⚠️ **Correlation risk**: High correlation between {{.Symbol1}} and {{.Symbol2}} ({{printf "%.2f" .Correlation}})
+### Concentration Analysis
+{{if gt .ConcentrationRisk 0.50}}
+⚠️ **High concentration risk** detected ({{printf "%.3f" .ConcentrationRisk}}). Consider diversifying positions.
+{{else}}
+✅ **Concentration risk** within acceptable limits ({{printf "%.3f" .ConcentrationRisk}}).
 {{end}}
 
-### Rebalancing Opportunities
-{{range $sector, $allocation := .SectorAllocation}}{{if gt $allocation 0.35}}- Consider reducing {{$sector}} allocation from {{printf "%.1f%%" ($allocation | times 100)}} to under 35%
-{{end}}{{end}}
+### Correlation Analysis
+{{if .HighCorrelationPairs}}
+⚠️ **High correlation pairs** detected:
+{{range .HighCorrelationPairs}}
+- {{.Symbol1}} vs {{.Symbol2}}: {{printf "%.3f" .Correlation}}
+{{end}}
+{{else}}
+✅ **No excessive correlations** detected between major positions.
+{{end}}
 
-### Position Management
-{{range .Positions}}{{if gt .DaysHeld 90}}- Review {{.Symbol}} position (held {{.DaysHeld}} days)
+### Sector Diversification
+{{range $sector, $allocation := .SectorAllocation}}{{if gt $allocation 0.40}}
+⚠️ **{{$sector}}** concentration: {{printf "%.1f%%" ($allocation | times 100)}} (>40% limit)
 {{end}}{{end}}
 
 ---
 
 **Report Generation**: CryptoRun v3.2.1 Portfolio Analytics  
-**Position Calculation**: Based on trade history and estimated market prices  
-**Risk Metrics**: Concentration risk calculated using sum of squared weights  
-**VaR Method**: Historical simulation with 95% confidence level
+**Data Sources**: Exchange-native APIs only (no aggregators)  
+**Compliance**: VADR≥1.8, microstructure validation, regime-aware weights

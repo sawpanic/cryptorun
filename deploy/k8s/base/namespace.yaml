@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cryptorun
+  labels:
+    name: cryptorun
+    app: cryptorun
+    version: v3.2.1
+    environment: production
+  annotations:
+    description: "CryptoRun v3.2.1 - 6-48h cryptocurrency momentum scanner"
+    contact: "ops@cryptorun.io"
+    created-by: "cryptorun-deployment"
+spec:
+  finalizers:
+    - kubernetes
+---
+# Resource quota to prevent runaway resource consumption
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: cryptorun-quota
+  namespace: cryptorun
+spec:
+  hard:
+    requests.cpu: "2"
+    requests.memory: 4Gi
+    requests.ephemeral-storage: 10Gi
+    limits.cpu: "4" 
+    limits.memory: 8Gi
+    limits.ephemeral-storage: 20Gi
+    persistentvolumeclaims: "5"
+    services: "10"
+    secrets: "10"
+    configmaps: "10"
+---
+# Network policy for security (default deny, allow specific)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cryptorun-netpol
+  namespace: cryptorun
+spec:
+  podSelector:
+    matchLabels:
+      app: cryptorun
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow ingress from ingress controller
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 8080
+    # Allow Prometheus scraping
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: monitoring
+      ports:
+        - protocol: TCP
+          port: 8081
+  egress:
+    # Allow DNS resolution
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Allow external API calls (Kraken, OKX, Coinbase)
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 80
+    # Allow internal service communication
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+      ports:
+        - protocol: TCP
+          port: 5432

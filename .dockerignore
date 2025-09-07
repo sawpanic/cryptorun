@@ -1,0 +1,131 @@
+# Build context optimization for CryptoRun v3.2.1
+# Keep build context minimal for faster Docker builds
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+.github/
+
+# Documentation (not needed in container)
+docs/
+README.md
+*.md
+!CHANGELOG.md
+
+# Development tools
+.vscode/
+.idea/
+*.code-workspace
+
+# Test artifacts and outputs
+tests/
+test_*.go
+*_test.go
+artifacts/
+out/
+tmp/
+.coverage/
+coverage.html
+coverage.out
+benchmark_results/
+
+# CI/CD and deployment (except config)
+.github/
+.gitlab-ci.yml
+.travis.yml
+deploy/grafana/
+deploy/compose/
+observability/
+
+# Development files
+.env
+.env.local
+.env.development
+docker-compose.override.yml
+docker-compose.dev.yml
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Build artifacts (keep only final binary)
+bin/
+dist/
+build/
+*.exe
+!cryptorun.exe
+
+# Node.js (if any frontend assets)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python (if any scripts)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+
+# Logs
+*.log
+logs/
+
+# Data files and databases
+*.db
+*.sqlite
+*.sqlite3
+data/
+
+# Certificate files (use secrets instead)
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Sensitive config files
+secrets.yaml
+local.yaml
+private.yaml
+
+# Large files and datasets
+*.csv
+*.parquet
+*.json.gz
+historical_data/
+market_data/
+
+# Backup files
+*.bak
+*.backup
+*-backup-*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Include necessary files explicitly
+!go.mod
+!go.sum
+!config/
+!src/
+!cmd/
+!internal/
+!pkg/
+!Dockerfile
+!LICENSE

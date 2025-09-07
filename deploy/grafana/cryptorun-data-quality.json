@@ -1,0 +1,163 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "CryptoRun Data Quality & Providers",
+    "tags": ["cryptorun", "data", "providers", "quality"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Data Freshness",
+        "type": "heatmap",
+        "targets": [
+          {
+            "expr": "cryptorun_data_freshness_seconds",
+            "legendFormat": "{{source}} {{symbol}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s"
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Provider Rate Limits",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "cryptorun_rate_limit_remaining",
+            "legendFormat": "{{provider}} {{endpoint}}"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        }
+      },
+      {
+        "id": 3,
+        "title": "Provider Health Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "cryptorun_provider_health",
+            "legendFormat": "{{provider}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {
+                "options": {
+                  "0": {
+                    "text": "DOWN",
+                    "color": "red"
+                  },
+                  "1": {
+                    "text": "HEALTHY",
+                    "color": "green"
+                  }
+                },
+                "type": "value"
+              }
+            ]
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": 4,
+        "title": "Data Consensus Scores",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "cryptorun_data_consensus",
+            "legendFormat": "{{symbol}} {{metric_type}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 1,
+            "unit": "percentunit"
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        }
+      },
+      {
+        "id": 5,
+        "title": "Data Outliers Rate",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(cryptorun_data_outliers_total[5m])",
+            "legendFormat": "{{source}} {{metric_type}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps"
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 16
+        }
+      },
+      {
+        "id": 6,
+        "title": "WebSocket Latency",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(cryptorun_ws_latency_ms_bucket[5m]))",
+            "legendFormat": "P95 {{exchange}}"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(cryptorun_ws_latency_ms_bucket[5m]))",
+            "legendFormat": "P99 {{exchange}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ms"
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 24
+        }
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "30s",
+    "schemaVersion": 30
+  }
+}
