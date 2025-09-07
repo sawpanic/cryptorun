@@ -1,0 +1,145 @@
+# Gitleaks configuration for CryptoRun
+# https://github.com/zricethezav/gitleaks
+
+title = "CryptoRun Secret Scanning Configuration"
+
+[extend]
+# Extend default rules
+useDefault = true
+
+[[rules]]
+id = "postgres-connection-string"
+description = "PostgreSQL connection string"
+regex = '''postgres://[^:]+:[^@]+@[^/]+/[^\s?"']+'''
+keywords = ["postgres://", "postgresql://"]
+
+[[rules]]
+id = "redis-connection-string"  
+description = "Redis connection string with password"
+regex = '''redis://[^:]+:[^@]+@[^/]+'''
+keywords = ["redis://"]
+
+[[rules]]
+id = "database-dsn"
+description = "Database DSN with credentials"
+regex = '''(?i)(dsn|connection_string)["\s]*[:=]["\s]*[^"'\s]+:[^"'\s@]+@[^"'\s/]+'''
+keywords = ["dsn", "connection_string"]
+
+[[rules]]
+id = "kraken-api-secret"
+description = "Kraken API secret (example pattern)"
+regex = '''(?i)kraken[_-]?(api[_-]?secret|secret)["\s]*[:=]["\s]*[A-Za-z0-9+/]{40,}'''
+keywords = ["kraken", "secret"]
+
+[[rules]]
+id = "jwt-token"
+description = "JWT token"
+regex = '''eyJ[a-zA-Z0-9_-]*\.eyJ[a-zA-Z0-9_-]*\.[a-zA-Z0-9_-]*'''
+keywords = ["eyJ"]
+
+[[rules]]
+id = "private-key"
+description = "Private key"
+regex = '''-----BEGIN[A-Z\s]+PRIVATE KEY-----[\s\S]*?-----END[A-Z\s]+PRIVATE KEY-----'''
+keywords = ["BEGIN", "PRIVATE KEY"]
+
+[[rules]]
+id = "webhook-secret"
+description = "Webhook secret"
+regex = '''(?i)webhook[_-]?secret["\s]*[:=]["\s]*[A-Za-z0-9+/]{16,}'''
+keywords = ["webhook", "secret"]
+
+[[rules]]
+id = "aws-access-key"
+description = "AWS Access Key ID"
+regex = '''AKIA[0-9A-Z]{16}'''
+keywords = ["AKIA"]
+
+[[rules]]
+id = "aws-secret-key"
+description = "AWS Secret Access Key"
+regex = '''(?i)aws[_-]?secret[_-]?access[_-]?key["\s]*[:=]["\s]*[A-Za-z0-9+/]{40}'''
+keywords = ["aws", "secret", "access", "key"]
+
+[[rules]]
+id = "google-api-key"
+description = "Google API Key"
+regex = '''AIza[0-9A-Za-z\\-_]{35}'''
+keywords = ["AIza"]
+
+[[rules]]
+id = "generic-api-key"
+description = "Generic API key pattern"
+regex = '''(?i)api[_-]?key["\s]*[:=]["\s]*[A-Za-z0-9+/\-_]{20,}'''
+keywords = ["api", "key"]
+
+[[rules]]
+id = "generic-secret"
+description = "Generic secret pattern"
+regex = '''(?i)secret["\s]*[:=]["\s]*[A-Za-z0-9+/\-_]{16,}'''
+keywords = ["secret"]
+
+[[rules]]
+id = "bearer-token"
+description = "Bearer token"
+regex = '''(?i)bearer\s+[A-Za-z0-9+/\-_.=]+'''
+keywords = ["bearer"]
+
+# Allowlist for false positives
+[allowlist]
+description = "Allowlist for known safe patterns"
+files = ['''.*\.md$''', '''.*\.txt$''']  # Documentation files
+paths = [
+    '''tests/.*''',  # Test files often contain mock secrets
+    '''testdata/.*''', # Test data
+    '''examples/.*''', # Example files
+    '''docs/.*''', # Documentation
+]
+
+# Specific false positives to ignore
+regexes = [
+    '''(?i)password.*example''',  # Example passwords in docs
+    '''(?i)secret.*placeholder''', # Placeholder secrets
+    '''(?i)changeme''', # Default changeme values
+    '''(?i)your_password''', # Documentation placeholders
+    '''(?i)your_secret''', # Documentation placeholders
+    '''(?i)example\.com''', # Example domains
+    '''(?i)localhost''', # Local development
+    '''(?i)127\.0\.0\.1''', # Local development
+]
+
+# Files to ignore completely
+[[allowlist.paths]]
+description = "Generated or vendor files"
+paths = [
+    '''go\.sum''',
+    '''go\.mod''',
+    '''vendor/.*''',
+    '''node_modules/.*''',
+    '''.git/.*''',
+    '''.*\.exe''',
+    '''.*\.dll''',
+    '''.*\.so''',
+    '''.*\.dylib''',
+]
+
+# Repository-specific allowlist for this project
+[[allowlist.regexes]]
+description = "CryptoRun specific safe patterns"
+regex = '''cryptorun:cryptorun'''  # Default dev database credentials
+
+[[allowlist.regexes]]
+description = "Local development Redis"
+regex = '''redis:6379'''
+
+[[allowlist.regexes]]
+description = "Kraken public API endpoints"
+regex = '''https://api\.kraken\.com'''
+
+[[allowlist.regexes]]
+description = "Kraken WebSocket endpoints"
+regex = '''wss://ws\.kraken\.com'''
+
+[[allowlist.regexes]]
+description = "Test database connections"
+regex = '''postgres://cryptorun:cryptorun@localhost:5432/cryptorun_test'''

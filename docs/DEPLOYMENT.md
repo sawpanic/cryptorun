@@ -2,7 +2,21 @@
 
 ## UX MUST — Live Progress & Explainability
 
-Complete deployment guide for CryptoRun v3.2.1 covering containerization, Kubernetes, database setup, and production configuration.
+Complete deployment guide for CryptoRun v3.2.1 covering containerization, Kubernetes, database setup, and production configuration with hardened security and monitoring.
+
+## Deployment Hardening & Monitoring
+
+### K8s Hardening Features
+- **Resource limits**: CPU/memory constraints prevent resource exhaustion
+- **Security context**: Non-root containers with read-only filesystems
+- **Health probes**: Liveness/readiness/startup probes on `/health` endpoint
+- **Pod anti-affinity**: Ensures replicas spread across nodes
+- **Network policies**: Restrict inter-pod communication
+
+### Staging & Production Overlays
+- **Staging**: `kubectl apply -k deploy/k8s/overlays/staging` - 2 replicas, debug logging
+- **Production**: `kubectl apply -k deploy/k8s/overlays/prod` - 3 replicas, optimized resources
+- **Environment-specific**: Separate domains, TLS certificates, resource allocations
 
 ## Environment Requirements
 

@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cryptorun
+  namespace: cryptorun
+spec:
+  template:
+    spec:
+      containers:
+      - name: cryptorun
+        env:
+        - name: ENV
+          value: "production"
+        - name: LOG_LEVEL
+          value: "info"
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+            ephemeral-storage: 1Gi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+            ephemeral-storage: 4Gi
+        readinessProbe:
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 10
+        livenessProbe:
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 5

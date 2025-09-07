@@ -2,13 +2,11 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"time"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/lib/pq"
 	"github.com/sawpanic/cryptorun/internal/persistence"
 )
 

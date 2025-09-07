@@ -1,0 +1,101 @@
+# Alertmanager configuration for CryptoRun
+global:
+  smtp_smarthost: 'localhost:587'
+  smtp_from: 'alerts@cryptorun.example.com'
+  smtp_auth_username: 'alerts@cryptorun.example.com'
+  smtp_auth_password: 'smtp-password'
+
+# Templates
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# Route tree for alert routing
+route:
+  group_by: ['alertname', 'instance']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'cryptorun-team'
+  routes:
+  - match:
+      severity: critical
+    receiver: 'cryptorun-critical'
+    group_wait: 5s
+    repeat_interval: 5m
+  - match:
+      alert_type: business_logic
+    receiver: 'cryptorun-business'
+    repeat_interval: 30m
+  - match:
+      alert_type: infrastructure
+    receiver: 'cryptorun-infra'
+    repeat_interval: 15m
+
+# Receivers
+receivers:
+- name: 'cryptorun-team'
+  email_configs:
+  - to: 'team@cryptorun.example.com'
+    subject: '[CryptoRun] Alert: {{ .GroupLabels.alertname }}'
+    body: |
+      {{ range .Alerts }}
+      Alert: {{ .Annotations.summary }}
+      Description: {{ .Annotations.description }}
+      Instance: {{ .Labels.instance }}
+      Severity: {{ .Labels.severity }}
+      Runbook: {{ .Annotations.runbook_url }}
+      {{ end }}
+      
+- name: 'cryptorun-critical'
+  email_configs:
+  - to: 'oncall@cryptorun.example.com'
+    subject: '[CRITICAL] CryptoRun: {{ .GroupLabels.alertname }}'
+    body: |
+      🚨 CRITICAL ALERT 🚨
+      
+      {{ range .Alerts }}
+      Alert: {{ .Annotations.summary }}
+      Description: {{ .Annotations.description }}
+      Instance: {{ .Labels.instance }}
+      Started: {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+      Runbook: {{ .Annotations.runbook_url }}
+      {{ end }}
+  slack_configs:
+  - api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+    channel: '#cryptorun-alerts'
+    title: 'CRITICAL: {{ .GroupLabels.alertname }}'
+    text: '{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+    color: 'danger'
+
+- name: 'cryptorun-business'
+  email_configs:
+  - to: 'trading-team@cryptorun.example.com'
+    subject: '[Business Logic] CryptoRun: {{ .GroupLabels.alertname }}'
+    body: |
+      📊 Business Logic Alert
+      
+      {{ range .Alerts }}
+      Alert: {{ .Annotations.summary }}
+      Description: {{ .Annotations.description }}
+      {{ end }}
+
+- name: 'cryptorun-infra'
+  email_configs:
+  - to: 'infra@cryptorun.example.com'
+    subject: '[Infrastructure] CryptoRun: {{ .GroupLabels.alertname }}'
+    body: |
+      🔧 Infrastructure Alert
+      
+      {{ range .Alerts }}
+      Alert: {{ .Annotations.summary }}
+      Description: {{ .Annotations.description }}
+      Instance: {{ .Labels.instance }}
+      {{ end }}
+
+# Inhibit rules
+inhibit_rules:
+- source_match:
+    severity: 'critical'
+  target_match:
+    severity: 'warning'
+  equal: ['alertname', 'instance']

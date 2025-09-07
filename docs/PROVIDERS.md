@@ -16,64 +16,73 @@ Real-time provider health monitoring, rate limit management, and circuit breaker
 | Provider    | Free Tier | Requests/Min | Requests/Hour | Daily Budget | Monthly Budget | Special Headers |
 |-------------|-----------|--------------|---------------|--------------|----------------|-----------------|
 | **Binance** | ✅        | 1,200        | 7,200         | 100,000      | 2,000,000      | X-MBX-USED-WEIGHT |
-| **DEXScreener** | ✅    | 300          | 1,800         | 25,000       | 500,000        | - |
-| **CoinGecko** | ✅      | 50           | 3,000         | 10,000       | 300,000        | - |
-| **Moralis** | ✅        | 25           | 1,500         | 40,000       | 1,000,000      | - |
-| **CMC**     | Basic     | 30           | 1,800         | 10,000       | 333 credits    | - |
-| **Etherscan** | ✅      | 5            | 300           | 100,000      | 3,000,000      | - |
-| **Paprika** | ✅        | 100          | 6,000         | 25,000       | 750,000        | - |
+| **Kraken**  | ✅        | 60           | 3,600         | Unlimited    | Unlimited      | - |
+| **OKX**     | ✅        | 900          | 54,000        | Unlimited    | Unlimited      | - |
+| **DEXScreener** | ✅    | 1,800        | 108,000       | Unlimited    | Unlimited      | - |
+| **CoinGecko** | ✅      | 600          | 36,000        | 10,000       | 300,000        | - |
+| **CoinPaprika** | ✅    | 6,000        | 360,000       | 25,000       | 750,000        | - |
+| **DeFiLlama** | ✅      | 180          | 10,800        | Unlimited    | Unlimited      | - |
+| **TheGraph** | ✅       | 300          | 18,000        | 100,000      | 3,000,000      | - |
 
 ### Circuit Breaker Settings
 
 | Provider | Failure Threshold | Success Threshold | Timeout | Max Concurrent | Health Check Interval |
 |----------|-------------------|-------------------|---------|----------------|-----------------------|
 | Binance | 5 failures | 3 successes | 2 min | 10 | 30s |
-| DEXScreener | 3 failures | 2 successes | 5 min | 5 | 1 min |
-| CoinGecko | 4 failures | 2 successes | 3 min | 3 | 1 min |
-| Moralis | 3 failures | 2 successes | 10 min | 2 | 2 min |
-| CMC | 2 failures | 1 success | 15 min | 2 | 3 min |
-| Etherscan | 2 failures | 1 success | 30 min | 1 | 5 min |
-| Paprika | 4 failures | 2 successes | 4 min | 5 | 1 min |
+| Kraken | 2 failures | 1 success | 4 min | 2 | 1 min |
+| OKX | 3 failures | 2 successes | 3 min | 5 | 45s |
+| DEXScreener | 4 failures | 2 successes | 2 min | 5 | 1 min |
+| CoinGecko | 3 failures | 2 successes | 4 min | 3 | 2 min |
+| CoinPaprika | 4 failures | 2 successes | 3 min | 5 | 1 min |
+| DeFiLlama | 2 failures | 1 success | 6 min | 2 | 3 min |
+| TheGraph | 3 failures | 2 successes | 8 min | 3 | 2 min |
 
 ### Cache Tier Configuration
 
 | Provider | Warm TTL | Hot TTL | Cold TTL | Degraded TTL | Max Size | Compression |
 |----------|----------|---------|----------|--------------|----------|-------------|
 | Binance | 5 min | 30s | 24h | 10 min | 10,000 | ✅ |
+| Kraken | 4 min | 60s | 30h | 15 min | 8,000 | ✅ |
+| OKX | 3 min | 45s | 12h | 8 min | 6,000 | ✅ |
 | DEXScreener | 5 min | 2 min | 12h | 10 min | 5,000 | ✅ |
-| CoinGecko | 5 min | 3 min | 6h | 15 min | 3,000 | ❌ |
-| Moralis | 5 min | 5 min | 24h | 20 min | 2,000 | ✅ |
-| CMC | 5 min | 5 min | 12h | 25 min | 3,000 | ✅ |
-| Etherscan | 5 min | 10 min | 48h | 30 min | 1,000 | ❌ |
-| Paprika | 5 min | 2 min | 8h | 12 min | 4,000 | ✅ |
+| CoinGecko | 8 min | 5 min | 6h | 20 min | 3,000 | ❌ |
+| CoinPaprika | 6 min | 3 min | 8h | 15 min | 4,000 | ✅ |
+| DeFiLlama | 10 min | 5 min | 24h | 30 min | 2,000 | ✅ |
+| TheGraph | 8 min | 3 min | 18h | 25 min | 3,000 | ✅ |
 
 ## Fallback Chain Specifications
 
 ### Data Type Priority Chains
 
-**Price Data:**
-- Primary: Binance → Fallbacks: CoinGecko → CMC → Paprika
+**Exchange-Native Microstructure:**
+- Primary: Binance → Fallbacks: Kraken → OKX
 - Max retries: 3, Retry delay: 2s
+- **BANNED**: Aggregators (CoinGecko, CoinPaprika, DEXScreener)
 
-**Market Data:**
-- Primary: CoinGecko → Fallbacks: CMC → Paprika → DEXScreener  
+**Derivatives & Futures:**
+- Primary: OKX → Fallbacks: Binance (futures)
 - Max retries: 2, Retry delay: 3s
+- **Exclusive**: Only exchange-native providers
 
-**Social Data:**
-- Primary: DEXScreener → Fallbacks: CoinGecko → CMC
-- Max retries: 2, Retry delay: 5s (less critical)
+**Market Data (Fallback Only):**
+- Primary: CoinGecko → Fallbacks: CoinPaprika → Binance
+- Max retries: 2, Retry delay: 4s
+- **Constraint**: Never used for microstructure
 
-**DeFi Data:**
-- Primary: Moralis → Fallbacks: DEXScreener → Etherscan
-- Max retries: 2, Retry delay: 10s
+**DeFi/On-Chain Volume:**
+- Primary: DeFiLlama → Fallbacks: TheGraph → DEXScreener
+- Max retries: 2, Retry delay: 8s
+- **Purpose**: Volume residual factor enhancement only
 
-**Ethereum Data:**
-- Primary: Etherscan → Fallbacks: Moralis
-- Max retries: 1, Retry delay: 15s
+**DEX Volume/Events:**
+- Primary: DEXScreener → Fallbacks: DeFiLlama → TheGraph
+- Max retries: 2, Retry delay: 5s
+- **BANNED**: Microstructure data (depth/spread)
 
-**Exchange Data:**
-- Primary: Binance → Fallbacks: Paprika → CMC
-- Max retries: 2, Retry delay: 3s
+**Protocol Analytics:**
+- Primary: TheGraph → Fallbacks: DeFiLlama
+- Max retries: 1, Retry delay: 12s
+- **Usage**: TVL, AMM metrics, subgraph data
 
 ## Rate Limit Handling
 
@@ -145,9 +154,40 @@ The test suite validates:
 
 ---
 
+## Provider Compliance & Classification
+
+### Exchange-Native (✅ Microstructure Allowed)
+- **Binance**: Full L1/L2 access, weight-based rate limiting
+- **Kraken**: Full L1/L2 access, conservative rate limits, server time sync
+- **OKX**: Derivatives focus, perpetuals, funding rates, basis calculations
+
+### DeFi/On-Chain (📊 Volume/Analytics Only)
+- **DeFiLlama**: Protocol TVL, DeFi metrics (free tier)
+- **TheGraph**: Subgraph data, AMM pools, on-chain analytics
+- **DEXScreener**: **Volume/Events Only** - banned from microstructure
+
+### Aggregators (⚠️ Fallback Only - Microstructure BANNED)
+- **CoinGecko**: Market data fallback, **NO** depth/spread/orderbook
+- **CoinPaprika**: Market data fallback, **NO** depth/spread/orderbook
+
+### Compliance Enforcement
+1. **Compile-Time Guards**: Build tags prevent aggregator microstructure usage
+2. **Runtime Bans**: Explicit error messages for banned methods
+3. **Circuit Integration**: Banned providers bypass microstructure circuits
+4. **Volume Enhancement**: On-chain volume integrated into VolumeResidual factor
+
+### Provider Health Indicators
+| Status | Meaning | Action |
+|--------|---------|--------|
+| 🟢 All healthy | All providers operational | Normal operation |
+| 🟡 6/8 OK | Majority healthy, some degraded | Monitor fallbacks |
+| 🔴 <5 healthy | Critical provider failures | Escalate, check exchanges |
+| ⚪ Not initialized | System starting up | Wait for initialization |
+
 **📋 Engineering Notes:**
 - All providers respect rate limits with exponential backoff
-- Circuit breakers prevent cascade failures
-- 5-minute warm cache standard across all providers
-- Degraded mode doubles cache TTLs automatically
+- Circuit breakers prevent cascade failures  
+- Aggregator ban enforced at compile-time and runtime
+- DeFi data enhances volume analysis without compromising microstructure integrity
 - Health monitoring integrated into CLI banner for transparency
+- Volume residual factor now includes on-chain DEX volume from DeFi providers

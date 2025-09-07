@@ -116,12 +116,46 @@ fallbacks:
 
 # Cold tier settings
 cold:
+  format: parquet               # Primary format: csv|parquet
   enable_parquet: true          # Enable Parquet format support
-  enable_csv: true              # Enable CSV format support
+  enable_csv: true              # Enable CSV format support  
   default_format: "parquet"     # Default format for new files
   base_path: "data/cold"        # Base directory for cold storage
   cache_expiry: "1h"            # Cache expiry duration
   enable_cache: true            # Enable cold tier caching
+  
+  # Parquet-specific configuration
+  parquet_schema:
+    table: ohlcv                # Primary table schema
+    fields:
+      - { name: "ts",      type: "timestamp(ms)", required: true, primary: true }
+      - { name: "symbol",  type: "string",        required: true, index: true }
+      - { name: "venue",   type: "string",        required: true, index: true }
+      - { name: "open",    type: "double",        required: false }
+      - { name: "high",    type: "double",        required: false }
+      - { name: "low",     type: "double",        required: false }
+      - { name: "close",   type: "double",        required: false }
+      - { name: "volume",  type: "double",        required: false }
+      - { name: "bid_price", type: "double",      required: false }
+      - { name: "ask_price", type: "double",      required: false }
+      - { name: "bid_qty",   type: "double",      required: false }
+      - { name: "ask_qty",   type: "double",      required: false }
+      - { name: "spread_bps", type: "double",     required: false }
+      - { name: "confidence", type: "double",     required: false }
+      - { name: "source_tier", type: "string",    required: true }
+    path: data/cold/ohlcv       # Partitioned path structure
+    partitioning:
+      enabled: true
+      scheme: "dt"              # Partition by date: dt=YYYY-MM-DD
+      retention_days: 365       # Keep data for 1 year
+    row_group_size: 131072      # 128KB row groups for optimal performance
+    compression: "snappy"       # Parquet-native compression
+    
+  # Time-series optimization
+  time_series:
+    enable_pushdown: true       # Enable predicate pushdown for time queries
+    sort_by_timestamp: true     # Ensure deterministic timestamp ordering
+    pit_safe: true              # Point-in-time integrity (no look-ahead)
   
   # Compression settings
   compression:

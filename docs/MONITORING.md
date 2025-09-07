@@ -2,7 +2,7 @@
 
 ## UX MUST — Live Progress & Explainability
 
-Complete monitoring and observability guide for CryptoRun v3.2.1 covering metrics, dashboards, alerts, and troubleshooting procedures.
+Complete monitoring and observability guide for CryptoRun v3.2.1 covering metrics, dashboards, alerts, and troubleshooting procedures with hardened alerting thresholds.
 
 ## Overview
 

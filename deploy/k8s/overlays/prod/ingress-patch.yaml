@@ -1,0 +1,37 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cryptorun-ingress
+  namespace: cryptorun
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+spec:
+  rules:
+  - host: cryptorun.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: cryptorun-service
+            port:
+              number: 8080
+  - host: api.cryptorun.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: cryptorun-service
+            port:
+              number: 8080
+  tls:
+  - hosts:
+    - cryptorun.example.com
+    - api.cryptorun.example.com
+    secretName: cryptorun-prod-tls

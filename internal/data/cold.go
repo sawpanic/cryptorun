@@ -15,6 +15,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/pierrec/lz4/v4"
 	"github.com/sawpanic/cryptorun/internal/quality"
 )
 
@@ -74,9 +75,15 @@ func createCompressedWriter(file *os.File, compressionType CompressionType, leve
 		}
 		return writer, nil
 	case CompressionLZ4:
-		// For now, use a pass-through wrapper since LZ4 needs external library
-		// In production, this would use github.com/pierrec/lz4/v4
-		return &passthroughCloser{file}, nil
+		// Use LZ4 compression with proper implementation
+		writer := lz4.NewWriter(file)
+		if writer == nil {
+			return nil, fmt.Errorf("failed to create LZ4 writer")
+		}
+		
+		// LZ4 writer doesn't expose compression level configuration in this library
+		// It uses fast compression by default, which is generally preferred for LZ4
+		return writer, nil
 	default:
 		return &passthroughCloser{file}, nil
 	}
@@ -92,9 +99,17 @@ func createCompressedReader(file *os.File, compressionType CompressionType) (io.
 		}
 		return reader, nil
 	case CompressionLZ4:
-		// For now, use a pass-through wrapper since LZ4 needs external library
-		// In production, this would use github.com/pierrec/lz4/v4
-		return file, nil
+		// Use LZ4 decompression with proper implementation
+		reader := lz4.NewReader(file)
+		if reader == nil {
+			return nil, fmt.Errorf("failed to create LZ4 reader")
+		}
+		
+		// Wrap in a custom closer that properly handles the LZ4 reader
+		return &lz4ReaderCloser{
+			reader: reader,
+			file:   file,
+		}, nil
 	default:
 		return file, nil
 	}
@@ -112,6 +127,21 @@ func (p *passthroughCloser) Write(data []byte) (int, error) {
 func (p *passthroughCloser) Close() error {
 	// Don't close the underlying file, let the caller handle it
 	return nil
+}
+
+// lz4ReaderCloser wraps LZ4 reader to properly handle closing
+type lz4ReaderCloser struct {
+	reader *lz4.Reader
+	file   *os.File
+}
+
+func (l *lz4ReaderCloser) Read(p []byte) (n int, err error) {
+	return l.reader.Read(p)
+}
+
+func (l *lz4ReaderCloser) Close() error {
+	// LZ4 reader doesn't need explicit closing, just close the underlying file
+	return nil // The file will be closed by the caller
 }
 
 // StreamingMessage represents a message in the streaming system
@@ -1244,7 +1274,7 @@ func (r *CSVReader) ValidateFile(filePath string) error {
 
 	// Validate at least first data row has correct number of fields
 	dataStart := 0
-	if len(records[0]) > 0 {
+	if len(records[0]) > 1 { // Ensure we have at least 2 columns before accessing [1]
 		if _, err := strconv.ParseFloat(records[0][1], 64); err != nil {
 			dataStart = 1 // Skip header
 		}

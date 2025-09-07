@@ -1,0 +1,132 @@
+# CryptoRun Grafana Alerts Configuration
+# Import via Grafana API or configuration management
+
+groups:
+  - name: CryptoRun Critical Alerts
+    interval: 30s
+    rules:
+      - alert: HighP99Latency
+        expr: histogram_quantile(0.99, rate(cryptorun_request_duration_seconds_bucket[5m])) > 0.3
+        for: 2m
+        labels:
+          severity: critical
+          service: cryptorun
+          alert_type: performance
+        annotations:
+          summary: "CryptoRun P99 latency exceeding 300ms threshold"
+          description: "P99 latency is {{ $value }}s, exceeding 300ms threshold for {{ $labels.instance }}"
+          runbook_url: "https://docs.cryptorun.example.com/runbooks/high-latency"
+
+      - alert: HighAPIErrorRate
+        expr: rate(cryptorun_api_errors_total[5m]) / rate(cryptorun_api_requests_total[5m]) > 0.05
+        for: 1m
+        labels:
+          severity: critical
+          service: cryptorun
+          alert_type: reliability
+        annotations:
+          summary: "CryptoRun API error rate above 5%"
+          description: "API error rate is {{ $value | humanizePercentage }} for {{ $labels.instance }}"
+          runbook_url: "https://docs.cryptorun.example.com/runbooks/api-errors"
+
+      - alert: LowCacheHitRate
+        expr: rate(cryptorun_cache_hits_total[5m]) / rate(cryptorun_cache_requests_total[5m]) < 0.85
+        for: 3m
+        labels:
+          severity: warning
+          service: cryptorun
+          alert_type: performance
+        annotations:
+          summary: "CryptoRun cache hit rate below 85%"
+          description: "Cache hit rate is {{ $value | humanizePercentage }} for {{ $labels.instance }}"
+          runbook_url: "https://docs.cryptorun.example.com/runbooks/cache-performance"
+
+      - alert: ServiceDown
+        expr: up{job="cryptorun"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: cryptorun
+          alert_type: availability
+        annotations:
+          summary: "CryptoRun service is down"
+          description: "CryptoRun instance {{ $labels.instance }} has been down for more than 30 seconds"
+          runbook_url: "https://docs.cryptorun.example.com/runbooks/service-down"
+
+  - name: CryptoRun Business Alerts
+    interval: 60s
+    rules:
+      - alert: FrequentRegimeFlips
+        expr: increase(cryptorun_regime_changes_total[1h]) > 6
+        for: 5m
+        labels:
+          severity: warning
+          service: cryptorun
+          alert_type: business_logic
+        annotations:
+          summary: "Excessive regime changes detected"
+          description: "{{ $value }} regime changes in the last hour, indicating market volatility"
+          runbook_url: "https://docs.cryptorun.example.com/runbooks/regime-instability"
+
+      - alert: NoRecentCandidates
+        expr: time() - cryptorun_last_candidate_timestamp > 1800
+        for: 10m
+        labels:
+          severity: warning
+          service: cryptorun
+          alert_type: business_logic
+        annotations:
+          summary: "No trading candidates found recently"
+          description: "No candidates found for {{ $value | humanizeDuration }} - check market conditions or gates"
+          runbook_url: "https://docs.cryptorun.example.com/runbooks/no-candidates"
+
+      - alert: HighRateLimitConsumption
+        expr: cryptorun_rate_limit_remaining / cryptorun_rate_limit_total < 0.2
+        for: 2m
+        labels:
+          severity: warning
+          service: cryptorun
+          alert_type: external_deps
+        annotations:
+          summary: "Rate limit consumption above 80%"
+          description: "{{ $labels.provider }} rate limit at {{ $value | humanizePercentage }} capacity"
+          runbook_url: "https://docs.cryptorun.example.com/runbooks/rate-limits"
+
+  - name: CryptoRun Infrastructure Alerts
+    interval: 60s
+    rules:
+      - alert: HighMemoryUsage
+        expr: container_memory_usage_bytes{container="cryptorun"} / container_spec_memory_limit_bytes > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: cryptorun
+          alert_type: infrastructure
+        annotations:
+          summary: "High memory usage on CryptoRun container"
+          description: "Memory usage is {{ $value | humanizePercentage }} of limit on {{ $labels.instance }}"
+          runbook_url: "https://docs.cryptorun.example.com/runbooks/high-memory"
+
+      - alert: HighCPUUsage
+        expr: rate(container_cpu_usage_seconds_total{container="cryptorun"}[5m]) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: cryptorun
+          alert_type: infrastructure
+        annotations:
+          summary: "High CPU usage on CryptoRun container"
+          description: "CPU usage is {{ $value | humanizePercentage }} on {{ $labels.instance }}"
+          runbook_url: "https://docs.cryptorun.example.com/runbooks/high-cpu"
+
+      - alert: PodRestartLoop
+        expr: increase(kube_pod_container_status_restarts_total{container="cryptorun"}[1h]) > 3
+        for: 0s
+        labels:
+          severity: critical
+          service: cryptorun
+          alert_type: infrastructure
+        annotations:
+          summary: "CryptoRun pod restarting frequently"
+          description: "Pod {{ $labels.pod }} has restarted {{ $value }} times in the last hour"
+          runbook_url: "https://docs.cryptorun.example.com/runbooks/pod-restarts"

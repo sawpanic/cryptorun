@@ -389,6 +389,7 @@ THE INTERACTIVE MENU IS THE PRIMARY INTERFACE
 	rootCmd.AddCommand(explainCmd)  // Factor analysis
 	rootCmd.AddCommand(reportCmd)   // Automated reporting
 	rootCmd.AddCommand(probeCmd)    // System probing
+	rootCmd.AddCommand(coldDumpCmd) // Cold tier debugging
 
 	if err := rootCmd.Execute(); err != nil {
 		log.Error().Err(err).Msg("command failed")

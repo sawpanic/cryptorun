@@ -15,6 +15,43 @@ import (
 	"github.com/sawpanic/cryptorun/internal/data"
 )
 
+// Helper function to extract float values from envelope data
+func extractFloat(envelope *data.Envelope, dataType, field string, defaultValue float64) float64 {
+	var dataMap map[string]interface{}
+	var ok bool
+	
+	switch dataType {
+	case "price":
+		if envelope.PriceData != nil {
+			dataMap, ok = envelope.PriceData.(map[string]interface{})
+			if !ok {
+				return defaultValue
+			}
+		}
+	case "volume":
+		if envelope.VolumeData != nil {
+			dataMap, ok = envelope.VolumeData.(map[string]interface{})
+			if !ok {
+				return defaultValue
+			}
+		}
+	default:
+		return defaultValue
+	}
+	
+	if dataMap == nil {
+		return defaultValue
+	}
+	
+	if value, exists := dataMap[field]; exists {
+		if floatValue, ok := value.(float64); ok {
+			return floatValue
+		}
+	}
+	
+	return defaultValue
+}
+
 func TestColdTierCompressionSupport(t *testing.T) {
 	// Create temporary directory for test data
 	tempDir := t.TempDir()

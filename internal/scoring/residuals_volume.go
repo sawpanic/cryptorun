@@ -9,19 +9,23 @@ type VolumeResiduals struct {
 }
 
 type VolumeWeights struct {
-	VolumeRatio24h float64
-	VWAP           float64
-	OBV            float64
-	VolSpike       float64
+	VolumeRatio24h    float64
+	VWAP              float64
+	OBV               float64
+	VolSpike          float64
+	OnChainVolume     float64 // NEW: On-chain DEX volume from DeFi providers
+	VolumeConsistency float64 // NEW: Cross-venue volume consistency
 }
 
 func NewVolumeResiduals() *VolumeResiduals {
 	return &VolumeResiduals{
 		weights: VolumeWeights{
-			VolumeRatio24h: 0.40,
-			VWAP:           0.25,
-			OBV:            0.20,
-			VolSpike:       0.15,
+			VolumeRatio24h:    0.30, // Reduced to accommodate new factors
+			VWAP:              0.20, // Reduced 
+			OBV:               0.15, // Reduced
+			VolSpike:          0.15, // Maintained
+			OnChainVolume:     0.15, // NEW: DEX/on-chain volume importance
+			VolumeConsistency: 0.05, // NEW: Cross-venue consistency bonus
 		},
 	}
 }
@@ -30,7 +34,9 @@ func (vr *VolumeResiduals) Calculate(factors VolumeFactors, momentum, technical 
 	rawVolume := factors.VolumeRatio24h*vr.weights.VolumeRatio24h +
 		factors.VWAP*vr.weights.VWAP +
 		factors.OBV*vr.weights.OBV +
-		factors.VolSpike*vr.weights.VolSpike
+		factors.VolSpike*vr.weights.VolSpike +
+		factors.OnChainVolume*vr.weights.OnChainVolume +
+		factors.VolumeConsistency*vr.weights.VolumeConsistency
 
 	return vr.orthogonalizeMultiple(rawVolume, momentum, technical)
 }

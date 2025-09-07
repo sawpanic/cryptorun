@@ -53,10 +53,12 @@ type TechnicalFactors struct {
 }
 
 type VolumeFactors struct {
-	VolumeRatio24h float64
-	VWAP           float64
-	OBV            float64
-	VolSpike       float64
+	VolumeRatio24h    float64
+	VWAP              float64
+	OBV               float64
+	VolSpike          float64
+	OnChainVolume     float64 // DEX/AMM volume from DeFi providers (normalized 0-100)
+	VolumeConsistency float64 // Cross-venue volume consistency score (0-100)
 }
 
 type QualityFactors struct {

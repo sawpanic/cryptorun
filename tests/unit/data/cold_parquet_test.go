@@ -1,4 +1,4 @@
-package data
+package data_test
 
 import (
 	"context"
@@ -520,4 +520,557 @@ func BenchmarkColdDataCSVLoad(b *testing.B) {
 		require.NoError(b, err)
 		require.Len(b, envelopes, 1000)
 	}
+}
+
+// Additional Parquet-specific tests for EPIC A1.3
+func TestParquetStore_WriteParquet(t *testing.T) {
+	tests := []struct {
+		name        string
+		table       string
+		rows        []data.Row
+		opts        data.ParquetOptions
+		expectError bool
+		errorMsg    string
+	}{
+		{
+			name:  "successful write with valid data",
+			table: "ohlcv",
+			rows: []data.Row{
+				{
+					"ts":          time.Now(),
+					"symbol":      "BTC-USD", 
+					"venue":       "kraken",
+					"source_tier": "cold",
+					"open":        50000.0,
+					"high":        51000.0,
+					"low":         49000.0,
+					"close":       50500.0,
+					"volume":      1000.0,
+				},
+			},
+			opts: data.ParquetOptions{
+				Compression:  "snappy",
+				RowGroupSize: 128 * 1024,
+			},
+			expectError: false,
+		},
+		{
+			name:        "empty rows should fail",
+			table:       "ohlcv",
+			rows:        []data.Row{},
+			opts:        data.DefaultParquetOptions(),
+			expectError: true,
+			errorMsg:    "no rows to write",
+		},
+		{
+			name:  "missing required fields should fail",
+			table: "ohlcv",
+			rows: []data.Row{
+				{
+					"symbol": "BTC-USD",
+					"venue":  "kraken",
+					// Missing 'ts' and 'source_tier'
+				},
+			},
+			opts:        data.DefaultParquetOptions(),
+			expectError: true,
+			errorMsg:    "required field 'ts' missing from row data",
+		},
+		{
+			name:  "gzip compression",
+			table: "ohlcv", 
+			rows: []data.Row{
+				{
+					"ts":          time.Now(),
+					"symbol":      "ETH-USD",
+					"venue":       "binance",
+					"source_tier": "warm",
+					"close":       3000.0,
+					"volume":      500.0,
+				},
+			},
+			opts: data.ParquetOptions{
+				Compression:  "gzip",
+				RowGroupSize: 64 * 1024,
+			},
+			expectError: false,
+		},
+		{
+			name:  "lz4 compression",
+			table: "ohlcv",
+			rows: []data.Row{
+				{
+					"ts":          time.Now(),
+					"symbol":      "ADA-USD", 
+					"venue":       "coinbase",
+					"source_tier": "hot",
+					"close":       0.5,
+					"volume":      10000.0,
+				},
+			},
+			opts: data.ParquetOptions{
+				Compression:  "lz4",
+				RowGroupSize: 256 * 1024,
+			},
+			expectError: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Create test configuration
+			config := data.ColdDataConfig{
+				EnableParquet: true,
+				DefaultFormat: "parquet",
+				BasePath:      "data/test/cold",
+			}
+
+			schema := data.ParquetSchema{
+				Table: "ohlcv",
+				Fields: []data.ParquetField{
+					{Name: "ts", Type: "timestamp(ms)", Required: true, Primary: true},
+					{Name: "symbol", Type: "string", Required: true, Index: true},
+					{Name: "venue", Type: "string", Required: true, Index: true},
+					{Name: "source_tier", Type: "string", Required: true},
+					{Name: "open", Type: "double"},
+					{Name: "high", Type: "double"},
+					{Name: "low", Type: "double"},
+					{Name: "close", Type: "double"},
+					{Name: "volume", Type: "double"},
+				},
+				Partitioning: data.ParquetPartitioning{
+					Enabled:       true,
+					Scheme:        "dt",
+					RetentionDays: 365,
+				},
+			}
+
+			store, err := data.NewParquetStore(config, schema)
+			require.NoError(t, err)
+
+			ctx := context.Background()
+			err = store.WriteParquet(ctx, tt.table, tt.rows, tt.opts)
+
+			if tt.expectError {
+				assert.Error(t, err)
+				if tt.errorMsg != "" {
+					assert.Contains(t, err.Error(), tt.errorMsg)
+				}
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestParquetStore_ReadParquet(t *testing.T) {
+	tests := []struct {
+		name          string
+		table         string
+		timeRange     data.TimeRange
+		columns       []string
+		expectedRows  int
+		expectError   bool
+	}{
+		{
+			name:  "read all columns in time range",
+			table: "ohlcv",
+			timeRange: data.TimeRange{
+				From: time.Now().Add(-1 * time.Hour),
+				To:   time.Now(),
+			},
+			columns:      nil, // All columns
+			expectedRows: 10,  // Mock iterator returns 10 rows
+			expectError:  false,
+		},
+		{
+			name:  "read specific columns",
+			table: "ohlcv",
+			timeRange: data.TimeRange{
+				From: time.Now().Add(-30 * time.Minute),
+				To:   time.Now(),
+			},
+			columns:      []string{"ts", "symbol", "close", "volume"},
+			expectedRows: 10,
+			expectError:  false,
+		},
+		{
+			name:  "narrow time window filtering",
+			table: "ohlcv",
+			timeRange: data.TimeRange{
+				From: time.Now().Add(-5 * time.Minute),
+				To:   time.Now().Add(-3 * time.Minute),
+			},
+			columns:      []string{"ts", "close"},
+			expectedRows: 10, // Mock returns fixed count
+			expectError:  false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			config := data.ColdDataConfig{
+				EnableParquet: true,
+				BasePath:      "data/test/cold",
+			}
+
+			schema := data.ParquetSchema{
+				Table: "ohlcv",
+				Fields: []data.ParquetField{
+					{Name: "ts", Type: "timestamp(ms)", Required: true, Primary: true},
+					{Name: "symbol", Type: "string", Required: true},
+				},
+			}
+
+			store, err := data.NewParquetStore(config, schema)
+			require.NoError(t, err)
+
+			ctx := context.Background()
+			iterator, err := store.ReadParquet(ctx, tt.table, tt.timeRange, tt.columns)
+
+			if tt.expectError {
+				assert.Error(t, err)
+				return
+			}
+
+			require.NoError(t, err)
+			require.NotNil(t, iterator)
+
+			// Count rows and validate data
+			rowCount := 0
+			for iterator.Next() {
+				row := iterator.Value()
+				require.NotNil(t, row)
+
+				// Validate required fields are present
+				if len(tt.columns) == 0 {
+					// All columns should be present
+					assert.Contains(t, row, "ts")
+					assert.Contains(t, row, "symbol")
+					assert.Contains(t, row, "venue")
+				} else {
+					// Only requested columns should be present
+					for _, col := range tt.columns {
+						assert.Contains(t, row, col)
+					}
+				}
+
+				// Validate timestamp is within range
+				if ts, exists := row["ts"]; exists {
+					timestamp, ok := ts.(time.Time)
+					assert.True(t, ok, "timestamp should be time.Time")
+					assert.True(t, timestamp.After(tt.timeRange.From) || timestamp.Equal(tt.timeRange.From))
+					assert.True(t, timestamp.Before(tt.timeRange.To) || timestamp.Equal(tt.timeRange.To))
+				}
+
+				rowCount++
+			}
+
+			// For mock data, we expect exactly the number of rows returned by MockParquetIterator
+			if tt.expectedRows > 0 {
+				assert.Equal(t, tt.expectedRows, rowCount)
+			}
+		})
+	}
+}
+
+func TestConvertEnvelopeToRow(t *testing.T) {
+	tests := []struct {
+		name         string
+		envelope     *data.Envelope
+		expectedKeys []string
+	}{
+		{
+			name: "envelope with price and volume data",
+			envelope: &data.Envelope{
+				Timestamp:  time.Now(),
+				Symbol:     "BTC-USD",
+				Venue:      "kraken",
+				SourceTier: data.TierCold,
+				PriceData: map[string]interface{}{
+					"open":  50000.0,
+					"high":  51000.0,
+					"low":   49000.0,
+					"close": 50500.0,
+				},
+				VolumeData: map[string]interface{}{
+					"volume": 1000.0,
+				},
+				Provenance: data.ProvenanceInfo{
+					ConfidenceScore: 0.85,
+				},
+			},
+			expectedKeys: []string{"ts", "symbol", "venue", "source_tier", "open", "high", "low", "close", "volume", "confidence"},
+		},
+		{
+			name: "envelope with order book data",
+			envelope: &data.Envelope{
+				Timestamp:  time.Now(),
+				Symbol:     "ETH-USD",
+				Venue:      "binance",
+				SourceTier: data.TierHot,
+				OrderBook: map[string]interface{}{
+					"best_bid_price": 2999.5,
+					"best_ask_price": 3000.5,
+					"best_bid_qty":   1.5,
+					"best_ask_qty":   2.0,
+					"spread_bps":     3.33,
+				},
+				Provenance: data.ProvenanceInfo{
+					ConfidenceScore: 0.95,
+				},
+			},
+			expectedKeys: []string{"ts", "symbol", "venue", "source_tier", "bid_price", "ask_price", "bid_qty", "ask_qty", "spread_bps", "confidence"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			row, err := data.ConvertEnvelopeToRow(tt.envelope)
+			require.NoError(t, err)
+			require.NotNil(t, row)
+
+			// Check all expected keys are present
+			for _, key := range tt.expectedKeys {
+				assert.Contains(t, row, key, "Row should contain key: %s", key)
+			}
+
+			// Validate core fields
+			assert.Equal(t, tt.envelope.Timestamp, row["ts"])
+			assert.Equal(t, tt.envelope.Symbol, row["symbol"])
+			assert.Equal(t, tt.envelope.Venue, row["venue"])
+			assert.Equal(t, string(tt.envelope.SourceTier), row["source_tier"])
+			assert.Equal(t, tt.envelope.Provenance.ConfidenceScore, row["confidence"])
+		})
+	}
+}
+
+func TestConvertRowToEnvelope(t *testing.T) {
+	tests := []struct {
+		name         string
+		row          data.Row
+		expectError  bool
+		errorMsg     string
+		validateFunc func(*testing.T, *data.Envelope)
+	}{
+		{
+			name: "valid row with all data",
+			row: data.Row{
+				"ts":          time.Now(),
+				"symbol":      "BTC-USD",
+				"venue":       "kraken",
+				"source_tier": "cold",
+				"open":        50000.0,
+				"high":        51000.0,
+				"low":         49000.0,
+				"close":       50500.0,
+				"volume":      1000.0,
+				"confidence":  0.85,
+			},
+			expectError: false,
+			validateFunc: func(t *testing.T, env *data.Envelope) {
+				assert.Equal(t, "BTC-USD", env.Symbol)
+				assert.Equal(t, "kraken", env.Venue)
+				assert.Equal(t, data.TierCold, env.SourceTier)
+				assert.Equal(t, 0.85, env.Provenance.ConfidenceScore)
+				
+				// Check price data
+				require.NotNil(t, env.PriceData)
+				priceData := env.PriceData.(map[string]interface{})
+				assert.Equal(t, 50000.0, priceData["open"])
+				assert.Equal(t, 50500.0, priceData["close"])
+				
+				// Check volume data
+				require.NotNil(t, env.VolumeData)
+				volumeData := env.VolumeData.(map[string]interface{})
+				assert.Equal(t, 1000.0, volumeData["volume"])
+			},
+		},
+		{
+			name: "missing symbol should fail",
+			row: data.Row{
+				"ts":          time.Now(),
+				"venue":       "kraken",
+				"source_tier": "cold",
+			},
+			expectError: true,
+			errorMsg:    "symbol field missing or invalid type",
+		},
+		{
+			name: "missing venue should fail",
+			row: data.Row{
+				"ts":          time.Now(),
+				"symbol":      "BTC-USD",
+				"source_tier": "cold",
+			},
+			expectError: true,
+			errorMsg:    "venue field missing or invalid type",
+		},
+		{
+			name: "missing timestamp should fail",
+			row: data.Row{
+				"symbol":      "BTC-USD",
+				"venue":       "kraken",
+				"source_tier": "cold",
+			},
+			expectError: true,
+			errorMsg:    "timestamp field 'ts' is required",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			envelope, err := data.ConvertRowToEnvelope(tt.row)
+
+			if tt.expectError {
+				assert.Error(t, err)
+				if tt.errorMsg != "" {
+					assert.Contains(t, err.Error(), tt.errorMsg)
+				}
+				assert.Nil(t, envelope)
+			} else {
+				assert.NoError(t, err)
+				require.NotNil(t, envelope)
+				
+				if tt.validateFunc != nil {
+					tt.validateFunc(t, envelope)
+				}
+			}
+		})
+	}
+}
+
+func TestParquetCompressionAlgorithms(t *testing.T) {
+	config := data.ColdDataConfig{
+		EnableParquet: true,
+		BasePath:      "data/test/cold",
+	}
+
+	schema := data.ParquetSchema{
+		Table: "ohlcv",
+		Fields: []data.ParquetField{
+			{Name: "ts", Type: "timestamp(ms)", Required: true, Primary: true},
+			{Name: "symbol", Type: "string", Required: true},
+			{Name: "venue", Type: "string", Required: true},
+			{Name: "source_tier", Type: "string", Required: true},
+			{Name: "close", Type: "double"},
+		},
+	}
+
+	store, err := data.NewParquetStore(config, schema)
+	require.NoError(t, err)
+
+	testRow := []data.Row{
+		{
+			"ts":          time.Now(),
+			"symbol":      "BTC-USD",
+			"venue":       "kraken",
+			"source_tier": "cold",
+			"close":       50000.0,
+		},
+	}
+
+	compressionTypes := []string{"gzip", "lz4", "snappy", "zstd", "uncompressed"}
+	
+	for _, compression := range compressionTypes {
+		t.Run(fmt.Sprintf("compression_%s", compression), func(t *testing.T) {
+			opts := data.ParquetOptions{
+				Compression:  compression,
+				RowGroupSize: 128 * 1024,
+			}
+
+			ctx := context.Background()
+			err := store.WriteParquet(ctx, "ohlcv", testRow, opts)
+			// Mock implementation should accept all compression types
+			assert.NoError(t, err)
+		})
+	}
+}
+
+func TestParquetRowGroupSizes(t *testing.T) {
+	config := data.ColdDataConfig{
+		EnableParquet: true,
+		BasePath:      "data/test/cold",
+	}
+
+	schema := data.ParquetSchema{Table: "ohlcv"}
+	store, err := data.NewParquetStore(config, schema)
+	require.NoError(t, err)
+
+	testRow := []data.Row{
+		{
+			"ts":          time.Now(),
+			"symbol":      "BTC-USD",
+			"venue":       "kraken",
+			"source_tier": "cold",
+		},
+	}
+
+	rowGroupSizes := []int{64 * 1024, 128 * 1024, 256 * 1024, 512 * 1024}
+	
+	for _, size := range rowGroupSizes {
+		t.Run(fmt.Sprintf("row_group_size_%d", size), func(t *testing.T) {
+			opts := data.ParquetOptions{
+				Compression:  "snappy",
+				RowGroupSize: size,
+			}
+
+			ctx := context.Background()
+			err := store.WriteParquet(ctx, "ohlcv", testRow, opts)
+			assert.NoError(t, err)
+		})
+	}
+}
+
+// Benchmark Parquet operations
+func BenchmarkParquetConversions(b *testing.B) {
+	envelope := &data.Envelope{
+		Timestamp:  time.Now(),
+		Symbol:     "BTC-USD",
+		Venue:      "kraken", 
+		SourceTier: data.TierCold,
+		PriceData: map[string]interface{}{
+			"open":  50000.0,
+			"high":  51000.0,
+			"low":   49000.0,
+			"close": 50500.0,
+		},
+		VolumeData: map[string]interface{}{
+			"volume": 1000.0,
+		},
+		Provenance: data.ProvenanceInfo{
+			ConfidenceScore: 0.85,
+		},
+	}
+
+	b.Run("envelope_to_row", func(b *testing.B) {
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			_, err := data.ConvertEnvelopeToRow(envelope)
+			if err != nil {
+				b.Fatal(err)
+			}
+		}
+	})
+
+	row := data.Row{
+		"ts":          time.Now(),
+		"symbol":      "BTC-USD", 
+		"venue":       "kraken",
+		"source_tier": "cold",
+		"open":        50000.0,
+		"close":       50500.0,
+		"volume":      1000.0,
+		"confidence":  0.85,
+	}
+
+	b.Run("row_to_envelope", func(b *testing.B) {
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			_, err := data.ConvertRowToEnvelope(row)
+			if err != nil {
+				b.Fatal(err)
+			}
+		}
+	})
 }

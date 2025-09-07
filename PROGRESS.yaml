@@ -3,35 +3,42 @@
 
 version: "3.2.1"
 last_updated: "2025-09-07"
-completion_note: "EPIC D - Reporting, Monitoring & Observability completed with performance reporting, load testing, and comprehensive documentation"
+completion_note: "Provider & Data Source Expansion completed with derivatives, DeFi, and fallback providers while enforcing aggregator ban for microstructure data"
 
 milestones:
-  # Core Architecture (25% total weight)
+  # Core Architecture (20% total weight - adjusted for provider expansion)
   unified_composite_scoring:
-    weight: 15
+    weight: 12
     completed: true
     description: "Single scoring path with protected MomentumCore"
     completion_date: "2025-01-10"
     
   gram_schmidt_orthogonalization:
-    weight: 10
+    weight: 8
     completed: true
     description: "Factor residualization with momentum protection"
     completion_date: "2025-01-10"
 
-  # Data Pipeline (20% total weight)
+  # Data Pipeline (25% total weight - increased due to provider expansion)
   data_facade_hot_warm:
-    weight: 10
+    weight: 8
     completed: true
     description: "TTL caches + deterministic fakes"
     completion_date: "2025-09-07"
     progress: 100
     
   exchange_native_microstructure:
-    weight: 10
+    weight: 8
     completed: true
     description: "L1/L2 validation with proof generation"
     completion_date: "2025-01-12"
+    
+  provider_data_source_expansion:
+    weight: 9
+    completed: true
+    description: "Derivatives, DeFi, fallback providers with aggregator ban enforcement"
+    completion_date: "2025-09-07"
+    progress: 100
 
   # Risk & Portfolio Management (20% total weight)
   regime_adaptive_weights:
@@ -75,9 +82,9 @@ milestones:
     completion_date: "2025-09-07"
     progress: 100
 
-  # User Interface (10% total weight)
+  # User Interface (8% total weight - adjusted for deployment)
   menu_system_unified:
-    weight: 6
+    weight: 4
     completed: true
     description: "Unified menu system with single pipeline calls"
     completion_date: "2025-01-12"
@@ -87,6 +94,28 @@ milestones:
     completed: true
     description: "SSE-throttled live dashboard with Grafana monitoring and metrics"
     completion_date: "2025-09-07"
+
+  # Deployment & Security (12% total weight - new category)
+  persistence_layer:
+    weight: 6
+    completed: true
+    description: "PostgreSQL/TimescaleDB with repository interfaces and migrations"
+    completion_date: "2025-09-07"
+    progress: 100
+    
+  deployment_infrastructure:
+    weight: 3
+    completed: true
+    description: "Docker, Kubernetes manifests, docker-compose for development"
+    completion_date: "2025-09-07"
+    progress: 100
+    
+  security_framework:
+    weight: 3
+    completed: true
+    description: "Secret management, CI security scanning, vulnerability assessment"
+    completion_date: "2025-09-07"
+    progress: 100
 
 # Calculation rules
 calculation:
