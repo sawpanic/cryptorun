@@ -1,10 +1,8 @@
-# Entry Gates and Guards
-
-This document describes the comprehensive entry gate system for CryptoRun, including hard gates, timing guards, and deterministic evaluation logic.
+# CryptoRun Entry Gates System
 
 ## UX MUST — Live Progress & Explainability
 
-All gate evaluations provide clear pass/fail reasoning with specific threshold values, failure explanations, and stable JSON reporting for deterministic testing and operational transparency.
+Complete guide to CryptoRun's entry gate system, providing transparent and deterministic evaluation of trading signal quality with comprehensive explanations and CLI debugging tools.
 
 ## Entry Gate Overview
 

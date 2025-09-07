@@ -54,7 +54,7 @@ func (s *FileBasedPITStore) CreateSnapshot(ctx context.Context, snapshotID strin
 	symbols := make(map[string]bool)
 	dataTypes := make(map[interfaces.DataType]bool)
 	
-	for key, value := range data {
+	for key := range data {
 		parts := strings.Split(key, ":")
 		if len(parts) >= 3 {
 			venue := parts[0]
