@@ -240,12 +240,12 @@ func NewOfflineScanner(dataFacade *datafacade.DataFacade, config ScanConfig) *Of
 	
 	factorBuilder := factors.NewFactorBuilder(regimeWeightsConfig)
 	regimeDetector := domainregime.NewRegimeDetector(regimeWeightsConfig)
-	compositeScorer := scoring.NewCompositeScorer(regimeWeightsConfig, regimeDetector)
+	compositeScorer := scoring.NewCompositeScorer(regimeWeightsConfig, regime.RegimeDetector(regimeDetector))
 	
 	return &OfflineScanner{
-		dataFacade:     dataFacade,
-		factorBuilder:  factorBuilder,
-		regimeDetector: regimeDetector,
+		dataFacade:      dataFacade,
+		factorBuilder:   factorBuilder,
+		regimeDetector:  regime.RegimeDetector(regimeDetector),
 		compositeScorer: compositeScorer,
 		config:        config,
 	}
