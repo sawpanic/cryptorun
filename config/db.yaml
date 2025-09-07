@@ -1,0 +1,105 @@
+# Database configuration for PostgreSQL/TimescaleDB persistence
+# CryptoRun v3.2.1 - Exchange-native data with PIT integrity
+
+database:
+  # Connection settings
+  dsn: "${PG_DSN:postgres://cryptorun:password@localhost:5432/cryptorun?sslmode=prefer}"
+  max_open_conns: 25
+  max_idle_conns: 10
+  conn_max_lifetime: "30m"
+  
+  # Query timeouts
+  query_timeout: "10s"
+  transaction_timeout: "30s"
+  health_check_timeout: "5s"
+  
+  # Retry configuration
+  max_retries: 3
+  retry_backoff: "100ms"
+  retry_max_backoff: "5s"
+  
+  # Feature flags
+  enabled: true
+  fallback_to_files: true  # Use file artifacts if DB unavailable
+  pit_reads: true         # Enable point-in-time queries
+  batch_size: 1000        # Max records per batch insert
+  
+  # Monitoring
+  metrics_enabled: true
+  slow_query_threshold: "1s"
+  connection_pool_alerts: true
+  
+  # Migration settings
+  migrations_table: "goose_db_version"
+  migrations_dir: "./db/migrations"
+  auto_migrate: false  # Require explicit migration in production
+
+# Table-specific configurations
+tables:
+  trades:
+    # Retention and cleanup
+    retention_days: 90
+    partition_by: "month"  # TimescaleDB partitioning
+    compression_after: "7d"
+    
+    # Query optimization
+    default_limit: 1000
+    max_limit: 10000
+    pit_index_hint: "trades_symbol_ts_idx"
+    
+  regime_snapshots:
+    retention_days: 365
+    compression_after: "30d"
+    default_limit: 100
+    max_limit: 1000
+    
+  premove_artifacts:
+    retention_days: 180
+    partition_by: "month"
+    compression_after: "14d"
+    default_limit: 500
+    max_limit: 5000
+    
+  jobs_audit:
+    retention_days: 30
+    compression_after: "3d"
+    default_limit: 200
+    max_limit: 2000
+
+# Health check configuration
+health:
+  check_interval: "30s"
+  failure_threshold: 3
+  recovery_threshold: 2
+  
+  # Connection pool monitoring
+  pool_utilization_warning: 0.8  # 80%
+  pool_utilization_critical: 0.95 # 95%
+  
+  # Query performance thresholds
+  p95_latency_warning: "500ms"
+  p95_latency_critical: "2s"
+  
+  # Error rate monitoring  
+  error_rate_warning: 0.01   # 1%
+  error_rate_critical: 0.05  # 5%
+
+# PIT (Point-in-Time) query configurations
+pit:
+  # Enable PIT snapshots for calibration and backtesting
+  enabled: true
+  
+  # Snapshot intervals
+  trades_snapshot_interval: "1h"
+  regime_snapshot_interval: "4h" 
+  artifacts_snapshot_interval: "15m"
+  
+  # Query optimization
+  max_time_range: "30d"      # Limit PIT query ranges
+  index_only_scans: true     # Prefer index-only scans for PIT
+  parallel_workers: 2        # PostgreSQL parallel query workers
+  
+  # Caching for PIT reads
+  cache_enabled: true
+  cache_ttl: "5m"
+  cache_max_entries: 10000

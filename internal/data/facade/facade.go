@@ -2,6 +2,7 @@ package facade
 
 import (
 	"context"
+	"fmt"
 	"time"
 )
 
@@ -147,10 +148,41 @@ type Facade struct {
 	pitStore   PITStore
 	exchanges  map[string]Exchange
 	
+	// PostgreSQL persistence for PIT reads and dual-path storage
+	repository Repository
+	dbEnabled  bool
+	
 	// Metrics
 	attribution map[string]*Attribution
 	healthStats map[string]*HealthStatus
 	cacheStats  *CacheStats
+}
+
+// Repository interface for PostgreSQL persistence integration
+type Repository interface {
+	// Trades persistence
+	InsertTrade(ctx context.Context, trade Trade) error
+	ReadTrades(ctx context.Context, symbol string, from time.Time, to time.Time, limit int) ([]Trade, error)
+	
+	// Regime snapshots
+	UpsertRegime(ctx context.Context, snapshot RegimeSnapshot) error
+	ReadRegimes(ctx context.Context, from time.Time, to time.Time) ([]RegimeSnapshot, error)
+	
+	// Premove artifacts
+	UpsertArtifact(ctx context.Context, artifact PremoveArtifact) error
+	ReadArtifacts(ctx context.Context, symbol string, from time.Time, to time.Time, limit int) ([]PremoveArtifact, error)
+	
+	// Health check
+	Health(ctx context.Context) RepositoryHealth
+}
+
+// RepositoryHealth for database monitoring
+type RepositoryHealth struct {
+	Healthy        bool              `json:"healthy"`
+	Errors         []string          `json:"errors,omitempty"`
+	ConnectionPool map[string]int    `json:"connection_pool"`
+	LastCheck      time.Time         `json:"last_check"`
+	ResponseTimeMS int64             `json:"response_time_ms"`
 }
 
 // Cache interface for TTL caching
@@ -177,11 +209,16 @@ type RateLimitStatus struct {
 	BackoffTime time.Duration `json:"backoff_time,omitempty"`
 }
 
-// PITStore interface for point-in-time snapshots
+// PITStore interface for point-in-time snapshots with PostgreSQL backend
 type PITStore interface {
 	Snapshot(entity string, timestamp time.Time, payload interface{}, source string) error
 	Read(entity string, timestamp time.Time) (interface{}, error)
 	List(entity string, from time.Time, to time.Time) ([]PITEntry, error)
+	
+	// PostgreSQL-backed queries for calibration and backtesting
+	ReadTrades(ctx context.Context, symbol string, from time.Time, to time.Time) ([]Trade, error)
+	ReadRegimes(ctx context.Context, from time.Time, to time.Time) ([]RegimeSnapshot, error)
+	ReadArtifacts(ctx context.Context, symbol string, from time.Time, to time.Time) ([]PremoveArtifact, error)
 }
 
 type PITEntry struct {
@@ -189,6 +226,44 @@ type PITEntry struct {
 	Timestamp time.Time   `json:"timestamp"`
 	Source    string      `json:"source"`
 	Payload   interface{} `json:"payload"`
+}
+
+// Persistence layer types for PIT queries (matching internal/persistence)
+type RegimeSnapshot struct {
+	Timestamp        time.Time             `json:"ts"`
+	RealizedVol7d    float64               `json:"realized_vol_7d"`
+	PctAbove20MA     float64               `json:"pct_above_20ma"`
+	BreadthThrust    float64               `json:"breadth_thrust"`
+	Regime           string                `json:"regime"`
+	Weights          map[string]float64    `json:"weights"`
+	ConfidenceScore  float64               `json:"confidence_score"`
+	DetectionMethod  string                `json:"detection_method"`
+	Metadata         map[string]interface{} `json:"metadata"`
+	CreatedAt        time.Time             `json:"created_at"`
+}
+
+type PremoveArtifact struct {
+	ID               int64                  `json:"id"`
+	Timestamp        time.Time             `json:"ts"`
+	Symbol           string                `json:"symbol"`
+	Venue            string                `json:"venue"`
+	GateScore        bool                  `json:"gate_score"`
+	GateVADR         bool                  `json:"gate_vadr"`
+	GateFunding      bool                  `json:"gate_funding"`
+	GateMicrostructure bool                `json:"gate_microstructure"`
+	GateFreshness    bool                  `json:"gate_freshness"`
+	GateFatigue      bool                  `json:"gate_fatigue"`
+	Score            *float64              `json:"score,omitempty"`
+	MomentumCore     *float64              `json:"momentum_core,omitempty"`
+	TechnicalResidual *float64             `json:"technical_residual,omitempty"`
+	VolumeResidual   *float64              `json:"volume_residual,omitempty"`
+	QualityResidual  *float64              `json:"quality_residual,omitempty"`
+	SocialResidual   *float64              `json:"social_residual,omitempty"` // Capped at +10
+	Factors          map[string]interface{} `json:"factors,omitempty"`
+	Regime           *string               `json:"regime,omitempty"`
+	ConfidenceScore  float64               `json:"confidence_score"`
+	ProcessingLatencyMS *int               `json:"processing_latency_ms,omitempty"`
+	CreatedAt        time.Time             `json:"created_at"`
 }
 
 // Exchange interface for venue-specific implementations
@@ -214,7 +289,7 @@ type Exchange interface {
 	Health() HealthStatus
 }
 
-// New creates a new data facade instance
+// New creates a new data facade instance with optional PostgreSQL repository
 func New(hotCfg HotConfig, warmCfg WarmConfig, cacheCfg CacheConfig, rl RateLimiter) *Facade {
 	return &Facade{
 		hotConfig:   hotCfg,
@@ -225,5 +300,54 @@ func New(hotCfg HotConfig, warmCfg WarmConfig, cacheCfg CacheConfig, rl RateLimi
 		attribution: make(map[string]*Attribution),
 		healthStats: make(map[string]*HealthStatus),
 		cacheStats:  &CacheStats{},
+		dbEnabled:   false, // Will be set via SetRepository
 	}
+}
+
+// SetRepository enables PostgreSQL persistence for dual-path storage and PIT reads
+func (f *Facade) SetRepository(repo Repository) {
+	f.repository = repo
+	f.dbEnabled = true
+}
+
+// PITReads provides point-in-time data access for calibration and backtesting
+func (f *Facade) PITReads() PITReader {
+	return &pitReader{
+		repository: f.repository,
+		dbEnabled:  f.dbEnabled,
+	}
+}
+
+// PITReader provides point-in-time queries for historical analysis
+type PITReader interface {
+	Trades(ctx context.Context, symbol string, from time.Time, to time.Time) ([]Trade, error)
+	Regimes(ctx context.Context, from time.Time, to time.Time) ([]RegimeSnapshot, error)
+	Artifacts(ctx context.Context, symbol string, from time.Time, to time.Time) ([]PremoveArtifact, error)
+}
+
+// pitReader implements PITReader interface
+type pitReader struct {
+	repository Repository
+	dbEnabled  bool
+}
+
+func (pr *pitReader) Trades(ctx context.Context, symbol string, from time.Time, to time.Time) ([]Trade, error) {
+	if !pr.dbEnabled || pr.repository == nil {
+		return nil, fmt.Errorf("database not enabled - use file artifacts for PIT reads")
+	}
+	return pr.repository.ReadTrades(ctx, symbol, from, to, 1000)
+}
+
+func (pr *pitReader) Regimes(ctx context.Context, from time.Time, to time.Time) ([]RegimeSnapshot, error) {
+	if !pr.dbEnabled || pr.repository == nil {
+		return nil, fmt.Errorf("database not enabled - use file artifacts for PIT reads")
+	}
+	return pr.repository.ReadRegimes(ctx, from, to)
+}
+
+func (pr *pitReader) Artifacts(ctx context.Context, symbol string, from time.Time, to time.Time) ([]PremoveArtifact, error) {
+	if !pr.dbEnabled || pr.repository == nil {
+		return nil, fmt.Errorf("database not enabled - use file artifacts for PIT reads")
+	}
+	return pr.repository.ReadArtifacts(ctx, symbol, from, to, 500)
 }

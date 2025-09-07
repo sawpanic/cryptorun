@@ -618,8 +618,8 @@ func TestRateLimiterMetrics(t *testing.T) {
 	t.Run("budget usage metrics", func(t *testing.T) {
 		bt := NewBudgetTracker()
 		dailyLimit := 10
-		bt.UpdateLimits("budget_metrics", &dailyLimit, nil)
-		
+		monthlyLimit := 100
+		bt.UpdateLimits("budget_metrics", &dailyLimit, &monthlyLimit)
 		// Use some budget
 		for i := 0; i < 5; i++ {
 			bt.IncrementUsage("budget_metrics")

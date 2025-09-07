@@ -97,8 +97,8 @@ func TestSocialFactor_HardCap10(t *testing.T) {
 				{Score: 12.0, Confidence: 0.5, Source: "weak_signal"},    // 6.0 effective
 				{Score: 8.0, Confidence: 0.7, Source: "moderate_signal"}, // 5.6 effective
 			},
-			expectedMax:    89.6, // 78 + 6.0 + 5.6 (under cap)
-			expectsCapping: false,
+			expectedMax:    88.0, // 78 + 10.0 (6.0 + 5.6 = 11.6 capped at 10.0)
+			expectsCapping: true,
 		},
 	}
 

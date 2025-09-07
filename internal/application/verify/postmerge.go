@@ -149,28 +149,35 @@ func runTopgainersAlignment(ctx context.Context, opts PostmergeOptions) ([]Align
 	for _, window := range opts.Windows {
 		// Run benchmark for this window
 		benchOpts := bench.TopGainersOptions{
-			Window:        window,
-			MinSampleSize: opts.MinSampleSize,
-			OutputFormat:  "json",
+			TTL:        30 * time.Minute,
+			Limit:      opts.MinSampleSize,
+			Windows:    []string{window},
+			OutputDir:  "/tmp",
+			DryRun:     true,
 		}
 
-		benchResult, err := bench.RunTopGainers(ctx, benchOpts)
+		benchResult, _, err := bench.Run(ctx, benchOpts)
 		if err != nil {
 			return nil, nil, fmt.Errorf("benchmark failed for window %s: %w", window, err)
 		}
 
-		benchmarkPaths = append(benchmarkPaths, benchResult.OutputPath)
+		benchmarkPaths = append(benchmarkPaths, benchResult.Artifacts...)
 
-		// Calculate alignment metrics
+		// Calculate alignment metrics from window results
+		windowResult, exists := benchResult.WindowResults[window]
+		if !exists {
+			return nil, nil, fmt.Errorf("window %s not found in benchmark results", window)
+		}
+		
 		alignment := AlignmentResult{
 			Window:          window,
-			Jaccard:         benchResult.Alignment.Jaccard,
-			KendallTau:      benchResult.Alignment.KendallTau,
-			SpearmanRho:     benchResult.Alignment.SpearmanRho,
-			MAE:             benchResult.Alignment.MAE,
-			OverlapCount:    benchResult.Alignment.OverlapCount,
-			TotalCandidates: benchResult.TotalCandidates,
-			SampleSizeMet:   benchResult.TotalCandidates >= opts.MinSampleSize,
+			Jaccard:         windowResult.Score,
+			KendallTau:      windowResult.KendallTau,
+			SpearmanRho:     windowResult.Pearson,
+			MAE:             windowResult.MAE,
+			OverlapCount:    windowResult.Matches,
+			TotalCandidates: windowResult.Total,
+			SampleSizeMet:   windowResult.Total >= opts.MinSampleSize,
 		}
 
 		alignmentResults = append(alignmentResults, alignment)

@@ -2,6 +2,7 @@ package provider
 
 import (
 	"fmt"
+	"math/rand"
 	"sync"
 	"time"
 )
@@ -41,6 +42,19 @@ type CircuitBreaker struct {
 	nextProbeTime   time.Time
 	mu              sync.RWMutex
 	
+	// Restore probe functionality
+	probeRunning    bool
+	probeTicker     *time.Ticker
+	probeStopCh     chan bool
+	lastProbeTime   time.Time
+	probeSuccessCount int
+	
+	// Exponential backoff state
+	backoffBase     time.Duration
+	backoffMultiplier float64
+	currentBackoff  time.Duration
+	maxBackoff      time.Duration
+	
 	// Metrics callback
 	metricsCallback func(string, interface{})
 }
@@ -60,11 +74,25 @@ func NewCircuitBreaker(name string, config CircuitConfig) *CircuitBreaker {
 		config.ProbeInterval = 5 * time.Second
 	}
 	
-	return &CircuitBreaker{
+	cb := &CircuitBreaker{
 		name:   name,
 		config: config,
 		state:  CircuitClosed,
+		probeStopCh: make(chan bool, 1),
+		
+		// Initialize backoff parameters
+		backoffBase:       100 * time.Millisecond,
+		backoffMultiplier: 2.0,
+		currentBackoff:    100 * time.Millisecond,
+		maxBackoff:        30 * time.Second,
 	}
+	
+	// Start restore probe if circuit breaker is enabled
+	if config.Enabled {
+		cb.startRestoreProbe()
+	}
+	
+	return cb
 }
 
 // SetMetricsCallback sets a callback for metrics collection
@@ -139,6 +167,9 @@ func (cb *CircuitBreaker) recordResult(err error, duration time.Duration) {
 		cb.failureCount++
 		cb.lastFailureTime = now
 		
+		// Update backoff on failure
+		cb.updateBackoff(false)
+		
 		cb.emitMetric("circuit_breaker_failure", 1)
 		cb.emitMetric("circuit_breaker_request_duration_ms", duration.Milliseconds())
 		
@@ -149,6 +180,9 @@ func (cb *CircuitBreaker) recordResult(err error, duration time.Duration) {
 	} else {
 		cb.successCount++
 		cb.lastSuccessTime = now
+		
+		// Update backoff on success
+		cb.updateBackoff(true)
 		
 		cb.emitMetric("circuit_breaker_success", 1)
 		cb.emitMetric("circuit_breaker_request_duration_ms", duration.Milliseconds())
@@ -229,6 +263,10 @@ func (cb *CircuitBreaker) GetStats() CircuitBreakerStats {
 		LastFailureTime: cb.lastFailureTime,
 		LastSuccessTime: cb.lastSuccessTime,
 		NextProbeTime:   cb.nextProbeTime,
+		LastProbeTime:   cb.lastProbeTime,
+		ProbeRunning:    cb.probeRunning,
+		CurrentBackoff:  cb.currentBackoff.String(),
+		ProbeSuccessCount: cb.probeSuccessCount,
 	}
 }
 
@@ -243,6 +281,10 @@ type CircuitBreakerStats struct {
 	LastFailureTime time.Time `json:"last_failure_time"`
 	LastSuccessTime time.Time `json:"last_success_time"`
 	NextProbeTime   time.Time `json:"next_probe_time"`
+	LastProbeTime   time.Time `json:"last_probe_time"`
+	ProbeRunning    bool      `json:"probe_running"`
+	CurrentBackoff  string    `json:"current_backoff"`
+	ProbeSuccessCount int     `json:"probe_success_count"`
 }
 
 // Reset manually resets the circuit breaker
@@ -337,6 +379,122 @@ func (cbm *CircuitBreakerManager) ResetAll() {
 	
 	for _, breaker := range cbm.breakers {
 		breaker.Reset()
+	}
+}
+
+// startRestoreProbe starts the periodic restore probe for tripped circuits
+func (cb *CircuitBreaker) startRestoreProbe() {
+	cb.mu.Lock()
+	defer cb.mu.Unlock()
+	
+	if cb.probeRunning {
+		return
+	}
+	
+	cb.probeTicker = time.NewTicker(cb.config.ProbeInterval)
+	cb.probeRunning = true
+	
+	go func() {
+		defer func() {
+			cb.mu.Lock()
+			cb.probeRunning = false
+			if cb.probeTicker != nil {
+				cb.probeTicker.Stop()
+			}
+			cb.mu.Unlock()
+		}()
+		
+		for {
+			select {
+			case <-cb.probeTicker.C:
+				cb.performRestoreProbe()
+			case <-cb.probeStopCh:
+				return
+			}
+		}
+	}()
+}
+
+// stopRestoreProbe stops the periodic restore probe
+func (cb *CircuitBreaker) stopRestoreProbe() {
+	cb.mu.Lock()
+	defer cb.mu.Unlock()
+	
+	if !cb.probeRunning {
+		return
+	}
+	
+	select {
+	case cb.probeStopCh <- true:
+	default:
+	}
+}
+
+// performRestoreProbe attempts to restore a tripped circuit
+func (cb *CircuitBreaker) performRestoreProbe() {
+	cb.mu.RLock()
+	state := cb.state
+	cb.mu.RUnlock()
+	
+	// Only probe if circuit is open
+	if state != CircuitOpen {
+		return
+	}
+	
+	now := time.Now()
+	
+	// Check if enough time has passed since last failure
+	cb.mu.RLock()
+	timeSinceFailure := now.Sub(cb.lastFailureTime)
+	backoffTime := cb.currentBackoff
+	cb.mu.RUnlock()
+	
+	// Apply exponential backoff
+	if timeSinceFailure < backoffTime {
+		cb.emitMetric("circuit_breaker_probe_skipped_backoff", 1)
+		return
+	}
+	
+	// Attempt to probe by transitioning to half-open temporarily
+	cb.mu.Lock()
+	cb.lastProbeTime = now
+	cb.state = CircuitHalfOpen
+	cb.mu.Unlock()
+	
+	cb.emitMetric("circuit_breaker_probe_attempt", 1)
+	
+	// The actual probe will happen on the next real request
+	// If it fails, circuit will go back to open
+	// If it succeeds, circuit will close
+}
+
+// calculateBackoff calculates exponential backoff with jitter
+func (cb *CircuitBreaker) calculateBackoff() time.Duration {
+	// Exponential backoff with jitter
+	backoff := time.Duration(float64(cb.backoffBase) * cb.backoffMultiplier)
+	
+	// Apply jitter (±25%)
+	jitter := time.Duration(float64(backoff) * 0.25 * (2*rand.Float64() - 1))
+	backoff += jitter
+	
+	// Cap at max backoff
+	if backoff > cb.maxBackoff {
+		backoff = cb.maxBackoff
+	}
+	
+	return backoff
+}
+
+// updateBackoff updates the backoff state based on success/failure
+func (cb *CircuitBreaker) updateBackoff(success bool) {
+	if success {
+		// Reset backoff on success
+		cb.currentBackoff = cb.backoffBase
+		cb.probeSuccessCount++
+	} else {
+		// Increase backoff on failure
+		cb.currentBackoff = cb.calculateBackoff()
+		cb.probeSuccessCount = 0
 	}
 }
 

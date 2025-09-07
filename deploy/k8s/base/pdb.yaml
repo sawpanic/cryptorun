@@ -1,0 +1,107 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: cryptorun-pdb
+  namespace: cryptorun
+  labels:
+    app: cryptorun
+    component: availability
+    version: v3.2.1
+spec:
+  minAvailable: 2  # Always keep at least 2 pods running
+  selector:
+    matchLabels:
+      app: cryptorun
+      component: application
+  # Optionally, use maxUnavailable instead of minAvailable
+  # maxUnavailable: 1  # Allow max 1 pod to be unavailable
+---
+# PDB for high availability scenarios
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: cryptorun-pdb-ha
+  namespace: cryptorun
+  labels:
+    app: cryptorun
+    component: high-availability
+    version: v3.2.1
+spec:
+  minAvailable: 67%  # Keep at least 67% of pods running during disruptions
+  selector:
+    matchLabels:
+      app: cryptorun
+      component: application
+  unhealthyPodEvictionPolicy: AlwaysAllow  # Allow eviction of unhealthy pods
+---
+# Network Policy to control pod-to-pod communication
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cryptorun-network-policy
+  namespace: cryptorun
+  labels:
+    app: cryptorun
+    component: security
+    version: v3.2.1
+spec:
+  podSelector:
+    matchLabels:
+      app: cryptorun
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow ingress from ingress controller
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 8080
+  # Allow Prometheus scraping
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    ports:
+    - protocol: TCP
+      port: 8081
+  # Allow health checks from within namespace
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: cryptorun
+    ports:
+    - protocol: TCP
+      port: 8082
+  egress:
+  # Allow DNS resolution
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+  # Allow external API calls to exchanges
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443  # HTTPS
+    - protocol: TCP
+      port: 80   # HTTP (for redirects)
+  # Allow connection to PostgreSQL
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgres
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow connection to Redis
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+    ports:
+    - protocol: TCP
+      port: 6379

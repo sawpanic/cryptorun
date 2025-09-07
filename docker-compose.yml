@@ -1,4 +1,4 @@
-version: '3.8'
+# Docker Compose file for CryptoRun v3.2.1 with complete infrastructure stack
 
 services:
   # CryptoRun application service
@@ -31,7 +31,7 @@ services:
       - ./config:/etc/cryptorun/config:ro
       - ./artifacts:/tmp/artifacts
     healthcheck:
-      test: ["/usr/local/bin/cryptorun", "health"]
+      test: ["CMD", "/usr/local/bin/cryptorun", "health"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -131,7 +131,34 @@ services:
     profiles:
       - streaming
 
-  # Grafana for observability (development only)
+  # Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: cryptorun-prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=90d'
+      - '--web.enable-lifecycle'
+    volumes:
+      - prometheus_data:/prometheus
+      - ./deploy/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - cryptorun-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    profiles:
+      - observability
+
+  # Grafana for observability dashboards
   grafana:
     image: grafana/grafana:latest
     container_name: cryptorun-grafana
@@ -140,10 +167,13 @@ services:
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
     volumes:
       - grafana_data:/var/lib/grafana
       - ./deploy/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
       - ./deploy/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    depends_on:
+      - prometheus
     networks:
       - cryptorun-network
     healthcheck:
@@ -160,6 +190,8 @@ volumes:
   postgres_data:
     driver: local
   redis_data:
+    driver: local
+  prometheus_data:
     driver: local
   grafana_data:
     driver: local

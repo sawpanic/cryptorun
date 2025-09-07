@@ -1,0 +1,129 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: cryptorun-hpa
+  namespace: cryptorun
+  labels:
+    app: cryptorun
+    component: autoscaling
+    version: v3.2.1
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: cryptorun
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  # CPU utilization target
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  # Memory utilization target  
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  # Custom metrics for CryptoRun-specific scaling
+  - type: Pods
+    pods:
+      metric:
+        name: http_requests_per_second
+        selector:
+          matchLabels:
+            app: cryptorun
+      target:
+        type: AverageValue
+        averageValue: "100"
+  - type: Pods
+    pods:
+      metric:
+        name: websocket_connections
+        selector:
+          matchLabels:
+            app: cryptorun
+      target:
+        type: AverageValue
+        averageValue: "50"
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300  # 5 minutes
+      policies:
+      - type: Percent
+        value: 25  # Scale down by max 25% of current replicas
+        periodSeconds: 60
+      - type: Pods
+        value: 2   # Scale down by max 2 pods
+        periodSeconds: 60
+      selectPolicy: Min  # Use the most conservative policy
+    scaleUp:
+      stabilizationWindowSeconds: 60   # 1 minute
+      policies:
+      - type: Percent
+        value: 50  # Scale up by max 50% of current replicas
+        periodSeconds: 60
+      - type: Pods
+        value: 3   # Scale up by max 3 pods
+        periodSeconds: 60
+      selectPolicy: Max  # Use the most aggressive policy
+---
+# Additional HPA for burst traffic handling
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: cryptorun-burst-hpa
+  namespace: cryptorun
+  labels:
+    app: cryptorun
+    component: burst-scaling
+    version: v3.2.1
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: cryptorun
+  minReplicas: 3
+  maxReplicas: 20  # Higher ceiling for burst scenarios
+  metrics:
+  # High-frequency trading scenarios
+  - type: Object
+    object:
+      metric:
+        name: nginx_ingress_controller_requests_rate
+        selector:
+          matchLabels:
+            ingress: cryptorun-ingress
+      target:
+        type: Value
+        value: "1000"  # Scale up when request rate > 1000/sec
+  # Queue depth for processing backlog
+  - type: External
+    external:
+      metric:
+        name: redis_queue_length
+        selector:
+          matchLabels:
+            queue: "premove_processing"
+      target:
+        type: Value
+        value: "100"  # Scale up when queue > 100 items
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 30   # Rapid scale-up for bursts
+      policies:
+      - type: Percent
+        value: 100 # Double the replicas
+        periodSeconds: 30
+      selectPolicy: Max
+    scaleDown:
+      stabilizationWindowSeconds: 600  # 10 minutes - conservative scale down
+      policies:
+      - type: Pods
+        value: 1   # Scale down by max 1 pod
+        periodSeconds: 120
+      selectPolicy: Min

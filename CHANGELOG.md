@@ -4,7 +4,7 @@
 
 Real-time implementation progress tracking with comprehensive change documentation: feature completeness indicators, breaking change analysis, and full traceability across all system components.
 
-## Unreleased
+## Unreleased\n\n### feat(rate-limiting): implement EPIC G1.1 - Weighted Rate Limiting with QPS & Budget Tracking\n- **Weighted Rate Limiting**: Enhanced `TokenBucketRateLimiter` with provider-specific weight tokens and sliding-window counters\n- **Budget Tracking**: Daily and monthly usage limits with automatic budget enforcement and window reset functionality\n- **Provider-Aware Headers**: Exchange-specific header processing (Binance X-MBX-USED-WEIGHT, OKX ratelimit-remaining, Retry-After support)\n- **Sliding Window Implementation**: Time-bucketed weight tracking with configurable duration and granularity for accurate usage monitoring\n- **Comprehensive Metrics**: Real-time tracking of requests allowed/blocked, budget utilization, cooldown events, and weight consumption\n- **Enhanced Configuration**: Extended `config/providers.yaml` with weighted endpoints, budget policies, and alerting thresholds\n- **Burst Simulation Testing**: Comprehensive test suite validating throttling behavior, concurrent access, and metrics collection\n- **Circuit Breaker Integration**: Rate limiter metrics feeding into circuit breaker decisions for improved fault tolerance
 
 ### feat(providers): complete EPIC G1.0 - Provider Interfaces & Live Connector Skeletons
 - **Provider Registry System**: Comprehensive `ProviderRegistry` with capability-based routing and config-driven fallback chains

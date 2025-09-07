@@ -19,7 +19,7 @@ All data sources provide real-time health monitoring, transparent rate limiting,
 | DeFiLlama | DeFi | No | Protocol TVL/metrics | 3 req/sec | DeFi protocol analytics |
 | TheGraph | Blockchain | No | DeFi subgraph data | Variable | AMM pool data, on-chain metrics |
 
-## Rate Limits by Provider
+## Enhanced Rate Limiting System (G1.1)\n\n### Weighted Rate Limiting\n\nCryptoRun implements a sophisticated rate limiting system with the following features:\n\n- **Sliding Window Counters**: Time-bucketed weight tracking with configurable granularity\n- **Provider-Specific Weights**: Each endpoint has configurable weight values\n- **Budget Tracking**: Daily and monthly usage limits with automatic enforcement\n- **Header Processing**: Exchange-specific header parsing for dynamic rate limit updates\n- **Metrics Collection**: Comprehensive tracking of blocked requests, budget usage, and cooldowns\n\n### Weight Calculation Example\n\n```go\n// Binance weight calculation\nweight := 0\nfor _, endpoint := range requestedEndpoints {\n    weight += getEndpointWeight(\"binance\", endpoint)\n}\n\nif slidingWindow.Total() + weight > maxWeight {\n    return ErrWeightLimitExceeded\n}\n\nslidingWindow.Add(weight)\n```\n\n### Budget Tracking\n\n```yaml\nbudget_policies:\n  conservative:  # Use 80% of limits\n    daily_multiplier: 0.8\n    monthly_multiplier: 0.8\n  aggressive:    # Use 95% of limits\n    daily_multiplier: 0.95\n    monthly_multiplier: 0.95\n```\n\n## Rate Limits by Provider
 
 ### Binance
 ```yaml
@@ -32,7 +32,7 @@ weight_based: true
 weight_limit: 1200  # per minute
 ```
 
-**Weight Tracking**: Uses `X-MBX-USED-WEIGHT-1M` header for weight consumption tracking.
+**Weight Tracking**: Uses `X-MBX-USED-WEIGHT-1M` header for weight consumption tracking.\n**Endpoint Weights**: orderbook(1), trades(1), klines(1), exchange_info(10), all_tickers(40)
 
 ### Kraken
 ```yaml

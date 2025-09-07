@@ -33,6 +33,13 @@ func scanOfflineCmd(args []string) error {
 	dataFacade := datafacade.NewDataFacade(facadeConfig)
 	defer dataFacade.Close()
 	
+	// For live data mode, register the Kraken adapter
+	// Note: In real implementation, this would be controlled by a --live flag
+	// facadeConfig.UseFakesForTesting = false
+	// if krakenAdapter, err := providers.NewKrakenLiveAdapter(); err == nil {
+	//     dataFacade.RegisterProvider(krakenAdapter)
+	// }
+	
 	// Create offline scanner
 	scanner := scan.NewOfflineScanner(dataFacade, config)
 	

@@ -343,7 +343,7 @@ jobs:
   priority: HIGH
 ```
 
-### Security Metrics
+### Rate Limiting Security\n\n```yaml\n# Rate limiting security policies\nrate_limiting_security:\n  # Prevent DoS attacks through rate limiting\n  ddos_protection:\n    enable: true\n    max_requests_per_second: 100\n    max_burst: 200\n    block_duration: \"5m\"\n    violation_threshold: 10\n    \n  # Budget exhaustion protection\n  budget_protection:\n    daily_limit_enforcement: true\n    monthly_limit_enforcement: true\n    emergency_reserve_percentage: 10  # Keep 10% reserve for emergencies\n    budget_alert_thresholds:\n      warning: 80   # Alert at 80% usage\n      critical: 95  # Critical alert at 95% usage\n      \n  # Provider isolation on security violations\n  security_isolation:\n    auto_isolation_enabled: true\n    isolation_triggers:\n      - excessive_rate_limit_violations\n      - suspicious_traffic_patterns  \n      - budget_anomalies\n    isolation_duration: \"1h\"\n    recovery_conditions:\n      - manual_approval_required\n      - security_review_completed\n      \n  # Sliding window security\n  sliding_window_protection:\n    anomaly_detection: true\n    pattern_analysis: true\n    baseline_establishment_period: \"24h\"\n    deviation_threshold: 3.0  # 3 standard deviations\n```\n\n### Security Metrics
 
 ```prometheus
 # Security-related metrics
@@ -351,7 +351,7 @@ cryptorun_security_events_total{type="tls_error"} counter
 cryptorun_security_events_total{type="auth_failure"} counter
 cryptorun_security_events_total{type="rate_limit_exceeded"} counter
 cryptorun_security_certificate_expiry_days{cert="api_client"} gauge
-cryptorun_security_dependency_vulnerabilities{severity="high"} gauge
+cryptorun_security_dependency_vulnerabilities{severity="high"} gauge\ncryptorun_security_rate_limit_violations{provider="binance"} counter\ncryptorun_security_budget_utilization{provider="binance",type="daily"} gauge\ncryptorun_security_sliding_window_anomalies{provider="binance"} counter
 ```
 
 ### Incident Response Automation

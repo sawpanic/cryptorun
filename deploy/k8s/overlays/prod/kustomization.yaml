@@ -4,11 +4,15 @@ kind: Kustomization
 namespace: cryptorun
 
 resources:
-  - ../../deployment.yaml
-  - ../../service.yaml
-  - ../../configmap.yaml
-  - ../../secret.yaml
-  - ../../ingress.yaml
+  - ../../base/deployment.yaml
+  - ../../base/service.yaml
+  - ../../base/configmap.yaml
+  - ../../base/secret.yaml
+  - ../../base/ingress.yaml
+  - ../../base/namespace.yaml
+  - ../../base/serviceaccount.yaml
+  - ../../base/hpa.yaml
+  - ../../base/pdb.yaml
 
 patchesStrategicMerge:
   - deployment-patch.yaml

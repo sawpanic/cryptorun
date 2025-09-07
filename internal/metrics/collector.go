@@ -35,13 +35,17 @@ type APIHealthMetrics struct {
 
 // CircuitBreakerState tracks circuit breaker states
 type CircuitBreakerState struct {
-	Name           string    `json:"name"`
-	State          string    `json:"state"` // "closed", "half-open", "open"
-	FailureCount   int       `json:"failure_count"`
-	SuccessCount   int       `json:"success_count"`
-	LastFailure    time.Time `json:"last_failure,omitempty"`
-	NextRetry      time.Time `json:"next_retry,omitempty"`
-	ThresholdCount int       `json:"threshold_count"`
+	Name              string    `json:"name"`
+	State             string    `json:"state"` // "closed", "half-open", "open"
+	FailureCount      int       `json:"failure_count"`
+	SuccessCount      int       `json:"success_count"`
+	LastFailure       time.Time `json:"last_failure,omitempty"`
+	NextRetry         time.Time `json:"next_retry,omitempty"`
+	ThresholdCount    int       `json:"threshold_count"`
+	ProbeRunning      bool      `json:"probe_running"`
+	LastProbeTime     time.Time `json:"last_probe_time,omitempty"`
+	CurrentBackoff    string    `json:"current_backoff"`
+	ProbeSuccessCount int       `json:"probe_success_count"`
 }
 
 // CacheMetrics tracks cache hit rates for hot and warm tiers
@@ -171,13 +175,17 @@ func (c *Collector) GetCircuitBreakers() map[string]*CircuitBreakerState {
 	result := make(map[string]*CircuitBreakerState)
 	for k, v := range c.circuitBreakers {
 		result[k] = &CircuitBreakerState{
-			Name:           v.Name,
-			State:          v.State,
-			FailureCount:   v.FailureCount,
-			SuccessCount:   v.SuccessCount,
-			LastFailure:    v.LastFailure,
-			NextRetry:      v.NextRetry,
-			ThresholdCount: v.ThresholdCount,
+			Name:              v.Name,
+			State:             v.State,
+			FailureCount:      v.FailureCount,
+			SuccessCount:      v.SuccessCount,
+			LastFailure:       v.LastFailure,
+			NextRetry:         v.NextRetry,
+			ThresholdCount:    v.ThresholdCount,
+			ProbeRunning:      v.ProbeRunning,
+			LastProbeTime:     v.LastProbeTime,
+			CurrentBackoff:    v.CurrentBackoff,
+			ProbeSuccessCount: v.ProbeSuccessCount,
 		}
 	}
 	return result
@@ -487,4 +495,45 @@ func (c *Collector) generateDecileFixtures() *DecileAnalysis {
 		SampleSize:  650 + rand.Intn(100), // 650-750 samples
 		TimeHorizon: "24h",
 	}
+}
+
+// UpdateCircuitBreakerFromStats updates circuit breaker metrics from actual provider stats
+func (c *Collector) UpdateCircuitBreakerFromStats(name string, stats interface{}) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	
+	// Handle provider circuit breaker stats
+	if cbStats, ok := stats.(CircuitBreakerStats); ok {
+		c.circuitBreakers[name] = &CircuitBreakerState{
+			Name:              cbStats.Name,
+			State:             cbStats.State,
+			FailureCount:      int(cbStats.FailureCount),
+			SuccessCount:      int(cbStats.SuccessCount),
+			LastFailure:       cbStats.LastFailureTime,
+			NextRetry:         cbStats.NextProbeTime,
+			ThresholdCount:    5, // Default threshold
+			ProbeRunning:      cbStats.ProbeRunning,
+			LastProbeTime:     cbStats.LastProbeTime,
+			CurrentBackoff:    cbStats.CurrentBackoff,
+			ProbeSuccessCount: cbStats.ProbeSuccessCount,
+		}
+	}
+}
+
+// CircuitBreakerStats represents statistics from provider circuit breakers
+// This should match the provider.CircuitBreakerStats struct
+type CircuitBreakerStats struct {
+	Name              string    `json:"name"`
+	State             string    `json:"state"`
+	RequestCount      int64     `json:"request_count"`
+	FailureCount      int64     `json:"failure_count"`
+	SuccessCount      int64     `json:"success_count"`
+	FailureRate       float64   `json:"failure_rate"`
+	LastFailureTime   time.Time `json:"last_failure_time"`
+	LastSuccessTime   time.Time `json:"last_success_time"`
+	NextProbeTime     time.Time `json:"next_probe_time"`
+	LastProbeTime     time.Time `json:"last_probe_time"`
+	ProbeRunning      bool      `json:"probe_running"`
+	CurrentBackoff    string    `json:"current_backoff"`
+	ProbeSuccessCount int       `json:"probe_success_count"`
 }

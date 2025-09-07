@@ -3,7 +3,6 @@ package explain
 import (
 	"context"
 	"fmt"
-	"sort"
 	"strings"
 	"time"
 
@@ -163,7 +162,7 @@ func (e *Explainer) ExplainScoring(
 	explanation := &ScoringExplanation{
 		Symbol:              symbol,
 		Timestamp:           time.Now(),
-		FinalScore:          compositeScore.FinalScoreWithSocial,
+		FinalScore:          compositeScore.FinalWithSocial,
 		Regime:              currentRegime,
 		FactorContributions: make(map[string]*FactorContribution),
 		DataSources:         make(map[string]string),
@@ -209,20 +208,20 @@ func (e *Explainer) explainCompositeBreakdown(
 		OrthogonalFactors: map[string]float64{
 			"momentum_core":   compositeScore.MomentumCore, // Protected
 			"technical_resid": compositeScore.TechnicalResid,
-			"volume_resid":    compositeScore.VolumeResid,
-			"quality_resid":   compositeScore.QualityResid,
-			"social_resid":    compositeScore.SocialResidCapped,
+			"volume_resid":    compositeScore.VolumeResid.Combined,
+			"quality_resid":   compositeScore.QualityResid.Combined,
+			"social_resid":    compositeScore.SocialResid,
 		},
 		WeightedFactors: map[string]float64{
 			// These would be calculated from the weighted components
 			"momentum_weighted":  compositeScore.MomentumCore * 0.4, // Example weights
 			"technical_weighted": compositeScore.TechnicalResid * 0.2,
-			"volume_weighted":    compositeScore.VolumeResid * 0.15,
-			"quality_weighted":   compositeScore.QualityResid * 0.15,
+			"volume_weighted":    compositeScore.VolumeResid.Combined * 0.15,
+			"quality_weighted":   compositeScore.QualityResid.Combined * 0.15,
 		},
-		InternalTotal:  compositeScore.InternalTotal100,
-		SocialAddition: compositeScore.SocialResidCapped,
-		FinalScore:     compositeScore.FinalScoreWithSocial,
+		InternalTotal:  compositeScore.Internal0to100,
+		SocialAddition: compositeScore.SocialResid,
+		FinalScore:     compositeScore.FinalWithSocial,
 	}
 }
 
@@ -234,9 +233,18 @@ func (e *Explainer) explainFactorContributions(
 	currentRegime string,
 ) {
 	// Get regime weights
-	weights, err := e.regimeWeights.GetWeightsForRegime(currentRegime)
+	weightsMap, err := e.regimeWeights.GetWeights(currentRegime)
 	if err != nil {
-		weights = e.regimeWeights.GetDefaultWeights()
+		// Fallback to normal regime if current regime not found
+		weightsMap, err = e.regimeWeights.GetWeights("normal")
+		if err != nil {
+			weightsMap = map[string]float64{
+				"momentum_core":       0.43,
+				"technical_resid":     0.20,
+				"supply_demand_block": 0.27,
+				"catalyst_block":      0.10,
+			}
+		}
 	}
 
 	// MomentumCore (protected)
@@ -244,8 +252,8 @@ func (e *Explainer) explainFactorContributions(
 		Name:            "Momentum Core",
 		RawValue:        rawFactors.MomentumCore,
 		OrthogonalValue: compositeScore.MomentumCore,
-		Weight:          weights.MomentumCore,
-		Contribution:    compositeScore.MomentumCore * weights.MomentumCore,
+		Weight:          weightsMap["momentum_core"],
+		Contribution:    compositeScore.MomentumCore * weightsMap["momentum_core"],
 		Interpretation:  e.interpretMomentumCore(rawFactors.MomentumCore),
 		DataQuality:     "high", // Assumed high quality for core momentum
 	}
@@ -255,22 +263,22 @@ func (e *Explainer) explainFactorContributions(
 		Name:            "Technical (Residualized)",
 		RawValue:        rawFactors.Technical,
 		OrthogonalValue: compositeScore.TechnicalResid,
-		Weight:          weights.TechnicalResid,
-		Contribution:    compositeScore.TechnicalResid * weights.TechnicalResid,
+		Weight:          weightsMap["technical_resid"],
+		Contribution:    compositeScore.TechnicalResid * weightsMap["technical_resid"],
 		Interpretation:  e.interpretTechnical(compositeScore.TechnicalResid),
 		DataQuality:     "medium",
 	}
 
 	// Volume Residual
-	supplyDemandWeight := weights.SupplyDemandBlock
+	supplyDemandWeight := weightsMap["supply_demand_block"]
 	volumeWeight := 0.55 * supplyDemandWeight
 	explanation.FactorContributions["volume"] = &FactorContribution{
 		Name:            "Volume (Residualized)",
 		RawValue:        rawFactors.Volume,
-		OrthogonalValue: compositeScore.VolumeResid,
+		OrthogonalValue: compositeScore.VolumeResid.Combined,
 		Weight:          volumeWeight,
-		Contribution:    compositeScore.VolumeResid * volumeWeight,
-		Interpretation:  e.interpretVolume(compositeScore.VolumeResid),
+		Contribution:    compositeScore.VolumeResid.Combined * volumeWeight,
+		Interpretation:  e.interpretVolume(compositeScore.VolumeResid.Combined),
 		DataQuality:     "high",
 	}
 
@@ -279,10 +287,10 @@ func (e *Explainer) explainFactorContributions(
 	explanation.FactorContributions["quality"] = &FactorContribution{
 		Name:            "Quality (Residualized)",
 		RawValue:        rawFactors.Quality,
-		OrthogonalValue: compositeScore.QualityResid,
+		OrthogonalValue: compositeScore.QualityResid.Combined,
 		Weight:          qualityWeight,
-		Contribution:    compositeScore.QualityResid * qualityWeight,
-		Interpretation:  e.interpretQuality(compositeScore.QualityResid),
+		Contribution:    compositeScore.QualityResid.Combined * qualityWeight,
+		Interpretation:  e.interpretQuality(compositeScore.QualityResid.Combined),
 		DataQuality:     "medium",
 	}
 
@@ -290,29 +298,38 @@ func (e *Explainer) explainFactorContributions(
 	explanation.FactorContributions["social"] = &FactorContribution{
 		Name:            "Social (Capped at +10)",
 		RawValue:        rawFactors.Social,
-		OrthogonalValue: compositeScore.SocialResidCapped,
+		OrthogonalValue: compositeScore.SocialResid,
 		Weight:          1.0, // Applied outside 100% allocation
-		Contribution:    compositeScore.SocialResidCapped,
-		Interpretation:  e.interpretSocial(compositeScore.SocialResidCapped, rawFactors.Social),
+		Contribution:    compositeScore.SocialResid,
+		Interpretation:  e.interpretSocial(compositeScore.SocialResid, rawFactors.Social),
 		DataQuality:     "low", // Social data is typically lower quality
 	}
 }
 
 // explainWeightAllocation explains the regime-based weight selection
 func (e *Explainer) explainWeightAllocation(explanation *ScoringExplanation, currentRegime string) {
-	weights, err := e.regimeWeights.GetWeightsForRegime(currentRegime)
+	weightsMap, err := e.regimeWeights.GetWeights(currentRegime)
 	if err != nil {
-		weights = e.regimeWeights.GetDefaultWeights()
+		// Fallback to normal regime if current regime not found
+		weightsMap, err = e.regimeWeights.GetWeights("normal")
+		if err != nil {
+			weightsMap = map[string]float64{
+				"momentum_core":       0.43,
+				"technical_resid":     0.20,
+				"supply_demand_block": 0.27,
+				"catalyst_block":      0.10,
+			}
+		}
 	}
 
 	explanation.WeightExplanation = &WeightExplanation{
 		CurrentRegime:    currentRegime,
 		RegimeConfidence: 0.85, // Mock confidence - would come from regime detector
 		WeightProfile: map[string]float64{
-			"momentum_core":       weights.MomentumCore,
-			"technical_resid":     weights.TechnicalResid,
-			"supply_demand_block": weights.SupplyDemandBlock,
-			"catalyst_block":      weights.CatalystBlock,
+			"momentum_core":       weightsMap["momentum_core"],
+			"technical_resid":     weightsMap["technical_resid"],
+			"supply_demand_block": weightsMap["supply_demand_block"],
+			"catalyst_block":      weightsMap["catalyst_block"],
 		},
 		RegimeReasoning: e.explainRegimeChoice(currentRegime),
 	}
@@ -349,21 +366,21 @@ func (e *Explainer) explainDerivativesAsync(ctx context.Context, explanation *Sc
 
 	// Funding divergence
 	if fundingSnapshot, err := e.fundingProvider.GetFundingSnapshot(ctx, symbol); err == nil {
-		venue, zScore := fundingSnapshot.GetDivergentVenue()
+		venue, _ := fundingSnapshot.GetDivergentVenue()
 		derivExplanation.FundingDivergence = &FundingExplanation{
-			MaxDivergence:   fundingSnapshot.MaxDivergence,
+			MaxDivergence:   fundingSnapshot.MaxVenueDivergence,
 			DivergentVenue:  venue,
 			CrossVenueRates: fundingSnapshot.VenueRates,
-			Interpretation:  e.interpretFundingDivergence(fundingSnapshot.MaxDivergence, venue),
+			Interpretation:  e.interpretFundingDivergence(fundingSnapshot.MaxVenueDivergence, venue),
 		}
 	}
 
 	// Open interest
 	if oiSnapshot, err := e.oiProvider.GetOpenInterestSnapshot(ctx, symbol, 0.05); err == nil {
 		derivExplanation.OpenInterestInsight = &OIExplanation{
-			OIChange24h:    oiSnapshot.OIChange24h,
+			OIChange24h:    oiSnapshot.DeltaOI_1h,
 			OIResidual:     oiSnapshot.OIResidual,
-			Interpretation: e.interpretOI(oiSnapshot.OIResidual, oiSnapshot.OIChange24h),
+			Interpretation: e.interpretOI(oiSnapshot.OIResidual, oiSnapshot.DeltaOI_1h),
 		}
 	}
 
@@ -424,11 +441,11 @@ func (e *Explainer) generateKeyInsights(
 	insights := []string{}
 
 	// Score level insights
-	if compositeScore.FinalScoreWithSocial >= 85 {
+	if compositeScore.FinalWithSocial >= 85 {
 		insights = append(insights, "🔥 Strong momentum signal across multiple timeframes")
-	} else if compositeScore.FinalScoreWithSocial >= 75 {
+	} else if compositeScore.FinalWithSocial >= 75 {
 		insights = append(insights, "✅ Solid momentum signal with good risk/reward")
-	} else if compositeScore.FinalScoreWithSocial >= 50 {
+	} else if compositeScore.FinalWithSocial >= 50 {
 		insights = append(insights, "⚠️ Mixed signals - proceed with caution")
 	} else {
 		insights = append(insights, "❌ Weak signal - consider avoiding")
@@ -446,7 +463,7 @@ func (e *Explainer) generateKeyInsights(
 		insights = append(insights, "⚡ Momentum-driven opportunity with strong price action")
 	}
 
-	if compositeScore.SocialResidCapped > 5 {
+	if compositeScore.SocialResid > 5 {
 		insights = append(insights, "📱 Positive social sentiment providing additional lift")
 	}
 
