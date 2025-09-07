@@ -1,0 +1,11 @@
+{
+  "symbol": "BTCUSD",
+  "monotonic_timestamp": 1704067200,
+  "net_flow_usd": 75000000.0,
+  "adv_usd_7d": 1200000000.0,
+  "flow_tint": 0.0125,
+  "etf_list": ["IBIT", "GBTC", "FBTC", "ARKB", "HODL"],
+  "cache_hit": false,
+  "source": "test-fixture",
+  "signature_hash": "etf789abc456"
+}

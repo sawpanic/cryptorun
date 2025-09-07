@@ -1,0 +1,16 @@
+Generate comprehensive benchmark snapshot for current system performance.
+
+Analyze:
+1. Top-100 momentum candidates with composite scores
+2. Regime detection confidence and stability
+3. Entry gate pass/fail rates by asset class
+4. Microstructure health across supported venues (Kraken, Binance, OKX, Coinbase)
+5. System latency metrics (P50/P95/P99)
+
+Output format:
+- JSON structured data with timestamps
+- Performance metrics with historical comparison
+- Actionable recommendations for optimization
+- System health dashboard summary
+
+Include attribution for all data sources and calculation methods.

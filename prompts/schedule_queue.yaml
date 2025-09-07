@@ -1,0 +1,17 @@
+# CryptoRun Delayed Prompt Queue
+# Format: title (required), file (required), in OR at (required), prompt_id (optional), mode (optional)
+
+jobs:
+  - title: ScoringMenuDelay
+    file: prompts/SCORING_REGIME_MENU.txt
+    in: 12m
+    
+  - title: VerifyPostmerge
+    file: prompts/verify_postmerge.txt
+    at: "2025-09-07 14:05"
+    prompt_id: VERIFY.GREENWALL.SERIAL
+    
+  - title: BenchSnap
+    file: prompts/bench_snapshot.txt
+    in: 20m
+    mode: simple

@@ -1,0 +1,50 @@
+OUTPUT DISCIPLINE — DO NOT EXCEED CONSOLE LIMITS
+DOCS MANDATE — UPDATE MD ON EVERY PROMPT
+
+PROMPT_ID=SCHED.LOOP.SIGNALS — LIVE HOT+WARM LOOPS (REGIME-AWARE)
+
+Goal
+Stand up the production scan loop: hot set every 15m, warm set every 2h, regime refresh every 4h. Apply regime-aware weight blend, enforce microstructure & entry gates, emit artifacts with explainability.
+
+Scope — implement and wire now
+1) Code: Create/update files
+   - src/internal/schedule/schedule.go
+     • Add RegisterInterval(name string, every time.Duration, fn func(ctx) error) and RegisterCron(name, spec string, fn func(ctx) error).
+     • Add StartAll(ctx) with jitter (±7s) and next-run logging.
+   - src/internal/application/scan/hot.go
+     • RunUniverse(ctx, topN=30, windows=[1h,4h,12h,24h]); MomentumCore 1h/4h/12h/24h = 20/35/30/10 + 4h acceleration; freshness ≤2 bars & ≤1.2×ATR(1h), fatigue guard (24h>+12% & RSI4h>70 unless accel↑).
+     • Microstructure: venue-native L1/L2 only; depth ≥$100k within ±2%, spread <50bps; VADR gate = max(p80(24h), tier_min).
+     • Attribution: why/why-not per gate; [Fresh ●] [Depth ✓] [Venue BIN/CB/OKX/KRA] [Sources n] Latency ms.
+   - src/internal/application/scan/warm.go
+     • Universe = remaining USD pairs; REST+cache; same scoring at milder cadence; reconciliation flags.
+   - src/internal/application/regime/refresh.go
+     • realized_vol_7d, %>20MA, breadth thrust; majority vote; cache {regime, ts} for 4h (GetCurrentRegime()).
+   - src/cmd/cryptorun/menu_signals.go
+     • Regime/API banner ("Regime: CHOPPY | APIs: 4/6 Healthy | Lat 142ms | Sources: 3").
+   - src/internal/output/artifacts.go
+     • Write artifacts/signals/{ts}/signals.csv, premove.csv, explain.json.
+
+2) Scheduler CLI
+   - src/cmd/cryptorun/cmd_schedule.go
+     • enable/list commands as described; register:
+       job.scan.hot (every 15m) → scan/hot.RunUniverse
+       job.scan.warm (cron 0 */2 * * *) → scan/warm.RunUniverse
+       job.regime.refresh (cron 0 */4 * * *) → regime.Refresh
+
+3) Tests
+   - tests/integration/signals_hot_test.go — VADR freeze <20 bars; [Fresh ●]; microstructure bans aggregators.
+   - tests/unit/regime_refresh_test.go — vote toggles & cache ts.
+
+4) Docs
+   - docs/SCHEDULER.md, docs/BENCHMARKS.md (live loops note), CLAUDE.md (banner note).
+
+Acceptance
+- schedule list shows 3 jobs (15m/2h/4h).
+- hot loop writes signals.csv/premove.csv/explain.json with deterministic reasons.
+- No aggregator microstructure calls compile path.
+
+Git commit checklist (perform)
+- feat(scheduler): hot/warm/regime jobs + engine
+- feat(signals): banner + attribution
+- docs: SCHEDULER.md, BENCHMARKS.md, CLAUDE.md
+- test: VADR/freshness + regime cache

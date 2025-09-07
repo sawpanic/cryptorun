@@ -1,0 +1,163 @@
+name: CI Guard - Require Progress Delta
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  ci-guard:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout PR
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+    
+    - name: Setup PowerShell
+      shell: bash
+      run: |
+        # Install PowerShell on Ubuntu
+        wget -q https://github.com/PowerShell/PowerShell/releases/download/v7.3.0/powershell_7.3.0-1.deb_amd64.deb
+        sudo dpkg -i powershell_7.3.0-1.deb_amd64.deb || true
+        sudo apt-get install -f -y
+    
+    - name: Get base branch progress
+      id: base-progress
+      shell: bash
+      run: |
+        git checkout ${{ github.base_ref }}
+        if [ -f "tools/progress.ps1" ]; then
+          BASE_PROGRESS=$(pwsh -File tools/progress.ps1 | tail -n 1 | grep -o '[0-9.]*%' | sed 's/%//')
+          echo "base_progress=${BASE_PROGRESS:-0}" >> $GITHUB_OUTPUT
+        else
+          echo "base_progress=0" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Get base branch test count
+      id: base-tests
+      shell: bash
+      run: |
+        if [ -f "tools/test_count.ps1" ]; then
+          BASE_TESTS=$(pwsh -File tools/test_count.ps1 2>/dev/null | tail -n 1 | grep -o '[0-9]*' || echo "0")
+          echo "base_tests=${BASE_TESTS:-0}" >> $GITHUB_OUTPUT
+        else
+          BASE_TESTS=$(go test -list . ./... 2>/dev/null | grep -c "^Test" || echo "0")
+          echo "base_tests=${BASE_TESTS:-0}" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Get base branch docs/changelog size
+      id: base-docs
+      shell: bash
+      run: |
+        DOCS_SIZE=0
+        if [ -f "CHANGELOG.md" ]; then
+          DOCS_SIZE=$((DOCS_SIZE + $(wc -c < CHANGELOG.md)))
+        fi
+        for f in $(find . -name "*.md" -not -path "./.git/*" -not -path "./vendor/*"); do
+          if [ -f "$f" ]; then
+            DOCS_SIZE=$((DOCS_SIZE + $(wc -c < "$f")))
+          fi
+        done
+        echo "base_docs=${DOCS_SIZE}" >> $GITHUB_OUTPUT
+    
+    - name: Checkout PR branch
+      shell: bash
+      run: |
+        git checkout ${{ github.head_ref }}
+    
+    - name: Get PR branch progress
+      id: pr-progress
+      shell: bash
+      run: |
+        if [ -f "tools/progress.ps1" ]; then
+          PR_PROGRESS=$(pwsh -File tools/progress.ps1 | tail -n 1 | grep -o '[0-9.]*%' | sed 's/%//')
+          echo "pr_progress=${PR_PROGRESS:-0}" >> $GITHUB_OUTPUT
+        else
+          echo "pr_progress=0" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Get PR branch test count
+      id: pr-tests
+      shell: bash
+      run: |
+        if [ -f "tools/test_count.ps1" ]; then
+          PR_TESTS=$(pwsh -File tools/test_count.ps1 2>/dev/null | tail -n 1 | grep -o '[0-9]*' || echo "0")
+          echo "pr_tests=${PR_TESTS:-0}" >> $GITHUB_OUTPUT
+        else
+          PR_TESTS=$(go test -list . ./... 2>/dev/null | grep -c "^Test" || echo "0")
+          echo "pr_tests=${PR_TESTS:-0}" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Get PR branch docs/changelog size
+      id: pr-docs
+      shell: bash
+      run: |
+        DOCS_SIZE=0
+        if [ -f "CHANGELOG.md" ]; then
+          DOCS_SIZE=$((DOCS_SIZE + $(wc -c < CHANGELOG.md)))
+        fi
+        for f in $(find . -name "*.md" -not -path "./.git/*" -not -path "./vendor/*"); do
+          if [ -f "$f" ]; then
+            DOCS_SIZE=$((DOCS_SIZE + $(wc -c < "$f")))
+          fi
+        done
+        echo "pr_docs=${DOCS_SIZE}" >> $GITHUB_OUTPUT
+    
+    - name: Check deltas and enforce policy
+      shell: bash
+      run: |
+        BASE_PROGRESS="${{ steps.base-progress.outputs.base_progress }}"
+        PR_PROGRESS="${{ steps.pr-progress.outputs.pr_progress }}"
+        BASE_TESTS="${{ steps.base-tests.outputs.base_tests }}"
+        PR_TESTS="${{ steps.pr-tests.outputs.pr_tests }}"
+        BASE_DOCS="${{ steps.base-docs.outputs.base_docs }}"
+        PR_DOCS="${{ steps.pr-docs.outputs.pr_docs }}"
+        
+        echo "📊 Delta Analysis:"
+        echo "Progress: ${BASE_PROGRESS}% → ${PR_PROGRESS}%"
+        echo "Tests: ${BASE_TESTS} → ${PR_TESTS}"  
+        echo "Docs/CHANGELOG size: ${BASE_DOCS} → ${PR_DOCS}"
+        
+        PROGRESS_DELTA=$(echo "$PR_PROGRESS - $BASE_PROGRESS" | bc -l 2>/dev/null || echo "0")
+        TEST_DELTA=$((PR_TESTS - BASE_TESTS))
+        DOCS_DELTA=$((PR_DOCS - BASE_DOCS))
+        
+        PROGRESS_INCREASED=$(echo "$PROGRESS_DELTA > 0" | bc -l 2>/dev/null || echo "0")
+        
+        echo ""
+        echo "📈 Deltas:"
+        echo "Progress delta: +${PROGRESS_DELTA}%"
+        echo "Test delta: +${TEST_DELTA}"
+        echo "Docs delta: +${DOCS_DELTA} chars"
+        
+        if [ "$PROGRESS_INCREASED" = "1" ] || [ "$TEST_DELTA" -gt "0" ] || [ "$DOCS_DELTA" -gt "0" ]; then
+          echo ""
+          echo "✅ CI Guard PASSED: PR increases at least one metric"
+          if [ "$PROGRESS_INCREASED" = "1" ]; then
+            echo "  → Progress increased by ${PROGRESS_DELTA}%"
+          fi
+          if [ "$TEST_DELTA" -gt "0" ]; then
+            echo "  → Tests increased by ${TEST_DELTA}"
+          fi
+          if [ "$DOCS_DELTA" -gt "0" ]; then
+            echo "  → Documentation increased by ${DOCS_DELTA} characters"
+          fi
+        else
+          echo ""
+          echo "❌ CI Guard FAILED: PR must increase at least one of:"
+          echo "  → Progress percentage (currently no change)"
+          echo "  → Test count (currently no change)"  
+          echo "  → Documentation/CHANGELOG size (currently no change)"
+          echo ""
+          echo "💡 To pass CI Guard, your PR should:"
+          echo "  - Add new tests, OR"
+          echo "  - Update progress tracking in tools/progress.ps1, OR"
+          echo "  - Add meaningful content to CHANGELOG.md or other docs"
+          exit 1
+        fi

@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cprotocol
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: cprotocol }
+  template:
+    metadata:
+      labels: { app: cprotocol }
+    spec:
+      containers:
+        - name: cprotocol
+          image: cprotocol:latest
+          args: ["monitor", "--exchange", "kraken"]
+          volumeMounts:
+            - name: config
+              mountPath: /etc/cprotocol/config
+      volumes:
+        - name: config
+          configMap:
+            name: cprotocol-config

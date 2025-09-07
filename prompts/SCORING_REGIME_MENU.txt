@@ -1,0 +1,33 @@
+PROMPT_ID=MENU_DISPLAY
+Display the main scoring and regime menu with current market status.
+
+Show:
+1. Current regime (trending/choppy/volatile) with confidence level
+2. Top-10 momentum candidates with composite scores
+3. Active entry gates status (score≥75, VADR≥1.8, funding divergence)
+4. System health indicators
+
+Format as interactive menu with timestamp.
+
+PROMPT_ID=REGIME_ANALYSIS
+Perform comprehensive regime analysis for the current market state.
+
+Analyze:
+- 7-day realized volatility vs 25% threshold
+- Breadth above 20MA vs 60% threshold  
+- Breadth thrust ADX proxy vs 70% threshold
+- Generate regime prediction for next 4h cycle
+
+Output regime confidence metrics and recommended weight adjustments.
+
+PROMPT_ID=SCORING_SNAPSHOT
+Generate current scoring snapshot for top-50 momentum candidates.
+
+Include:
+- MomentumCore (protected) across 1h/4h/12h/24h timeframes
+- Residualized factors: Technical, Volume, Quality, Social
+- Composite scores with attribution
+- Entry gate validation results
+- Microstructure consultation (depth, spread, VADR)
+
+Format as structured JSON with explanations.

@@ -1,0 +1,42 @@
+{
+  "symbol": "BTCUSD",
+  "data_points": [
+    {
+      "timestamp": 1703980800,
+      "venue_median": 0.009,
+      "max_divergence": 6.0
+    },
+    {
+      "timestamp": 1704067200,
+      "venue_median": 0.010,
+      "max_divergence": 8.0
+    },
+    {
+      "timestamp": 1704153600,
+      "venue_median": 0.008,
+      "max_divergence": 5.0
+    },
+    {
+      "timestamp": 1704240000,
+      "venue_median": 0.011,
+      "max_divergence": 9.0
+    },
+    {
+      "timestamp": 1704326400,
+      "venue_median": 0.007,
+      "max_divergence": 4.0
+    },
+    {
+      "timestamp": 1704412800,
+      "venue_median": 0.009,
+      "max_divergence": 7.0
+    },
+    {
+      "timestamp": 1704499200,
+      "venue_median": 0.012,
+      "max_divergence": 10.0
+    }
+  ],
+  "last_updated": 1704499200,
+  "signature_hash": "hist789abc123"
+}

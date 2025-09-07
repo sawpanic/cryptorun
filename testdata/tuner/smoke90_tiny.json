@@ -1,0 +1,46 @@
+[
+  {
+    "symbol": "BTC",
+    "timestamp": "2024-01-01T10:00:00Z",
+    "score": 85.5,
+    "regime": "normal",
+    "forward_return": 0.0325,
+    "hit": true,
+    "window": "4h",
+    "entry_price": 50000,
+    "exit_price": 51625
+  },
+  {
+    "symbol": "ETH",
+    "timestamp": "2024-01-01T10:00:00Z",
+    "score": 72.3,
+    "regime": "normal",
+    "forward_return": 0.018,
+    "hit": false,
+    "window": "4h",
+    "entry_price": 3000,
+    "exit_price": 3054
+  },
+  {
+    "symbol": "SOL",
+    "timestamp": "2024-01-01T11:00:00Z",
+    "score": 91.2,
+    "regime": "volatile",
+    "forward_return": 0.045,
+    "hit": true,
+    "window": "4h",
+    "entry_price": 100,
+    "exit_price": 104.5
+  },
+  {
+    "symbol": "ADA",
+    "timestamp": "2024-01-01T11:00:00Z",
+    "score": 68.1,
+    "regime": "calm",
+    "forward_return": 0.012,
+    "hit": false,
+    "window": "4h",
+    "entry_price": 0.5,
+    "exit_price": 0.506
+  }
+]

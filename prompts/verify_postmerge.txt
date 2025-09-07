@@ -1,0 +1,24 @@
+PROMPT_ID=VERIFY.GREENWALL.SERIAL
+Verify post-merge system integrity with greenwall validation.
+
+Execute comprehensive validation:
+1. Build verification (go build ./...)
+2. Core test suite (go test ./internal/gates ./internal/regime ./internal/microstructure)
+3. Entry gate validation with real-time checks
+4. Regime detection accuracy against historical data
+5. Microstructure tiered gate functionality
+
+Generate PASS/FAIL report with detailed attribution for each component.
+Flag any regressions or unexpected behavior.
+
+PROMPT_ID=VERIFY.INTEGRATION.FULL
+Full integration verification across all system components.
+
+Test end-to-end workflows:
+- Universe building with pair filtering
+- Factor computation and residualization
+- Composite scoring with regime adaptation
+- Entry gate evaluation with microstructure validation
+- Exit logic with hierarchy enforcement
+
+Document any breaking changes or compatibility issues.

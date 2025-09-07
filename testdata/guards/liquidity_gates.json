@@ -1,0 +1,86 @@
+{
+  "name": "liquidity_guards",
+  "regime": "normal",
+  "timestamp": "2025-01-15T12:00:00Z", 
+  "candidates": [
+    {
+      "symbol": "BTCUSD",
+      "composite_score": 8.5,
+      "momentum_core": 0.0,
+      "rsi_4h": 0.0,
+      "volume_24h": 0.0,
+      "volume_avg": 0.0,
+      "spread_bps": 25.0,
+      "depth_usd": 150000,
+      "vadr": 2.0,
+      "catalyst_heat": 0.0,
+      "social_score": 0.0,
+      "brand_score": 0.0,
+      "last_update": "2025-01-15T12:00:00Z",
+      "bar_age": 0,
+      "atr_current": 0.0,
+      "price_move_atr": 0.0
+    },
+    {
+      "symbol": "ALTCOIN",
+      "composite_score": 9.2,
+      "momentum_core": 0.0,
+      "rsi_4h": 0.0,
+      "volume_24h": 0.0,
+      "volume_avg": 0.0,
+      "spread_bps": 75.0,
+      "depth_usd": 120000,
+      "vadr": 1.8,
+      "catalyst_heat": 0.0,
+      "social_score": 0.0,
+      "brand_score": 0.0,
+      "last_update": "2025-01-15T12:00:00Z",
+      "bar_age": 0,
+      "atr_current": 0.0,
+      "price_move_atr": 0.0
+    },
+    {
+      "symbol": "ILLIQUID",
+      "composite_score": 7.8,
+      "momentum_core": 0.0,
+      "rsi_4h": 0.0,
+      "volume_24h": 0.0,
+      "volume_avg": 0.0,
+      "spread_bps": 30.0,
+      "depth_usd": 80000,
+      "vadr": 1.5,
+      "catalyst_heat": 0.0,
+      "social_score": 0.0,
+      "brand_score": 0.0,
+      "last_update": "2025-01-15T12:00:00Z",
+      "bar_age": 0,
+      "atr_current": 0.0,
+      "price_move_atr": 0.0
+    }
+  ],
+  "expected": {
+    "pass_count": 1,
+    "fail_count": 2,
+    "exit_code": 1,
+    "guard_results": [
+      {
+        "symbol": "BTCUSD",
+        "status": "PASS"
+      },
+      {
+        "symbol": "ALTCOIN",
+        "status": "FAIL",
+        "failed_guard": "spread",
+        "reason": "Spread 75.0 bps > 50.0 bps limit",
+        "fix_hint": "Wait for tighter spread or increase spread tolerance"
+      },
+      {
+        "symbol": "ILLIQUID",
+        "status": "FAIL", 
+        "failed_guard": "depth",
+        "reason": "Depth $80k < $100k minimum, VADR 1.5× < 1.75× minimum",
+        "fix_hint": "Wait for improved liquidity or reduce depth requirements"
+      }
+    ]
+  }
+}

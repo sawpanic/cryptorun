@@ -1,0 +1,97 @@
+# artifacts.yaml - Artifact retention and management configuration
+
+# Retention policies for different artifact families
+retention:
+  # Microstructure proofs from GREEN-WALL verification
+  proofs:
+    keep: 10              # Keep last 10 runs
+    pin: []               # Pinned run IDs (never delete)
+    
+  # Performance benchmarks (topgainers, P99 latency)
+  bench:
+    keep: 10              # Keep last 10 benchmark runs
+    pin: []               # Pinned benchmark IDs
+    
+  # Smoke90 backtest results
+  smoke90:
+    keep: 8               # Keep last 8 backtest runs  
+    pin: []               # Pinned backtest IDs
+    
+  # Factor explanation deltas and analysis
+  explain:
+    keep: 12              # Keep last 12 explanation runs
+    pin: []               # Pinned explanation IDs
+    
+  # Complete GREEN-WALL verification runs
+  greenwall:
+    keep: 12              # Keep last 12 full verification runs
+    pin: []               # Pinned greenwall IDs
+
+# Compaction settings
+compaction:
+  # JSONL compaction parameters
+  jsonl:
+    enabled: true
+    min_size_kb: 50       # Only compact files larger than 50KB
+    dict_threshold: 3     # Use dictionary compression if field repeats 3+ times
+    preserve_schema: true # Always preserve first record schema
+    
+  # Markdown compaction parameters  
+  markdown:
+    enabled: true
+    min_size_kb: 20       # Only compact files larger than 20KB
+    remove_empty_sections: true
+    canonical_headers: true
+    preserve_timestamps: true
+
+# GC (Garbage Collection) settings
+gc:
+  # Safety settings
+  dry_run_default: true   # Always dry-run unless --apply specified
+  require_confirmation: true
+  backup_before_delete: true
+  
+  # Retention rules
+  always_keep:
+    - "last_pass"         # Always keep most recent PASS for each family
+    - "pinned"            # Never delete pinned artifacts
+    - "last_run"          # Always keep the most recent run (pass or fail)
+  
+  # Trash settings
+  trash_dir: "./artifacts/.trash"
+  trash_retention_days: 30
+  
+# Manifest settings
+manifest:
+  file: "./artifacts/.manifest.json"
+  backup_file: "./artifacts/.manifest.backup.json"
+  scan_interval_hours: 6    # Auto-rescan every 6 hours
+  checksum_algorithm: "sha256"
+  
+# Path patterns for artifact families
+patterns:
+  proofs:   ["**/microstructure/proofs/*.jsonl", "**/microstructure/proofs/*.md"]
+  bench:    ["**/bench/*.jsonl", "**/bench/*.md", "**/bench/p99_*.json"]
+  smoke90:  ["**/smoke90/*.jsonl", "**/smoke90/*.md", "**/smoke90/backtest_*.json"]
+  explain:  ["**/explain_delta/*.jsonl", "**/explain_delta/*.md"]
+  greenwall:["**/greenwall/*.jsonl", "**/greenwall/*.md", "**/greenwall/verification_*.json"]
+
+# Indexing settings
+indexing:
+  # Fields to extract from file metadata
+  extract_fields:
+    - "family"
+    - "timestamp"
+    - "pass_fail_status"
+    - "file_size_bytes"
+    - "checksum_sha256"
+    - "is_pinned"
+    - "file_paths"
+    - "run_id"
+    - "creation_time"
+    - "last_modified"
+  
+  # Performance settings
+  parallel_workers: 4
+  checksum_buffer_size_kb: 64
+  max_files_per_scan: 10000

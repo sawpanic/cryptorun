@@ -1,0 +1,98 @@
+# CryptoRun Unified Factor Weights Configuration
+# All weights are normalized to sum exactly 1.0 per regime
+
+default_regime: "bull"
+
+validation:
+  weight_sum_tolerance: 0.001      # ±0.1% tolerance for weight sum = 1.0
+  min_momentum_weight: 0.40        # MomentumCore must be ≥40% (protected factor)
+  max_social_weight: 0.15          # SocialResidual capped at 15% of total weight
+  social_hard_cap: 10.0           # Social contribution hard-capped at +10 post-residualization
+
+# Regime-specific weight profiles (normalized to sum = 1.0)
+regimes:
+  bull:
+    description: "Bull market - momentum and volume focus"
+    momentum_core: 0.50           # 50% - Protected momentum signal
+    technical_residual: 0.20      # 20% - Technical indicators (residualized)
+    volume_residual: 0.20         # 20% - Volume confirmation (residualized) 
+    quality_residual: 0.05        # 5%  - Fundamental quality (residualized)
+    social_residual: 0.05         # 5%  - Social sentiment (residualized + capped)
+    
+  choppy:
+    description: "Choppy market - quality and technical focus"
+    momentum_core: 0.40           # 40% - Reduced momentum weight in chop
+    technical_residual: 0.25      # 25% - Higher technical indicator weight
+    volume_residual: 0.15         # 15% - Reduced volume weight (less reliable)
+    quality_residual: 0.15        # 15% - Higher quality weight for stability
+    social_residual: 0.05         # 5%  - Consistent social weight
+    
+  high_vol:
+    description: "High volatility - stability and quality emphasis"
+    momentum_core: 0.45           # 45% - Moderate momentum weight
+    technical_residual: 0.15      # 15% - Reduced technical (noisy in high vol)
+    volume_residual: 0.25         # 25% - Higher volume for confirmation
+    quality_residual: 0.10        # 10% - Quality for stability
+    social_residual: 0.05         # 5%  - Consistent social weight
+
+# Factor definitions and orthogonalization order
+orthogonalization:
+  protected_factors:
+    - "MomentumCore"              # Never residualized - always first in hierarchy
+    
+  sequence:                       # Gram-Schmidt application order
+    - "TechnicalFactor"           # RSI, MACD, ADX - residualized vs MomentumCore
+    - "VolumeFactor"              # Volume surge, ADV ratio - residualized vs Momentum + Technical
+    - "QualityFactor"             # Fundamental metrics - residualized vs all previous  
+    - "SocialFactor"              # Social sentiment - residualized vs all previous + hard capped
+
+# Factor descriptions and calculation notes
+factor_definitions:
+  MomentumCore:
+    description: "Multi-timeframe momentum (1h=20%, 4h=35%, 12h=30%, 24h=15%)"
+    protected: true
+    range: "Percentage momentum (-50% to +50%)"
+    
+  TechnicalFactor:
+    description: "Technical indicators: RSI(14), MACD, ADX(14)"
+    residualized_against: ["MomentumCore"]
+    range: "Normalized technical score (0-100)"
+    
+  VolumeFactor:
+    description: "Volume surge vs average, ADV ratio confirmation"
+    residualized_against: ["MomentumCore", "TechnicalResidual"]
+    range: "Volume multiple (0.5x to 5.0x average)"
+    
+  QualityFactor:
+    description: "Fundamental quality metrics (when available)"
+    residualized_against: ["MomentumCore", "TechnicalResidual", "VolumeResidual"]
+    range: "Quality score (0-100)"
+    
+  SocialFactor:
+    description: "Social sentiment from multiple sources"
+    residualized_against: ["MomentumCore", "TechnicalResidual", "VolumeResidual", "QualityResidual"]
+    post_processing: "Hard capped at ±10 after residualization"
+    range: "Social score (-10 to +10 post-cap)"
+
+# Quality assurance requirements
+qa_requirements:
+  correlation_threshold: 0.6      # |ρ| < 0.6 between residual factors
+  weight_sum_exact: 1.000        # All regime weights must sum to exactly 1.0
+  momentum_minimum: 0.40         # MomentumCore always ≥40% across all regimes
+  social_maximum: 0.15           # SocialResidual weight ≤15% across all regimes
+  
+# Testing fixtures for correlation matrix validation
+test_fixtures:
+  sample_size: 100               # Minimum sample for correlation testing
+  acceptable_correlations:       # Expected correlation ranges post-orthogonalization
+    MomentumCore_vs_TechnicalResidual: [-0.1, 0.1]   # Should be near-zero
+    MomentumCore_vs_VolumeResidual: [-0.1, 0.1]      # Should be near-zero
+    MomentumCore_vs_QualityResidual: [-0.1, 0.1]     # Should be near-zero
+    MomentumCore_vs_SocialResidual: [-0.1, 0.1]      # Should be near-zero
+    # Residual factors should have low correlation with each other
+    TechnicalResidual_vs_VolumeResidual: [-0.3, 0.3]
+    TechnicalResidual_vs_QualityResidual: [-0.3, 0.3]
+    TechnicalResidual_vs_SocialResidual: [-0.3, 0.3]
+    VolumeResidual_vs_QualityResidual: [-0.3, 0.3]
+    VolumeResidual_vs_SocialResidual: [-0.3, 0.3]
+    QualityResidual_vs_SocialResidual: [-0.3, 0.3]

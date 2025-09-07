@@ -1,0 +1,35 @@
+# Normalize line endings for all text files
+* text=auto eol=lf
+
+# Binary files
+*.exe -text
+*.dll -text
+*.so -text
+*.dylib -text
+*.lib -text
+*.a -text
+*.db -text
+*.sqlite -text
+
+# Large binary files use LFS
+*.zip filter=lfs diff=lfs merge=lfs -text
+*.tar.gz filter=lfs diff=lfs merge=lfs -text
+
+# Go files (ensure LF)
+*.go text eol=lf
+*.mod text eol=lf
+*.sum text eol=lf
+
+# Config files
+*.yaml text eol=lf
+*.yml text eol=lf
+*.toml text eol=lf
+*.json text eol=lf
+
+# Scripts
+*.sh text eol=lf
+*.ps1 text eol=crlf
+
+# Documentation
+*.md text eol=lf
+*.txt text eol=lf

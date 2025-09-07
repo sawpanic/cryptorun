@@ -1,0 +1,141 @@
+# Example Data Facade Configuration
+# This file demonstrates a complete configuration for the CryptoRun Data Facade
+
+cache:
+  redis:
+    addr: "localhost:6379"
+    password: ""
+    db: 0
+  
+  ttls:
+    default:
+      trades: 30s
+      klines: 60s
+      orderbook_l1: 5s
+      orderbook_l2: 10s
+      funding: 300s
+      openinterest: 60s
+    
+    binance:
+      trades: 20s      # Higher frequency venue
+      orderbook_l1: 3s
+      orderbook_l2: 8s
+    
+    okx:
+      trades: 25s
+      orderbook_l1: 4s
+    
+    kraken:
+      trades: 45s      # Lower frequency venue
+      klines: 120s
+
+rate_limits:
+  venues:
+    binance:
+      requests_per_second: 20
+      burst_allowance: 10
+      weight_limits:
+        trades: 1
+        klines: 1
+        orderbook: 1
+        funding: 1
+        openinterest: 1
+      daily_limit: 160000
+      monthly_limit: 5000000
+    
+    okx:
+      requests_per_second: 10
+      burst_allowance: 5
+      weight_limits: {}
+      daily_limit: 50000
+      monthly_limit: 1500000
+    
+    coinbase:
+      requests_per_second: 5
+      burst_allowance: 3
+      weight_limits: {}
+      daily_limit: 10000
+      monthly_limit: 300000
+    
+    kraken:
+      requests_per_second: 1
+      burst_allowance: 1
+      weight_limits: {}
+      daily_limit: 5000
+      monthly_limit: 150000
+
+circuits:
+  venues:
+    binance:
+      http:
+        failure_threshold: 5
+        success_threshold: 3
+        timeout: 30s
+        max_requests: 3
+      websocket:
+        failure_threshold: 3
+        success_threshold: 2
+        timeout: 60s
+        max_requests: 2
+    
+    okx:
+      http:
+        failure_threshold: 5
+        success_threshold: 3
+        timeout: 30s
+        max_requests: 3
+      websocket:
+        failure_threshold: 3
+        success_threshold: 2
+        timeout: 60s
+        max_requests: 2
+    
+    coinbase:
+      http:
+        failure_threshold: 8
+        success_threshold: 4
+        timeout: 45s
+        max_requests: 2
+      websocket:
+        failure_threshold: 3
+        success_threshold: 2
+        timeout: 60s
+        max_requests: 2
+    
+    kraken:
+      http:
+        failure_threshold: 3
+        success_threshold: 2
+        timeout: 60s
+        max_requests: 1
+      websocket:
+        failure_threshold: 2
+        success_threshold: 1
+        timeout: 120s
+        max_requests: 1
+
+pit:
+  base_path: "./data/pit"
+  compression: true
+  retention_days: 30
+
+venues:
+  binance:
+    base_url: "https://api.binance.com"
+    ws_url: "wss://stream.binance.com:9443/ws"
+    enabled: true
+  
+  okx:
+    base_url: "https://www.okx.com"
+    ws_url: "wss://ws.okx.com:8443"
+    enabled: true
+  
+  coinbase:
+    base_url: "https://api.exchange.coinbase.com"
+    ws_url: "wss://ws-feed.exchange.coinbase.com"
+    enabled: true
+  
+  kraken:
+    base_url: "https://api.kraken.com"
+    ws_url: "wss://ws.kraken.com"
+    enabled: true

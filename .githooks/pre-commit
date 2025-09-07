@@ -1,0 +1,88 @@
+#!/bin/bash
+# CryptoRun Pre-Commit Hook
+# Validates documentation UX requirements and brand consistency
+
+set -e
+
+echo "🔍 Running CryptoRun pre-commit checks..."
+
+EXIT_CODE=0
+CHECKS_PASSED=0
+CHECKS_FAILED=0
+
+run_check() {
+    local check_name="$1"
+    shift
+    
+    echo ""
+    echo "📋 $check_name"
+    echo "$(printf '─%.0s' {1..50})"
+    
+    if "$@"; then
+        echo "✅ $check_name: PASSED"
+        ((CHECKS_PASSED++))
+    else
+        echo "❌ $check_name: FAILED"
+        ((CHECKS_FAILED++))
+        EXIT_CODE=1
+    fi
+}
+
+# Change to repository root
+REPO_ROOT=$(git rev-parse --show-toplevel)
+cd "$REPO_ROOT"
+
+# Check 1: Documentation UX Guard
+run_check "Documentation UX Guard" bash -c '
+    if [[ -f "scripts/check_docs_ux.ps1" ]] && command -v pwsh &> /dev/null; then
+        pwsh -File "scripts/check_docs_ux.ps1"
+    elif [[ -f "scripts/check_docs_ux.go" ]]; then
+        go run scripts/check_docs_ux.go
+    else
+        echo "Error: Documentation UX checker not found"
+        exit 1
+    fi
+'
+
+# Check 2: Branding Guard Test
+run_check "Branding Guard Test" bash -c '
+    if [[ -f "tests/branding/branding_guard_test.go" ]]; then
+        go test -v ./tests/branding -run TestBrandConsistency
+    else
+        echo "Warning: Branding guard test not found - skipping"
+        exit 0
+    fi
+'
+
+# Check 3: Basic Go Build (if Go files exist)
+if find . -name "*.go" -not -path "./vendor/*" | head -1 | grep -q .; then
+    run_check "Go Build Verification" go build ./...
+fi
+
+# Check 4: Go Tests (if test files exist)
+if find . -name "*_test.go" -not -path "./vendor/*" | head -1 | grep -q .; then
+    run_check "Go Test Suite" go test -short ./...
+fi
+
+# Summary
+echo ""
+echo "$(printf '=%.0s' {1..60})"
+echo "📊 PRE-COMMIT SUMMARY"
+echo "$(printf '=%.0s' {1..60})"
+
+if [[ $EXIT_CODE -eq 0 ]]; then
+    echo "✅ ALL CHECKS PASSED ($CHECKS_PASSED passed, 0 failed)"
+    echo "🚀 Ready to commit!"
+else
+    echo "❌ SOME CHECKS FAILED ($CHECKS_PASSED passed, $CHECKS_FAILED failed)"
+    echo "🛑 Fix issues before committing"
+    
+    echo ""
+    echo "Common fixes:"
+    echo "  • Add '## UX MUST — Live Progress & Explainability' to markdown files"
+    echo "  • Replace 'CryptoEdge' or 'Crypto Edge' with 'CryptoRun'"
+    echo "  • Fix any Go build or test failures"
+fi
+
+echo ""
+exit $EXIT_CODE

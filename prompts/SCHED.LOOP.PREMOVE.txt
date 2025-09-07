@@ -1,0 +1,32 @@
+OUTPUT DISCIPLINE — DO NOT EXCEED CONSOLE LIMITS
+DOCS MANDATE — UPDATE MD ON EVERY PROMPT
+
+PROMPT_ID=SCHED.LOOP.PREMOVE — HOURLY PRE-MOVEMENT DETECTOR
+
+Goal
+Hourly top-50 ADV premovement sweep. Require 2-of-3: A) funding divergence (funding_z<−1.5 & spot≥VWAP(24h) w/ CVD confirm), B) supply squeeze (reserves_7d ≤−5% across ≥3 venues or proxy 2-of-4), C) whales (2-of-3 composite: large_print_clustering, cvd_residual>0 w/ drift<0.5×ATR, maker-pull/hot-wallet). In risk_off/btc_driven require volume-confirm (first_15m ≥ p80 vadr_24h). Enforce USD-only, venue-native microstructure. Push alerts.
+
+Scope
+1) Code
+   - src/internal/application/premove/sweep.go (+ gates A/B/C; regime-conditional volume confirm)
+   - src/internal/output/alerts.go → artifacts/premove/{ts}/alerts.json (dedupe/throttle)
+
+2) Scheduler
+   - job.premove.hourly (0 * * * *)
+
+3) CLI
+   - menu_premove.go (table + missing-gate reasons)
+
+4) Tests
+   - gate permutations; risk_off add-on; JSON schema.
+
+5) Docs
+   - docs/PREMOVE.md (gates/scoring/scheduler)
+
+Acceptance
+- Alerts only when valid; artifacts written.
+
+Git commit checklist (perform)
+- feat(premove): sweep + alerts + CLI
+- test: gates/schema
+- docs: PREMOVE.md

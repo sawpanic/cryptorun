@@ -1,0 +1,34 @@
+OUTPUT DISCIPLINE — DO NOT EXCEED CONSOLE LIMITS
+DOCS MANDATE — UPDATE MD ON EVERY PROMPT
+
+PROMPT_ID=SCHED.GUARDS.PROVIDERS — RL/CB + BUDGETS + FALLBACKS
+
+Goal
+Every 5m protect providers: honor weight/QPS; parse X-MBX-USED-WEIGHT-*; 429/418 backoff; budgets; auto-fallback; cache_ttl×2; restore probes; banner state.
+
+Scope
+1) Code
+   - src/internal/providers/limits.go (headers→usage; budgets; backoff)
+   - src/internal/providers/circuit.go (Healthy/Degraded/Fallback/Restoring; triggers & actions)
+   - src/internal/providers/fallbacks.go (explicit chains)
+   - src/internal/providers/healthjob.go (*/5m) → artifacts/ops/providers.json
+   - src/cmd/cryptorun/menu_banner.go (🟢/🟡/🔴 + cause)
+
+2) Scheduler
+   - job.providers.health (*/5m)
+
+3) Tests
+   - 429/418 fallback→restore; budget depletion → TTL×2 + fallback.
+
+4) Docs
+   - docs/PROVIDERS.md (limits/fallbacks/probes)
+
+Acceptance
+- Simulated 429/418 flips to secondary, restores after probes.
+- Banner shows per-provider state; providers.json updated.
+
+Git commit checklist (perform)
+- feat(providers): RL/CB engine + fallbacks + probes
+- feat(scheduler): providers.health
+- test: 429/418 + budgets
+- docs: PROVIDERS.md

@@ -1,0 +1,30 @@
+OUTPUT DISCIPLINE — DO NOT EXCEED CONSOLE LIMITS
+DOCS MANDATE — UPDATE MD ON EVERY PROMPT
+
+PROMPT_ID=SCHED.REPORTS.DAILY.WEEKLY — EOD + WEEKLY TRANSPARENCY PACKS
+
+Goal
+Automate EOD (23:45 local) + weekly (Sun 16:00 UTC): decile lift, exit distribution, provider budgets, reconciliation disagreements, regime summary; 7d roll-up with heatmaps + patterns.
+
+Scope
+1) Code
+   - reports/daily.go → artifacts/reports/daily/{date}/(deciles.csv, exits.csv, providers.json, recon.csv, regime.txt)
+   - reports/weekly.go → artifacts/reports/weekly/{date}/(overview.md, heatmaps.png, patterns.json)
+
+2) Scheduler
+   - job.report.daily   cron "45 23 * * *" (local)
+   - job.report.weekly  cron "0 16 * * Sun" (UTC)
+
+3) Docs
+   - docs/REPORTS.md; ENGINEERING_TRANSPARENCY_LOG.md append.
+
+4) Tests
+   - decile monotonicity / isotonic fallback; exit distribution math; weekly links resolve.
+
+Acceptance
+- schedule list shows both; artifacts render; weekly links daily assets.
+
+Git commit checklist (perform)
+- feat(reports): EOD + weekly generators
+- docs: REPORTS.md + transparency log
+- test: deciles/exits/weekly

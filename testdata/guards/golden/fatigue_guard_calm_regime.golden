@@ -1,0 +1,38 @@
+{
+  "summary": {
+    "test_name": "fatigue_guard_calm",
+    "regime": "calm",
+    "timestamp": "2025-01-15T12:00:00Z",
+    "pass_count": 2,
+    "fail_count": 1,
+    "exit_code": 1,
+    "results": [
+      {
+        "symbol": "BTCUSD",
+        "status": "PASS"
+      },
+      {
+        "symbol": "ETHUSD",
+        "status": "FAIL",
+        "failed_guard": "fatigue",
+        "reason": "24h momentum 12.0% \u003e 10.0% + RSI4h 75.0 \u003e 70.0",
+        "fix_hint": "Wait for momentum cooldown or RSI retreat"
+      },
+      {
+        "symbol": "SOLUSD",
+        "status": "PASS"
+      }
+    ],
+    "progress_log": [
+      "⏳ Starting guard evaluation (regime: calm)",
+      "📊 Processing 3 candidates",
+      "🛡️  [20%] Evaluating freshness guards...",
+      "🛡️  [40%] Evaluating fatigue guards...",
+      "🛡️  [60%] Evaluating liquidity guards...",
+      "🛡️  [80%] Evaluating caps guards...",
+      "🛡️  [100%] Evaluating final guards...",
+      "✅ Guard evaluation completed"
+    ]
+  },
+  "compact_table": "🛡️  Guard Results (calm regime)\n┌──────────┬────────┬─────────────┬──────────────────────────────────────┐\n│ Symbol   │ Status │ Failed Guard│ Reason                               │\n├──────────┼────────┼─────────────┼──────────────────────────────────────┤\n│ BTCUSD   │ ✅ PASS │ -           │ -                                    │\n│ ETHUSD   │ ❌ FAIL │ fatigue     │ 24h momentum 12.0% \u003e 10.0% + RSI4... │\n│ SOLUSD   │ ✅ PASS │ -           │ -                                    │\n└──────────┴────────┴─────────────┴──────────────────────────────────────┘\nSummary: 2 passed, 1 failed (exit code 1)\n\nProgress Log:\n  ⏳ Starting guard evaluation (regime: calm)\n  📊 Processing 3 candidates\n  🛡️  [20%] Evaluating freshness guards...\n  🛡️  [40%] Evaluating fatigue guards...\n  🛡️  [60%] Evaluating liquidity guards...\n  🛡️  [80%] Evaluating caps guards...\n  🛡️  [100%] Evaluating final guards...\n  ✅ Guard evaluation completed"
+}

@@ -1,0 +1,137 @@
+# Data Facade Cache Configuration
+# TTL-based caching for WARM (REST) data pulls
+
+cache:
+  enabled: true
+  provider: "redis" # redis, inmemory, hybrid
+  
+  # Redis configuration
+  redis:
+    addr: "${REDIS_ADDR:localhost:6379}"
+    password: "${REDIS_PASSWORD:}"
+    db: 2 # Use separate DB for facade cache
+    pool_size: 10
+    dial_timeout: 5s
+    read_timeout: 3s
+    write_timeout: 3s
+    pool_timeout: 4s
+    idle_timeout: 5m
+    idle_check_frequency: 1m
+
+  # In-memory fallback configuration
+  inmemory:
+    max_size_mb: 256
+    cleanup_interval: 10m
+    
+  # Cache key prefixes
+  prefixes:
+    trades: "facade:trades:"
+    klines: "facade:klines:"
+    orderbook: "facade:orderbook:"
+    funding: "facade:funding:"
+    openinterest: "facade:oi:"
+    pit: "facade:pit:"
+
+# TTL configurations by data type and venue
+ttls:
+  # Default TTLs (can be overridden per venue)
+  default:
+    trades: 30s
+    klines_1m: 15s
+    klines_5m: 1m
+    klines_1h: 5m
+    klines_1d: 30m
+    orderbook_l1: 5s
+    orderbook_l2: 10s
+    funding: 5m
+    openinterest: 1m
+    
+  # Venue-specific overrides
+  binance:
+    trades: 20s      # Higher frequency venue
+    orderbook_l1: 3s
+    orderbook_l2: 5s
+    
+  okx:
+    trades: 25s
+    orderbook_l1: 4s
+    orderbook_l2: 8s
+    
+  coinbase:
+    trades: 30s
+    orderbook_l1: 5s
+    orderbook_l2: 10s
+    
+  kraken:
+    trades: 45s      # More conservative for Kraken
+    orderbook_l1: 10s
+    orderbook_l2: 15s
+    funding: 10m     # Kraken updates less frequently
+
+# Cache warming settings
+warming:
+  enabled: true
+  
+  # Pre-populate cache for high-priority symbols
+  priority_symbols:
+    - "BTC/USD"
+    - "ETH/USD" 
+    - "BTC/USDT"
+    - "ETH/USDT"
+    
+  # Data types to pre-warm
+  warm_data_types:
+    - "trades"
+    - "klines_1m"
+    - "klines_5m"
+    - "orderbook_l1"
+    
+  # Warming intervals
+  intervals:
+    trades: 10s
+    klines: 30s
+    orderbook: 5s
+
+# Cache eviction policies
+eviction:
+  max_memory_mb: 512
+  policy: "lru" # lru, lfu, random
+  
+  # Aggressive cleanup when memory usage exceeds threshold
+  cleanup_threshold: 0.8 # 80% of max_memory
+  cleanup_batch_size: 100
+
+# Cache monitoring and alerts
+monitoring:
+  enabled: true
+  
+  # Metrics collection
+  collect_hit_rate: true
+  collect_latency: true
+  collect_size_metrics: true
+  
+  # Alert thresholds
+  alerts:
+    low_hit_rate: 0.75      # Alert if hit rate < 75%
+    high_memory_usage: 0.9  # Alert if memory > 90%
+    connection_failures: 5   # Alert after 5 consecutive Redis failures
+    
+  # Export metrics every N seconds
+  export_interval: 30s
+
+# PIT snapshot cache settings
+pit_cache:
+  enabled: true
+  
+  # How long to cache PIT snapshot metadata
+  metadata_ttl: 24h
+  
+  # How long to cache actual PIT data
+  data_ttl: 1h
+  
+  # Compression for large snapshots
+  compression: "gzip"
+  compression_threshold_kb: 50
+  
+  # Maximum snapshot size to cache
+  max_snapshot_size_mb: 10

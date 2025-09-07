@@ -1,0 +1,19 @@
+{
+  "symbol": "BTCUSD",
+  "monotonic_timestamp": 1704067200,
+  "venue_rates": {
+    "binance": 0.012,
+    "okx": 0.008,
+    "bybit": 0.015,
+    "deribit": 0.010
+  },
+  "venue_median": 0.011,
+  "seven_day_mean": 0.009,
+  "seven_day_std": 0.0025,
+  "funding_z": 0.8,
+  "funding_divergence_present": false,
+  "max_venue_divergence": 7.0,
+  "cache_hit": false,
+  "source": "test-fixture",
+  "signature_hash": "abc123def456"
+}

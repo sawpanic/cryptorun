@@ -1,0 +1,216 @@
+# Data Facade Rate Limiting Configuration
+# Provider-aware rate limits with weight-based systems
+
+rate_limits:
+  enabled: true
+  
+  # Global settings
+  global:
+    default_timeout: 30s
+    max_retries: 3
+    base_backoff: 1s
+    max_backoff: 30s
+    backoff_multiplier: 2.0
+    jitter_enabled: true
+    
+  # Venue-specific rate limits
+  venues:
+    binance:
+      # Request limits
+      requests_per_minute: 1200
+      requests_per_second: 20
+      burst_allowance: 50
+      
+      # Weight-based limits (Binance uses weight system)
+      weight_limits:
+        default: 1
+        klines: 1
+        trades: 1
+        orderbook: 1
+        ticker: 1
+        
+      # Special endpoint weights
+      endpoint_weights:
+        "/api/v3/klines": 1
+        "/api/v3/trades": 1  
+        "/api/v3/depth": 1
+        "/api/v3/ticker/24hr": 1
+        "/api/v3/ticker/price": 1
+        
+      # Daily limits
+      daily_limit: 160000  # Based on Binance API documentation
+      
+      # Headers to respect
+      respect_headers:
+        - "X-MBX-USED-WEIGHT"
+        - "X-MBX-USED-WEIGHT-1M" 
+        - "Retry-After"
+        
+    okx:
+      requests_per_minute: 600
+      requests_per_second: 10
+      burst_allowance: 20
+      
+      # OKX rate limits per endpoint
+      endpoint_limits:
+        "/api/v5/market/tickers": 20      # 20 req/2s
+        "/api/v5/market/ticker": 20       # 20 req/2s  
+        "/api/v5/market/books": 40        # 40 req/2s
+        "/api/v5/market/candles": 40      # 40 req/2s
+        "/api/v5/market/trades": 100      # 100 req/2s
+        
+      # Respect OKX headers
+      respect_headers:
+        - "ratelimit-limit"
+        - "ratelimit-remaining" 
+        - "ratelimit-reset"
+        - "Retry-After"
+        
+    coinbase:
+      requests_per_minute: 600
+      requests_per_second: 10  
+      burst_allowance: 15
+      
+      # Coinbase Pro rate limits
+      endpoint_limits:
+        "/products": 10
+        "/products/{id}/ticker": 10
+        "/products/{id}/trades": 10
+        "/products/{id}/book": 10
+        "/products/{id}/candles": 10
+        
+      respect_headers:
+        - "CB-AFTER"
+        - "CB-BEFORE" 
+        - "Retry-After"
+        
+    kraken:
+      requests_per_minute: 60   # More conservative for Kraken
+      requests_per_second: 1
+      burst_allowance: 5
+      
+      # Kraken uses a tier system
+      api_counter_decrease: 0.33  # Counter decreases by 0.33 every second
+      max_api_counter: 15         # Max API counter value
+      
+      endpoint_costs:
+        "/0/public/Ticker": 1
+        "/0/public/OHLC": 1
+        "/0/public/Depth": 1
+        "/0/public/Trades": 1
+        "/0/public/Spread": 1
+        
+      respect_headers:
+        - "Retry-After"
+
+# Exponential backoff configuration
+backoff:
+  enabled: true
+  
+  # Per-venue backoff settings
+  venues:
+    binance:
+      initial_delay: 1s
+      max_delay: 60s
+      multiplier: 1.5
+      max_retries: 5
+      
+    okx:
+      initial_delay: 2s
+      max_delay: 120s
+      multiplier: 2.0
+      max_retries: 4
+      
+    coinbase:
+      initial_delay: 1s
+      max_delay: 60s
+      multiplier: 1.6
+      max_retries: 4
+      
+    kraken:
+      initial_delay: 5s    # Start higher for Kraken
+      max_delay: 300s      # Can wait longer
+      multiplier: 2.5
+      max_retries: 3
+
+# Monthly/daily budget protection
+budgets:
+  enabled: true
+  
+  # Monthly request budgets (to prevent hitting exchange limits)
+  monthly:
+    binance: 4000000    # 4M requests per month
+    okx: 1000000        # 1M requests per month  
+    coinbase: 1000000   # 1M requests per month
+    kraken: 100000      # 100k requests per month
+    
+  # Daily budgets (subset of monthly)
+  daily:
+    binance: 150000
+    okx: 40000
+    coinbase: 40000
+    kraken: 5000
+    
+  # Budget tracking
+  tracking:
+    window_size: 24h
+    cleanup_interval: 1h
+    alert_threshold: 0.8  # Alert at 80% of budget
+    
+# Rate limit violation handling  
+violations:
+  # What to do when rate limited
+  on_limit_exceeded:
+    action: "backoff"  # backoff, circuit_break, skip
+    
+  # Circuit breaker integration
+  circuit_breaker:
+    enabled: true
+    failure_threshold: 5      # Open after 5 rate limit violations
+    success_threshold: 3      # Close after 3 successful requests
+    timeout: 60s             # Stay open for 60s
+    
+# Header parsing configuration
+header_parsing:
+  enabled: true
+  
+  # Common rate limit header patterns
+  header_mappings:
+    # Standard headers
+    "X-RateLimit-Limit": "limit"
+    "X-RateLimit-Remaining": "remaining"
+    "X-RateLimit-Reset": "reset_time"
+    "Retry-After": "retry_after"
+    
+    # Binance specific
+    "X-MBX-USED-WEIGHT": "used_weight"
+    "X-MBX-USED-WEIGHT-1M": "used_weight_1m"
+    
+    # OKX specific  
+    "ratelimit-limit": "limit"
+    "ratelimit-remaining": "remaining"
+    "ratelimit-reset": "reset_time"
+    
+    # Coinbase specific
+    "CB-AFTER": "pagination_after"
+    "CB-BEFORE": "pagination_before"
+
+# Monitoring and alerting
+monitoring:
+  enabled: true
+  
+  # Metrics to collect
+  metrics:
+    requests_per_second: true
+    rate_limit_hits: true
+    backoff_delays: true
+    budget_usage: true
+    
+  # Alert conditions
+  alerts:
+    high_rate_limit_hit_rate: 0.1    # Alert if >10% requests are rate limited
+    budget_exhaustion_warning: 0.8   # Alert at 80% budget usage
+    excessive_backoff_delays: 5s     # Alert if avg backoff > 5s
+    
+  # Export interval
+  export_interval: 60s

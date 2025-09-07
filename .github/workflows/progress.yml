@@ -1,0 +1,109 @@
+name: Progress Enforcement
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  progress-check:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout PR
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+        
+    - name: Install dependencies
+      run: go mod download
+      
+    - name: Get baseline progress
+      id: baseline
+      run: |
+        git checkout origin/${{ github.base_ref }}
+        $baselinePercent = 0.0
+        if (Test-Path "PROGRESS.yaml") {
+          & pwsh -File "tools/progress.ps1" 2>$null
+          if (Test-Path ".progress") {
+            $baselinePercent = [double](Get-Content ".progress").Trim()
+          }
+        }
+        Write-Output "percent=$baselinePercent" >> $env:GITHUB_OUTPUT
+        Write-Host "Baseline progress: $baselinePercent%"
+        
+    - name: Get PR progress  
+      id: pr_progress
+      run: |
+        git checkout ${{ github.head_ref }}
+        & pwsh -File "tools/progress.ps1"
+        $prPercent = [double](Get-Content ".progress").Trim()
+        Write-Output "percent=$prPercent" >> $env:GITHUB_OUTPUT
+        Write-Host "PR progress: $prPercent%"
+        
+    - name: Count tests
+      id: test_counts
+      run: |
+        git checkout origin/${{ github.base_ref }}
+        $baselineTests = (go test ./... -list . 2>$null | Where-Object { $_ -match "^Test" }).Count
+        if (!$baselineTests) { $baselineTests = 0 }
+        
+        git checkout ${{ github.head_ref }}
+        $prTests = (go test ./... -list . 2>$null | Where-Object { $_ -match "^Test" }).Count
+        if (!$prTests) { $prTests = 0 }
+        
+        Write-Output "baseline=$baselineTests" >> $env:GITHUB_OUTPUT
+        Write-Output "pr=$prTests" >> $env:GITHUB_OUTPUT
+        Write-Host "Tests - Baseline: $baselineTests, PR: $prTests"
+        
+    - name: Check docs changes
+      id: docs_changed
+      run: |
+        $changedFiles = git diff --name-only origin/${{ github.base_ref }}..HEAD
+        $docsChanged = $changedFiles | Where-Object { $_ -match "(docs/|CHANGELOG)" }
+        $hasDocsChanges = $docsChanged.Count -gt 0
+        Write-Output "changed=$hasDocsChanges" >> $env:GITHUB_OUTPUT
+        Write-Host "Docs changed: $hasDocsChanges"
+        if ($hasDocsChanges) {
+          Write-Host "Changed files: $($docsChanged -join ', ')"
+        }
+        
+    - name: Enforce progress or improvements
+      run: |
+        $baselinePercent = [double]"${{ steps.baseline.outputs.percent }}"
+        $prPercent = [double]"${{ steps.pr_progress.outputs.percent }}"
+        $baselineTests = [int]"${{ steps.test_counts.outputs.baseline }}"
+        $prTests = [int]"${{ steps.test_counts.outputs.pr }}"
+        $docsChanged = "${{ steps.docs_changed.outputs.changed }}" -eq "True"
+        
+        $progressDelta = $prPercent - $baselinePercent
+        $testDelta = $prTests - $baselineTests
+        
+        Write-Host "🔍 Enforcement Check:"
+        Write-Host "  Progress: $baselinePercent% -> $prPercent% (delta: $progressDelta%)"
+        Write-Host "  Tests: $baselineTests -> $prTests (delta: $testDelta)"
+        Write-Host "  Docs changed: $docsChanged"
+        
+        $progressImproved = $progressDelta -ge 0.1
+        $testsImproved = $testDelta -gt 0
+        
+        if ($progressImproved -or $testsImproved -or $docsChanged) {
+          Write-Host "✅ PR provides measurable improvement:"
+          if ($progressImproved) { Write-Host "  - Progress increased by $progressDelta%" }
+          if ($testsImproved) { Write-Host "  - Tests increased by $testDelta" }
+          if ($docsChanged) { Write-Host "  - Documentation updated" }
+          exit 0
+        } else {
+          Write-Error "❌ PR must provide at least one of:"
+          Write-Error "  - Progress increase ≥0.1% (current: $progressDelta%)"
+          Write-Error "  - Test count increase (current: $testDelta)"
+          Write-Error "  - Documentation/CHANGELOG changes (current: none)"
+          exit 1
+        }
+        
+    - name: Run tests
+      run: go test ./... -count=1

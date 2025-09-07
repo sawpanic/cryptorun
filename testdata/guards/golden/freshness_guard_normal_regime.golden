@@ -1,0 +1,41 @@
+{
+  "summary": {
+    "test_name": "freshness_guard_normal",
+    "regime": "normal",
+    "timestamp": "2025-01-15T12:00:00Z",
+    "pass_count": 1,
+    "fail_count": 2,
+    "exit_code": 1,
+    "results": [
+      {
+        "symbol": "ADAUSD",
+        "status": "FAIL",
+        "failed_guard": "freshness",
+        "reason": "Price move 1.40×ATR \u003e 1.20×ATR limit",
+        "fix_hint": "Wait for price stabilization or increase ATR tolerance"
+      },
+      {
+        "symbol": "BTCUSD",
+        "status": "PASS"
+      },
+      {
+        "symbol": "ETHUSD",
+        "status": "FAIL",
+        "failed_guard": "freshness",
+        "reason": "Bar age 3 \u003e 2 bars maximum",
+        "fix_hint": "Wait for fresh data or increase bar age tolerance"
+      }
+    ],
+    "progress_log": [
+      "⏳ Starting guard evaluation (regime: normal)",
+      "📊 Processing 3 candidates",
+      "🛡️  [20%] Evaluating freshness guards...",
+      "🛡️  [40%] Evaluating fatigue guards...",
+      "🛡️  [60%] Evaluating liquidity guards...",
+      "🛡️  [80%] Evaluating caps guards...",
+      "🛡️  [100%] Evaluating final guards...",
+      "✅ Guard evaluation completed"
+    ]
+  },
+  "compact_table": "🛡️  Guard Results (normal regime)\n┌──────────┬────────┬─────────────┬──────────────────────────────────────┐\n│ Symbol   │ Status │ Failed Guard│ Reason                               │\n├──────────┼────────┼─────────────┼──────────────────────────────────────┤\n│ ADAUSD   │ ❌ FAIL │ freshness   │ Price move 1.40×ATR \u003e 1.20×ATR ...   │\n│ BTCUSD   │ ✅ PASS │ -           │ -                                    │\n│ ETHUSD   │ ❌ FAIL │ freshness   │ Bar age 3 \u003e 2 bars maximum           │\n└──────────┴────────┴─────────────┴──────────────────────────────────────┘\nSummary: 1 passed, 2 failed (exit code 1)\n\nProgress Log:\n  ⏳ Starting guard evaluation (regime: normal)\n  📊 Processing 3 candidates\n  🛡️  [20%] Evaluating freshness guards...\n  🛡️  [40%] Evaluating fatigue guards...\n  🛡️  [60%] Evaluating liquidity guards...\n  🛡️  [80%] Evaluating caps guards...\n  🛡️  [100%] Evaluating final guards...\n  ✅ Guard evaluation completed"
+}

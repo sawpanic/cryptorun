@@ -1,0 +1,42 @@
+{
+  "symbol": "BTCUSD",
+  "data_points": [
+    {
+      "timestamp": 1703980800,
+      "volume_usd": 1100000000.0,
+      "net_flow_usd": 60000000.0
+    },
+    {
+      "timestamp": 1704067200,
+      "volume_usd": 1250000000.0,
+      "net_flow_usd": 80000000.0
+    },
+    {
+      "timestamp": 1704153600,
+      "volume_usd": 1300000000.0,
+      "net_flow_usd": 45000000.0
+    },
+    {
+      "timestamp": 1704240000,
+      "volume_usd": 1150000000.0,
+      "net_flow_usd": 90000000.0
+    },
+    {
+      "timestamp": 1704326400,
+      "volume_usd": 1200000000.0,
+      "net_flow_usd": 70000000.0
+    },
+    {
+      "timestamp": 1704412800,
+      "volume_usd": 1350000000.0,
+      "net_flow_usd": 55000000.0
+    },
+    {
+      "timestamp": 1704499200,
+      "volume_usd": 1280000000.0,
+      "net_flow_usd": 75000000.0
+    }
+  ],
+  "last_updated": 1704499200,
+  "signature_hash": "etfhist123abc"
+}

@@ -1,0 +1,65 @@
+# CryptoRun Code Ownership
+# This file defines ownership for different parts of the repository
+# For more details, see: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Global fallback - repository maintainers
+* @anthropic/cryptorun-core
+
+# Domain layers - business logic ownership
+/src/domain/premove/ @anthropic/premove-team
+/src/domain/scoring/ @anthropic/scoring-team
+/src/domain/gates/ @anthropic/gates-team
+/src/domain/regime/ @anthropic/regime-team
+/src/domain/orthogonalization/ @anthropic/math-team
+
+# Application layer - use cases and pipelines
+/src/application/ @anthropic/application-team
+
+# Infrastructure layer - external integrations
+/src/infrastructure/kraken/ @anthropic/data-team
+/src/infrastructure/cache/ @anthropic/infra-team
+/src/infrastructure/circuits/ @anthropic/reliability-team
+
+# Interfaces - HTTP and CLI
+/src/interfaces/ @anthropic/interface-team
+/src/cmd/ @anthropic/cli-team
+
+# Internal core modules
+/internal/score/ @anthropic/scoring-team
+/internal/gates/ @anthropic/gates-team
+/internal/data/ @anthropic/data-team
+/internal/explain/ @anthropic/explain-team
+
+# Configuration and deployment
+/config/ @anthropic/config-team
+/deployments/ @anthropic/deploy-team
+/.githooks/ @anthropic/tooling-team
+/tools/ @anthropic/tooling-team
+
+# Testing ownership by type
+/tests/unit/ @anthropic/qa-team
+/tests/integration/ @anthropic/qa-team
+/tests/load/ @anthropic/performance-team
+/tests/conformance/ @anthropic/arch-team
+/tests/branding/ @anthropic/qa-team
+
+# Documentation
+/docs/ @anthropic/docs-team
+README.md @anthropic/docs-team
+CHANGELOG.md @anthropic/release-team
+CLAUDE.md @anthropic/ai-team
+
+# Security and governance
+.crun_write_lock @anthropic/security-team
+CODEOWNERS @anthropic/admin-team
+/scripts/security/ @anthropic/security-team
+
+# Build and CI/CD
+go.mod @anthropic/build-team
+go.sum @anthropic/build-team
+/.github/workflows/ @anthropic/ci-team
+/scripts/build/ @anthropic/build-team
+
+# Specific high-impact files requiring multiple approvals
+/internal/score/composite/ @anthropic/scoring-team @anthropic/arch-team
+/src/domain/premove/portfolio.go @anthropic/premove-team @anthropic/risk-team

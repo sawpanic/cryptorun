@@ -1,0 +1,55 @@
+{
+  "timestamp": "2025-09-06T20:30:00Z",
+  "current_regime": "trending_bull",
+  "regime_numeric": 1.0,
+  "health": {
+    "volatility_7d": 0.42,
+    "above_ma_pct": 0.68,
+    "breadth_thrust": 0.24,
+    "stability_score": 0.87
+  },
+  "weights": {
+    "momentum": 50.0,
+    "technical": 20.0,
+    "volume": 15.0,
+    "quality": 10.0,
+    "catalyst": 5.0
+  },
+  "switches_today": 1,
+  "avg_duration_hours": 19.5,
+  "next_evaluation": "2025-09-07T00:00:00Z",
+  "history": [
+    {
+      "timestamp": "2025-09-06T16:30:00Z",
+      "from_regime": "choppy",
+      "to_regime": "trending_bull",
+      "trigger": "volatility_threshold",
+      "confidence": 0.85,
+      "duration": 21600000000000
+    },
+    {
+      "timestamp": "2025-09-06T08:30:00Z",
+      "from_regime": "high_vol",
+      "to_regime": "choppy",
+      "trigger": "ma_crossover",
+      "confidence": 0.78,
+      "duration": 14400000000000
+    },
+    {
+      "timestamp": "2025-09-05T20:30:00Z",
+      "from_regime": "trending_bull",
+      "to_regime": "high_vol",
+      "trigger": "breadth_signal",
+      "confidence": 0.81,
+      "duration": 25200000000000
+    },
+    {
+      "timestamp": "2025-09-05T08:30:00Z",
+      "from_regime": "choppy",
+      "to_regime": "trending_bull",
+      "trigger": "manual_override",
+      "confidence": 0.73,
+      "duration": 28800000000000
+    }
+  ]
+}

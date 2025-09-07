@@ -1,0 +1,17 @@
+normal:
+  momentum_core: 0.425
+  technical_residual: 0.20
+  volume_residual: 0.15
+  quality_residual: 0.225
+
+calm:
+  momentum_core: 0.45
+  technical_residual: 0.215
+  volume_residual: 0.125
+  quality_residual: 0.21
+
+volatile:
+  momentum_core: 0.44
+  technical_residual: 0.18
+  volume_residual: 0.185
+  quality_residual: 0.195

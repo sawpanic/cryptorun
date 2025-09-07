@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    ports: ["5432:5432"]
+  cprotocol:
+    build: .
+    depends_on: [redis, timescaledb]

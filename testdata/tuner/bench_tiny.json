@@ -1,0 +1,57 @@
+[
+  {
+    "symbol": "BTC",
+    "timestamp": "2024-01-01T12:00:00Z",
+    "score": 89.5,
+    "regime": "normal",
+    "rank": 1,
+    "batch_size": 5,
+    "actual_gain": 0.0425,
+    "benchmark_hit": true,
+    "window": "24h"
+  },
+  {
+    "symbol": "ETH",
+    "timestamp": "2024-01-01T12:00:00Z",
+    "score": 76.2,
+    "regime": "normal",
+    "rank": 2,
+    "batch_size": 5,
+    "actual_gain": 0.0315,
+    "benchmark_hit": true,
+    "window": "24h"
+  },
+  {
+    "symbol": "SOL",
+    "timestamp": "2024-01-01T12:00:00Z",
+    "score": 71.8,
+    "regime": "normal",
+    "rank": 3,
+    "batch_size": 5,
+    "actual_gain": 0.0125,
+    "benchmark_hit": false,
+    "window": "24h"
+  },
+  {
+    "symbol": "ADA",
+    "timestamp": "2024-01-01T12:00:00Z",
+    "score": 65.3,
+    "regime": "normal",
+    "rank": 4,
+    "batch_size": 5,
+    "actual_gain": 0.008,
+    "benchmark_hit": false,
+    "window": "24h"
+  },
+  {
+    "symbol": "DOT",
+    "timestamp": "2024-01-01T12:00:00Z",
+    "score": 62.1,
+    "regime": "normal",
+    "rank": 5,
+    "batch_size": 5,
+    "actual_gain": -0.005,
+    "benchmark_hit": false,
+    "window": "24h"
+  }
+]

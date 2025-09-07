@@ -1,0 +1,202 @@
+# CryptoRun Benchmark Configuration
+# Controls benchmarking behavior against external references
+
+# Top Gainers Benchmark Configuration
+topgainers:
+  # Cache TTL (minimum 300s to respect rate limits)
+  ttl: 300s
+  
+  # Maximum number of top gainers to fetch per window
+  limit: 20
+  
+  # Minimum sample size for generating recommendations
+  min_sample: 20
+  
+  # Time windows to analyze (valid: 1h, 24h, 7d)
+  windows:
+    - "1h"
+    - "24h" 
+    - "7d"
+  
+  # Output directory for benchmark artifacts
+  output_dir: "out/bench"
+  
+  # Audit directory for progress traces  
+  audit_dir: "out/audit"
+
+# Scoring Configuration
+scoring:
+  # Composite score weights (must sum to 1.0)
+  weights:
+    symbol_overlap: 0.6      # Weight for symbol overlap (Jaccard similarity)
+    rank_correlation: 0.3    # Weight for rank correlation (Spearman-like)
+    percentage_align: 0.1    # Weight for percentage alignment (future)
+  
+  # Alignment thresholds for interpretation
+  thresholds:
+    high_alignment: 0.7      # >70% = High alignment
+    medium_alignment: 0.3    # 30-70% = Medium alignment
+                             # <30% = Low alignment
+
+# Diagnostics Configuration
+diagnostics:
+  # Sample size requirements - CRITICAL for spec compliance
+  sample_size:
+    min_per_window: 20  # Suppress tuning advice when n < 20
+    required_for_recommendations: true
+    insufficient_window_handling: "disable_recommendations"
+  
+  # Price series sourcing (exchange-native first) - SPEC COMPLIANT
+  series:
+    exchange_native_first: true
+    preferred_exchanges:
+      - "binance"      # Preferred for CEX data
+      - "kraken"       # Backup exchange-native
+      - "coinbase"     # Tertiary exchange-native
+      - "okx"          # Additional exchange-native
+    fallback_aggregators:
+      - "coingecko"    # Must be labeled as aggregator_fallback
+      - "dexscreener"  # Must be labeled as aggregator_fallback
+    require_labeling: true
+
+  # Spec-compliant P&L simulation - THE CORE CHANGE
+  simulation:
+    entry_logic: "first_bar_after_signal_with_gates_guards"
+    exit_hierarchy:
+      - "hard_stop"           # 5% loss limit
+      - "venue_health"        # Spread >100bps or depth <$50k  
+      - "time_limit_48h"      # Maximum holding period
+      - "accel_reversal"      # Momentum acceleration reversal
+      - "momentum_fade"       # RSI overbought >80
+      - "profit_target"       # 15% gain target
+    regime_aware: true        # Use regime snapshot at scan time
+
+  # Gates configuration (for entry validation)
+  gates:
+    min_score: 2.0
+    max_spread_bps: 50.0
+    min_depth_usd: 100000.0
+    min_vadr: 1.75
+
+  # Guards configuration (regime-aware)
+  guards:
+    fatigue:
+      baseline_threshold: 12.0      # Chop/high-vol regime
+      trending_multiplier: 1.5      # Relaxed for trending (18%)
+      rsi_threshold: 70.0
+    freshness:
+      max_bars_age: 2
+      trending_max_bars_age: 3      # Relaxed for trending
+      atr_factor: 1.2
+    late_fill:
+      max_delay_seconds: 30
+      trending_max_delay_seconds: 45  # Relaxed for trending
+
+  # Output configuration - ENFORCE SPEC COMPLIANCE
+  output:
+    include_raw_24h: true           # For context only
+    primary_metric: "spec_pnl_pct"  # Used for recommendations
+    suppress_raw_advice: true       # NEVER use raw_24h for advice
+    show_both_columns: true         # Side-by-side display
+    
+  # Diagnostic recommendations - SPEC COMPLIANT ONLY
+  recommendations:
+    base_on_spec_pnl_only: true     # CRITICAL: Only spec_pnl_pct
+    min_confidence: 0.75            # Minimum confidence for advice
+    max_recommendations: 5          # Limit recommendation count
+  
+  # Output directory for diagnostic reports
+  output_dir: "out/bench/diagnostics"
+
+# Rate Limiting & API Compliance
+api:
+  # CoinGecko API constraints
+  coingecko:
+    requests_per_minute: 10  # Free tier limit
+    requests_per_month: 10000 # Monthly budget
+    base_url: "https://api.coingecko.com/api/v3"
+    timeout: 30s
+    user_agent: "CryptoRun/v3.2.1 Benchmark"
+    
+  # Cache behavior
+  cache:
+    enabled: true
+    directory: "out/bench/.cache"
+    cleanup_after: 24h       # Clean up old cache files
+    
+# Progress Streaming
+progress:
+  # Default progress mode for benchmarks
+  default_mode: "auto"      # auto|plain|json
+  
+  # Progress phases and their target percentages
+  phases:
+    init: 10                # 0-10%: Initialization
+    fetch: 50               # 10-50%: Data fetching  
+    analyze: 70             # 50-70%: Analysis
+    score: 90               # 70-90%: Scoring
+    output: 100             # 90-100%: Output generation
+    
+# Output Configuration
+output:
+  # File formats to generate
+  formats:
+    json: true              # JSON results for programmatic use
+    markdown: true          # Markdown reports for human reading
+    csv: false              # CSV exports (future)
+    
+  # Include detailed breakdowns
+  include_details: true
+  
+  # Artifact retention
+  retention:
+    keep_individual_windows: true  # Keep per-window JSON files
+    keep_cache_files: true         # Retain cache for debugging
+    cleanup_after_days: 30         # Clean up old artifacts
+
+# Integration Settings
+integration:
+  # Whether to trigger actual scans or use mock data
+  use_live_scans: false     # true = trigger momentum scans, false = use mock data
+  
+  # Scan parameters when using live scans
+  scan_config:
+    max_sample: 20
+    venues: ["kraken", "okx", "coinbase"]
+    regime: "bull"
+    
+  # Mock data behavior
+  mock_data:
+    realistic_percentages: true    # Generate realistic gain percentages
+    overlap_ratio: 0.45            # Target overlap ratio for testing
+    
+  # P&L calculation method
+  pnl_method: "spec_compliant"    # spec_compliant|raw_market
+  
+  # Entry/Exit simulation
+  simulate_gates_guards: true     # Apply actual gates/guards for entry validation
+  simulate_exit_hierarchy: true   # Use full exit hierarchy (stops, time limits, etc.)
+    
+# Validation Rules
+validation:
+  # Minimum cache TTL enforcement
+  min_ttl_seconds: 300
+  
+  # Valid time windows
+  valid_windows: ["1h", "24h", "7d"]
+  
+  # Maximum limits to prevent excessive API usage
+  max_limit: 100
+  
+  # Required fields for composite scoring
+  required_score_weights: ["symbol_overlap", "rank_correlation", "percentage_align"]
+  
+  # Minimum sample size enforcement for recommendations
+  min_sample_enforcement: true
+  
+  # Exchange-native data requirements
+  exchange_native_priority: ["binance", "kraken", "coinbase"]
+  
+  # Aggregator fallback settings
+  allow_aggregator_fallback: true
+  aggregator_fallback_label: "aggregator_fallback"

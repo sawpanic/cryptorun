@@ -1,0 +1,97 @@
+# Operational KPIs and Circuit Breaker Configuration
+# Controls budget guards, call quotas, venue health, correlation caps, and emergency toggles
+
+kpi:
+  # Rolling window sizes for KPI calculation
+  windows:
+    requests_per_min: 60  # seconds for request rate calculation
+    error_rate: 300       # seconds for error rate calculation (5min)
+    cache_hit_rate: 300   # seconds for cache hit rate calculation (5min)
+    
+  # Alert thresholds
+  thresholds:
+    error_rate_warn: 0.05     # 5% error rate warning
+    error_rate_critical: 0.15  # 15% error rate critical
+    cache_hit_rate_warn: 0.75  # 75% cache hit rate warning
+    cache_hit_rate_critical: 0.50  # 50% cache hit rate critical
+    requests_per_min_warn: 100     # requests/min warning
+    requests_per_min_critical: 200  # requests/min critical
+
+guards:
+  # Budget guard - hourly API call limits
+  budget:
+    enabled: true
+    hourly_limit: 3600        # calls per hour
+    soft_warn_percent: 0.8    # warn at 80% of budget
+    hard_stop_percent: 0.95   # stop at 95% of budget
+    
+  # Call quota guard - per provider limits
+  call_quota:
+    enabled: true
+    providers:
+      kraken:
+        calls_per_minute: 60
+        burst_limit: 10
+      binance:
+        calls_per_minute: 1200
+        burst_limit: 100
+      coinbase:
+        calls_per_minute: 1000
+        burst_limit: 50
+      okx:
+        calls_per_minute: 600
+        burst_limit: 30
+        
+  # Correlation cap - prevent highly correlated signals
+  correlation:
+    enabled: true
+    max_correlation: 0.85     # maximum correlation threshold
+    top_n_signals: 10         # check correlation among top N signals
+    lookback_periods: 24      # periods to calculate correlation
+    
+  # Venue health thresholds
+  venue_health:
+    enabled: true
+    min_uptime_percent: 0.95  # 95% uptime required
+    max_latency_ms: 5000      # 5 second max latency
+    min_depth_usd: 50000      # minimum depth in USD
+    max_spread_bps: 100       # maximum spread in basis points
+
+switches:
+  # Emergency toggles
+  emergency:
+    disable_all_scanners: false
+    disable_live_data: false
+    read_only_mode: false
+    
+  # Provider-specific toggles
+  providers:
+    kraken:
+      enabled: true
+      allow_websocket: true
+      allow_rest: true
+    binance:
+      enabled: true
+      allow_websocket: true
+      allow_rest: true
+    coinbase:
+      enabled: true
+      allow_websocket: true
+      allow_rest: true
+    okx:
+      enabled: true
+      allow_websocket: true
+      allow_rest: true
+      
+  # Venue-specific toggles
+  venues:
+    kraken_usd: true
+    binance_usd: true
+    coinbase_usd: true
+    okx_usd: true
+
+artifacts:
+  # Status snapshot configuration
+  output_dir: "./artifacts/ops"
+  snapshot_filename: "status_snapshot.csv"
+  retention_days: 30

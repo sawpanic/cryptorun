@@ -1,0 +1,170 @@
+# CryptoRun Circuit Breaker Configuration  
+# Provider-aware fault tolerance with fallback chains
+
+circuit_breakers:
+  enabled: true
+  
+  # Global circuit breaker settings
+  global:
+    default_timeout: 30s          # How long circuit stays open
+    default_max_requests: 5       # Max requests in half-open state
+    default_interval: 60s         # Reset interval for counters
+    state_change_logging: true    # Log state transitions
+    
+  # Provider-specific circuit breaker configs
+  providers:
+    binance:
+      name: "Binance Exchange"
+      max_requests: 10            # Allow more requests due to higher capacity
+      interval: 60s               # Reset counters every 60s
+      timeout: 30s                # Stay open for 30s after trip
+      
+      # Trip conditions
+      trip_conditions:
+        error_rate_threshold: 30.0         # Trip if >30% requests fail
+        consecutive_failures: 5            # Trip after 5 consecutive failures
+        latency_threshold_ms: 5000         # Trip if P99 latency >5s
+        monthly_quota_exhausted: true      # Trip if monthly quota reached
+        
+      # What constitutes a failure
+      failure_conditions:
+        http_status_codes: [429, 500, 502, 503, 504]
+        timeout_errors: true
+        connection_errors: true
+        rate_limit_exceeded: true
+        
+    kraken:
+      name: "Kraken Exchange"  
+      max_requests: 3             # Lower capacity, fewer test requests
+      interval: 90s               # Longer reset interval  
+      timeout: 60s                # Longer timeout due to stricter limits
+      
+      trip_conditions:
+        error_rate_threshold: 25.0         # Trip at lower error rate
+        consecutive_failures: 3            # Trip sooner
+        latency_threshold_ms: 3000         # Lower latency threshold
+        monthly_quota_exhausted: true
+        
+      failure_conditions:
+        http_status_codes: [429, 500, 502, 503, 504]
+        timeout_errors: true
+        connection_errors: true
+        rate_limit_exceeded: true
+        api_counter_exceeded: true         # Kraken-specific
+        
+    coingecko:
+      name: "CoinGecko API"
+      max_requests: 2             # Very conservative for free tier
+      interval: 120s              # Longer intervals for free tier
+      timeout: 90s                # Longer timeout
+      
+      trip_conditions:
+        error_rate_threshold: 20.0         # Trip at low error rate
+        consecutive_failures: 2            # Trip quickly to preserve quota
+        latency_threshold_ms: 2000         # Lower latency threshold
+        monthly_quota_exhausted: true      # Critical for free tier
+        
+      failure_conditions:
+        http_status_codes: [429, 500, 502, 503, 504]
+        timeout_errors: true
+        connection_errors: true
+        rate_limit_exceeded: true
+        quota_exceeded: true               # CoinGecko-specific
+        
+    moralis:
+      name: "Moralis Web3 API"
+      max_requests: 2             # Conservative for CU-based pricing
+      interval: 120s              # Longer reset interval
+      timeout: 120s               # Longest timeout
+      
+      trip_conditions:
+        error_rate_threshold: 15.0         # Very sensitive
+        consecutive_failures: 2            # Trip immediately
+        latency_threshold_ms: 1000         # Fast response expected
+        monthly_quota_exhausted: true      # Critical for CU limits
+        
+      failure_conditions:
+        http_status_codes: [429, 500, 502, 503, 504]
+        timeout_errors: true
+        connection_errors: true
+        compute_units_exceeded: true       # Moralis-specific CU limit
+
+# Fallback chain configuration
+fallback_chains:
+  # Market data fallback chain
+  market_data:
+    primary: "binance"
+    secondary: ["kraken", "coingecko"]
+    tertiary: []
+    
+    # Chain behavior
+    max_fallback_attempts: 2     # Try at most 2 fallbacks
+    fallback_timeout: 10s        # Timeout for each fallback attempt
+    abandon_after_failures: 3    # Abandon chain after 3 total failures
+    
+  # Token metadata fallback chain  
+  token_metadata:
+    primary: "coingecko"
+    secondary: ["moralis"]
+    tertiary: []
+    
+    max_fallback_attempts: 1
+    fallback_timeout: 15s
+    abandon_after_failures: 2
+    
+  # On-chain data fallback chain
+  on_chain_data:
+    primary: "moralis"
+    secondary: []               # No fallbacks for on-chain data
+    tertiary: []
+    
+    max_fallback_attempts: 0
+    fallback_timeout: 30s
+    abandon_after_failures: 1
+
+# Circuit breaker actions
+actions:
+  on_circuit_open:
+    - action: "log_warning"
+      params:
+        message: "Circuit breaker opened for {provider}"
+        level: "warn"
+        
+    - action: "switch_to_fallback"
+      params:
+        fallback_chain: "{fallback_chain}"
+        
+    - action: "extend_cache_ttl"
+      params:
+        multiplier: 2.0          # Double cache TTL when circuit opens
+        
+    - action: "emit_metric"
+      params:
+        metric_name: "circuit_breaker_opened"
+        tags: ["provider:{provider}"]
+        
+  on_circuit_half_open:
+    - action: "log_info"
+      params:
+        message: "Circuit breaker probing {provider} recovery"
+        level: "info"
+        
+    - action: "emit_metric"
+      params:
+        metric_name: "circuit_breaker_probing"
+        tags: ["provider:{provider}"]
+        
+  on_circuit_closed:
+    - action: "log_info"
+      params:
+        message: "Circuit breaker closed for {provider} - service restored"
+        level: "info"
+        
+    - action: "restore_cache_ttl"
+      params:
+        reset_to_default: true
+        
+    - action: "emit_metric"
+      params:
+        metric_name: "circuit_breaker_closed"
+        tags: ["provider:{provider}"]

@@ -1,0 +1,105 @@
+internal\premove\api_test.go:551:1: imports must appear before other declarations
+tests\unit\http\endpoints_test.go:399:10: expected operand, found ':='
+# cryptorun/internal/data/derivs
+internal\data\derivs\openinterest.go:615:14: invalid operation: operator - not defined on currentOI (variable of type string)
+internal\data\derivs\openinterest.go:618:9: cannot use currentOI (variable of type string) as float64 value in return statement
+internal\data\derivs\openinterest.go:639:13: ois.OIChange24h undefined (type *OpenInterestSnapshot has no field or method OIChange24h)
+internal\data\derivs\openinterest.go:651:14: ois.OIChange24h undefined (type *OpenInterestSnapshot has no field or method OIChange24h)
+internal\data\derivs\etf.go:5:2: "encoding/json" imported and not used
+internal\data\derivs\etf.go:7:2: "io" imported and not used
+# cryptorun/internal/reports/regime
+internal\reports\regime\analyzer.go:77:28: invalid operation: operator % not defined on float64(len(flips) * 13) (value of type float64)
+internal\reports\regime\analyzer.go:93:30: invalid operation: operator % not defined on float64(len(flips) * 7) (value of type float64)
+internal\reports\regime\analyzer.go:94:30: invalid operation: operator % not defined on float64(len(flips) * 11) (value of type float64)
+internal\reports\regime\analyzer.go:95:30: invalid operation: operator % not defined on float64(len(flips) * 13) (value of type float64)
+internal\reports\regime\analyzer.go:96:30: invalid operation: operator % not defined on float64(len(flips) * 5) (value of type float64)
+internal\reports\regime\analyzer.go:97:30: invalid operation: operator % not defined on float64(len(flips) * 3) (value of type float64)
+internal\reports\regime\analyzer.go:217:20: declared and not used: lift
+internal\reports\regime\generator.go:10:2: "strings" imported and not used
+# cryptorun/internal/microstructure
+internal\microstructure\depth.go:143:6: declared and not used: isAscending
+internal\microstructure\evaluator.go:238:2: declared and not used: maxScore
+# cryptorun/internal/ui/menu
+internal\ui\menu\page_premove_board.go:127:31: cannot use ui.runner.GetExecutionSummary() (value of type map[string]interface{}) as *premove.ExecutionMetrics value in assignment
+internal\ui\menu\page_premove_board.go:200:4: unknown field AlertType in struct literal of type premove.AlertRecord
+internal\ui\menu\page_premove_board.go:201:4: unknown field Severity in struct literal of type premove.AlertRecord
+internal\ui\menu\page_premove_board.go:203:4: unknown field Message in struct literal of type premove.AlertRecord
+internal\ui\menu\page_premove_board.go:205:4: unknown field Source in struct literal of type premove.AlertRecord
+internal\ui\menu\page_premove_board.go:230:3: unknown field TotalExecutions in struct literal of type premove.ExecutionMetrics
+internal\ui\menu\page_premove_board.go:231:3: unknown field SuccessfulExecutions in struct literal of type premove.ExecutionMetrics
+internal\ui\menu\page_premove_board.go:233:3: unknown field AvgFillTimeMs in struct literal of type premove.ExecutionMetrics
+internal\ui\menu\page_premove_board.go:234:3: unknown field AvgQualityScore in struct literal of type premove.ExecutionMetrics
+internal\ui\menu\page_premove_board.go:235:3: unknown field AcceptableSlippageRate in struct literal of type premove.ExecutionMetrics
+internal\ui\menu\page_premove_board.go:235:3: too many errors
+# cryptorun/internal/application/pipeline
+internal\application\pipeline\scan.go:109:9: cannot use NewLegacyScanPipeline(opts.SnapshotDir) (value of type *LegacyScanPipeline) as ScanPipelineInterface value in return statement: *LegacyScanPipeline does not implement ScanPipelineInterface (missing method ScanUniverse)
+internal\application\pipeline\scan.go:118:21: pipeline.WriteJSONL undefined (type *LegacyScanPipeline has no field or method WriteJSONL)
+internal\application\pipeline\scan.go:124:21: pipeline.WriteLedger undefined (type *LegacyScanPipeline has no field or method WriteLedger)
+internal\application\pipeline\scan.go:156:2: embedded field type cannot be a pointer to an interface
+internal\application\pipeline\scan.go:161:17: cannot use NewScanPipeline(snapshotDir) (value of interface type ScanPipeline) as *ScanPipeline value in struct literal: ScanPipeline does not implement *ScanPipeline (type *ScanPipeline is pointer to interface, not interface)
+internal\application\pipeline\scan.go:202:6: FactorSet redeclared in this block
+	internal\application\pipeline\orthogonalization.go:11:6: other declaration of FactorSet
+internal\application\pipeline\scoring.go:16:6: CompositeScore redeclared in this block
+	internal\application\pipeline\scan.go:201:6: other declaration of CompositeScore
+internal\application\pipeline\scoring.go:63:6: RegimeWeights redeclared in this block
+	internal\application\pipeline\momentum.go:59:6: other declaration of RegimeWeights
+internal\application\pipeline\scoring.go:74:18: rw.Momentum undefined (type RegimeWeights has no field or method Momentum)
+internal\application\pipeline\scoring.go:75:18: rw.Volume undefined (type RegimeWeights has no field or method Volume)
+internal\application\pipeline\scoring.go:75:18: too many errors
+# cryptorun/internal/infrastructure/websocket
+internal\infrastructure\websocket\normalizers.go:184:2: struct field Count repeats json tag "c" also at normalizers.go:173
+# cryptorun/internal/application/guards/testkit
+internal\application\guards\testkit\golden_helpers.go:23:6: GuardResult redeclared in this block
+	internal\application\guards\testkit\fixtures.go:160:6: other declaration of GuardResult
+internal\application\guards\testkit\seeded_builders.go:66:6: ExpectedGuardResult redeclared in this block
+	internal\application\guards\testkit\fixtures.go:50:6: other declaration of ExpectedGuardResult
+# cryptorun/internal/bench/diagnostics
+internal\bench\diagnostics\analyzer.go:9:2: "sort" imported and not used
+internal\bench\diagnostics\analyzer.go:163:27: da.regimeDetector undefined (type *DiagnosticsAnalyzer has no field or method regimeDetector)
+internal\bench\diagnostics\analyzer.go:334:15: da.getRegimeAwareConfig undefined (type *DiagnosticsAnalyzer has no field or method getRegimeAwareConfig)
+internal\bench\diagnostics\analyzer.go:337:17: da.findCompliantEntry undefined (type *DiagnosticsAnalyzer has no field or method findCompliantEntry)
+internal\bench\diagnostics\analyzer.go:343:16: da.findEarliestExit undefined (type *DiagnosticsAnalyzer has no field or method findEarliestExit)
+# cryptorun/internal/application/guards
+# [cryptorun/internal/application/guards]
+vet.exe: internal\application\guards\latefill_test.go:264:2: declared and not used: mockTime
+# cryptorun/internal/bench/common
+vet.exe: internal\bench\common\forward_returns.go:33:7: declared and not used: err
+# cryptorun/internal/domain/guards
+internal\domain\guards\evaluator.go:4:2: "fmt" imported and not used
+internal\domain\guards\late_fill.go:5:2: "time" imported and not used
+# cryptorun/internal/domain/microstructure
+internal\domain\microstructure\checker.go:145:56: cannot use adv (variable of type int) as float64 value in argument to c.ValidateOrderBook
+internal\domain\microstructure\proofs.go:105:14: undefined: filepath.Contains
+# cryptorun/internal/microstructure
+# [cryptorun/internal/microstructure]
+vet.exe: internal\microstructure\depth.go:143:6: declared and not used: isAscending
+# cryptorun/internal/tune
+# [cryptorun/internal/tune]
+vet.exe: internal\tune\loader_smoke90_test.go:9:2: "time" imported and not used
+# cryptorun/internal/social
+# [cryptorun/internal/social]
+vet.exe: internal\social\api.go:587:16: undefined: math
+# cryptorun/out/review/stage_20250906_133751/internal/infrastructure/websocket
+out\review\stage_20250906_133751\internal\infrastructure\websocket\normalizers.go:184:2: struct field Count repeats json tag "c" also at normalizers.go:173
+# cryptorun/src/application/gates
+vet.exe: src\application\gates\funding_divergence.go:9:2: derivs redeclared in this block
+# cryptorun/src/internal/artifacts
+# [cryptorun/src/internal/artifacts]
+vet.exe: src\internal\artifacts\writer.go:11:2: "strings" imported and not used
+# cryptorun/tests/conformance
+# [cryptorun/tests/conformance]
+vet.exe: tests\conformance\momentum_protection_test.go:68:6: declared and not used: i
+# cryptorun/tests/empirical
+# [cryptorun/tests/empirical]
+vet.exe: tests\empirical\gate_alignment_test.go:69:2: declared and not used: analysis4h
+# cryptorun/tests/integration/premove
+# [cryptorun/tests/integration/premove]
+vet.exe: tests\integration\premove\backtest_pit_test.go:18:21: undefined: premove.NewPITRecordLoader
+# cryptorun/src/application/factors
+vet.exe: src\application\factors\pipeline.go:185:35: momentumInputs.Timestamp undefined (type momentum.CoreInputs has no field or method Timestamp)
+# cryptorun/tests/unit/catalyst
+# [cryptorun/tests/unit/catalyst]
+vet.exe: tests\unit\catalyst\heat_test.go:407:14: undefined: fmt
+# cryptorun/tests/unit/premove
+# [cryptorun/tests/unit/premove]
+vet.exe: tests\unit\premove\alerts_test.go:435:4: unknown field MaxAlertsPerHour in struct literal of type "cryptorun/src/application/premove".FatigueConfig

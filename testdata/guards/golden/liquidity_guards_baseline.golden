@@ -1,0 +1,41 @@
+{
+  "summary": {
+    "test_name": "liquidity_guards",
+    "regime": "normal",
+    "timestamp": "2025-01-15T12:00:00Z",
+    "pass_count": 1,
+    "fail_count": 2,
+    "exit_code": 1,
+    "results": [
+      {
+        "symbol": "ALTCOIN",
+        "status": "FAIL",
+        "failed_guard": "spread",
+        "reason": "Spread 75.0 bps \u003e 50.0 bps limit",
+        "fix_hint": "Wait for tighter spread or increase spread tolerance"
+      },
+      {
+        "symbol": "BTCUSD",
+        "status": "PASS"
+      },
+      {
+        "symbol": "ILLIQUID",
+        "status": "FAIL",
+        "failed_guard": "depth",
+        "reason": "Depth $80k \u003c $100k minimum, VADR 1.5× \u003c 1.75× minimum",
+        "fix_hint": "Wait for improved liquidity or reduce depth requirements"
+      }
+    ],
+    "progress_log": [
+      "⏳ Starting guard evaluation (regime: normal)",
+      "📊 Processing 3 candidates",
+      "🛡️  [20%] Evaluating freshness guards...",
+      "🛡️  [40%] Evaluating fatigue guards...",
+      "🛡️  [60%] Evaluating liquidity guards...",
+      "🛡️  [80%] Evaluating caps guards...",
+      "🛡️  [100%] Evaluating final guards...",
+      "✅ Guard evaluation completed"
+    ]
+  },
+  "compact_table": "🛡️  Guard Results (normal regime)\n┌──────────┬────────┬─────────────┬──────────────────────────────────────┐\n│ Symbol   │ Status │ Failed Guard│ Reason                               │\n├──────────┼────────┼─────────────┼──────────────────────────────────────┤\n│ ALTCOIN  │ ❌ FAIL │ spread      │ Spread 75.0 bps \u003e 50.0 bps limit     │\n│ BTCUSD   │ ✅ PASS │ -           │ -                                    │\n│ ILLIQUID │ ❌ FAIL │ depth       │ Depth $80k \u003c $100k minimum, VADR ... │\n└──────────┴────────┴─────────────┴──────────────────────────────────────┘\nSummary: 1 passed, 2 failed (exit code 1)\n\nProgress Log:\n  ⏳ Starting guard evaluation (regime: normal)\n  📊 Processing 3 candidates\n  🛡️  [20%] Evaluating freshness guards...\n  🛡️  [40%] Evaluating fatigue guards...\n  🛡️  [60%] Evaluating liquidity guards...\n  🛡️  [80%] Evaluating caps guards...\n  🛡️  [100%] Evaluating final guards...\n  ✅ Guard evaluation completed"
+}

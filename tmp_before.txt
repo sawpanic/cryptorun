@@ -1,0 +1,11 @@
+		
+		ui.SafePrintln("5. ❌ COMPLETE FACTORS (DEPRECATED | 124.8% weight sum error)")
+		
+		ui.SafePrintln("6. ❌ ENHANCED MATRIX (DEPRECATED | Factor double counting)")
+		
+		ui.SafePrintln("7. 📈 Analysis & Tools (Backtesting, Paper Trading, Algorithm Analyst, Market Analyst)")
+		ui.SafePrintln("8. 🌐 Web Dashboard (Browser Interface)")
+		ui.SafePrintln("0. Exit")
+		
+		// Flush buffer before user input
+		ui.FlushOutput()

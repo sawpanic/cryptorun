@@ -1,0 +1,57 @@
+[
+  {
+    "symbol": "BTCUSDT",
+    "timestamp": "2025-01-01T12:00:00Z",
+    "score": 78.5,
+    "regime": "normal",
+    "forward_return": 0.032,
+    "hit": true,
+    "window": "4h",
+    "entry_price": 50000.0,
+    "exit_price": 51600.0
+  },
+  {
+    "symbol": "ETHUSDT",
+    "timestamp": "2025-01-01T13:00:00Z",
+    "score": 82.3,
+    "regime": "normal",
+    "forward_return": 0.041,
+    "hit": true,
+    "window": "4h",
+    "entry_price": 3000.0,
+    "exit_price": 3123.0
+  },
+  {
+    "symbol": "ADAUSDT",
+    "timestamp": "2025-01-01T14:00:00Z",
+    "score": 65.2,
+    "regime": "volatile",
+    "forward_return": 0.018,
+    "hit": false,
+    "window": "1h",
+    "entry_price": 0.45,
+    "exit_price": 0.4581
+  },
+  {
+    "symbol": "DOTUSDT",
+    "timestamp": "2025-01-01T15:00:00Z",
+    "score": 91.7,
+    "regime": "calm",
+    "forward_return": 0.055,
+    "hit": true,
+    "window": "12h",
+    "entry_price": 8.50,
+    "exit_price": 8.967
+  },
+  {
+    "symbol": "SOLUSDT",
+    "timestamp": "2025-01-01T16:00:00Z",
+    "score": 73.1,
+    "regime": "normal",
+    "forward_return": 0.021,
+    "hit": false,
+    "window": "1h",
+    "entry_price": 120.0,
+    "exit_price": 122.52
+  }
+]

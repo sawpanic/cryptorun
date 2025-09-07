@@ -1,0 +1,53 @@
+# CryptoRun Production Scheduler Configuration
+# Manages hot/warm momentum scanning and regime refresh cycles
+
+global:
+  artifacts_dir: "artifacts/signals"
+  log_level: "info"
+  timezone: "UTC"
+
+jobs:
+  # Hot scan: Top-30 ADV universe with momentum + premove every 15 minutes
+  - name: "scan.hot"
+    schedule: "*/15 * * * *"  # Every 15 minutes
+    type: "scan.hot"
+    description: "Hot momentum + premove scan for top-30 ADV universe"
+    enabled: true
+    config:
+      universe: "top30"
+      venues: ["kraken", "okx", "coinbase"]
+      max_sample: 30
+      ttl: 300
+      top_n: 20
+      premove: true
+      output_dir: "artifacts/signals"
+
+  # Warm scan: Remaining universe with cached sources every 2 hours
+  - name: "scan.warm"
+    schedule: "0 */2 * * *"   # Every 2 hours at minute 0
+    type: "scan.warm"
+    description: "Warm scan for remaining universe with cached sources"
+    enabled: true
+    config:
+      universe: "remaining"
+      venues: ["kraken"]
+      max_sample: 100
+      ttl: 1800
+      top_n: 50
+      premove: false
+      output_dir: "artifacts/signals"
+
+  # Regime refresh: Detect market regime every 4 hours
+  - name: "regime.refresh"
+    schedule: "0 */4 * * *"   # Every 4 hours at minute 0
+    type: "regime.refresh"
+    description: "Refresh market regime detection (realized_vol_7d, %>20MA, breadth thrust)"
+    enabled: true
+    config:
+      universe: "all"
+      venues: ["kraken", "okx", "coinbase"]
+      max_sample: 200
+      ttl: 3600
+      top_n: 100
+      premove: false
+      output_dir: "artifacts/regime"

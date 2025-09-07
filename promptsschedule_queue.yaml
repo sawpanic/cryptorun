@@ -1,0 +1,17 @@
+queue:
+  - title: S1-LoopSignals
+    file: prompts/SCHED.LOOP.SIGNALS.txt
+    in: "2m"
+    mode: auto
+  - title: S2-GuardsProviders
+    file: prompts/SCHED.GUARDS.PROVIDERS.txt
+    in: "5m"
+    mode: auto
+  - title: S3-LoopPremove
+    file: prompts/SCHED.LOOP.PREMOVE.txt
+    in: "10m"
+    mode: auto
+  - title: S4-Reports
+    file: prompts/SCHED.REPORTS.DAILY.WEEKLY.txt
+    in: "20m"
+    mode: auto
