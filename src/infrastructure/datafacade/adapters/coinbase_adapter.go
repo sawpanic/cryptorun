@@ -2,7 +2,6 @@ package adapters
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -224,10 +223,8 @@ func (c *CoinbaseAdapter) StreamOpenInterest(ctx context.Context, symbol string)
 // REST API methods (WARM data)
 
 func (c *CoinbaseAdapter) GetTrades(ctx context.Context, symbol string, limit int) ([]interfaces.Trade, error) {
-	// Check cache first
-	if trades, found, err := c.cache.GetCachedTrades(ctx, "coinbase", symbol); err == nil && found {
-		return trades, nil
-	}
+	// TODO: Implement proper caching using CacheLayer interface
+	// cache.Get() and cache.Set() methods
 	
 	// Check circuit breaker
 	if err := c.circuitBreaker.Call(ctx, "fetch_trades", func() error {
@@ -255,7 +252,7 @@ func (c *CoinbaseAdapter) GetTrades(ctx context.Context, symbol string, limit in
 		timestamp, _ := time.Parse(time.RFC3339, trade.Time)
 		
 		trades[i] = interfaces.Trade{
-			ID:        trade.TradeID,
+			TradeID:   trade.TradeID,
 			Symbol:    symbol,
 			Price:     price,
 			Quantity:  quantity,
@@ -265,17 +262,14 @@ func (c *CoinbaseAdapter) GetTrades(ctx context.Context, symbol string, limit in
 		}
 	}
 	
-	// Cache the result
-	c.cache.CacheTrades(ctx, "coinbase", symbol, trades, 30*time.Second)
+	// TODO: Cache the result using CacheLayer.Set()
 	
 	return trades, nil
 }
 
 func (c *CoinbaseAdapter) GetKlines(ctx context.Context, symbol, interval string, limit int) ([]interfaces.Kline, error) {
 	// Check cache first
-	if klines, found, err := c.cache.GetCachedKlines(ctx, "coinbase", symbol, interval); err == nil && found {
-		return klines, nil
-	}
+	// TODO: Implement proper caching using CacheLayer interface
 	
 	// Check circuit breaker
 	if err := c.circuitBreaker.Call(ctx, "fetch_klines", func() error {
@@ -328,16 +322,14 @@ func (c *CoinbaseAdapter) GetKlines(ctx context.Context, symbol, interval string
 	}
 	
 	// Cache the result
-	c.cache.CacheKlines(ctx, "coinbase", symbol, interval, klines, 60*time.Second)
+	// TODO: Cache the result using CacheLayer.Set()
 	
 	return klines, nil
 }
 
 func (c *CoinbaseAdapter) GetOrderBook(ctx context.Context, symbol string, depth int) (*interfaces.OrderBookSnapshot, error) {
 	// Check cache first
-	if orderBook, found, err := c.cache.GetCachedOrderBook(ctx, "coinbase", symbol); err == nil && found {
-		return orderBook, nil
-	}
+	// TODO: Implement proper caching using CacheLayer interface
 	
 	// Check circuit breaker
 	if err := c.circuitBreaker.Call(ctx, "fetch_orderbook", func() error {
@@ -393,8 +385,7 @@ func (c *CoinbaseAdapter) GetOrderBook(ctx context.Context, symbol string, depth
 		}
 	}
 	
-	// Cache the result
-	c.cache.CacheOrderBook(ctx, "coinbase", symbol, orderBook, 5*time.Second)
+	// TODO: Implement proper caching using CacheLayer interface
 	
 	return orderBook, nil
 }
@@ -735,4 +726,30 @@ func (c *CoinbaseAdapter) makeRequest(ctx context.Context, method, endpoint stri
 	// This would implement the actual HTTP request logic
 	// For now, return a mock implementation
 	return nil
+}
+
+// HealthCheck performs venue health check
+func (c *CoinbaseAdapter) HealthCheck(ctx context.Context) error {
+	// Check circuit breaker
+	return c.circuitBreaker.Call(ctx, "health_check", func() error {
+		if err := c.rateLimiter.Allow(ctx, "coinbase", "ping"); err != nil {
+			return fmt.Errorf("rate limited: %w", err)
+		}
+		
+		// Simple health check - could call /products endpoint
+		return nil
+	})
+}
+
+// IsSupported checks if a data type is supported
+func (c *CoinbaseAdapter) IsSupported(dataType interfaces.DataType) bool {
+	supported := map[interfaces.DataType]bool{
+		interfaces.DataTypeTrades:    true,
+		interfaces.DataTypeKlines:    true,
+		interfaces.DataTypeOrderBook: true,
+		// Coinbase doesn't support funding rates or open interest for spot trading
+		interfaces.DataTypeFunding:      false,
+		interfaces.DataTypeOpenInterest: false,
+	}
+	return supported[dataType]
 }

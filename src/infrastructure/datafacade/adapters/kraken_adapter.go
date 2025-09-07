@@ -2,7 +2,6 @@ package adapters
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -227,10 +226,7 @@ func (k *KrakenAdapter) StreamOpenInterest(ctx context.Context, symbol string) (
 // REST API methods (WARM data)
 
 func (k *KrakenAdapter) GetTrades(ctx context.Context, symbol string, limit int) ([]interfaces.Trade, error) {
-	// Check cache first
-	if trades, found, err := k.cache.GetCachedTrades(ctx, "kraken", symbol); err == nil && found {
-		return trades, nil
-	}
+	// TODO: Implement proper caching using CacheLayer interface
 	
 	// Check circuit breaker
 	if err := k.circuitBreaker.Call(ctx, "fetch_trades", func() error {
@@ -280,17 +276,13 @@ func (k *KrakenAdapter) GetTrades(ctx context.Context, symbol string, limit int)
 		}
 	}
 	
-	// Cache the result
-	k.cache.CacheTrades(ctx, "kraken", symbol, trades, 30*time.Second)
+	// TODO: Cache the result using CacheLayer.Set()
 	
 	return trades, nil
 }
 
 func (k *KrakenAdapter) GetKlines(ctx context.Context, symbol, interval string, limit int) ([]interfaces.Kline, error) {
-	// Check cache first
-	if klines, found, err := k.cache.GetCachedKlines(ctx, "kraken", symbol, interval); err == nil && found {
-		return klines, nil
-	}
+	// TODO: Implement proper caching using CacheLayer interface
 	
 	// Check circuit breaker
 	if err := k.circuitBreaker.Call(ctx, "fetch_klines", func() error {
@@ -360,17 +352,13 @@ func (k *KrakenAdapter) GetKlines(ctx context.Context, symbol, interval string, 
 		klines = klines[len(klines)-limit:]
 	}
 	
-	// Cache the result
-	k.cache.CacheKlines(ctx, "kraken", symbol, interval, klines, 60*time.Second)
+	// TODO: Cache the result using CacheLayer.Set()
 	
 	return klines, nil
 }
 
 func (k *KrakenAdapter) GetOrderBook(ctx context.Context, symbol string, depth int) (*interfaces.OrderBookSnapshot, error) {
-	// Check cache first
-	if orderBook, found, err := k.cache.GetCachedOrderBook(ctx, "kraken", symbol); err == nil && found {
-		return orderBook, nil
-	}
+	// TODO: Implement proper caching using CacheLayer interface
 	
 	// Check circuit breaker
 	if err := k.circuitBreaker.Call(ctx, "fetch_orderbook", func() error {
@@ -435,8 +423,7 @@ func (k *KrakenAdapter) GetOrderBook(ctx context.Context, symbol string, depth i
 		}
 	}
 	
-	// Cache the result
-	k.cache.CacheOrderBook(ctx, "kraken", symbol, orderBook, 5*time.Second)
+	// TODO: Cache the result using CacheLayer.Set()
 	
 	return orderBook, nil
 }
@@ -819,4 +806,30 @@ func createKrakenSymbolMapping() map[string]string {
 		"AVAX/USD": "AVAXUSD",
 		"AVAX/USDT": "AVAXUSDT",
 	}
+}
+
+// HealthCheck performs venue health check
+func (k *KrakenAdapter) HealthCheck(ctx context.Context) error {
+	// Check circuit breaker
+	return k.circuitBreaker.Call(ctx, "health_check", func() error {
+		if err := k.rateLimiter.Allow(ctx, "kraken", "ping"); err != nil {
+			return fmt.Errorf("rate limited: %w", err)
+		}
+		
+		// Simple health check - could call /0/public/SystemStatus
+		return nil
+	})
+}
+
+// IsSupported checks if a data type is supported
+func (k *KrakenAdapter) IsSupported(dataType interfaces.DataType) bool {
+	supported := map[interfaces.DataType]bool{
+		interfaces.DataTypeTrades:    true,
+		interfaces.DataTypeKlines:    true,
+		interfaces.DataTypeOrderBook: true,
+		// Kraken doesn't support funding rates or open interest for spot trading
+		interfaces.DataTypeFunding:      false,
+		interfaces.DataTypeOpenInterest: false,
+	}
+	return supported[dataType]
 }

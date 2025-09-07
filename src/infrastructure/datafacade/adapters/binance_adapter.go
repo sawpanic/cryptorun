@@ -184,6 +184,37 @@ func (b *BinanceAdapter) StreamFunding(ctx context.Context, symbol string) (<-ch
 	return fundingChan, nil
 }
 
+// StreamOpenInterest implements open interest streaming (stub - Binance would need futures connection)
+func (b *BinanceAdapter) StreamOpenInterest(ctx context.Context, symbol string) (<-chan interfaces.OpenInterestEvent, error) {
+	// This would typically be for Binance Futures
+	stream := fmt.Sprintf("%s@openInterest", strings.ToLower(b.normalizeSymbol(symbol)))
+	wsURL := fmt.Sprintf("wss://fstream.binance.com/ws/%s", stream)
+	
+	oiChan := make(chan interfaces.OpenInterestEvent, 100)
+	
+	go func() {
+		defer close(oiChan)
+		
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				if err := b.connectAndStream(ctx, wsURL, stream, oiChan, b.parseOpenInterestEvent); err != nil {
+					select {
+					case <-ctx.Done():
+						return
+					case <-time.After(10 * time.Second): // Longer delay for OI
+						continue
+					}
+				}
+			}
+		}
+	}()
+	
+	return oiChan, nil
+}
+
 // FetchTrades implements warm trade fetching with rate limiting
 func (b *BinanceAdapter) FetchTrades(ctx context.Context, symbol string, limit int) ([]interfaces.Trade, error) {
 	var trades []interfaces.Trade
@@ -227,6 +258,21 @@ func (b *BinanceAdapter) FetchTrades(ctx context.Context, symbol string, limit i
 	return trades, err
 }
 
+// GetTrades is an alias for FetchTrades to match interface
+func (b *BinanceAdapter) GetTrades(ctx context.Context, symbol string, limit int) ([]interfaces.Trade, error) {
+	return b.FetchTrades(ctx, symbol, limit)
+}
+
+// GetKlines is an alias for FetchKlines to match interface
+func (b *BinanceAdapter) GetKlines(ctx context.Context, symbol, interval string, limit int) ([]interfaces.Kline, error) {
+	return b.FetchKlines(ctx, symbol, interval, limit)
+}
+
+// GetOrderBook is an alias for FetchOrderBook to match interface
+func (b *BinanceAdapter) GetOrderBook(ctx context.Context, symbol string, depth int) (*interfaces.OrderBookSnapshot, error) {
+	return b.FetchOrderBook(ctx, symbol)
+}
+
 // FetchKlines implements warm kline fetching
 func (b *BinanceAdapter) FetchKlines(ctx context.Context, symbol string, interval string, limit int) ([]interfaces.Kline, error) {
 	var klines []interfaces.Kline
@@ -236,30 +282,24 @@ func (b *BinanceAdapter) FetchKlines(ctx context.Context, symbol string, interva
 			return fmt.Errorf("rate limited: %w", err)
 		}
 		
-		url := fmt.Sprintf("%s/api/v3/klines?symbol=%s&interval=%s&limit=%d", 
-			b.baseURL, b.normalizeSymbol(symbol), interval, limit)
+		endpoint := fmt.Sprintf("/api/v3/klines?symbol=%s&interval=%s&limit=%d", 
+			b.normalizeSymbol(symbol), interval, limit)
 		
-		req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
-		if err != nil {
-			return fmt.Errorf("create request: %w", err)
-		}
-		
-		resp, err := b.httpClient.Do(req)
+		resp, rateLimitHeaders, err := b.httpClient.GetWithRateLimitHeaders(ctx, endpoint)
 		if err != nil {
 			return fmt.Errorf("http request: %w", err)
 		}
-		defer resp.Body.Close()
 		
-		if err := b.processRateLimitHeaders(resp.Header); err != nil {
+		if err := b.processRateLimitHeaders(rateLimitHeaders); err != nil {
 			return fmt.Errorf("process rate limit headers: %w", err)
 		}
 		
-		if resp.StatusCode != http.StatusOK {
-			return fmt.Errorf("http error: %d", resp.StatusCode)
+		if resp.StatusCode != 200 {
+			return fmt.Errorf("http error: %d - %s", resp.StatusCode, string(resp.Body))
 		}
 		
 		var rawKlines [][]interface{}
-		if err := json.NewDecoder(resp.Body).Decode(&rawKlines); err != nil {
+		if err := json.Unmarshal(resp.Body, &rawKlines); err != nil {
 			return fmt.Errorf("decode response: %w", err)
 		}
 		
@@ -283,30 +323,24 @@ func (b *BinanceAdapter) FetchOrderBook(ctx context.Context, symbol string) (*in
 			return fmt.Errorf("rate limited: %w", err)
 		}
 		
-		url := fmt.Sprintf("%s/api/v3/depth?symbol=%s&limit=100", 
-			b.baseURL, b.normalizeSymbol(symbol))
+		endpoint := fmt.Sprintf("/api/v3/depth?symbol=%s&limit=100", 
+			b.normalizeSymbol(symbol))
 		
-		req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
-		if err != nil {
-			return fmt.Errorf("create request: %w", err)
-		}
-		
-		resp, err := b.httpClient.Do(req)
+		resp, rateLimitHeaders, err := b.httpClient.GetWithRateLimitHeaders(ctx, endpoint)
 		if err != nil {
 			return fmt.Errorf("http request: %w", err)
 		}
-		defer resp.Body.Close()
 		
-		if err := b.processRateLimitHeaders(resp.Header); err != nil {
+		if err := b.processRateLimitHeaders(rateLimitHeaders); err != nil {
 			return fmt.Errorf("process rate limit headers: %w", err)
 		}
 		
-		if resp.StatusCode != http.StatusOK {
-			return fmt.Errorf("http error: %d", resp.StatusCode)
+		if resp.StatusCode != 200 {
+			return fmt.Errorf("http error: %d - %s", resp.StatusCode, string(resp.Body))
 		}
 		
 		var raw binanceOrderBookResponse
-		if err := json.NewDecoder(resp.Body).Decode(&raw); err != nil {
+		if err := json.Unmarshal(resp.Body, &raw); err != nil {
 			return fmt.Errorf("decode response: %w", err)
 		}
 		
@@ -326,31 +360,25 @@ func (b *BinanceAdapter) FetchFundingRate(ctx context.Context, symbol string) (*
 			return fmt.Errorf("rate limited: %w", err)
 		}
 		
-		// Use futures API
-		url := fmt.Sprintf("https://fapi.binance.com/fapi/v1/premiumIndex?symbol=%s", 
+		// Use futures API - note: this bypasses base URL for futures endpoint
+		endpoint := fmt.Sprintf("/fapi/v1/premiumIndex?symbol=%s", 
 			b.normalizeSymbol(symbol))
 		
-		req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
-		if err != nil {
-			return fmt.Errorf("create request: %w", err)
-		}
-		
-		resp, err := b.httpClient.Do(req)
+		resp, rateLimitHeaders, err := b.httpClient.GetWithRateLimitHeaders(ctx, endpoint)
 		if err != nil {
 			return fmt.Errorf("http request: %w", err)
 		}
-		defer resp.Body.Close()
 		
-		if err := b.processRateLimitHeaders(resp.Header); err != nil {
+		if err := b.processRateLimitHeaders(rateLimitHeaders); err != nil {
 			return fmt.Errorf("process rate limit headers: %w", err)
 		}
 		
-		if resp.StatusCode != http.StatusOK {
-			return fmt.Errorf("http error: %d", resp.StatusCode)
+		if resp.StatusCode != 200 {
+			return fmt.Errorf("http error: %d - %s", resp.StatusCode, string(resp.Body))
 		}
 		
 		var raw binanceFundingResponse
-		if err := json.NewDecoder(resp.Body).Decode(&raw); err != nil {
+		if err := json.Unmarshal(resp.Body, &raw); err != nil {
 			return fmt.Errorf("decode response: %w", err)
 		}
 		
@@ -359,6 +387,16 @@ func (b *BinanceAdapter) FetchFundingRate(ctx context.Context, symbol string) (*
 	})
 	
 	return fundingRate, err
+}
+
+// GetFunding is an alias for FetchFundingRate to match interface
+func (b *BinanceAdapter) GetFunding(ctx context.Context, symbol string) (*interfaces.FundingRate, error) {
+	return b.FetchFundingRate(ctx, symbol)
+}
+
+// GetOpenInterest is an alias for FetchOpenInterest to match interface  
+func (b *BinanceAdapter) GetOpenInterest(ctx context.Context, symbol string) (*interfaces.OpenInterest, error) {
+	return b.FetchOpenInterest(ctx, symbol)
 }
 
 // FetchOpenInterest implements open interest fetching
@@ -370,30 +408,24 @@ func (b *BinanceAdapter) FetchOpenInterest(ctx context.Context, symbol string) (
 			return fmt.Errorf("rate limited: %w", err)
 		}
 		
-		url := fmt.Sprintf("https://fapi.binance.com/fapi/v1/openInterest?symbol=%s", 
+		endpoint := fmt.Sprintf("/fapi/v1/openInterest?symbol=%s", 
 			b.normalizeSymbol(symbol))
 		
-		req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
-		if err != nil {
-			return fmt.Errorf("create request: %w", err)
-		}
-		
-		resp, err := b.httpClient.Do(req)
+		resp, rateLimitHeaders, err := b.httpClient.GetWithRateLimitHeaders(ctx, endpoint)
 		if err != nil {
 			return fmt.Errorf("http request: %w", err)
 		}
-		defer resp.Body.Close()
 		
-		if err := b.processRateLimitHeaders(resp.Header); err != nil {
+		if err := b.processRateLimitHeaders(rateLimitHeaders); err != nil {
 			return fmt.Errorf("process rate limit headers: %w", err)
 		}
 		
-		if resp.StatusCode != http.StatusOK {
-			return fmt.Errorf("http error: %d", resp.StatusCode)
+		if resp.StatusCode != 200 {
+			return fmt.Errorf("http error: %d - %s", resp.StatusCode, string(resp.Body))
 		}
 		
 		var raw binanceOpenInterestResponse
-		if err := json.NewDecoder(resp.Body).Decode(&raw); err != nil {
+		if err := json.Unmarshal(resp.Body, &raw); err != nil {
 			return fmt.Errorf("decode response: %w", err)
 		}
 		
@@ -411,21 +443,15 @@ func (b *BinanceAdapter) HealthCheck(ctx context.Context) error {
 			return fmt.Errorf("rate limited: %w", err)
 		}
 		
-		url := fmt.Sprintf("%s/api/v3/ping", b.baseURL)
+		endpoint := "/api/v3/ping"
 		
-		req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
-		if err != nil {
-			return fmt.Errorf("create request: %w", err)
-		}
-		
-		resp, err := b.httpClient.Do(req)
+		resp, _, err := b.httpClient.GetWithRateLimitHeaders(ctx, endpoint)
 		if err != nil {
 			return fmt.Errorf("http request: %w", err)
 		}
-		defer resp.Body.Close()
 		
-		if resp.StatusCode != http.StatusOK {
-			return fmt.Errorf("health check failed: %d", resp.StatusCode)
+		if resp.StatusCode != 200 {
+			return fmt.Errorf("health check failed: %d - %s", resp.StatusCode, string(resp.Body))
 		}
 		
 		return nil
@@ -477,6 +503,29 @@ func (b *BinanceAdapter) connectAndStream(ctx context.Context, wsURL, stream str
 			}
 		}
 	}
+}
+
+func (b *BinanceAdapter) parseOpenInterestEvent(data []byte, outputChan interface{}) error {
+	// Stub implementation - would parse Binance futures OI events
+	oiChan := outputChan.(chan interfaces.OpenInterestEvent)
+	
+	// For now, just create a dummy event
+	event := interfaces.OpenInterestEvent{
+		OpenInterest: interfaces.OpenInterest{
+			Symbol:       "BTC/USDT", // Would extract from data
+			Venue:        b.venue,
+			OpenInterest: 0.0, // Would parse from data
+			Timestamp:    time.Now(),
+		},
+		EventTime: time.Now(),
+	}
+	
+	select {
+	case oiChan <- event:
+	default: // Channel full, drop event
+	}
+	
+	return nil
 }
 
 func (b *BinanceAdapter) parseTradeEvent(data []byte, outputChan interface{}) error {

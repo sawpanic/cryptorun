@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/sawpanic/cryptorun/src/infrastructure/datafacade"
-	"github.com/sawpanic/cryptorun/src/infrastructure/datafacade/config"
 	"github.com/sawpanic/cryptorun/src/infrastructure/datafacade/interfaces"
 )
 
@@ -310,11 +309,11 @@ func healthMonitoringExample() {
 	fmt.Println("\nVenue Health:")
 	for venue, venueHealth := range health.Venues {
 		status := "🔴 unhealthy"
-		if venueHealth.Healthy {
+		if venueHealth.IsHealthy {
 			status = "🟢 healthy"
 		}
 		fmt.Printf("  %s: %s (circuit: %s, last check: %s)\n", 
-			venue, status, venueHealth.CircuitState, 
+			venue, status, venueHealth.CircuitBreakerState, 
 			venueHealth.LastCheck.Format("15:04:05"))
 	}
 	
@@ -334,13 +333,8 @@ func healthMonitoringExample() {
 	fmt.Printf("  Cache Size: %d bytes\n", metrics.CacheStats.Size)
 	
 	// Demonstrate rate limiting information
-	for _, venue := range facade.GetSupportedVenues() {
-		limits, err := facade.rateLimiter.GetLimits(ctx, venue)
-		if err == nil {
-			fmt.Printf("  %s Rate Limit: %d req/s (burst: %d)\n", 
-				venue, limits.RequestsPerSecond, limits.BurstAllowance)
-		}
-	}
+	// Note: Rate limit details are internal to the facade
+	fmt.Println("\nRate limiting is handled automatically by the facade")
 }
 
 // Helper function for error handling

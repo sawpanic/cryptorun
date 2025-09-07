@@ -147,11 +147,8 @@ func (f *Factory) createVenueAdapters(cache interfaces.CacheLayer, rateLimiter i
 		switch venueName {
 		case "binance":
 			adapter = adapters.NewBinanceAdapter(
-				venueConfig.BaseURL,
-				venueConfig.WSURL,
 				rateLimiter,
 				circuitBreaker,
-				cache,
 			)
 			
 		case "okx":

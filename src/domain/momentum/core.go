@@ -5,7 +5,7 @@ import (
 	"math"
 	"time"
 
-	"github.com/sawpanic/cryptorun/internal/domain/regime"
+	regimeconfig "github.com/sawpanic/cryptorun/internal/config/regime"
 )
 
 // MTW represents Multi-TimeFrame Weights normalized to 1.0 within active set
@@ -64,10 +64,10 @@ type CoreResult struct {
 }
 
 // WeightsForRegime returns regime-specific multi-timeframe weights
-func WeightsForRegime(r regime.RegimeType) MTW {
+func WeightsForRegime(r regimeconfig.RegimeType) MTW {
 	switch r {
-	case regime.TrendingBull:
-		// Bull markets: emphasize longer timeframes with 7d carry
+	case regimeconfig.RegimeCalm:
+		// Calm markets: emphasize longer timeframes with 7d carry
 		return MTW{
 			W1h:  0.15, // Reduced short-term noise
 			W4h:  0.30, // Primary signal
@@ -76,7 +76,7 @@ func WeightsForRegime(r regime.RegimeType) MTW {
 			W7d:  0.05, // Weekly carry (bull only)
 		}.Normalize()
 
-	case regime.Choppy:
+	case regimeconfig.RegimeVolatile:
 		// Choppy markets: emphasize shorter timeframes, no 7d carry
 		return MTW{
 			W1h:  0.25, // Higher short-term weight
@@ -86,7 +86,7 @@ func WeightsForRegime(r regime.RegimeType) MTW {
 			W7d:  0.00, // No weekly carry in chop
 		}.Normalize()
 
-	case regime.HighVol:
+	case regimeconfig.RegimeNormal:
 		// High volatility: balanced approach with quality focus
 		return MTW{
 			W1h:  0.20, // Standard short-term

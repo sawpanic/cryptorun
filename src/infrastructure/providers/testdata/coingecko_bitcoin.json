@@ -1,0 +1,10 @@
+{
+  "id": "bitcoin",
+  "symbol": "btc",
+  "name": "Bitcoin",
+  "market_data": {
+    "circulating_supply": 19750000.0,
+    "total_supply": 19750000.0,
+    "max_supply": 21000000.0
+  }
+}

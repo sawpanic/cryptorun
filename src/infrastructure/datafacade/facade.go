@@ -168,16 +168,12 @@ func (f *DataFacadeImpl) initializeVenues() error {
 		}
 		
 		var adapter interfaces.VenueAdapter
-		var err error
 		
 		switch venueName {
 		case "binance":
 			adapter = adapters.NewBinanceAdapter(
-				venueConfig.BaseURL,
-				venueConfig.WSURL,
 				f.rateLimiter,
 				f.circuitBreaker,
-				f.cache,
 			)
 		case "okx":
 			adapter = adapters.NewOKXAdapter(
@@ -546,14 +542,14 @@ func (f *DataFacadeImpl) GetHealth(ctx context.Context) (*interfaces.HealthStatu
 	// Check each venue health
 	for venueName := range f.venues {
 		venueHealth := interfaces.VenueHealth{
-			Name:      venueName,
-			Healthy:   true,
+			Venue:     venueName,
+			IsHealthy: true,
 			LastCheck: time.Now(),
 		}
 		
 		// Check circuit breaker status
 		if state, err := f.circuitBreaker.GetState(ctx, venueName); err == nil {
-			venueHealth.CircuitState = state.State
+			venueHealth.CircuitBreakerState = state.State
 		}
 		
 		health.Venues[venueName] = venueHealth

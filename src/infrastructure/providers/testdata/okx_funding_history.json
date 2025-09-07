@@ -1,0 +1,23 @@
+{
+  "code": "0",
+  "data": [
+    {
+      "instId": "BTC-USDT-SWAP",
+      "fundingRate": "0.0001",
+      "fundingTime": "1693958400000",
+      "markPx": "43500.5"
+    },
+    {
+      "instId": "BTC-USDT-SWAP",
+      "fundingRate": "0.00008",
+      "fundingTime": "1693954800000", 
+      "markPx": "43480.25"
+    },
+    {
+      "instId": "BTC-USDT-SWAP",
+      "fundingRate": "0.00012",
+      "fundingTime": "1693951200000",
+      "markPx": "43520.75"
+    }
+  ]
+}

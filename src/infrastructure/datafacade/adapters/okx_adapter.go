@@ -2,7 +2,6 @@ package adapters
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -284,10 +283,7 @@ func (o *OKXAdapter) StreamOpenInterest(ctx context.Context, symbol string) (<-c
 // REST API methods (WARM data)
 
 func (o *OKXAdapter) GetTrades(ctx context.Context, symbol string, limit int) ([]interfaces.Trade, error) {
-	// Check cache first
-	if trades, found, err := o.cache.GetCachedTrades(ctx, "okx", symbol); err == nil && found {
-		return trades, nil
-	}
+	// TODO: Implement proper caching using CacheLayer interface
 	
 	// Check circuit breaker
 	if err := o.circuitBreaker.Call(ctx, "fetch_trades", func() error {
@@ -321,7 +317,7 @@ func (o *OKXAdapter) GetTrades(ctx context.Context, symbol string, limit int) ([
 		timestamp, _ := strconv.ParseInt(trade.Ts, 10, 64)
 		
 		trades[i] = interfaces.Trade{
-			ID:        trade.TradeID,
+			TradeID:   trade.TradeID,
 			Symbol:    symbol,
 			Price:     price,
 			Quantity:  quantity,
@@ -331,17 +327,13 @@ func (o *OKXAdapter) GetTrades(ctx context.Context, symbol string, limit int) ([
 		}
 	}
 	
-	// Cache the result
-	o.cache.CacheTrades(ctx, "okx", symbol, trades, 30*time.Second)
+	// TODO: Implement proper caching using CacheLayer interface
 	
 	return trades, nil
 }
 
 func (o *OKXAdapter) GetKlines(ctx context.Context, symbol, interval string, limit int) ([]interfaces.Kline, error) {
-	// Check cache first
-	if klines, found, err := o.cache.GetCachedKlines(ctx, "okx", symbol, interval); err == nil && found {
-		return klines, nil
-	}
+	// TODO: Implement proper caching using CacheLayer interface
 	
 	// Check circuit breaker
 	if err := o.circuitBreaker.Call(ctx, "fetch_klines", func() error {
@@ -396,17 +388,13 @@ func (o *OKXAdapter) GetKlines(ctx context.Context, symbol, interval string, lim
 		}
 	}
 	
-	// Cache the result
-	o.cache.CacheKlines(ctx, "okx", symbol, interval, klines, 60*time.Second)
+	// TODO: Implement proper caching using CacheLayer interface
 	
 	return klines, nil
 }
 
 func (o *OKXAdapter) GetOrderBook(ctx context.Context, symbol string, depth int) (*interfaces.OrderBookSnapshot, error) {
-	// Check cache first
-	if orderBook, found, err := o.cache.GetCachedOrderBook(ctx, "okx", symbol); err == nil && found {
-		return orderBook, nil
-	}
+	// TODO: Implement proper caching using CacheLayer interface
 	
 	// Check circuit breaker
 	if err := o.circuitBreaker.Call(ctx, "fetch_orderbook", func() error {
@@ -468,17 +456,13 @@ func (o *OKXAdapter) GetOrderBook(ctx context.Context, symbol string, depth int)
 		}
 	}
 	
-	// Cache the result
-	o.cache.CacheOrderBook(ctx, "okx", symbol, orderBook, 5*time.Second)
+	// TODO: Implement proper caching using CacheLayer interface
 	
 	return orderBook, nil
 }
 
 func (o *OKXAdapter) GetFunding(ctx context.Context, symbol string) (*interfaces.FundingRate, error) {
-	// Check cache first
-	if funding, found, err := o.cache.GetCachedFunding(ctx, "okx", symbol); err == nil && found {
-		return funding, nil
-	}
+	// TODO: Implement proper caching using CacheLayer interface
 	
 	// Check circuit breaker
 	if err := o.circuitBreaker.Call(ctx, "fetch_funding", func() error {
@@ -512,22 +496,18 @@ func (o *OKXAdapter) GetFunding(ctx context.Context, symbol string) (*interfaces
 	funding := &interfaces.FundingRate{
 		Symbol:          symbol,
 		Venue:           "okx",
-		Rate:            fundingRate,
+		FundingRate:     fundingRate,
 		Timestamp:       time.Unix(0, timestamp*1000000), // Convert ms to nanoseconds
 		NextFundingTime: time.Unix(0, nextFundingTime*1000000),
 	}
 	
-	// Cache the result
-	o.cache.CacheFunding(ctx, "okx", symbol, funding, 300*time.Second) // 5 minutes
+	// TODO: Implement proper caching using CacheLayer interface
 	
 	return funding, nil
 }
 
 func (o *OKXAdapter) GetOpenInterest(ctx context.Context, symbol string) (*interfaces.OpenInterest, error) {
-	// Check cache first
-	if oi, found, err := o.cache.GetCachedOpenInterest(ctx, "okx", symbol); err == nil && found {
-		return oi, nil
-	}
+	// TODO: Implement proper caching using CacheLayer interface
 	
 	// Check circuit breaker
 	if err := o.circuitBreaker.Call(ctx, "fetch_openinterest", func() error {
@@ -560,12 +540,11 @@ func (o *OKXAdapter) GetOpenInterest(ctx context.Context, symbol string) (*inter
 	oi := &interfaces.OpenInterest{
 		Symbol:       symbol,
 		Venue:        "okx",
-		Value:        openInterest,
+		OpenInterest: openInterest,
 		Timestamp:    time.Unix(0, timestamp*1000000), // Convert ms to nanoseconds
 	}
 	
-	// Cache the result
-	o.cache.CacheOpenInterest(ctx, "okx", symbol, oi, 60*time.Second)
+	// TODO: Implement proper caching using CacheLayer interface
 	
 	return oi, nil
 }
@@ -859,7 +838,7 @@ func (o *OKXAdapter) convertTradeData(data map[string]interface{}) *interfaces.T
 	
 	return &interfaces.TradeEvent{
 		Trade: interfaces.Trade{
-			ID:        tradeID,
+			TradeID:   tradeID,
 			Symbol:    o.denormalizeSymbol(instID),
 			Price:     price,
 			Quantity:  quantity,
@@ -939,7 +918,7 @@ func (o *OKXAdapter) convertOrderBookData(data map[string]interface{}) *interfac
 	}
 	
 	return &interfaces.OrderBookEvent{
-		OrderBook: *snapshot,
+		OrderBookSnapshot: *snapshot,
 		EventTime: time.Now(),
 	}
 }
@@ -954,7 +933,7 @@ func (o *OKXAdapter) convertFundingData(data map[string]interface{}) *interfaces
 		FundingRate: interfaces.FundingRate{
 			Symbol:          o.denormalizeSymbol(instID),
 			Venue:           "okx",
-			Rate:            fundingRate,
+			FundingRate:     fundingRate,
 			Timestamp:       time.Unix(0, ts*1000000), // Convert ms to nanoseconds
 			NextFundingTime: time.Unix(0, nextFundingTime*1000000),
 		},
@@ -969,10 +948,10 @@ func (o *OKXAdapter) convertOpenInterestData(data map[string]interface{}) *inter
 	
 	return &interfaces.OpenInterestEvent{
 		OpenInterest: interfaces.OpenInterest{
-			Symbol:    o.denormalizeSymbol(instID),
-			Venue:     "okx",
-			Value:     openInterest,
-			Timestamp: time.Unix(0, ts*1000000), // Convert ms to nanoseconds
+			Symbol:       o.denormalizeSymbol(instID),
+			Venue:        "okx",
+			OpenInterest: openInterest,
+			Timestamp:    time.Unix(0, ts*1000000), // Convert ms to nanoseconds
 		},
 		EventTime: time.Now(),
 	}
@@ -993,4 +972,29 @@ func (o *OKXAdapter) makeRequest(ctx context.Context, method, endpoint string, b
 	// This would implement the actual HTTP request logic
 	// For now, return a mock implementation
 	return nil
+}
+
+// HealthCheck performs venue health check
+func (o *OKXAdapter) HealthCheck(ctx context.Context) error {
+	// Check circuit breaker
+	return o.circuitBreaker.Call(ctx, "health_check", func() error {
+		if err := o.rateLimiter.Allow(ctx, "okx", "ping"); err != nil {
+			return fmt.Errorf("rate limited: %w", err)
+		}
+		
+		// Simple health check - could call /api/v5/system/status
+		return nil
+	})
+}
+
+// IsSupported checks if a data type is supported
+func (o *OKXAdapter) IsSupported(dataType interfaces.DataType) bool {
+	supported := map[interfaces.DataType]bool{
+		interfaces.DataTypeTrades:       true,
+		interfaces.DataTypeKlines:       true,
+		interfaces.DataTypeOrderBook:    true,
+		interfaces.DataTypeFunding:      true,
+		interfaces.DataTypeOpenInterest: true,
+	}
+	return supported[dataType]
 }

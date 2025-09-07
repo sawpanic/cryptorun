@@ -41,13 +41,14 @@ type VenueAdapter interface {
 	StreamKlines(ctx context.Context, symbol string, interval string) (<-chan KlineEvent, error)
 	StreamOrderBook(ctx context.Context, symbol string, depth int) (<-chan OrderBookEvent, error)
 	StreamFunding(ctx context.Context, symbol string) (<-chan FundingEvent, error)
+	StreamOpenInterest(ctx context.Context, symbol string) (<-chan OpenInterestEvent, error)
 
 	// Warm pull methods
-	FetchTrades(ctx context.Context, symbol string, limit int) ([]Trade, error)
-	FetchKlines(ctx context.Context, symbol string, interval string, limit int) ([]Kline, error)
-	FetchOrderBook(ctx context.Context, symbol string) (*OrderBookSnapshot, error)
-	FetchFundingRate(ctx context.Context, symbol string) (*FundingRate, error)
-	FetchOpenInterest(ctx context.Context, symbol string) (*OpenInterest, error)
+	GetTrades(ctx context.Context, symbol string, limit int) ([]Trade, error)
+	GetKlines(ctx context.Context, symbol string, interval string, limit int) ([]Kline, error)
+	GetOrderBook(ctx context.Context, symbol string, depth int) (*OrderBookSnapshot, error)
+	GetFunding(ctx context.Context, symbol string) (*FundingRate, error)
+	GetOpenInterest(ctx context.Context, symbol string) (*OpenInterest, error)
 
 	// Health check
 	HealthCheck(ctx context.Context) error
@@ -71,6 +72,8 @@ type PITStore interface {
 	GetSnapshot(ctx context.Context, snapshotID string) (map[string]interface{}, error)
 	ListSnapshots(ctx context.Context, filter SnapshotFilter) ([]SnapshotInfo, error)
 	DeleteSnapshot(ctx context.Context, snapshotID string) error
+	LoadExistingSnapshots() error
+	Cleanup(ctx context.Context, retentionDays int) error
 }
 
 // RateLimiter handles provider-aware rate limiting
@@ -104,6 +107,7 @@ const (
 
 // Trade represents a single trade execution
 type Trade struct {
+	ID        string    `json:"id,omitempty"` // Alias for TradeID for backward compatibility
 	Symbol    string    `json:"symbol"`
 	Venue     string    `json:"venue"`
 	Price     float64   `json:"price"`
@@ -160,6 +164,7 @@ type OrderBookSnapshot struct {
 // OrderBookEvent represents streaming order book updates
 type OrderBookEvent struct {
 	OrderBookSnapshot
+	OrderBook   OrderBookSnapshot `json:"order_book,omitempty"` // For backward compatibility
 	EventTime   time.Time `json:"event_time"`
 	FirstUpdate int64     `json:"first_update_id"`
 	FinalUpdate int64     `json:"final_update_id"`
@@ -170,6 +175,9 @@ type PriceLevel struct {
 	Price    float64 `json:"price"`
 	Quantity float64 `json:"quantity"`
 }
+
+// OrderBookLevel is an alias for PriceLevel for backward compatibility
+type OrderBookLevel = PriceLevel
 
 // FundingRate represents perpetual funding rate
 type FundingRate struct {
@@ -237,15 +245,21 @@ type VenueHealth struct {
 
 // FacadeMetrics contains overall facade performance metrics
 type FacadeMetrics struct {
-	Timestamp         time.Time                    `json:"timestamp"`
-	TotalRequests     int64                        `json:"total_requests"`
-	SuccessfulRequests int64                       `json:"successful_requests"`
-	FailedRequests    int64                        `json:"failed_requests"`
-	CacheHitRate      float64                      `json:"cache_hit_rate"`
-	AvgResponseTime   time.Duration                `json:"avg_response_time"`
-	P99ResponseTime   time.Duration                `json:"p99_response_time"`
-	VenueMetrics      map[string]*VenueMetrics     `json:"venue_metrics"`
-	StreamMetrics     *StreamMetrics               `json:"stream_metrics"`
+	Timestamp          time.Time                    `json:"timestamp"`
+	TotalRequests      int64                        `json:"total_requests"`
+	SuccessfulRequests int64                        `json:"successful_requests"`
+	FailedRequests     int64                        `json:"failed_requests"`
+	CacheHitRate       float64                      `json:"cache_hit_rate"`
+	AvgResponseTime    time.Duration                `json:"avg_response_time"`
+	P99ResponseTime    time.Duration                `json:"p99_response_time"`
+	VenueMetrics       map[string]*VenueMetrics     `json:"venue_metrics"`
+	StreamMetrics      *StreamMetrics               `json:"stream_metrics"`
+	
+	// Additional facade-specific metrics
+	ActiveStreams      int                          `json:"active_streams"`
+	TotalVenues        int                          `json:"total_venues"`
+	EnabledVenues      int                          `json:"enabled_venues"`
+	CacheStats         CacheStats                   `json:"cache_stats"`
 }
 
 // VenueMetrics contains per-venue metrics
