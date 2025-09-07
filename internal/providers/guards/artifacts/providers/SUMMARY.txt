@@ -1,0 +1,61 @@
+Provider Guards v1.0 Configuration Summary
+Generated: 2025-09-07T15:16:34+03:00
+
+Default Settings:
+- TTL: 300 seconds (5 minutes)
+- Burst Limit: 20 requests
+- Sustained Rate: 2.0 req/sec
+- Max Retries: 3
+- Backoff Base: 100ms
+- Failure Threshold: 50%
+- Window Requests: 10
+- Probe Interval: 30 seconds
+
+Provider-Specific Settings:
+CoinGecko:
+- TTL: 300s (price data stability)
+- Rate: 0.5 req/sec (free tier limit)
+- Tolerance: 60% failure threshold
+- File Cache: artifacts/cache/coingecko.json
+
+Binance:
+- TTL: 60s (fast-moving market data)  
+- Rate: 10.0 req/sec (professional API)
+- Tolerance: 30% failure threshold
+- File Cache: artifacts/cache/binance.json
+
+OKX:
+- TTL: 90s (market data)
+- Rate: 5.0 req/sec (conservative)
+- Tolerance: 40% failure threshold
+- File Cache: artifacts/cache/okx.json
+
+Coinbase:
+- TTL: 120s (exchange data)
+- Rate: 3.0 req/sec (public limit)
+- Tolerance: 40% failure threshold
+- File Cache: artifacts/cache/coinbase.json
+
+Kraken (Preferred):
+- TTL: 180s (stable USD pairs)
+- Rate: 1.0 req/sec (respectful)
+- Tolerance: 70% failure threshold (most patient)
+- File Cache: artifacts/cache/kraken.json
+
+Features Enabled:
+✅ TTL Caching (memory + file-backed)
+✅ Token bucket rate limiting
+✅ Exponential backoff with jitter
+✅ Circuit breaker protection
+✅ Point-in-time headers (ETag, If-Modified-Since)
+✅ Comprehensive telemetry
+✅ CSV export capability
+✅ Health monitoring
+✅ Error classification and retry logic
+
+Artifacts Generated:
+- Cache files: artifacts/cache/*.json
+- Telemetry export: artifacts/providers/telemetry.csv
+- Configuration summary: artifacts/providers/SUMMARY.txt
+
+Status: ✅ All guards configured and tested

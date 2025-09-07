@@ -1,0 +1,16 @@
+Check,Status,Evidence_File,Evidence_Line,Notes
+D1_OI_Arithmetic,PASS,internal/data/derivs/openinterest.go,multiple,Float64 math operations confirmed
+D2_Float64_Modulo,PASS,internal/reports/regime/analyzer.go,77-97,Fixed with int() conversion
+D3_Test_Imports,SKIP,N/A,N/A,File not found - may be refactored
+D4_Funding_Divergence,PASS,internal/data/derivs/funding.go,multiple,Z-score calculation implemented
+D5_Momentum_Inputs,PASS,internal/score/composite/unified.go,multiple,No stale timestamp reads
+D6_LegacyScanPipeline,FAIL,internal/application/pipeline/scan.go,109,Missing ScanUniverse method
+D7_Unified_Scoring,PASS,internal/score/composite/,multiple,Single pipeline confirmed
+D8_Microstructure_VADR,PASS,internal/gates/entry.go,multiple,Exchange-native L1/L2 validation
+D9_Social_Cap,PASS,config/weights.yaml,10,Hard cap 10.0 enforced
+D10_Docs_Present,PASS,docs/,multiple,All required docs updated
+A1_Lint_Issues,WARN,multiple,multiple,TODO/HACK/FIXME present
+A2_USD_Only,PASS,internal/microstructure/,multiple,USD normalization confirmed
+A3_Aggregator_Ban,PASS,internal/microstructure/,multiple,No aggregator references
+BUILD_STATUS,FAIL,multiple,multiple,8 packages failing compilation
+TEST_STATUS,PENDING,N/A,N/A,Blocked by build failures

@@ -1,0 +1,38 @@
+{
+  "description": "CryptoRun v3.2.1 Quality Gates - minimum thresholds for shipping with results proof and operational health",
+  "precision_thresholds": {
+    "min_precision_p20_24h": 0.65,
+    "min_precision_p20_48h": 0.60,
+    "min_win_rate_24h": 0.55,
+    "min_win_rate_48h": 0.50
+  },
+  "bad_miss_rate_thresholds": {
+    "1h": 0.35,
+    "24h": 0.40,
+    "7d": 0.40
+  },
+  "operational_health": {
+    "min_cache_hit_rate_hot": 0.80,
+    "min_cache_hit_rate_warm": 0.60,
+    "max_scan_latency_p99_ms": 500,
+    "required_artifacts": [
+      "out/results/results_report.md",
+      "out/digest/latest/digest.md", 
+      "out/analyst/coverage.json",
+      "out/scanner/latest_candidates.jsonl",
+      "config/universe.json"
+    ],
+    "max_candidates_age_hours": 24,
+    "monitor_endpoint_timeout_ms": 5000
+  },
+  "artifact_integrity": {
+    "min_candidates_lines": 5,
+    "required_universe_hash": true,
+    "max_file_sizes": {
+      "candidates_jsonl_mb": 10,
+      "coverage_json_kb": 500,
+      "digest_md_kb": 50,
+      "results_report_kb": 100
+    }
+  }
+}

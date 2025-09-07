@@ -1,0 +1,1 @@
+gh pr create --title "[MANUAL]" --body-file "out\ship\PR_BODY.md"

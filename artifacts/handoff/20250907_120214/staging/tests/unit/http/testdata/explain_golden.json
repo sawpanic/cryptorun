@@ -1,0 +1,260 @@
+{
+  "symbol": "BTC-USD",
+  "exchange": "kraken",
+  "timestamp": "2025-09-06T20:30:00Z",
+  "data_source": "live",
+  "score": {
+    "final_score": 87.4,
+    "pre_orthogonal": {
+      "momentum": 34.96,
+      "technical": 30.59,
+      "volume": 21.85,
+      "quality": 26.22,
+      "social": 8.5
+    },
+    "post_orthogonal": {
+      "momentum": 34.96,
+      "technical": 26.00,
+      "volume": 15.73,
+      "quality": 17.83,
+      "social": 8.5
+    },
+    "weighted_scores": {
+      "momentum": 43.70,
+      "technical": 17.48,
+      "volume": 13.11,
+      "quality": 8.74
+    },
+    "social_bonus": 8.5,
+    "calculation_steps": [
+      {
+        "step": "raw_factors",
+        "description": "Initial factor calculations",
+        "input": 0.0,
+        "output": 87.4,
+        "applied": "market_data"
+      },
+      {
+        "step": "orthogonalization",
+        "description": "Gram-Schmidt orthogonalization (momentum protected)",
+        "input": 87.4,
+        "output": 80.41,
+        "applied": "gram_schmidt"
+      },
+      {
+        "step": "regime_weights",
+        "description": "Apply regime-specific weights",
+        "input": 80.41,
+        "output": 83.03,
+        "applied": "trending_bull_weights"
+      },
+      {
+        "step": "social_cap",
+        "description": "Add social bonus (capped at +10)",
+        "input": 83.03,
+        "output": 87.4,
+        "applied": "+10_cap"
+      }
+    ]
+  },
+  "gates": {
+    "overall": true,
+    "score_gate": {
+      "passed": true,
+      "threshold": 75.0,
+      "actual_value": 87.4,
+      "margin": 12.4,
+      "description": "Composite score must be >= 75",
+      "last_checked": "2025-09-06T20:30:00Z"
+    },
+    "vadr_gate": {
+      "passed": true,
+      "threshold": 1.8,
+      "actual_value": 2.8,
+      "margin": 1.0,
+      "description": "VADR (Volume-Adjusted Daily Range) >= 1.8x",
+      "last_checked": "2025-09-06T20:30:00Z"
+    },
+    "funding_gate": {
+      "passed": true,
+      "threshold": 2.0,
+      "actual_value": 2.3,
+      "margin": 0.3,
+      "description": "Funding divergence >= 2σ",
+      "last_checked": "2025-09-06T20:30:00Z"
+    },
+    "spread_gate": {
+      "passed": true,
+      "threshold": 0.5,
+      "actual_value": 0.25,
+      "margin": 0.25,
+      "description": "Spread must be < 50bps",
+      "last_checked": "2025-09-06T20:30:00Z"
+    },
+    "depth_gate": {
+      "passed": true,
+      "threshold": 100000.0,
+      "actual_value": 250000.0,
+      "margin": 150000.0,
+      "description": "Depth >= $100k within ±2%",
+      "last_checked": "2025-09-06T20:30:00Z"
+    },
+    "fatigue_gate": {
+      "passed": true,
+      "threshold": 70.0,
+      "actual_value": 45.0,
+      "margin": 25.0,
+      "description": "RSI4h < 70 or acceleration increasing",
+      "last_checked": "2025-09-06T20:30:00Z"
+    },
+    "freshness_gate": {
+      "passed": true,
+      "threshold": 2.0,
+      "actual_value": 1.0,
+      "margin": 1.0,
+      "description": "Signal <= 2 bars old and within 1.2x ATR(1h)",
+      "last_checked": "2025-09-06T20:30:00Z"
+    },
+    "evaluation_time": "2025-09-06T20:30:00Z"
+  },
+  "factors": {
+    "momentum_core": {
+      "raw_score": 34.96,
+      "weight": 50.0,
+      "weighted_score": 43.70,
+      "timeframes": {
+        "1h": 15.2,
+        "4h": 22.8,
+        "12h": 18.5,
+        "24h": 25.1
+      },
+      "protected": true,
+      "data_age": 30000000000,
+      "confidence": 0.87
+    },
+    "technical": {
+      "raw_score": 30.59,
+      "orthogonal_score": 26.00,
+      "weight": 20.0,
+      "weighted_score": 17.48,
+      "components": {
+        "rsi_4h": 12.5,
+        "macd_signal": 8.7,
+        "bb_position": 6.2,
+        "adx": 11.1
+      },
+      "data_age": 30000000000,
+      "confidence": 0.82
+    },
+    "volume": {
+      "raw_score": 21.85,
+      "orthogonal_score": 15.73,
+      "weight": 15.0,
+      "weighted_score": 13.11,
+      "components": {
+        "vol_surge": 9.5,
+        "vol_profile": 7.2,
+        "oi_change": 5.8
+      },
+      "data_age": 30000000000,
+      "confidence": 0.79
+    },
+    "quality": {
+      "raw_score": 26.22,
+      "orthogonal_score": 17.83,
+      "weight": 10.0,
+      "weighted_score": 8.74,
+      "components": {
+        "liquidity": 8.1,
+        "stability": 6.7,
+        "correlation": 4.9
+      },
+      "data_age": 30000000000,
+      "confidence": 0.76
+    },
+    "social": {
+      "raw_score": 12.5,
+      "capped_score": 10.0,
+      "bonus": 10.0,
+      "sources": {
+        "social_momentum": 6.2,
+        "news_sentiment": 3.8,
+        "dev_activity": 2.5
+      },
+      "was_capped": true,
+      "data_age": 30000000000
+    }
+  },
+  "regime": {
+    "current_regime": "trending_bull",
+    "regime_weights": {
+      "momentum": 50.0,
+      "technical": 20.0,
+      "volume": 15.0,
+      "quality": 10.0,
+      "catalyst": 5.0
+    },
+    "indicators": {
+      "volatility_7d": 0.42,
+      "above_ma_pct": 0.68,
+      "breadth_thrust": 0.24
+    },
+    "confidence": 0.84,
+    "last_switch": "2025-09-06T16:30:00Z",
+    "switch_reason": "volatility_threshold"
+  },
+  "attribution": {
+    "total_contributions": {
+      "momentum": 43.7,
+      "technical": 14.48,
+      "volume": 9.44,
+      "quality": 5.96,
+      "social": 10.0
+    },
+    "step_by_step": [
+      {
+        "step": "data_fetch",
+        "running_total": 0.0,
+        "contribution": 87.4,
+        "duration": 125000000
+      },
+      {
+        "step": "orthogonalization",
+        "running_total": 87.4,
+        "contribution": -13.11,
+        "duration": 45000000
+      },
+      {
+        "step": "regime_weighting",
+        "running_total": 74.29,
+        "contribution": 8.5,
+        "duration": 25000000
+      },
+      {
+        "step": "social_capping",
+        "running_total": 82.79,
+        "contribution": 10.0,
+        "duration": 15000000
+      }
+    ],
+    "data_sources": {
+      "price": "kraken_ws",
+      "volume": "kraken_rest",
+      "orderbook": "kraken_l2",
+      "social": "free_apis"
+    },
+    "cache_status": {
+      "price_data": true,
+      "volume_data": false,
+      "social_data": true,
+      "regime_data": true
+    },
+    "performance_metrics": {
+      "total_duration": 210000000,
+      "cache_hits": 3,
+      "cache_misses": 1,
+      "api_calls_made": 2,
+      "data_freshness": 30000000000
+    }
+  }
+}

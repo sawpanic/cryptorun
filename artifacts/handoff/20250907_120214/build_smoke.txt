@@ -1,0 +1,16 @@
+BUILD SMOKE TEST RESULTS
+======================
+
+Build Status: FAILED
+- Multiple syntax errors in datafacade middleware (imports placement)
+- Unused variables in pit/store.go and other modules
+- Undefined types/methods in adapter implementations
+- Import path issues in signals module
+
+Key Issues:
+- infrastructure\datafacade\middleware\rate_limiter.go:448:1: syntax error: imports must appear before other declarations
+- Multiple undefined interfaces.OpenInterestEvent references
+- Missing cache methods and struct field mismatches
+- Too many compilation errors to continue build
+
+Recommendation: Fix syntax and interface definition issues before packaging

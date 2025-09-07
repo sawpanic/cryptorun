@@ -1,0 +1,130 @@
+# CryptoRun Provider Guard Configuration  
+# Unified middleware for all free APIs with TTL caching, rate limiting,
+# exponential backoff, circuit breakers, and point-in-time headers
+
+# Default settings applied to all providers unless overridden
+defaults:
+  ttl_seconds: 300         # Cache TTL, 5 minutes default
+  burst_limit: 20          # Token bucket burst capacity
+  sustained_rate: 2.0      # Requests per second sustained rate
+  max_retries: 3           # Maximum retry attempts
+  backoff_base_ms: 100     # Base backoff delay in milliseconds
+  failure_thresh: 0.5      # Circuit breaker failure threshold (50%)
+  window_requests: 10      # Minimum requests for failure rate calculation
+  probe_interval: 30       # Half-open probe interval in seconds
+  enable_file_cache: false # File-backed cache disabled by default
+  cache_path: ""           # Cache file path (empty = no file cache)
+
+providers:
+  coingecko:
+    name: "coingecko"
+    ttl_seconds: 300       # 5 minutes - good for price data
+    burst_limit: 10        # Conservative burst for free tier
+    sustained_rate: 0.5    # 30 requests per minute free limit
+    max_retries: 3
+    backoff_base_ms: 1000  # Start with 1 second backoff
+    failure_thresh: 0.6    # More tolerant for free API
+    window_requests: 5
+    probe_interval: 60     # 1 minute probe interval
+    enable_file_cache: true
+    cache_path: "artifacts/cache/coingecko.json"
+
+  binance:
+    name: "binance"
+    ttl_seconds: 60        # 1 minute for market data
+    burst_limit: 50        # Higher burst for professional API
+    sustained_rate: 10.0   # 1200 requests per minute weight limit
+    max_retries: 2
+    backoff_base_ms: 200   # Faster recovery
+    failure_thresh: 0.3    # Less tolerant for reliable API
+    window_requests: 20
+    probe_interval: 15     # 15 second probe interval
+    enable_file_cache: true
+    cache_path: "artifacts/cache/binance.json"
+
+  okx:
+    name: "okx"
+    ttl_seconds: 90        # 1.5 minutes for market data
+    burst_limit: 30        # Moderate burst
+    sustained_rate: 5.0    # Conservative rate
+    max_retries: 3
+    backoff_base_ms: 300
+    failure_thresh: 0.4
+    window_requests: 15
+    probe_interval: 20
+    enable_file_cache: true
+    cache_path: "artifacts/cache/okx.json"
+
+  coinbase:
+    name: "coinbase"
+    ttl_seconds: 120       # 2 minutes for exchange data
+    burst_limit: 25        # Moderate burst
+    sustained_rate: 3.0    # 3 requests per second public limit
+    max_retries: 3
+    backoff_base_ms: 500
+    failure_thresh: 0.4
+    window_requests: 12
+    probe_interval: 25
+    enable_file_cache: true
+    cache_path: "artifacts/cache/coinbase.json"
+
+  kraken:
+    name: "kraken"
+    ttl_seconds: 180       # 3 minutes - preferred exchange
+    burst_limit: 15        # Conservative for free tier
+    sustained_rate: 1.0    # 1 request per second for public
+    max_retries: 4         # More patient with preferred exchange
+    backoff_base_ms: 1500  # Longer backoff for respect
+    failure_thresh: 0.7    # Very tolerant
+    window_requests: 8
+    probe_interval: 45
+    enable_file_cache: true
+    cache_path: "artifacts/cache/kraken.json"
+
+# Cache settings
+cache:
+  cleanup_interval: 300    # Cleanup every 5 minutes
+  max_memory_entries: 1000 # Maximum in-memory entries per provider
+  max_file_size_mb: 10     # Maximum cache file size in MB
+  base_path: "artifacts/cache"
+  enable_etag: true        # Use ETag headers when available
+  enable_if_modified: true # Use If-Modified-Since headers
+  stale_threshold: 3600    # Log staleness warnings after 1 hour
+
+# Rate limiting
+rate_limits:
+  enable_jitter: true      # Add jitter to backoff calculations
+  jitter_percent: 25       # ±25% jitter
+  max_backoff_ms: 30000    # Cap backoff at 30 seconds
+  refill_precision: 100    # Token refill precision (milliseconds)
+  burst_recovery_time: 60  # Time to recover full burst capacity
+
+# Circuit breaker settings  
+circuit_breakers:
+  min_throughput: 5        # Minimum requests before opening circuit
+  success_threshold: 3     # Consecutive successes to close from half-open
+  max_open_time: 300       # Maximum time to stay open (5 minutes)
+  half_open_max_calls: 1   # Maximum calls in half-open state
+  health_check_interval: 30 # Provider health check interval
+
+# Telemetry settings
+telemetry:
+  enable_latency_histogram: true
+  histogram_buckets: [10, 25, 50, 100, 250, 500, 1000, 2500, 5000] # ms
+  csv_export_path: "artifacts/providers/telemetry.csv"
+  log_interval: 300        # Log metrics every 5 minutes
+  metrics_retention_hours: 24  # Keep metrics for 24 hours
+  reset_on_restart: false      # Preserve metrics across restarts
+
+# Security and compliance
+security:
+  max_url_length: 2048     # Maximum URL length
+  max_header_size: 8192    # Maximum header size in bytes
+  allowed_schemes: ["https"] # Only allow HTTPS
+  excluded_headers: 
+    - "Authorization"
+    - "X-API-Key" 
+    - "Cookie"
+    - "Set-Cookie"
+    - "X-Forwarded-For"
+  user_agent: "CryptoRun/1.0 (+https://github.com/cryptorun)"

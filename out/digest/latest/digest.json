@@ -1,0 +1,11 @@
+{
+  "date": "2025-09-06",
+  "precision_at_20_24h": 0.68,
+  "precision_at_20_48h": 0.64,
+  "win_rate_24h": 0.58,
+  "win_rate_48h": 0.54,
+  "lift_vs_baseline_24h": 12.5,
+  "lift_vs_baseline_48h": 9.8,
+  "sparkline_7d": "▁▂▃▄▅▆▇█",
+  "total_entries": 127
+}

@@ -1,0 +1,2 @@
+timestamp,venue,status,healthy,uptime,heartbeat_age_ms,message_gap_rate,ws_reconnect_count,latency_p50_ms,latency_p99_ms,error_rate,data_freshness_ms,data_completeness,recommendation
+2024-01-01T12:00:00Z,binance,green,true,99.5,1500,0.02,0,45,120,0.01,2000,98.5,proceed

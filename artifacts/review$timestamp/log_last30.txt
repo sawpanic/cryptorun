@@ -1,0 +1,28 @@
+7aa4b76 feat(repo): initial publish of CryptoRun codebase + docs scaffolding
+5fed83c chore(scaffold): create empty premove rooms tied to tests; mark milestones in progress
+1bf047f test(premove): add failing tests & fixtures to drive implementations; document strategy
+ac5fc16 feat(artifacts): minimal PIT artifact writer (JSON/CSV) + ledger docs
+5465cf5 chore(claude): doctor script to fix agent front-matter & settings; docs
+e143083 chore(docs): pre-push guard to enforce docs/CHANGELOG with code changes
+0b319e0 chore(qa): add preflight/postflight macros + pre-commit hook; enforce scope when provided
+80f205a ci(guard): require delta in progress% or test count or docs
+c3593b7 chore(progress): add PROGRESS.yaml + CI/pre-push guards for measurable % completion; docs
+419dd8f feat(premove): portfolio pruning (corr/sector/beta/size caps) wired post-gates pre-alerts
+eee61f1 chore(premove): config freshness=90s; add portfolio/alerts/execution/learning blocks; docs
+f2497a0 feat(data): add hot WS + warm REST data facade with cache, PIT integrity, and source authority
+92e1798 feat(premove): add backtest & isotonic calibration harness; docs
+8fdbdc6 checkpoint: before MODULE_FIX
+b286ed5 checkpoint: before FASTLANE_REPAIR
+a7b32bb Pre-flight checkpoint before Prompt D fixes
+b91d032 Harden pairs sync for pristine config/universe.json per STRICT MODE Contract D
+ec3440b Fix volume/volatility scoring semantics per explicit requirements
+9ac7a0d Pre-flight checkpoint before fixing unit tests
+7bedcf9 Implement comprehensive Analyst/Trader coverage system
+b898488 checkpoint: before B
+563ab95 Initial push of CryptoRun project
+09dc77a Initial CryptoRun push
+f9c9bf0 Add code review snapshot under reviews/CodeReview_CProtocol with full docs
+75a1806 Implement CLI monitor and Top 10 output; update build docs; add AGENTS.md
+3663a28 Initial commit from local CProtocol
+cf73fd3 chore: initialize repo; add v3.2.1 mission; momentum UI badges + API Health dashboard; docs protocol + changelog logging; momentum-protected scoring; Balanced & Acceleration scanners
+81b37c4 Initial commit of CProtocol

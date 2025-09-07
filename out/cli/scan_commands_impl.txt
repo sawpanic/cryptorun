@@ -1,0 +1,12 @@
+CLI BATCH A1: Adding momentum|dip scan subcommands to main.go
+
+Current scan command structure:
+- scanCmd (general scan command)
+- Need to add: momentum and dip subcommands
+- Add common flags: --venues, --max-sample, --ttl, --progress
+
+Implementation plan:
+1. Add momentumCmd and dipCmd as subcommands to scanCmd
+2. Move existing scan flags to be shared
+3. Add specific implementation functions
+4. Ensure progress streaming and output to out/scan/

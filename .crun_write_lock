@@ -1,0 +1,16 @@
+# CryptoRun Write Lock Configuration
+# This file controls write access to different parts of the repository
+#
+# States:
+#   UNLOCKED        - All files can be modified (default development mode)
+#   LOCKED: code    - Only docs and CHANGELOG can be modified (documentation-only mode)
+#   LOCKED: docs    - Only code can be modified (code-only mode)
+#
+# Usage:
+#   - Change the state below to enforce write restrictions
+#   - Pre-commit hooks will check this file and block commits accordingly
+#   - Use "LOCKED: code" when only documentation updates should be allowed
+#   - Use "LOCKED: docs" when only code changes should be allowed
+#
+# Current State:
+UNLOCKED

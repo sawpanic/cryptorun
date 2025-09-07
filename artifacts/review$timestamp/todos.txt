@@ -1,0 +1,75 @@
+./exchanges/coinbase/book_stub.go:15:// TODO: Implement Coinbase WS orderbook provider
+./exchanges/okx/book_stub.go:15:// TODO: Implement OKX WS orderbook provider
+./internal/microstructure/checker.go:204:	// TODO: Implement proper VADR calculation with historical volume data
+./internal/microstructure/proofs.go:120:		RequiredValue: 50.0, // TODO: Make configurable
+./internal/microstructure/proofs.go:139:		RequiredValue: 100000, // TODO: Make configurable
+./internal/microstructure/proofs.go:158:		RequiredValue: 1.75, // TODO: Make configurable
+./internal/qa/nostub_gate.go:35:	regexp.MustCompile(`(?i)TODO`),
+./internal/qa/nostub_gate.go:36:	regexp.MustCompile(`(?i)FIXME`),
+./internal/qa/nostub_gate.go:40:	regexp.MustCompile(`(?i)return nil\s*//\s*TODO`),
+./internal/qa/nostub_gate.go:45:	"TODO",
+./internal/qa/nostub_gate.go:46:	"FIXME",
+./internal/qa/runner.go:248:		result.Hint = "Remove TODO/STUB/not-implemented patterns from non-test Go files before QA execution"
+./internal/qa/runner.go:251:		fmt.Printf("❌ FAIL SCAFFOLDS_FOUND +hint: remove TODO/STUB/not-implemented\n")
+./internal/spec/factors.go:33:	// TODO(QA): real factor graph per mission.md (Momentum protected)
+./internal/spec/microstructure.go:5:	// TODO(QA): enforce venue-native L1/L2 (Kraken/OKX/Coinbase)
+./internal/spec/social_cap.go:5:	// TODO(QA): cap brand/social ≤ +10 pts AFTER residuals
+./out/review/stage_20250906_133751/internal/qa/nostub_gate.go:35:	regexp.MustCompile(`(?i)TODO`),
+./out/review/stage_20250906_133751/internal/qa/nostub_gate.go:36:	regexp.MustCompile(`(?i)FIXME`),
+./out/review/stage_20250906_133751/internal/qa/nostub_gate.go:40:	regexp.MustCompile(`(?i)return nil\s*//\s*TODO`),
+./out/review/stage_20250906_133751/internal/qa/nostub_gate.go:45:	"TODO",
+./out/review/stage_20250906_133751/internal/qa/nostub_gate.go:46:	"FIXME",
+./out/review/stage_20250906_133751/internal/qa/runner.go:248:		result.Hint = "Remove TODO/STUB/not-implemented patterns from non-test Go files before QA execution"
+./out/review/stage_20250906_133751/internal/qa/runner.go:251:		fmt.Printf("❌ FAIL SCAFFOLDS_FOUND +hint: remove TODO/STUB/not-implemented\n")
+./out/review/stage_20250906_133751/internal/spec/factors.go:33:	// TODO(QA): real factor graph per mission.md (Momentum protected)
+./out/review/stage_20250906_133751/internal/spec/microstructure.go:5:	// TODO(QA): enforce venue-native L1/L2 (Kraken/OKX/Coinbase)
+./out/review/stage_20250906_133751/internal/spec/social_cap.go:5:	// TODO(QA): cap brand/social ≤ +10 pts AFTER residuals
+./out/review/stage_20250906_135049/internal/qa/nostub_gate.go:35:	regexp.MustCompile(`(?i)TODO`),
+./out/review/stage_20250906_135049/internal/qa/nostub_gate.go:36:	regexp.MustCompile(`(?i)FIXME`),
+./out/review/stage_20250906_135049/internal/qa/nostub_gate.go:40:	regexp.MustCompile(`(?i)return nil\s*//\s*TODO`),
+./out/review/stage_20250906_135049/internal/qa/nostub_gate.go:45:	"TODO",
+./out/review/stage_20250906_135049/internal/qa/nostub_gate.go:46:	"FIXME",
+./out/review/stage_20250906_135049/internal/qa/runner.go:248:		result.Hint = "Remove TODO/STUB/not-implemented patterns from non-test Go files before QA execution"
+./out/review/stage_20250906_135049/internal/qa/runner.go:251:		fmt.Printf("❌ FAIL SCAFFOLDS_FOUND +hint: remove TODO/STUB/not-implemented\n")
+./out/review/stage_20250906_135049/internal/spec/factors.go:33:	// TODO(QA): real factor graph per mission.md (Momentum protected)
+./out/review/stage_20250906_135049/internal/spec/microstructure.go:5:	// TODO(QA): enforce venue-native L1/L2 (Kraken/OKX/Coinbase)
+./out/review/stage_20250906_135049/internal/spec/social_cap.go:5:	// TODO(QA): cap brand/social ≤ +10 pts AFTER residuals
+./out/review/stage_20250906_135049/tests/unit/providers_guard_test.go:286:	// TODO: Implement when metrics package is available
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:15:	// Create a fake Go file with a TODO
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:22:	// TODO: implement this function properly
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:65:	foundTODO := false
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:70:			foundTODO = true
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:77:	if !foundTODO {
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:78:		t.Error("TODO pattern not detected")
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:96:	// TODO: write actual test
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:105:	// Create a regular Go file with TODO
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:110:	// TODO: implement
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:130:	// Should only detect TODO in regular file, not test file
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:164:	// FIXME: this is a stub implementation
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:253:	// TODO: implement this
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:257:	// FIXME: broken logic
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:265:	return nil // TODO
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:269:	// TODO: refactor this code
+./src/application/premove/backtest.go:3:// TODO: Implement backtesting functionality for premove strategies
+./src/application/premove/backtest.go:12:	// TODO: Add fields for historical data, pattern tracking, learning metrics
+./src/application/premove/backtest.go:16:	// TODO: Initialize with configuration from config/premove.yaml
+./src/application/premove/backtest.go:22:	// TODO: Implement backtesting logic
+./src/application/premove/backtest.go:30:	// TODO: Implement pattern exhaustion detection
+./src/application/premove/backtest.go:37:	// TODO: Return backtesting performance results
+./src/cmd/cryptorun/cmd_optimize.go:3:// TODO: add optimize command when rootCmd is available
+./tests/unit/providers_guard_test.go:286:	// TODO: Implement when metrics package is available
+./tests/unit/qa_nostub_gate_test.go:15:	// Create a fake Go file with a TODO
+./tests/unit/qa_nostub_gate_test.go:22:	// TODO: implement this function properly
+./tests/unit/qa_nostub_gate_test.go:65:	foundTODO := false
+./tests/unit/qa_nostub_gate_test.go:70:			foundTODO = true
+./tests/unit/qa_nostub_gate_test.go:77:	if !foundTODO {
+./tests/unit/qa_nostub_gate_test.go:78:		t.Error("TODO pattern not detected")
+./tests/unit/qa_nostub_gate_test.go:96:	// TODO: write actual test
+./tests/unit/qa_nostub_gate_test.go:105:	// Create a regular Go file with TODO
+./tests/unit/qa_nostub_gate_test.go:110:	// TODO: implement
+./tests/unit/qa_nostub_gate_test.go:130:	// Should only detect TODO in regular file, not test file
+./tests/unit/qa_nostub_gate_test.go:164:	// FIXME: this is a stub implementation
+./tests/unit/qa_nostub_gate_test.go:253:	// TODO: implement this
+./tests/unit/qa_nostub_gate_test.go:257:	// FIXME: broken logic
+./tests/unit/qa_nostub_gate_test.go:265:	return nil // TODO
+./tests/unit/qa_nostub_gate_test.go:269:	// TODO: refactor this code

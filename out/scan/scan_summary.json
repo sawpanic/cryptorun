@@ -1,0 +1,94 @@
+{
+  "timestamp": "2025-09-07T16:25:10.2019824+03:00",
+  "regime": "trending_bull",
+  "total_processed": 10,
+  "candidates_found": 10,
+  "selected": 2,
+  "processing_time": "0.05s",
+  "top_selected": [
+    {
+      "symbol": "BTCUSD",
+      "timestamp": "2025-09-07T16:25:10.1944709+03:00",
+      "score": {
+        "total": 85.94648138192913,
+        "momentum": 34.37859255277166,
+        "technical": 21.486620345482283,
+        "volume": 17.18929627638583,
+        "quality": 8.594648138192914,
+        "social": 0.18719054725562906
+      },
+      "factors": {
+        "momentum": 71.1789573822204,
+        "technical": 78.04412196550848,
+        "volume": 87.00485273861871,
+        "quality": 74.40294531609612,
+        "social": 7.573699337773027
+      },
+      "gates": {
+        "microstructure": {
+          "spread_bps": 15.90761831675459,
+          "depth_usd": 216599.45455509675,
+          "vadr": 2.3746838829018593,
+          "all_pass": true
+        },
+        "freshness": {
+          "ok": true,
+          "name": "freshness_guard"
+        },
+        "late_fill": {
+          "ok": true,
+          "name": "late_fill_guard"
+        },
+        "fatigue": {
+          "ok": true,
+          "name": "fatigue_guard"
+        },
+        "all_pass": true
+      },
+      "decision": "SELECTED: score=85.9 ≥75.0, gates=PASS",
+      "selected": true
+    },
+    {
+      "symbol": "ETHUSD",
+      "timestamp": "2025-09-07T16:25:10.1949781+03:00",
+      "score": {
+        "total": 88.46346464226859,
+        "momentum": 35.38538585690744,
+        "technical": 22.115866160567148,
+        "volume": 17.69269292845372,
+        "quality": 8.84634646422686,
+        "social": 8.927629165045278
+      },
+      "factors": {
+        "momentum": 81.65576383889933,
+        "technical": 63.272823859619386,
+        "volume": 82.67737175553626,
+        "quality": 87.45579402255527,
+        "social": 0.6291811503330801
+      },
+      "gates": {
+        "microstructure": {
+          "spread_bps": 22.7870126911688,
+          "depth_usd": 336354.47505001165,
+          "vadr": 2.3703589457773333,
+          "all_pass": true
+        },
+        "freshness": {
+          "ok": true,
+          "name": "freshness_guard"
+        },
+        "late_fill": {
+          "ok": true,
+          "name": "late_fill_guard"
+        },
+        "fatigue": {
+          "ok": true,
+          "name": "fatigue_guard"
+        },
+        "all_pass": true
+      },
+      "decision": "SELECTED: score=88.5 ≥75.0, gates=PASS",
+      "selected": true
+    }
+  ]
+}

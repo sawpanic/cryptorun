@@ -1,0 +1,6 @@
+universe:
+  exchange: kraken
+  quote_currency: USD
+  exclude_stablecoins: true
+  min_daily_volume_usd: 200000
+  min_price_history_days: 3

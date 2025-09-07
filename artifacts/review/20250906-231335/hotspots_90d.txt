@@ -1,0 +1,20 @@
+     26 
+     16 CHANGELOG.md
+      7 src/cmd/cryptorun/menu_main.go
+      6 go.mod
+      5 tests/unit/pipeline_scoring_test.go
+      5 tests/unit/pairs_sync_test.go
+      5 go.sum
+      4 tests/unit/vadr_test.go
+      4 tests/unit/scoring_volume_test.go
+      4 tests/unit/scoring_volatility_test.go
+      4 tests/unit/gram_schmidt_test.go
+      4 tests/go.mod
+      4 src/infrastructure/apis/kraken/client.go
+      4 src/go.mod
+      4 src/application/premove/backtest.go
+      4 src/application/pairs_sync.go
+      4 src/application/analyst/types.go
+      4 main.go
+      4 docs/PREMOVE.md
+      4 docs/ENGINEERING_TRANSPARENCY_LOG.md

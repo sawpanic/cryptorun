@@ -1,0 +1,46 @@
+{
+  "timestamp": "2025-09-06T13:32:48.670136+03:00",
+  "overall_alignment": 0.60,
+  "window_alignments": {
+    "1h": {
+      "score": 0.60,
+      "matches": 3,
+      "total": 5,
+      "kendall_tau": 0.67,
+      "spearman_rho": 0.80
+    },
+    "24h": {
+      "score": 0.60,
+      "matches": 3,
+      "total": 5,
+      "kendall_tau": 0.33,
+      "spearman_rho": 0.40
+    },
+    "7d": {
+      "score": null,
+      "matches": null,
+      "total": null,
+      "kendall_tau": null,
+      "spearman_rho": null
+    }
+  },
+  "miss_breakdown": {
+    "total_misses": 4,
+    "by_primary_reason": {
+      "freshness_guard": {"count": 1, "symbols": ["ADA"], "window": "1h"},
+      "score_gate": {"count": 1, "symbols": ["DOT"], "window": "1h"},
+      "fatigue_guard": {"count": 1, "symbols": ["ETH"], "window": "24h"},
+      "late_fill_guard": {"count": 1, "symbols": ["SOL"], "window": "24h"}
+    },
+    "missed_gain_total": 134.90,
+    "average_missed_gain": 33.725
+  },
+  "current_config": {
+    "fatigue_threshold": 18.0,
+    "late_fill_max_delay": 45,
+    "freshness_max_bars": 3,
+    "min_score": 2.2,
+    "volume_multiple": 1.65,
+    "adx_threshold": 23.0
+  }
+}

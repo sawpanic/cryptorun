@@ -1,0 +1,14 @@
+LINT & VET RESULTS
+=================
+
+Go Vet Status: FAILED
+Key Issue:
+- internal\application\signals\scan.go:8:2: package cryptorun/internal/gates/entry is not in std
+- Import path configuration issues
+
+Golangci-lint: Not available/installed
+
+Vet Summary:
+- Standard library path confusion detected
+- Module path resolution issues
+- Recommend reviewing go.mod and import statements

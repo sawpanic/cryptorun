@@ -1,0 +1,104 @@
+# CryptoRun MomentumCore Configuration v3.2.1
+# Multi-timeframe momentum scanning with guards and regime adaptation
+
+# 4h acceleration boost configuration
+accel_4h_boost: 0.10  # Add 10% boost when fresh & aligned (range: 0.05-0.15)
+
+# ATR normalization to prevent unit drift
+atr_norm: true
+
+# Use 7d carry component in bull regimes
+use_7d_in_bull: true
+
+# Minimum bars required per timeframe to avoid cold starts
+min_bars:
+  1h: 60    # 60 1-hour bars = 2.5 days
+  4h: 60    # 60 4-hour bars = 10 days  
+  12h: 60   # 60 12-hour bars = 30 days
+  24h: 30   # 30 daily bars = 1 month
+  7d: 30    # 30 weekly bars = ~7 months
+
+# Fatigue Guard Parameters
+fatigue:
+  return_24h_threshold: 18.0  # Block if 24h return > +18% (calibrated)
+  rsi_4h_threshold: 70.0      # RSI threshold on 4h timeframe
+  accel_renewal: true         # Allow override if acceleration is positive
+
+# Freshness Guard Parameters  
+freshness:
+  max_bars_age: 3            # Maximum age in bars (≤3 bars, calibrated)
+  atr_window: 14             # ATR calculation window
+  atr_factor: 1.2            # Price movement threshold (1.2×ATR)
+
+# Late-Fill Guard Parameters
+late_fill:
+  max_delay_seconds: 45      # Maximum delay after bar close (45s, calibrated)
+
+# Regime Adaptation
+regime:
+  adapt_weights: true        # Enable regime-adaptive weight adjustments
+  update_period: 4           # Update frequency in hours (4h)
+
+# Entry Gate Configuration
+entry_gates:
+  min_score: 2.0            # Minimum momentum score threshold (calibrated for DOT recovery)
+  volume_multiple: 1.6      # Minimum volume surge multiple (calibrated for ADA recovery)
+  adx_threshold: 23.0       # Minimum ADX for trend confirmation (calibrated)
+  hurst_threshold: 0.55     # Minimum Hurst exponent for persistence
+
+# Exit Gate Configuration
+exit_gates:
+  hard_stop: 5.0            # Hard stop loss percentage
+  venue_health: 0.8         # Minimum venue health threshold
+  max_hold_hours: 48        # Maximum hold period (48 hours)
+  accel_reversal: 0.5       # Acceleration reversal threshold
+  fade_threshold: 1.0       # Momentum fade threshold percentage
+  trailing_stop: 2.0        # Trailing stop percentage
+  profit_target: 8.0        # Profit target percentage
+
+# Pipeline Configuration
+pipeline:
+  explainability_output: true    # Generate explainability artifacts
+  output_path: "./out/momentum"  # Output directory for results
+  protected_factors:             # Factors protected in orthogonalization
+    - "MomentumCore"
+  max_symbols: 50               # Maximum symbols to process per scan
+
+# Regime-Specific Weight Adjustments
+regime_weights:
+  trending:
+    tf_1h_multiplier: 0.8      # Reduce short-term weight in trends
+    tf_4h_multiplier: 1.1      # Boost primary timeframe
+    tf_12h_multiplier: 1.2     # Favor longer timeframes
+    tf_24h_multiplier: 1.3     # Maximize trend capture
+    
+  choppy:
+    tf_1h_multiplier: 1.3      # Favor shorter timeframes in chop
+    tf_4h_multiplier: 1.2      # Boost responsiveness
+    tf_12h_multiplier: 0.9     # Reduce longer timeframes
+    tf_24h_multiplier: 0.7     # Minimize trend noise
+    
+  volatile:
+    tf_1h_multiplier: 1.1      # Slight boost to short-term
+    tf_4h_multiplier: 1.0      # Keep primary stable
+    tf_12h_multiplier: 0.95    # Minor reduction
+    tf_24h_multiplier: 0.9     # Reduce longest timeframe
+
+# Quality Thresholds
+quality:
+  min_confidence: 60.0       # Minimum confidence percentage
+  min_data_points: 20        # Minimum data points per timeframe
+  max_correlation: 0.8       # Maximum correlation before orthogonalization
+
+# Performance Limits
+performance:
+  max_processing_time_ms: 5000   # Maximum processing time per symbol
+  cache_ttl_seconds: 300         # Cache TTL for market data
+  concurrent_symbols: 10         # Maximum concurrent symbol processing
+
+# Debug and Monitoring
+debug:
+  log_guard_failures: true      # Log guard failure details
+  log_orthogonalization: false  # Log orthogonalization process
+  save_factor_matrices: false   # Save factor matrices for analysis
+  performance_metrics: true     # Collect performance metrics

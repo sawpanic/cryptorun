@@ -1,0 +1,31 @@
+**🏆 MISSION ACCOMPLISHED**: SCHED.GUARDS.PROVIDERS completed successfully with full provider infrastructure, health monitoring, and failover capabilities operational.
+e_limits.go` - Provider-specific limits with X-MBX-USED-WEIGHT header parsing
+- `internal/providers/runtime/circuit_breakers.go` - State management (Healthy/Degraded/Fallback/Restoring)  
+- `internal/providers/runtime/fallback_chains.go` - Explicit fallback chains with cache TTL×2 on degradation
+
+### ✅ **Health Monitoring System**
+- `internal/providers/runtime/healthjob.go` - 5-minute provider health checks
+- `cmd/cryptorun/menu_main.go` - Banner system with 🟢/🟡/🔴 provider status display
+- Outputs to `artifacts/ops/providers.json` every 5 minutes
+
+### ✅ **Scheduler Integration**
+- `config/scheduler.yaml` - Added `providers.health` job (*/5m schedule)
+- `internal/scheduler/scheduler.go` - Support for provider health job type
+
+### ✅ **Comprehensive Test Suite**
+- `internal/providers/runtime/runtime_test.go` - 429/418 fallback→restore scenarios
+- Budget depletion → TTL×2 + fallback tests
+- Circuit breaker state transition validation
+- Performance benchmarks included
+
+### ✅ **Documentation**
+- `docs/PROVIDERS.md` - Complete provider limits, fallbacks, and probe documentation
+- Real-time status display patterns
+- Troubleshooting and best practices
+
+### ✅ **Acceptance Criteria Met**
+- ✅ Simulated 429/418 flips to secondary provider and restores after probes
+- ✅ Banner shows per-provider state in real-time  
+- ✅ `providers.json` updated every 5 minutes with comprehensive health data
+
+The provider guard system is **fully operational** and protects against rate limits, provider failures, and provides transparent fallback with comprehensive monitoring and alerting.

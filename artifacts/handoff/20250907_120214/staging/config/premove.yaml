@@ -1,0 +1,134 @@
+# Pre-Movement Detector v3.3 Configuration
+# Coiled-spring setup detection with 100-point composite scoring
+
+# Data freshness and health monitoring
+freshness:
+  hard_fail_s: 90        # Hard failure threshold - 90 seconds max staleness
+  soft_warn_s: 30        # Soft warning threshold for UI indicators
+  worst_feed_wins: true  # Use worst (stalest) feed for health decisions
+  decay_half_life_s: 45  # Half-life for freshness penalties
+
+# Scoring model (100-point composite)
+scoring:
+  structural_weight: 45    # Structural indicators (45 points)
+  behavioral_weight: 30    # Behavioral flow analysis (30 points)
+  catalyst_compression_weight: 25  # Catalyst/compression signals (25 points)
+  
+  # Score thresholds
+  min_composite_score: 60  # Minimum score for consideration
+  strong_signal_score: 75  # Strong signal threshold
+  exceptional_score: 85    # Exceptional opportunity threshold
+
+# 2-of-3 Gates system
+gates:
+  required_gates: 2        # Must pass 2 of 3 gates minimum
+  volume_gate_regime_override: true  # Volume gate can override in certain regimes
+  
+  # Individual gate thresholds
+  microstructure:
+    min_depth_pct: 2.0     # ±2% depth requirement
+    max_spread_bps: 50     # Max spread 50 basis points
+    min_bid_ask_ratio: 0.8 # Min bid/ask size ratio
+  
+  volume:
+    min_surge_multiple: 1.75  # Volume surge threshold
+    min_adv_coverage: 0.3     # ADV coverage requirement
+  
+  momentum:
+    min_acceleration: 0.02    # Minimum momentum acceleration
+    max_fatigue_rsi: 70      # RSI fatigue threshold
+
+# Portfolio construction and risk management
+portfolio:
+  pairwise_corr_max: 0.65    # Maximum pairwise correlation between positions
+  sector_caps:               # Sector position limits
+    L1: 2
+    DeFi: 2
+    Infrastructure: 2
+    Gaming: 2
+  beta_budget_to_btc: 2.0    # Total beta budget relative to BTC
+  max_single_position_pct: 5 # Maximum single position size (%)
+  max_total_exposure_pct: 20 # Maximum total exposure (%)
+  apply_stage: post_gates_pre_alerts # When portfolio pruning is applied
+  
+  # Correlation matrix settings
+  lookback_1h: 168         # 1-hour correlation lookback (7 days)
+  lookback_4h: 168         # 4-hour correlation lookback (28 days)
+  min_observations: 50     # Minimum observations for correlation
+
+# Alert system configuration
+alerts:
+  per_hour: 3             # Maximum 3 alerts per hour
+  per_day: 10             # Maximum 10 alerts per day
+  high_vol_per_hour: 6    # Increased limit during high volatility
+  manual_override:        # Manual override settings
+    condition: "score>90 && gates<2"  # Override condition
+    mode: alert_only      # Manual override mode
+
+# Execution quality monitoring
+execution_quality:
+  slippage_bps_tighten_threshold: 30  # Tighten requirements at 30 bps slippage
+  recovery:                           # Recovery settings
+    good_trades: 20                   # 20 good trades for recovery
+    hours: 48                         # OR 48-hour reset
+
+# Learning and backtesting system
+learning:
+  pattern_exhaustion:         # Pattern exhaustion monitoring
+    degrade_confidence_when_7d_lt_0_7_of_30d: true  # Degrade confidence when 7d performance < 70% of 30d
+
+# Data sources and feeds
+data_sources:
+  primary_exchange: "kraken"  # Primary data source
+  backup_exchanges: ["binance", "coinbase"]  # Backup exchanges
+  
+  # WebSocket settings
+  ws_reconnect_delay_s: 5    # Reconnection delay
+  ws_max_reconnects: 10      # Maximum reconnection attempts
+  
+  # REST fallback
+  rest_poll_interval_s: 15   # REST polling interval when WS fails
+  rest_timeout_s: 10         # REST request timeout
+
+# UI refresh and SSE configuration
+ui:
+  max_refresh_hz: 1.0        # Maximum UI refresh rate (1 Hz)
+  sse_enabled: true          # Enable Server-Sent Events
+  sse_heartbeat_s: 30        # SSE heartbeat interval
+  
+  # Board display settings
+  top_n_display: 20          # Show top 20 opportunities on board
+  auto_scroll: true          # Auto-scroll to new opportunities
+  sound_alerts: false        # Audio alerts disabled by default
+
+# System health and monitoring
+health:
+  metrics_export: true       # Export Prometheus metrics
+  artifact_retention_days: 30  # Keep artifacts for 30 days
+  log_level: "info"          # Logging level
+  
+  # Performance thresholds
+  max_processing_time_ms: 1000  # Max processing time per cycle
+  max_memory_mb: 512            # Memory usage limit
+  
+# Circuit breaker configuration
+circuit_breakers:
+  api_failure_threshold: 5      # API failure threshold
+  api_recovery_time_s: 60       # API recovery time
+  data_staleness_circuit_s: 180 # Circuit opens if data >3min stale
+
+# Regime-specific adjustments
+regime_adjustments:
+  trending_bull:
+    structural_boost: 1.1      # 10% boost to structural weight
+    catalyst_boost: 0.9        # 10% reduction to catalyst weight
+    gate_relaxation: 0.05      # Slightly relax gate thresholds
+  
+  choppy:
+    behavioral_boost: 1.2      # 20% boost to behavioral weight
+    structural_reduction: 0.9  # 10% reduction to structural weight
+    gate_tightening: 0.1       # Tighten gate thresholds
+  
+  high_vol:
+    catalyst_boost: 1.3        # 30% boost to catalyst weight
+    all_gates_required: true   # Require all 3 gates in high vol

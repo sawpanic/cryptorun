@@ -1,0 +1,61 @@
+# CryptoRun Regime Detection Configuration
+# 
+# This file defines the regime detection system that adapts factor weights
+# based on market conditions using a 3-indicator system with 4h updates.
+
+# Detection Thresholds for 3-Indicator System
+thresholds:
+  # Realized Volatility (7-day, annualized)
+  vol_low_threshold: 0.30   # Below 30% = low volatility
+  vol_high_threshold: 0.60  # Above 60% = high volatility
+
+  # Universe Breadth (% above 20MA)
+  bull_threshold: 0.65      # Above 65% = bullish breadth
+  bear_threshold: 0.35      # Below 35% = bearish breadth
+
+  # Breadth Thrust Indicator
+  thrust_positive: 0.15     # Above 15% = positive thrust
+  thrust_negative: -0.15    # Below -15% = negative thrust
+
+# Update Configuration
+cadence:
+  update_interval: "4h"     # Regime updates every 4 hours
+  majority_window: 6        # Keep 6 periods (24h) for majority voting
+  stability_bias: 1.2       # Require 20% higher score to switch regimes
+
+# Default Regime (fallback)
+default_regime: "CHOPPY"
+
+# Regime-Specific Factor Weight Allocations
+# All weights sum to 100 (excluding Social which is capped +10 separately)
+weights:
+  trending_bull:
+    momentum: 50.0    # High momentum weight for trend following
+    technical: 20.0   # Moderate technical indicators
+    volume: 15.0      # Volume confirmation
+    quality: 10.0     # Quality screens
+    catalyst: 5.0     # Event catalysts
+
+  choppy:
+    momentum: 35.0    # Reduced momentum in sideways markets
+    technical: 30.0   # Higher technical weight for range trading
+    volume: 15.0      # Volume analysis for breakouts
+    quality: 15.0     # Quality becomes more important
+    catalyst: 5.0     # Catalyst factors
+
+  high_vol:
+    momentum: 30.0    # Lower momentum due to noise
+    technical: 25.0   # Technical analysis for volatility
+    volume: 20.0      # Volume spikes matter more
+    quality: 20.0     # Quality screens critical
+    catalyst: 5.0     # Catalyst factors minimal
+
+# Regime Protection Rules
+protection:
+  momentum_core:
+    min_weight: 25.0        # Minimum momentum allocation (MomentumCore protection)
+    always_protected: true  # Never allow residualization of MomentumCore
+    
+  social_factor:
+    cap_limit: 10.0         # Social factors capped at +10 points
+    applied_outside: true   # Applied OUTSIDE the 100% base allocation

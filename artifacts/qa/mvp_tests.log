@@ -1,0 +1,406 @@
+# cryptorun/internal/application/bench
+internal\application\bench\spec_pnl.go:179:2: declared and not used: endTime
+internal\application\bench\spec_pnl.go:217:2: declared and not used: endTime
+internal\application\bench\topgainers.go:373:19: tgb.progressBus.Emit undefined (type *progress.ScanProgressBus has no field or method Emit)
+internal\application\bench\topgainers.go:373:33: undefined: progress.ScanProgress
+internal\application\bench\alignment.go:4:2: "encoding/json" imported and not used
+internal\application\bench\alignment.go:5:2: "fmt" imported and not used
+internal\application\bench\alignment.go:6:2: "io/ioutil" imported and not used
+internal\application\bench\alignment.go:8:2: "os" imported and not used
+internal\application\bench\alignment.go:9:2: "path/filepath" imported and not used
+internal\application\bench\alignment.go:10:2: "sort" imported and not used
+internal\application\bench\alignment.go:10:2: too many errors
+# cryptorun/internal/explain/delta
+internal\explain\delta\runner.go:8:2: "sort" imported and not used
+internal\explain\delta\runner.go:113:22: not enough arguments in call to universe.NewBuilder
+	have ()
+	want (universe.KrakenLite)
+internal\explain\delta\runner.go:114:33: universeBuilder.LoadUniverse undefined (type *universe.Builder has no field or method LoadUniverse)
+internal\explain\delta\runner.go:141:20: scanner.GetCurrentRegime undefined (type *application.ScanPipeline has no field or method GetCurrentRegime)
+internal\explain\delta\runner.go:148:27: scanner.ExplainSymbol undefined (type *application.ScanPipeline has no field or method ExplainSymbol)
+# cryptorun/internal/interfaces/http/endpoints
+internal\interfaces\http\endpoints\explain.go:6:2: "path/filepath" imported and not used
+?   	cryptorun	[no test files]
+FAIL	cryptorun/cmd/cryptorun [build failed]
+FAIL	cryptorun/cmd/test_server [build failed]
+?   	cryptorun/data	[no test files]
+?   	cryptorun/data/cache	[no test files]
+?   	cryptorun/exchanges/binance	[no test files]
+?   	cryptorun/exchanges/coinbase	[no test files]
+?   	cryptorun/exchanges/kraken	[no test files]
+?   	cryptorun/exchanges/okx	[no test files]
+?   	cryptorun/factors	[no test files]
+?   	cryptorun/infra/breakers	[no test files]
+?   	cryptorun/infra/limits	[no test files]
+?   	cryptorun/infrastructure/market	[no test files]
+?   	cryptorun/interfaces/ui/menu	[no test files]
+?   	cryptorun/internal/adapters	[no test files]
+?   	cryptorun/internal/algo/dip	[no test files]
+?   	cryptorun/internal/algo/momentum	[no test files]
+?   	cryptorun/internal/api	[no test files]
+?   	cryptorun/internal/application	[no test files]
+?   	cryptorun/internal/application/analyst	[no test files]
+FAIL	cryptorun/internal/application/bench [build failed]
+# cryptorun/internal/application/guards [cryptorun/internal/application/guards.test]
+internal\application\guards\latefill_test.go:264:2: declared and not used: mockTime
+FAIL	cryptorun/internal/application/guards [build failed]
+ok  	cryptorun/internal/application/guards/e2e	1.585s [no tests to run]
+?   	cryptorun/internal/application/guards/testkit	[no test files]
+ok  	cryptorun/internal/application/menu/e2e	1.337s [no tests to run]
+?   	cryptorun/internal/application/metrics	[no test files]
+?   	cryptorun/internal/application/optimization	[no test files]
+ok  	cryptorun/internal/application/pipeline	1.567s [no tests to run]
+?   	cryptorun/internal/application/regime	[no test files]
+?   	cryptorun/internal/application/selftest	[no test files]
+?   	cryptorun/internal/application/universe	[no test files]
+FAIL	cryptorun/internal/application/verify [build failed]
+?   	cryptorun/internal/artifacts/compact	[no test files]
+?   	cryptorun/internal/artifacts/gc	[no test files]
+?   	cryptorun/internal/artifacts/manifest	[no test files]
+?   	cryptorun/internal/atomicio	[no test files]
+?   	cryptorun/internal/backtest/march_aug	[no test files]
+ok  	cryptorun/internal/backtest/smoke90	1.304s [no tests to run]
+?   	cryptorun/internal/bench	[no test files]
+?   	cryptorun/internal/bench/common	[no test files]
+?   	cryptorun/internal/bench/diagnostics	[no test files]
+?   	cryptorun/internal/bench/sources	[no test files]
+?   	cryptorun/internal/config	[no test files]
+?   	cryptorun/internal/config/regime	[no test files]
+# cryptorun/internal/exits [cryptorun/internal/exits.test]
+internal\exits\logic_test.go:18:3: unknown field HardStopPrice in struct literal of type ExitInputs
+internal\exits\logic_test.go:23:3: unknown field MomentumScore in struct literal of type ExitInputs
+internal\exits\logic_test.go:24:3: unknown field EntryMomentumScore in struct literal of type ExitInputs
+internal\exits\logic_test.go:25:3: unknown field MomentumAccel in struct literal of type ExitInputs
+internal\exits\logic_test.go:26:3: unknown field EntryAccel in struct literal of type ExitInputs
+internal\exits\logic_test.go:28:3: unknown field TrailingStopPct in struct literal of type ExitInputs
+internal\exits\logic_test.go:60:3: unknown field HardStopPrice in struct literal of type ExitInputs
+internal\exits\logic_test.go:98:3: unknown field HardStopPrice in struct literal of type ExitInputs
+internal\exits\logic_test.go:132:3: unknown field HardStopPrice in struct literal of type ExitInputs
+internal\exits\logic_test.go:170:3: unknown field HardStopPrice in struct literal of type ExitInputs
+internal\exits\logic_test.go:170:3: too many errors
+# cryptorun/internal/explain [cryptorun/internal/explain.test]
+internal\explain\explainer.go:166:39: compositeScore.FinalScoreWithSocial undefined (type *composite.CompositeScore has no field or method FinalScoreWithSocial)
+internal\explain\explainer.go:212:23: cannot use compositeScore.VolumeResid (variable of struct type composite.VolumeComponents) as float64 value in map literal
+internal\explain\explainer.go:213:23: cannot use compositeScore.QualityResid (variable of struct type composite.QualityComponents) as float64 value in map literal
+internal\explain\explainer.go:214:38: compositeScore.SocialResidCapped undefined (type *composite.CompositeScore has no field or method SocialResidCapped)
+internal\explain\explainer.go:220:55: cannot convert 0.15 (untyped float constant) to type struct{Volume float64 "json:\"volume\""; DeltaOI float64 "json:\"delta_oi\""; Combined float64 "json:\"combined\""}
+internal\explain\explainer.go:221:56: cannot convert 0.15 (untyped float constant) to type struct{OIResid float64 "json:\"oi_resid\""; Reserves float64 "json:\"reserves\""; ETFTint float64 "json:\"etf_tint\""; VenueHealth float64 "json:\"venue_health\""; Combined float64 "json:\"combined\""}
+internal\explain\explainer.go:223:34: compositeScore.InternalTotal100 undefined (type *composite.CompositeScore has no field or method InternalTotal100)
+internal\explain\explainer.go:224:34: compositeScore.SocialResidCapped undefined (type *composite.CompositeScore has no field or method SocialResidCapped)
+internal\explain\explainer.go:225:34: compositeScore.FinalScoreWithSocial undefined (type *composite.CompositeScore has no field or method FinalScoreWithSocial)
+internal\explain\explainer.go:237:34: e.regimeWeights.GetWeightsForRegime undefined (type *"cryptorun/internal/config/regime".WeightsLoader has no field or method GetWeightsForRegime)
+internal\explain\explainer.go:237:34: too many errors
+# cryptorun/internal/gates [cryptorun/internal/gates.test]
+internal\gates\entry_test.go:134:84: not enough arguments in call to evaluator.EvaluateEntry
+	have (context.Context, string, number, number, string)
+	want (context.Context, string, float64, float64, string, float64)
+internal\gates\entry_test.go:161:84: not enough arguments in call to evaluator.EvaluateEntry
+	have (context.Context, string, number, number, string)
+	want (context.Context, string, float64, float64, string, float64)
+internal\gates\entry_test.go:183:84: not enough arguments in call to evaluator.EvaluateEntry
+	have (context.Context, string, number, number, string)
+	want (context.Context, string, float64, float64, string, float64)
+internal\gates\entry_test.go:201:84: not enough arguments in call to evaluator.EvaluateEntry
+	have (context.Context, string, number, number, string)
+	want (context.Context, string, float64, float64, string, float64)
+internal\gates\entry_test.go:219:84: not enough arguments in call to evaluator.EvaluateEntry
+	have (context.Context, string, number, number, string)
+	want (context.Context, string, float64, float64, string, float64)
+internal\gates\entry_test.go:237:84: not enough arguments in call to evaluator.EvaluateEntry
+	have (context.Context, string, number, number, string)
+	want (context.Context, string, float64, float64, string, float64)
+internal\gates\entry_test.go:274:84: not enough arguments in call to evaluator.EvaluateEntry
+	have (context.Context, string, number, number, string)
+	want (context.Context, string, float64, float64, string, float64)
+internal\gates\entry_test.go:318:84: not enough arguments in call to evaluator.EvaluateEntry
+	have (context.Context, string, number, number, string)
+	want (context.Context, string, float64, float64, string, float64)
+internal\gates\entry_test.go:341:84: not enough arguments in call to evaluator.EvaluateEntry
+	have (context.Context, string, number, number, string)
+	want (context.Context, string, float64, float64, string, float64)
+internal\gates\entry_test.go:373:84: not enough arguments in call to evaluator.EvaluateEntry
+	have (context.Context, string, number, number, string)
+	want (context.Context, string, float64, float64, string, float64)
+internal\gates\entry_test.go:373:84: too many errors
+# cryptorun/internal/providers/adapters
+internal\providers\adapters\coingecko.go:41:27: undefined: microstructure.GuardAgainstAggregator
+internal\providers\adapters\coingecko.go:72:27: undefined: microstructure.GuardAgainstAggregator
+ok  	cryptorun/internal/data	2.402s [no tests to run]
+?   	cryptorun/internal/data/cold	[no test files]
+?   	cryptorun/internal/data/derivs	[no test files]
+?   	cryptorun/internal/data/etf	[no test files]
+?   	cryptorun/internal/data/venue/binance	[no test files]
+?   	cryptorun/internal/data/venue/coinbase	[no test files]
+?   	cryptorun/internal/data/venue/okx	[no test files]
+?   	cryptorun/internal/data/venue/types	[no test files]
+?   	cryptorun/internal/data/ws	[no test files]
+ok  	cryptorun/internal/datasources	0.415s [no tests to run]
+?   	cryptorun/internal/domain	[no test files]
+?   	cryptorun/internal/domain/factors	[no test files]
+?   	cryptorun/internal/domain/gates	[no test files]
+?   	cryptorun/internal/domain/guards	[no test files]
+?   	cryptorun/internal/domain/microstructure	[no test files]
+?   	cryptorun/internal/domain/pairs	[no test files]
+?   	cryptorun/internal/domain/regime	[no test files]
+?   	cryptorun/internal/domain/scoring	[no test files]
+FAIL	cryptorun/internal/exits [build failed]
+FAIL	cryptorun/internal/explain [build failed]
+FAIL	cryptorun/internal/explain/delta [build failed]
+FAIL	cryptorun/internal/gates [build failed]
+?   	cryptorun/internal/http	[no test files]
+?   	cryptorun/internal/infrastructure/httpclient	[no test files]
+?   	cryptorun/internal/infrastructure/providers	[no test files]
+?   	cryptorun/internal/infrastructure/websocket	[no test files]
+?   	cryptorun/internal/interfaces/http	[no test files]
+FAIL	cryptorun/internal/interfaces/http/endpoints [build failed]
+?   	cryptorun/internal/interfaces/http/handlers	[no test files]
+?   	cryptorun/internal/io	[no test files]
+?   	cryptorun/internal/log	[no test files]
+?   	cryptorun/internal/metrics	[no test files]
+ok  	cryptorun/internal/micro	1.106s [no tests to run]
+ok  	cryptorun/internal/micro/collectors	1.817s [no tests to run]
+# cryptorun/internal/social [cryptorun/internal/social.test]
+internal\social\api_test.go:229:35: comp.SourceID undefined (type *SocialComponent has no field or method SourceID)
+internal\social\api_test.go:440:18: undefined: fmt
+internal\social\normalize_test.go:5:2: "math" imported and not used
+# cryptorun/out/review/stage_20250906_133751/internal/application
+out\review\stage_20250906_133751\internal\application\scan.go:337:85: not enough arguments in call to pipeline.BuildFactorSet
+	have (string, *pipeline.MomentumFactors, float64, float64, float64)
+	want (string, *pipeline.MomentumFactors, float64, float64, float64, float64)
+out\review\stage_20250906_133751\internal\application\scan.go:690:103: factors.Raw undefined (type pipeline.FactorSet has no field or method Raw)
+out\review\stage_20250906_133751\internal\application\scan.go:708:27: factors.Raw undefined (type pipeline.FactorSet has no field or method Raw)
+out\review\stage_20250906_133751\internal\application\scan.go:709:27: factors.Raw undefined (type pipeline.FactorSet has no field or method Raw)
+out\review\stage_20250906_133751\internal\application\scan.go:710:27: factors.Raw undefined (type pipeline.FactorSet has no field or method Raw)
+# cryptorun/out/review/stage_20250906_133751/internal/spec
+out\review\stage_20250906_133751\internal\spec\factor_hierarchy.go:140:3: unknown field Volatility in struct literal of type pipeline.FactorSet
+out\review\stage_20250906_133751\internal\spec\factor_hierarchy.go:155:3: unknown field Volatility in struct literal of type pipeline.FactorSet
+out\review\stage_20250906_133751\internal\spec\factor_hierarchy.go:170:3: unknown field Volatility in struct literal of type pipeline.FactorSet
+out\review\stage_20250906_133751\internal\spec\factor_hierarchy.go:241:4: unknown field Volatility in struct literal of type pipeline.FactorSet
+# cryptorun/tests/conformance [cryptorun/tests/conformance.test]
+tests\conformance\momentum_protection_test.go:68:6: declared and not used: i
+tests\conformance\guards_regime_test.go:4:2: "encoding/json" imported and not used
+tests\conformance\menu_coverage_test.go:5:2: "reflect" imported and not used
+tests\conformance\menu_coverage_test.go:6:2: "strings" imported and not used
+tests\conformance\microstructure_ban_test.go:4:2: "bufio" imported and not used
+# cryptorun/tests/empirical [cryptorun/tests/empirical.test]
+tests\empirical\gate_alignment_test.go:69:2: declared and not used: analysis4h
+tests\empirical\gate_alignment_test.go:70:2: declared and not used: analysis24h
+# cryptorun/internal/explain
+internal\explain\explainer.go:166:39: compositeScore.FinalScoreWithSocial undefined (type *composite.CompositeScore has no field or method FinalScoreWithSocial)
+internal\explain\explainer.go:212:23: cannot use compositeScore.VolumeResid (variable of struct type composite.VolumeComponents) as float64 value in map literal
+internal\explain\explainer.go:213:23: cannot use compositeScore.QualityResid (variable of struct type composite.QualityComponents) as float64 value in map literal
+internal\explain\explainer.go:214:38: compositeScore.SocialResidCapped undefined (type *composite.CompositeScore has no field or method SocialResidCapped)
+internal\explain\explainer.go:220:55: cannot convert 0.15 (untyped float constant) to type struct{Volume float64 "json:\"volume\""; DeltaOI float64 "json:\"delta_oi\""; Combined float64 "json:\"combined\""}
+internal\explain\explainer.go:221:56: cannot convert 0.15 (untyped float constant) to type struct{OIResid float64 "json:\"oi_resid\""; Reserves float64 "json:\"reserves\""; ETFTint float64 "json:\"etf_tint\""; VenueHealth float64 "json:\"venue_health\""; Combined float64 "json:\"combined\""}
+internal\explain\explainer.go:223:34: compositeScore.InternalTotal100 undefined (type *composite.CompositeScore has no field or method InternalTotal100)
+internal\explain\explainer.go:224:34: compositeScore.SocialResidCapped undefined (type *composite.CompositeScore has no field or method SocialResidCapped)
+internal\explain\explainer.go:225:34: compositeScore.FinalScoreWithSocial undefined (type *composite.CompositeScore has no field or method FinalScoreWithSocial)
+internal\explain\explainer.go:237:34: e.regimeWeights.GetWeightsForRegime undefined (type *"cryptorun/internal/config/regime".WeightsLoader has no field or method GetWeightsForRegime)
+internal\explain\explainer.go:237:34: too many errors
+# cryptorun/tests/integration/premove [cryptorun/tests/integration/premove.test]
+tests\integration\premove\backtest_pit_test.go:18:21: undefined: premove.NewPITRecordLoader
+tests\integration\premove\backtest_pit_test.go:18:48: undefined: premove.PITLoaderConfig
+tests\integration\premove\backtest_pit_test.go:66:24: undefined: premove.NewOutcomeValidator
+tests\integration\premove\backtest_pit_test.go:66:52: undefined: premove.ValidationConfig
+tests\integration\premove\backtest_pit_test.go:73:21: undefined: premove.NewPITRecordLoader
+tests\integration\premove\backtest_pit_test.go:73:48: undefined: premove.PITLoaderConfig
+tests\integration\premove\backtest_pit_test.go:110:33: undefined: premove.NewTemporalConsistencyChecker
+tests\integration\premove\backtest_pit_test.go:110:71: undefined: premove.ConsistencyConfig
+tests\integration\premove\backtest_pit_test.go:117:28: undefined: premove.PITRecord
+tests\integration\premove\backtest_pit_test.go:173:32: undefined: premove.NewRegimeTransitionTracker
+tests\integration\premove\backtest_pit_test.go:173:32: too many errors
+ok  	cryptorun/internal/microstructure	5.521s [no tests to run]
+?   	cryptorun/internal/microstructure/adapters	[no test files]
+ok  	cryptorun/internal/net/budget	0.298s [no tests to run]
+ok  	cryptorun/internal/net/circuit	0.295s [no tests to run]
+?   	cryptorun/internal/net/client	[no test files]
+ok  	cryptorun/internal/net/ratelimit	1.233s [no tests to run]
+ok  	cryptorun/internal/ops	1.506s [no tests to run]
+ok  	cryptorun/internal/premove	1.671s [no tests to run]
+FAIL	cryptorun/internal/providers/adapters [build failed]
+ok  	cryptorun/internal/providers/guards	1.458s [no tests to run]
+ok  	cryptorun/internal/providers/runtime	0.319s [no tests to run]
+?   	cryptorun/internal/qa	[no test files]
+?   	cryptorun/internal/regime	[no test files]
+?   	cryptorun/internal/reports/regime	[no test files]
+?   	cryptorun/internal/scan/pipeline	[no test files]
+?   	cryptorun/internal/scan/progress	[no test files]
+?   	cryptorun/internal/scan/sim	[no test files]
+?   	cryptorun/internal/score/composite	[no test files]
+ok  	cryptorun/internal/scoring	1.194s
+FAIL	cryptorun/internal/social [build failed]
+?   	cryptorun/internal/spec	[no test files]
+?   	cryptorun/internal/telemetry/latency	[no test files]
+?   	cryptorun/internal/telemetry/metrics	[no test files]
+?   	cryptorun/internal/telemetry/providers	[no test files]
+ok  	cryptorun/internal/tune	0.380s [no tests to run]
+ok  	cryptorun/internal/tune/data	0.283s [no tests to run]
+ok  	cryptorun/internal/tune/opt	0.317s [no tests to run]
+?   	cryptorun/internal/tune/report	[no test files]
+ok  	cryptorun/internal/tune/weights	0.282s [no tests to run]
+?   	cryptorun/internal/ui	[no test files]
+?   	cryptorun/internal/ui/menu	[no test files]
+ok  	cryptorun/internal/verify/greenwall	0.259s [no tests to run]
+FAIL	cryptorun/out/review/stage_20250906_133751/cryptorun [build failed]
+?   	cryptorun/out/review/stage_20250906_133751/internal/algo/dip	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/algo/momentum	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/api	[no test files]
+FAIL	cryptorun/out/review/stage_20250906_133751/internal/application [build failed]
+?   	cryptorun/out/review/stage_20250906_133751/internal/application/analyst	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/application/optimization	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/application/pipeline	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/application/selftest	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/application/universe	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/atomicio	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/bench	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/domain	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/domain/pairs	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/domain/scoring	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/infrastructure/httpclient	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/infrastructure/providers	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/infrastructure/websocket	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/interfaces/http/endpoints	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/io	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/metrics	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/qa	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/scan/pipeline	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/scan/progress	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/scan/sim	[no test files]
+FAIL	cryptorun/out/review/stage_20250906_133751/internal/spec [build failed]
+?   	cryptorun/out/review/stage_20250906_133751/internal/telemetry/metrics	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/ui	[no test files]
+?   	cryptorun/regime	[no test files]
+?   	cryptorun/scripts	[no test files]
+?   	cryptorun/signals	[no test files]
+?   	cryptorun/src/application/factors	[no test files]
+?   	cryptorun/src/application/gates	[no test files]
+?   	cryptorun/src/application/momentum	[no test files]
+?   	cryptorun/src/application/premove	[no test files]
+FAIL	cryptorun/src/cmd/cryptorun [build failed]
+?   	cryptorun/src/domain/catalyst	[no test files]
+?   	cryptorun/src/domain/derivs	[no test files]
+?   	cryptorun/src/domain/momentum	[no test files]
+ok  	cryptorun/src/domain/premove	0.250s [no tests to run]
+?   	cryptorun/src/domain/premove/cvd	[no test files]
+?   	cryptorun/src/domain/premove/portfolio	[no test files]
+?   	cryptorun/src/domain/premove/ports	[no test files]
+?   	cryptorun/src/domain/premove/proxy	[no test files]
+?   	cryptorun/src/domain/quality	[no test files]
+?   	cryptorun/src/infrastructure/catalyst	[no test files]
+?   	cryptorun/src/infrastructure/data	[no test files]
+?   	cryptorun/src/infrastructure/derivs	[no test files]
+?   	cryptorun/src/infrastructure/percentiles	[no test files]
+# cryptorun/tests/spec [cryptorun/tests/spec.test]
+tests\spec\suite_test.go:15:9: undefined: spec.MicrostructureSpec
+tests\spec\suite_test.go:16:9: undefined: spec.SocialCapSpec
+tests\spec\suite_test.go:21:31: too many arguments in call to spec.NewSpecRunner
+	have ([]"cryptorun/internal/spec".SpecSection)
+	want ()
+tests\spec\suite_test.go:91:16: undefined: spec.MicrostructureSpec
+tests\spec\suite_test.go:108:16: undefined: spec.SocialCapSpec
+tests\spec\suite_test.go:146:9: undefined: spec.MicrostructureSpec
+tests\spec\suite_test.go:147:9: undefined: spec.SocialCapSpec
+tests\spec\suite_test.go:151:31: too many arguments in call to spec.NewSpecRunner
+	have ([]"cryptorun/internal/spec".SpecSection)
+	want ()
+# cryptorun/tests/system/premove [cryptorun/tests/system/premove.test]
+tests\system\premove\risk_filters_test.go:23:5: unknown field Symbol in struct literal of type microstructure.EvaluationResult
+tests\system\premove\risk_filters_test.go:31:45: cannot use degradedMicro (variable of type *mockMicroEvaluator) as microstructure.Evaluator value in argument to premove.NewGateEvaluator: *mockMicroEvaluator does not implement microstructure.Evaluator (wrong type for method EvaluateSnapshot)
+		have EvaluateSnapshot(context.Context, string) (*microstructure.EvaluationResult, error)
+		want EvaluateSnapshot(string) (microstructure.EvaluationResult, error)
+tests\system\premove\risk_filters_test.go:92:45: cannot use unhealthyMicro (variable of type *mockMicroEvaluator) as microstructure.Evaluator value in argument to premove.NewGateEvaluator: *mockMicroEvaluator does not implement microstructure.Evaluator (wrong type for method EvaluateSnapshot)
+		have EvaluateSnapshot(context.Context, string) (*microstructure.EvaluationResult, error)
+		want EvaluateSnapshot(string) (microstructure.EvaluationResult, error)
+tests\system\premove\risk_filters_test.go:124:5: unknown field Symbol in struct literal of type microstructure.EvaluationResult
+tests\system\premove\risk_filters_test.go:131:45: cannot use slowMicro (variable of type *mockMicroEvaluator) as microstructure.Evaluator value in argument to premove.NewGateEvaluator: *mockMicroEvaluator does not implement microstructure.Evaluator (wrong type for method EvaluateSnapshot)
+		have EvaluateSnapshot(context.Context, string) (*microstructure.EvaluationResult, error)
+		want EvaluateSnapshot(string) (microstructure.EvaluationResult, error)
+tests\system\premove\risk_filters_test.go:231:5: unknown field Symbol in struct literal of type microstructure.EvaluationResult
+tests\system\premove\risk_filters_test.go:238:45: cannot use mockMicro (variable of type *mockMicroEvaluator) as microstructure.Evaluator value in argument to premove.NewGateEvaluator: *mockMicroEvaluator does not implement microstructure.Evaluator (wrong type for method EvaluateSnapshot)
+		have EvaluateSnapshot(context.Context, string) (*microstructure.EvaluationResult, error)
+		want EvaluateSnapshot(string) (microstructure.EvaluationResult, error)
+tests\system\premove\risk_filters_test.go:305:7: unknown field Symbol in struct literal of type microstructure.EvaluationResult
+tests\system\premove\risk_filters_test.go:312:47: cannot use mockMicro (variable of type *mockMicroEvaluator) as microstructure.Evaluator value in argument to premove.NewGateEvaluator: *mockMicroEvaluator does not implement microstructure.Evaluator (wrong type for method EvaluateSnapshot)
+		have EvaluateSnapshot(context.Context, string) (*microstructure.EvaluationResult, error)
+		want EvaluateSnapshot(string) (microstructure.EvaluationResult, error)
+ok  	cryptorun/src/internal/artifacts	1.394s [no tests to run]
+ok  	cryptorun/tests/atomicio	0.256s [no tests to run]
+ok  	cryptorun/tests/branding	1.209s [no tests to run]
+FAIL	cryptorun/tests/conformance [build failed]
+--- FAIL: TestRegimeDetector_BoundaryConditions (0.00s)
+    --- FAIL: TestRegimeDetector_BoundaryConditions/vol_just_above_high_threshold (0.00s)
+        detector_thresholds_table_test.go:224: regime detection failed: expected HIGH_VOL, got CHOPPY
+            Description: Volatility just above high threshold triggers high vol vote
+            Inputs: vol=0.610, breadth=0.500, thrust=0.000
+    --- FAIL: TestRegimeDetector_BoundaryConditions/breadth_just_below_bear_threshold (0.00s)
+        detector_thresholds_table_test.go:224: regime detection failed: expected HIGH_VOL, got TRENDING_BULL
+            Description: Breadth just below bear threshold triggers bear vote
+            Inputs: vol=0.450, breadth=0.340, thrust=0.000
+    --- FAIL: TestRegimeDetector_BoundaryConditions/thrust_just_below_negative_threshold (0.00s)
+        detector_thresholds_table_test.go:224: regime detection failed: expected HIGH_VOL, got TRENDING_BULL
+            Description: Thrust just below negative threshold triggers negative vote
+            Inputs: vol=0.450, breadth=0.500, thrust=-0.160
+--- FAIL: TestRegimeDetector_ExtremeValues (0.00s)
+    --- FAIL: TestRegimeDetector_ExtremeValues/extreme_high_vol (0.00s)
+        detector_thresholds_table_test.go:301: extreme value test failed: expected HIGH_VOL, got CHOPPY
+    --- FAIL: TestRegimeDetector_ExtremeValues/extreme_bear_breadth (0.00s)
+        detector_thresholds_table_test.go:301: extreme value test failed: expected HIGH_VOL, got TRENDING_BULL
+    --- FAIL: TestRegimeDetector_ExtremeValues/extreme_negative_thrust (0.00s)
+        detector_thresholds_table_test.go:301: extreme value test failed: expected HIGH_VOL, got TRENDING_BULL
+FAIL
+FAIL	cryptorun/tests/conformance/regime	0.300s
+FAIL	cryptorun/tests/empirical [build failed]
+FAIL	cryptorun/tests/integration [build failed]
+# cryptorun/tests/unit/catalyst [cryptorun/tests/unit/catalyst.test]
+tests\unit\catalyst\heat_test.go:8:2: "github.com/stretchr/testify/require" imported and not used
+tests\unit\catalyst\heat_test.go:407:14: undefined: fmt
+tests\unit\catalyst\heat_test.go:428:14: undefined: fmt
+# cryptorun/tests/unit/exits [cryptorun/tests/unit/exits.test]
+tests\unit\exits\exit_logic_test.go:20:3: unknown field HardStopPrice in struct literal of type "cryptorun/internal/exits".ExitInputs
+tests\unit\exits\exit_logic_test.go:25:3: unknown field MomentumScore in struct literal of type "cryptorun/internal/exits".ExitInputs
+tests\unit\exits\exit_logic_test.go:26:3: unknown field EntryMomentumScore in struct literal of type "cryptorun/internal/exits".ExitInputs
+tests\unit\exits\exit_logic_test.go:27:3: unknown field MomentumAccel in struct literal of type "cryptorun/internal/exits".ExitInputs
+tests\unit\exits\exit_logic_test.go:28:3: unknown field EntryAccel in struct literal of type "cryptorun/internal/exits".ExitInputs
+tests\unit\exits\exit_logic_test.go:30:3: unknown field TrailingStopPct in struct literal of type "cryptorun/internal/exits".ExitInputs
+tests\unit\exits\exit_logic_test.go:63:3: unknown field HardStopPrice in struct literal of type "cryptorun/internal/exits".ExitInputs
+tests\unit\exits\exit_logic_test.go:195:3: unknown field MomentumAccel in struct literal of type "cryptorun/internal/exits".ExitInputs
+tests\unit\exits\exit_logic_test.go:196:3: unknown field EntryAccel in struct literal of type "cryptorun/internal/exits".ExitInputs
+tests\unit\exits\exit_logic_test.go:226:3: unknown field MomentumScore in struct literal of type "cryptorun/internal/exits".ExitInputs
+tests\unit\exits\exit_logic_test.go:226:3: too many errors
+# cryptorun/tests/unit/premove [cryptorun/tests/unit/premove.test]
+tests\unit\premove\alerts_test.go:435:4: unknown field MaxAlertsPerHour in struct literal of type "cryptorun/src/application/premove".FatigueConfig
+tests\unit\premove\alerts_test.go:436:4: unknown field FatigueThreshold in struct literal of type "cryptorun/src/application/premove".FatigueConfig
+tests\unit\premove\alerts_test.go:437:4: unknown field RecoveryPeriod in struct literal of type "cryptorun/src/application/premove".FatigueConfig
+tests\unit\premove\alerts_test.go:438:4: unknown field AdaptiveLimits in struct literal of type "cryptorun/src/application/premove".FatigueConfig
+tests\unit\premove\alerts_test.go:449:13: detector.RecordAlert undefined (type *"cryptorun/src/application/premove".OperatorFatigueDetector has no field or method RecordAlert)
+tests\unit\premove\alerts_test.go:452:28: detector.GetFatigueLevel undefined (type *"cryptorun/src/application/premove".OperatorFatigueDetector has no field or method GetFatigueLevel)
+tests\unit\premove\alerts_test.go:458:27: detector.GetRecommendedFrequency undefined (type *"cryptorun/src/application/premove".OperatorFatigueDetector has no field or method GetRecommendedFrequency)
+tests\unit\premove\alerts_test.go:466:4: unknown field BaseInterval in struct literal of type "cryptorun/src/application/premove".ThrottlingConfig
+tests\unit\premove\alerts_test.go:467:4: unknown field MaxInterval in struct literal of type "cryptorun/src/application/premove".ThrottlingConfig
+tests\unit\premove\alerts_test.go:468:4: unknown field BackoffFactor in struct literal of type "cryptorun/src/application/premove".ThrottlingConfig
+tests\unit\premove\alerts_test.go:468:4: too many errors
+ok  	cryptorun/tests/integration/catalyst	9.846s [no tests to run]
+ok  	cryptorun/tests/integration/data	0.301s [no tests to run]
+ok  	cryptorun/tests/integration/derivs	0.321s [no tests to run]
+ok  	cryptorun/tests/integration/ops	1.135s [no tests to run]
+FAIL	cryptorun/tests/integration/premove [build failed]
+?   	cryptorun/tests/internal/testpaths	[no test files]
+ok  	cryptorun/tests/load	0.258s [no tests to run]
+FAIL	cryptorun/tests/spec [build failed]
+FAIL	cryptorun/tests/system/premove [build failed]
+FAIL	cryptorun/tests/unit [build failed]
+ok  	cryptorun/tests/unit/artifacts	1.197s [no tests to run]
+FAIL	cryptorun/tests/unit/catalyst [build failed]
+ok  	cryptorun/tests/unit/derivs	0.234s [no tests to run]
+FAIL	cryptorun/tests/unit/exits [build failed]
+ok  	cryptorun/tests/unit/gates	1.832s [no tests to run]
+ok  	cryptorun/tests/unit/guards	0.294s [no tests to run]
+FAIL	cryptorun/tests/unit/http [build failed]
+ok  	cryptorun/tests/unit/momentum	0.280s [no tests to run]
+FAIL	cryptorun/tests/unit/premove [build failed]
+ok  	cryptorun/tests/unit/regime	1.095s [no tests to run]
+ok  	cryptorun/tests/unit/tune	0.296s [no tests to run]
+?   	cryptorun/tools/buildstamp	[no test files]
+?   	cryptorun/tools/zipper	[no test files]
+?   	cryptorun/ui	[no test files]
+FAIL

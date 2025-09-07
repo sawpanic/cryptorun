@@ -1,0 +1,11 @@
+Category,Count,Examples,Impact
+Go_Files_Modified,80,"cmd/cryptorun/menu_main.go, internal/score/composite/, internal/gates/entry.go",High
+Markdown_Files_Updated,15,"docs/REGIME.md, docs/GATES.md, docs/CLI.md, CHANGELOG.md",High
+New_Directories,8,"cmd/test_server/, internal/exits/, internal/gates/, docs/new/",Medium
+Test_Files_Added,12,"tests/unit/regime_detector_comprehensive_test.go, tests/unit/orthogonalization_comprehensive_test.go",Medium
+Config_Files_Updated,5,"config/weights.yaml, config/alerts.yaml",Low
+Total_Files_Changed,219,Various across all categories,High
+Major_Features,4,"Unified Scoring, Regime Detection, Entry/Exit Gates, CLI Menu",Critical
+Documentation_Updates,6,"Complete docs refresh with PROMPT_ID requirements",High
+Architecture_Changes,3,"Single pipeline, MomentumCore protection, Social capping",Critical
+Build_Breaking_Changes,8,"Interface mismatches, undefined types",Critical

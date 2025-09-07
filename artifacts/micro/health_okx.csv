@@ -1,0 +1,2 @@
+timestamp,venue,status,healthy,uptime,heartbeat_age_ms,message_gap_rate,ws_reconnect_count,latency_p50_ms,latency_p99_ms,error_rate,data_freshness_ms,data_completeness,recommendation
+2024-01-01T12:00:00Z,okx,green,true,98.2,2200,0.03,1,65,180,0.02,2500,97.1,proceed

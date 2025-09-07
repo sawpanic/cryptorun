@@ -1,0 +1,129 @@
+# Data Sources Configuration
+# Defines canonical source authority and fallback chains
+
+# Exchange-native sources for microstructure data
+# CRITICAL: Only these sources allowed for depth/spread/order book data
+exchanges:
+  binance:
+    name: "Binance"
+    websocket_url: "wss://stream.binance.com:9443/ws"
+    rest_url: "https://api.binance.com"
+    rate_limits:
+      ws_connections: 5
+      rest_requests_per_second: 10
+    data_types: ["trades", "depth", "klines", "funding", "open_interest"]
+    
+  okx:
+    name: "OKX"  
+    websocket_url: "wss://ws.okx.com:8443/ws/v5/public"
+    rest_url: "https://www.okx.com"
+    rate_limits:
+      ws_connections: 5
+      rest_requests_per_second: 20
+    data_types: ["trades", "depth", "klines", "funding", "open_interest"]
+    
+  coinbase:
+    name: "Coinbase Advanced"
+    websocket_url: "wss://advanced-trade-ws.coinbase.com"
+    rest_url: "https://api.exchange.coinbase.com"
+    rate_limits:
+      ws_connections: 3
+      rest_requests_per_second: 10
+    data_types: ["trades", "depth", "klines"]
+    # NOTE: Coinbase perps/funding/basis = N/A per requirements
+    
+  kraken:
+    name: "Kraken"
+    websocket_url: "wss://ws.kraken.com"
+    rest_url: "https://api.kraken.com"
+    rate_limits:
+      ws_connections: 3
+      rest_requests_per_second: 1
+    data_types: ["trades", "depth", "klines", "funding"]
+
+# Warm data sources for price/volume aggregation
+# These are allowed ONLY for price/volume, NEVER for microstructure
+warm_sources:
+  coingecko:
+    name: "CoinGecko"
+    rest_url: "https://api.coingecko.com/api/v3"
+    rate_limits:
+      requests_per_minute: 10  # Free tier limit
+    data_types: ["prices", "market_caps", "volumes"]  # NO depth/spread
+    
+  coinpaprika:
+    name: "CoinPaprika"
+    rest_url: "https://api.coinpaprika.com/v1"
+    rate_limits:
+      requests_per_minute: 100
+    data_types: ["prices", "market_caps", "volumes"]  # NO depth/spread
+
+# Source authority rules - defines which sources to use for what data
+authority:
+  # Microstructure data - EXCHANGE-NATIVE ONLY
+  microstructure:
+    allowed_sources: ["binance", "okx", "coinbase", "kraken"]
+    banned_sources: ["coingecko", "coinpaprika"]  # Aggregators banned
+    primary: ["binance", "okx"]
+    fallback: ["coinbase", "kraken"]
+    
+  # Price/volume data - warm sources allowed
+  price_volume:
+    primary: ["coingecko", "coinpaprika"]
+    fallback: ["binance", "okx", "coinbase", "kraken"]
+    reconciliation_method: "trimmed_median"
+    
+  # Derivatives data - exchange-native only
+  derivatives:
+    allowed_sources: ["binance", "okx", "kraken"]  # Coinbase N/A
+    primary: ["binance", "okx"]
+    fallback: ["kraken"]
+
+# Hot vs Warm tier assignment
+tiers:
+  hot:
+    # Hot tier uses WebSocket streams
+    exchanges: ["binance", "okx", "coinbase", "kraken"]
+    max_symbols: 50
+    data_types: ["trades", "depth", "klines"]
+    update_frequency: "realtime"
+    
+  warm:
+    # Warm tier uses REST with caching
+    sources: ["coingecko", "coinpaprika", "binance", "okx"]
+    data_types: ["prices", "volumes", "market_caps", "funding", "open_interest"]
+    update_frequency: "30s"
+    
+# Reconciliation settings
+reconciliation:
+  max_deviation: 0.01      # 1% outlier threshold
+  min_sources: 2           # Minimum sources required
+  use_trimmed_mean: false  # Use median instead of trimmed mean
+  trim_percent: 0.10       # 10% trim if using trimmed mean
+  confidence_threshold: 0.7 # 70% confidence minimum
+
+# Fallback and cascade rules
+fallbacks:
+  # If primary source fails, cascade to fallback
+  cascade_delay_seconds: 5
+  max_cascade_depth: 3
+  
+  # Circuit breaker settings
+  circuit_breaker:
+    failure_threshold: 5     # Failures before opening circuit
+    recovery_timeout: 60     # Seconds before retry
+    half_open_requests: 3    # Test requests in half-open state
+
+# Data quality gates
+quality:
+  # Freshness requirements
+  max_staleness_seconds:
+    hot: 10    # Hot data must be < 10s old
+    warm: 60   # Warm data must be < 60s old
+    
+  # Completeness requirements  
+  min_completeness_percent: 80  # 80% of expected data points
+  
+  # Consistency checks
+  max_price_change_percent: 50  # Flag >50% price changes
+  volume_spike_threshold: 10    # Flag >10x volume spikes

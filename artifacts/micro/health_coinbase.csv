@@ -1,0 +1,2 @@
+timestamp,venue,status,healthy,uptime,heartbeat_age_ms,message_gap_rate,ws_reconnect_count,latency_p50_ms,latency_p99_ms,error_rate,data_freshness_ms,data_completeness,recommendation
+2024-01-01T12:00:00Z,coinbase,yellow,true,94.8,3500,0.06,2,85,250,0.04,3200,89.2,halve_size

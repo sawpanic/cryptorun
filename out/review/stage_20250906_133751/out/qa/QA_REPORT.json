@@ -1,0 +1,77 @@
+{
+  "qa_report": {
+    "timestamp": "2025-09-06T11:00:00+03:00",
+    "mode": "STRICT_MAX_50",
+    "status": "FAIL",
+    "reason_code": "BUILD_COMPILATION_ERROR",
+    "environment": {
+      "os": "Windows (MINGW64_NT-10.0-26100)",
+      "go_version": "go1.25.0 windows/amd64",
+      "gomaxprocs": 1,
+      "network": "ONLINE",
+      "tty": false,
+      "git_head": "8fdbdc6d13c7832de3df7d223627204fb915671e",
+      "git_dirty_files": 286
+    },
+    "build_matrix": {
+      "no_net_build": {
+        "command": "go build -tags no_net ./...",
+        "status": "FAILED",
+        "duration_seconds": 16,
+        "exit_code": 1
+      },
+      "standard_build": {
+        "command": "go build ./...",
+        "status": "FAILED", 
+        "duration_seconds": 1,
+        "exit_code": 1
+      },
+      "cmd_build": {
+        "command": "go build ./... (from cmd/)",
+        "status": "FAILED",
+        "duration_seconds": 1,
+        "exit_code": 1
+      }
+    },
+    "compilation_errors": {
+      "duplicate_declarations": [
+        "internal/spec/runner.go:9:6: SpecRunner redeclared",
+        "internal/spec/types.go:9:6: SpecResult redeclared",
+        "internal/spec/runner.go:14:6: NewSpecRunner redeclared"
+      ],
+      "undefined_symbols": [
+        "internal/spec/framework.go:63:4: undefined: NewFactorHierarchySpec",
+        "internal/spec/framework.go:65:4: undefined: NewMicrostructureSpec", 
+        "internal/spec/guards.go:47:25: undefined: domain.FatigueGateInputs",
+        "internal/application/risk_envelope.go:510:18: undefined: atomicio.WriteFile"
+      ],
+      "unused_imports": [
+        "internal/application/risk_envelope.go:7:2: \"math\" imported and not used",
+        "internal/application/risk_envelope.go:9:2: \"sort\" imported and not used"
+      ]
+    },
+    "phases": {
+      "phase_0": { "status": "FAILED", "reason": "Build matrix failures" },
+      "phase_1": { "status": "BLOCKED", "reason": "Cannot execute due to build failure" },
+      "phase_2": { "status": "BLOCKED", "reason": "Cannot execute due to build failure" },
+      "phase_3": { "status": "BLOCKED", "reason": "Cannot execute due to build failure" },
+      "phase_4": { "status": "BLOCKED", "reason": "Cannot execute due to build failure" },
+      "phase_5": { "status": "BLOCKED", "reason": "Cannot execute due to build failure" },
+      "phase_6": { "status": "BLOCKED", "reason": "Cannot execute due to build failure" }
+    },
+    "recommendations": {
+      "priority_1": "Fix duplicate type declarations in internal/spec package",
+      "priority_2": "Implement missing spec components (NewFactorHierarchySpec, etc.)",
+      "priority_3": "Create atomicio package for atomic file operations",
+      "priority_4": "Clean unused imports and variables"
+    },
+    "next_steps": [
+      "Consolidate SpecRunner types in internal/spec",
+      "Remove duplicate declarations from runner.go and types.go", 
+      "Implement missing spec framework components",
+      "Create internal/atomicio package with WriteFile function",
+      "Clean up unused imports in application package",
+      "Re-run QA validation after build fixes"
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+TEST SUMMARY RESULTS
+==================
+
+Overall Status: MIXED (some packages pass, some fail)
+
+Failed Tests:
+- TestRandomWeightGeneration: failed to generate valid weights after 100 attempts
+- TestEdgeCases: weights validation failed for regime normal supply_demand bounds
+
+Test Results Summary:
+- Multiple test packages executed
+- Some passes, some failures in tune constraint validation
+- Weight generation and clamping logic needs review
+- Final result: FAIL
+
+Total packages with failures: cryptorun/tests/unit/tune
+Packages without test files: buildstamp, zipper, ui

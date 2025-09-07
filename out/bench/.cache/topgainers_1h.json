@@ -1,0 +1,32 @@
+[
+  {
+    "id": "btc",
+    "symbol": "BTC",
+    "name": "BTC Token",
+    "price_change_percentage": "15.00"
+  },
+  {
+    "id": "eth",
+    "symbol": "ETH",
+    "name": "ETH Token",
+    "price_change_percentage": "14.20"
+  },
+  {
+    "id": "ada",
+    "symbol": "ADA",
+    "name": "ADA Token",
+    "price_change_percentage": "13.40"
+  },
+  {
+    "id": "sol",
+    "symbol": "SOL",
+    "name": "SOL Token",
+    "price_change_percentage": "12.60"
+  },
+  {
+    "id": "dot",
+    "symbol": "DOT",
+    "name": "DOT Token",
+    "price_change_percentage": "11.80"
+  }
+]

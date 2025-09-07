@@ -1,0 +1,82 @@
+# CryptoRun Quality-Dip Scanner Configuration
+# Optimizes for high-probability pullbacks within uptrends while avoiding knife-catching
+
+# Trend Qualification Parameters
+trend:
+  ma_len_12h: 50          # 12h moving average length
+  ma_len_24h: 50          # 24h moving average length
+  adx_4h_min: 25.0        # Minimum ADX(4h) for trend strength
+  hurst_min: 0.55         # Minimum Hurst exponent for trend persistence
+  lookback_n: 20          # Lookback bars to find prior swing high
+
+# Fibonacci Retracement Parameters
+fib:
+  min: 0.38              # Minimum retracement (38.2%)
+  max: 0.62              # Maximum retracement (61.8%)
+
+# RSI-Based Dip Identification
+rsi:
+  low_min: 25            # RSI minimum at dip low
+  low_max: 40            # RSI maximum at dip low
+  div_confirm_bars: 3    # Bars to confirm positive divergence
+
+# Volume Quality Signals
+volume:
+  adv_mult_min: 1.4      # Minimum ADV multiplier on reversal bar
+  vadr_min: 1.75         # Minimum VADR in 6h window
+
+# Microstructure Quality Gates
+microstructure:
+  spread_bps_max: 50.0   # Maximum spread in basis points
+  depth_usd_2pc_min: 100000  # Minimum depth within ±2% ($100k)
+
+# Composite Scoring Weights
+scoring:
+  core_w: 0.5           # Core technical signal weight (50%)
+  vol_w: 0.2            # Volume signal weight (20%)
+  qual_w: 0.2           # Quality signal weight (20%)
+  brand_cap_pts: 10     # Maximum brand/social points
+  threshold: 0.62       # Minimum score for entry signal
+
+# Time Decay Window
+decay:
+  bars_to_live: 2       # Signal expiration in bars
+
+# False-Positive Reduction Guards
+guards:
+  # News Shock Guard - prevents catching falling knives
+  news_shock:
+    return_24h_min: -15.0    # Minimum 24h return (% threshold)
+    accel_rebound: 3.0       # Required acceleration rebound (%)
+    rebound_bars: 2          # Bars to check for rebound
+  
+  # Stair-Step Pattern Guard - avoids persistent weakness
+  stair_step:
+    max_attempts: 2          # Maximum lower-high attempts allowed
+    lower_high_window: 5     # Window size for detecting lower highs
+  
+  # Time Decay Guard - enforces signal freshness
+  time_decay:
+    bars_to_live: 2         # Maximum bars before signal expires
+
+# Quality Assurance Settings
+qa:
+  min_data_points: 50     # Minimum data points required
+  max_processing_time: 30 # Maximum processing time per symbol (seconds)
+  require_microstructure: true  # Require valid microstructure data
+  social_data_max_age: 60 # Maximum age for social data (minutes)
+
+# Risk Management Defaults
+risk:
+  default_stop_pct: 2.0   # Default stop loss percentage below entry
+  take_profit_levels:     # Default take profit levels
+    - 2.0                 # 2% target
+    - 5.0                 # 5% target  
+    - 8.0                 # 8% target
+  min_risk_reward: 1.5    # Minimum risk/reward ratio
+
+# Output and Attribution
+output:
+  explainability_enabled: true      # Generate explainability JSON
+  attribution_required: true       # Require full attribution
+  quality_checks_detailed: true    # Include detailed quality check results

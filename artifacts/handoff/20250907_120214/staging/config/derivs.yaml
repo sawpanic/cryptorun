@@ -1,0 +1,119 @@
+# CryptoRun Derivatives Configuration
+# 
+# This file configures the derivatives overlay system for QualityResidual scoring
+# and funding divergence entry gates. Uses venue-native free endpoints only.
+
+# Provider Configuration - Free Exchange APIs
+providers:
+  binance:
+    base_url: "https://fapi.binance.com"
+    rate_limit_rps: 20  # 1200/min = 20/sec limit for free tier
+    timeout_ms: 5000
+    endpoints:
+      funding_history: "/fapi/v1/fundingHistory"
+      open_interest: "/fapi/v1/openInterest"
+      ticker_24hr: "/fapi/v1/ticker/24hr"
+      klines: "/fapi/v1/klines"
+  
+  okx:
+    base_url: "https://www.okx.com"
+    rate_limit_rps: 10  # Conservative for public endpoints
+    timeout_ms: 5000
+    endpoints:
+      funding_history: "/api/v5/public/funding-history"
+      open_interest: "/api/v5/public/open-interest"
+      index_tickers: "/api/v5/market/index-tickers"
+      candles: "/api/v5/market/history-candles"
+  
+  bybit:
+    base_url: "https://api.bybit.com"
+    rate_limit_rps: 10  # Public API conservative limit
+    timeout_ms: 5000
+    endpoints:
+      funding_history: "/v5/market/funding/history"
+      open_interest: "/v5/market/open-interest"
+      tickers: "/v5/market/tickers"
+      kline: "/v5/market/kline"
+
+# Cache Configuration - TTL Settings
+cache:
+  funding_history:
+    ttl_seconds: 120    # 2 minutes - funding updates every 8h, infrequent refresh OK
+    max_entries: 1000
+  
+  open_interest:
+    ttl_seconds: 60     # 1 minute - OI more dynamic, needs fresher data
+    max_entries: 500
+    
+  basis_data:
+    ttl_seconds: 90     # 1.5 minutes - basis calculation intermediate caching
+    max_entries: 200
+    
+  metrics:
+    ttl_seconds: 300    # 5 minutes - derived metrics can be cached longer
+    max_entries: 100
+
+# Quality Residual Weights Configuration
+quality_weights:
+  funding_zscore: 0.4      # w1: Cross-venue funding z-score contribution
+  delta_oi_residual: 0.35  # w2: Delta OI residual (price correlation removed)
+  basis_dispersion: 0.25   # w3: Near/far basis dispersion signal
+  
+  # Clipping and normalization bounds
+  funding_z_clip_max: 3.0  # Clip z-scores above +3.0
+  funding_z_clip_min: 0.0  # Clip negative z-scores to 0 (only positive funding stress matters)
+
+# Analysis Windows
+analysis:
+  funding_lookback_days: 30    # 30-day historical funding for z-score calculation
+  oi_analysis_hours: 1         # 1-hour window for delta OI analysis
+  basis_check_intervals: 4     # Check 4 different tenor points for basis curve
+  
+  # OLS Configuration for OI residual
+  ols:
+    min_observations: 10       # Minimum data points for valid OLS regression
+    r_squared_threshold: 0.1   # Minimum R² for meaningful price correlation
+
+# Budget Guards - Cost Controls
+budget_guards:
+  max_requests_per_minute: 100  # Total across all providers
+  max_requests_per_hour: 5000   # Hourly budget cap
+  
+  # Circuit breaker thresholds
+  error_rate_threshold: 0.2     # 20% error rate triggers circuit breaker
+  circuit_breaker_duration: 300 # 5 minutes circuit breaker cool-down
+  
+  # Provider failover
+  enable_failover: true         # Failover to other providers on failures
+  min_providers_required: 2     # Minimum providers needed for valid signals
+
+# Entry Gate Configuration
+entry_gates:
+  funding_divergence:
+    enabled: true
+    
+    # Divergence detection thresholds
+    min_zscore_magnitude: 2.0    # Minimum |z-score| for divergence signal
+    price_vs_vwap_threshold: 1.02 # Price must be ≥2% above 24h VWAP
+    
+    # Volume-weighted median calculation
+    min_venue_volume: 1000000    # $1M minimum venue volume for inclusion
+    volume_lookback_hours: 24    # 24-hour volume for weighting
+    
+    # Quality checks
+    min_venues_required: 2       # Need at least 2 venues for valid signal
+    max_funding_age_hours: 2     # Funding data must be <2h old
+
+# Logging and Monitoring
+monitoring:
+  log_cache_hits: true          # Log cache hit/miss rates
+  log_provider_latencies: true  # Log API response times
+  log_budget_usage: true        # Log API quota consumption
+  
+  # Metrics collection
+  collect_metrics: true
+  metrics_retention_days: 7     # Keep metrics for 7 days
+  
+  # Alert thresholds
+  high_latency_threshold_ms: 2000   # Alert if API calls >2s
+  low_cache_hit_rate: 0.7           # Alert if cache hit rate <70%

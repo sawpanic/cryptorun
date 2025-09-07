@@ -1,0 +1,16 @@
+providers:
+  kraken:
+    failure_threshold: 5
+    success_threshold: 3
+    timeout_seconds: 30
+    probe_interval_seconds: 10
+  dexscreener:
+    failure_threshold: 5
+    success_threshold: 3
+    timeout_seconds: 30
+    probe_interval_seconds: 15
+  binance:
+    failure_threshold: 5
+    success_threshold: 3
+    timeout_seconds: 30
+    probe_interval_seconds: 15

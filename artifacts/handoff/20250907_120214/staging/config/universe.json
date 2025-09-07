@@ -1,0 +1,19 @@
+{
+  "_metadata": {
+    "generated": "2025-09-06T00:00:00Z",
+    "source": "kraken",
+    "criteria": {
+      "venue": "kraken",
+      "quote": "USD",
+      "min_adv_usd": 100000
+    },
+    "hash": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
+  },
+  "universe": [
+    "BTCUSD",
+    "ETHUSD",
+    "ADAUSD",
+    "SOLUSD",
+    "DOTUSD"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "timestamp": "2025-09-06T13:50:49+03:00",
+  "total_files": 214,
+  "package_type": "code_review",
+  "methodology": "Deterministic review bundle with runtime artifacts",
+  "contents": {
+    "code": ["cmd/**", "internal/**"],
+    "configuration": ["config/**", "go.mod", "go.sum", "Makefile"],
+    "documentation": ["docs/**", "README.md", "CHANGELOG.md", "CLAUDE.md"],
+    "tests": ["tests/unit/**", "tests/integration/**"],
+    "runtime_artifacts": [
+      "out/bench/topgainers_alignment.{json,md}",
+      "out/bench/topgainers_{1h,24h,7d}.json",
+      "out/bench/diagnostics/*.{json,jsonl,md}",
+      "out/scan/momentum_explain.json",
+      "out/scan/dip_explain.json", 
+      "out/qa/QA_REPORT.json",
+      "out/audit/progress_trace.jsonl",
+      "out/ops/progress_audit.json"
+    ]
+  },
+  "verification": {
+    "checksum_method": "SHA-256",
+    "file_count_verified": 214,
+    "deterministic_build": true,
+    "sorted_by_path": true
+  },
+  "quality_gates": {
+    "benchmark_alignment": "60% with diagnostic analysis",
+    "qa_report_status": "available",
+    "progress_traces": "complete",
+    "test_coverage": "unit+integration included"
+  }
+}

@@ -1,0 +1,573 @@
+# cryptorun/internal/premove
+internal\premove\api_test.go:551:1: imports must appear before other declarations
+FAIL	cryptorun/internal/premove [setup failed]
+# cryptorun/internal/data/derivs
+internal\data\derivs\openinterest.go:615:14: invalid operation: operator - not defined on currentOI (variable of type string)
+internal\data\derivs\openinterest.go:618:41: cannot use currentOI (variable of type string) as float64 value in return statement
+internal\data\derivs\openinterest.go:639:13: ois.OIChange24h undefined (type *OpenInterestSnapshot has no field or method OIChange24h)
+internal\data\derivs\openinterest.go:651:14: ois.OIChange24h undefined (type *OpenInterestSnapshot has no field or method OIChange24h)
+internal\data\derivs\etf.go:5:2: "encoding/json" imported and not used
+internal\data\derivs\etf.go:7:2: "io" imported and not used
+FAIL	cryptorun [build failed]
+# cryptorun/internal/reports/regime
+internal\reports\regime\analyzer.go:77:28: invalid operation: operator % not defined on float64(len(flips) * 13) (value of type float64)
+internal\reports\regime\analyzer.go:93:30: invalid operation: operator % not defined on float64(len(flips) * 7) (value of type float64)
+internal\reports\regime\analyzer.go:94:30: invalid operation: operator % not defined on float64(len(flips) * 11) (value of type float64)
+internal\reports\regime\analyzer.go:95:30: invalid operation: operator % not defined on float64(len(flips) * 13) (value of type float64)
+internal\reports\regime\analyzer.go:96:30: invalid operation: operator % not defined on float64(len(flips) * 5) (value of type float64)
+internal\reports\regime\analyzer.go:97:30: invalid operation: operator % not defined on float64(len(flips) * 3) (value of type float64)
+internal\reports\regime\analyzer.go:217:51: declared and not used: lift
+internal\reports\regime\generator.go:10:2: "strings" imported and not used
+# cryptorun/internal/application/pipeline
+internal\application\pipeline\scan.go:109:9: cannot use NewLegacyScanPipeline(opts.SnapshotDir) (value of type *LegacyScanPipeline) as ScanPipelineInterface value in return statement: *LegacyScanPipeline does not implement ScanPipelineInterface (missing method ScanUniverse)
+internal\application\pipeline\scan.go:118:21: pipeline.WriteJSONL undefined (type *LegacyScanPipeline has no field or method WriteJSONL)
+internal\application\pipeline\scan.go:124:21: pipeline.WriteLedger undefined (type *LegacyScanPipeline has no field or method WriteLedger)
+internal\application\pipeline\scan.go:156:2: embedded field type cannot be a pointer to an interface
+internal\application\pipeline\scan.go:161:17: cannot use NewScanPipeline(snapshotDir) (value of interface type ScanPipeline) as *ScanPipeline value in struct literal: ScanPipeline does not implement *ScanPipeline (type *ScanPipeline is pointer to interface, not interface)
+internal\application\pipeline\scan.go:202:6: FactorSet redeclared in this block
+	internal\application\pipeline\orthogonalization.go:11:6: other declaration of FactorSet
+internal\application\pipeline\scoring.go:16:6: CompositeScore redeclared in this block
+	internal\application\pipeline\scan.go:201:6: other declaration of CompositeScore
+internal\application\pipeline\scoring.go:63:6: RegimeWeights redeclared in this block
+	internal\application\pipeline\momentum.go:59:6: other declaration of RegimeWeights
+internal\application\pipeline\scoring.go:74:18: rw.Momentum undefined (type RegimeWeights has no field or method Momentum)
+internal\application\pipeline\scoring.go:75:18: rw.Volume undefined (type RegimeWeights has no field or method Volume)
+internal\application\pipeline\scoring.go:75:18: too many errors
+# cryptorun/internal/microstructure
+internal\microstructure\depth.go:143:6: declared and not used: isAscending
+internal\microstructure\evaluator.go:238:2: declared and not used: maxScore
+# cryptorun/internal/ui/menu
+internal\ui\menu\page_premove_board.go:127:31: cannot use ui.runner.GetExecutionSummary() (value of type map[string]interface{}) as *premove.ExecutionMetrics value in assignment
+internal\ui\menu\page_premove_board.go:200:4: unknown field AlertType in struct literal of type premove.AlertRecord
+internal\ui\menu\page_premove_board.go:201:4: unknown field Severity in struct literal of type premove.AlertRecord
+internal\ui\menu\page_premove_board.go:203:4: unknown field Message in struct literal of type premove.AlertRecord
+internal\ui\menu\page_premove_board.go:205:4: unknown field Source in struct literal of type premove.AlertRecord
+internal\ui\menu\page_premove_board.go:230:3: unknown field TotalExecutions in struct literal of type premove.ExecutionMetrics
+internal\ui\menu\page_premove_board.go:231:3: unknown field SuccessfulExecutions in struct literal of type premove.ExecutionMetrics
+internal\ui\menu\page_premove_board.go:233:3: unknown field AvgFillTimeMs in struct literal of type premove.ExecutionMetrics
+internal\ui\menu\page_premove_board.go:234:3: unknown field AvgQualityScore in struct literal of type premove.ExecutionMetrics
+internal\ui\menu\page_premove_board.go:235:3: unknown field AcceptableSlippageRate in struct literal of type premove.ExecutionMetrics
+internal\ui\menu\page_premove_board.go:235:3: too many errors
+FAIL	cryptorun/cmd/cryptorun [build failed]
+	cryptorun/data		coverage: 0.0% of statements
+	cryptorun/data/cache		coverage: 0.0% of statements
+	cryptorun/exchanges/binance		coverage: 0.0% of statements
+	cryptorun/exchanges/coinbase		coverage: 0.0% of statements
+	cryptorun/exchanges/kraken		coverage: 0.0% of statements
+	cryptorun/exchanges/okx		coverage: 0.0% of statements
+	cryptorun/factors		coverage: 0.0% of statements
+	cryptorun/infra/breakers		coverage: 0.0% of statements
+# cryptorun/internal/application/guards [cryptorun/internal/application/guards.test]
+internal\application\guards\latefill_test.go:264:2: declared and not used: mockTime
+# cryptorun/internal/application/guards/testkit
+internal\application\guards\testkit\golden_helpers.go:23:6: GuardResult redeclared in this block
+	internal\application\guards\testkit\fixtures.go:160:6: other declaration of GuardResult
+internal\application\guards\testkit\seeded_builders.go:66:6: ExpectedGuardResult redeclared in this block
+	internal\application\guards\testkit\fixtures.go:50:6: other declaration of ExpectedGuardResult
+	cryptorun/infra/limits		coverage: 0.0% of statements
+	cryptorun/infrastructure/market		coverage: 0.0% of statements
+	cryptorun/interfaces/ui/menu		coverage: 0.0% of statements
+	cryptorun/internal/adapters		coverage: 0.0% of statements
+	cryptorun/internal/algo/dip		coverage: 0.0% of statements
+	cryptorun/internal/algo/momentum		coverage: 0.0% of statements
+	cryptorun/internal/api		coverage: 0.0% of statements
+FAIL	cryptorun/internal/application [build failed]
+	cryptorun/internal/application/analyst		coverage: 0.0% of statements
+FAIL	cryptorun/internal/application/bench [build failed]
+FAIL	cryptorun/internal/application/guards [build failed]
+FAIL	cryptorun/internal/application/guards/e2e [build failed]
+FAIL	cryptorun/internal/application/guards/testkit [build failed]
+FAIL	cryptorun/internal/application/menu/e2e [build failed]
+	cryptorun/internal/application/metrics		coverage: 0.0% of statements
+	cryptorun/internal/application/optimization		coverage: 0.0% of statements
+FAIL	cryptorun/internal/application/pipeline [build failed]
+	cryptorun/internal/application/regime		coverage: 0.0% of statements
+	cryptorun/internal/application/selftest		coverage: 0.0% of statements
+	cryptorun/internal/application/universe		coverage: 0.0% of statements
+FAIL	cryptorun/internal/application/verify [build failed]
+	cryptorun/internal/artifacts/compact		coverage: 0.0% of statements
+	cryptorun/internal/artifacts/gc		coverage: 0.0% of statements
+	cryptorun/internal/artifacts/manifest		coverage: 0.0% of statements
+	cryptorun/internal/atomicio		coverage: 0.0% of statements
+# cryptorun/internal/bench/common
+internal\bench\common\forward_returns.go:33:7: declared and not used: err
+# cryptorun/internal/bench/diagnostics
+internal\bench\diagnostics\analyzer.go:9:2: "sort" imported and not used
+internal\bench\diagnostics\analyzer.go:163:27: da.regimeDetector undefined (type *DiagnosticsAnalyzer has no field or method regimeDetector)
+internal\bench\diagnostics\analyzer.go:334:46: da.getRegimeAwareConfig undefined (type *DiagnosticsAnalyzer has no field or method getRegimeAwareConfig)
+internal\bench\diagnostics\analyzer.go:337:17: da.findCompliantEntry undefined (type *DiagnosticsAnalyzer has no field or method findCompliantEntry)
+internal\bench\diagnostics\analyzer.go:343:47: da.findEarliestExit undefined (type *DiagnosticsAnalyzer has no field or method findEarliestExit)
+# cryptorun/internal/domain/microstructure
+internal\domain\microstructure\checker.go:145:56: cannot use adv (variable of type int) as float64 value in argument to c.ValidateOrderBook
+internal\domain\microstructure\proofs.go:105:14: undefined: filepath.Contains
+# cryptorun/internal/domain/guards
+internal\domain\guards\evaluator.go:4:2: "fmt" imported and not used
+internal\domain\guards\late_fill.go:5:2: "time" imported and not used
+ok  	cryptorun/internal/backtest/smoke90	11.277s	coverage: 52.5% of statements
+	cryptorun/internal/bench		coverage: 0.0% of statements
+FAIL	cryptorun/internal/bench/common [build failed]
+FAIL	cryptorun/internal/bench/diagnostics [build failed]
+	cryptorun/internal/bench/sources		coverage: 0.0% of statements
+	cryptorun/internal/config		coverage: 0.0% of statements
+	cryptorun/internal/config/regime		coverage: 0.0% of statements
+FAIL	cryptorun/internal/data/derivs [build failed]
+	cryptorun/internal/data/etf		coverage: 0.0% of statements
+	cryptorun/internal/data/venue/binance		coverage: 0.0% of statements
+	cryptorun/internal/data/venue/coinbase		coverage: 0.0% of statements
+	cryptorun/internal/data/venue/okx		coverage: 0.0% of statements
+?   	cryptorun/internal/data/venue/types	[no test files]
+ok  	cryptorun/internal/datasources	3.094s	coverage: 89.5% of statements
+	cryptorun/internal/domain		coverage: 0.0% of statements
+	cryptorun/internal/domain/factors		coverage: 0.0% of statements
+FAIL	cryptorun/internal/domain/gates [build failed]
+FAIL	cryptorun/internal/domain/guards [build failed]
+FAIL	cryptorun/internal/domain/microstructure [build failed]
+	cryptorun/internal/domain/pairs		coverage: 0.0% of statements
+	cryptorun/internal/domain/regime		coverage: 0.0% of statements
+	cryptorun/internal/domain/scoring		coverage: 0.0% of statements
+ok  	cryptorun/internal/exits	2.401s	coverage: 95.9% of statements
+FAIL	cryptorun/internal/explain [build failed]
+FAIL	cryptorun/internal/explain/delta [build failed]
+FAIL	cryptorun/internal/gates [build failed]
+	cryptorun/internal/infrastructure/httpclient		coverage: 0.0% of statements
+	cryptorun/internal/infrastructure/providers		coverage: 0.0% of statements
+	cryptorun/internal/infrastructure/websocket		coverage: 0.0% of statements
+	cryptorun/internal/interfaces/http		coverage: 0.0% of statements
+FAIL	cryptorun/internal/interfaces/http/endpoints [build failed]
+	cryptorun/internal/io		coverage: 0.0% of statements
+	cryptorun/internal/log		coverage: 0.0% of statements
+	cryptorun/internal/metrics		coverage: 0.0% of statements
+FAIL	cryptorun/internal/microstructure [build failed]
+--- FAIL: TestTracker_SetLimit (0.00s)
+    budget_test.go:178: Should allow when limit increased above usage: budget warning for : 83.3% used (50/60), threshold 80.0%
+--- FAIL: TestTracker_AutoReset (0.00s)
+    budget_test.go:209: Usage should be reset, got 50
+--- FAIL: TestManager_Allow (0.00s)
+    budget_test.go:249: Should warn at 80% threshold
+FAIL
+coverage: 87.8% of statements
+FAIL	cryptorun/internal/net/budget	2.051s
+--- FAIL: TestBreaker_Stats (0.00s)
+    circuit_test.go:219: Should be healthy with >90% success rate
+FAIL
+coverage: 92.0% of statements
+FAIL	cryptorun/internal/net/circuit	2.301s
+	cryptorun/internal/net/client		coverage: 0.0% of statements
+ok  	cryptorun/internal/net/ratelimit	2.351s	coverage: 75.4% of statements
+	cryptorun/internal/qa		coverage: 0.0% of statements
+	cryptorun/internal/regime		coverage: 0.0% of statements
+FAIL	cryptorun/internal/reports/regime [build failed]
+	cryptorun/internal/scan/pipeline		coverage: 0.0% of statements
+	cryptorun/internal/scan/progress		coverage: 0.0% of statements
+	cryptorun/internal/scan/sim		coverage: 0.0% of statements
+FAIL	cryptorun/internal/score/composite [build failed]
+# cryptorun/internal/tune [cryptorun/internal/tune.test]
+internal\tune\loader_smoke90_test.go:9:2: "time" imported and not used
+ok  	cryptorun/internal/scoring	2.182s	coverage: 81.8% of statements
+FAIL	cryptorun/internal/spec [build failed]
+	cryptorun/internal/telemetry/latency		coverage: 0.0% of statements
+	cryptorun/internal/telemetry/metrics		coverage: 0.0% of statements
+	cryptorun/internal/telemetry/providers		coverage: 0.0% of statements
+FAIL	cryptorun/internal/tune [build failed]
+ok  	cryptorun/internal/tune/data	2.221s	coverage: 77.6% of statements
+--- FAIL: TestCoordinateDescent_OptimizeDeterministic (0.00s)
+    coordinate_descent_test.go:40: first optimization failed: failed to clamp initial weights: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+--- FAIL: TestCoordinateDescent_ConvergenceWithinK (0.00s)
+    coordinate_descent_test.go:94: optimization failed: failed to clamp initial weights: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+--- FAIL: TestCoordinateDescent_MonotoneNonWorsening (0.00s)
+    coordinate_descent_test.go:139: optimization failed: failed to clamp initial weights: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+--- FAIL: TestCoordinateDescent_ConstraintsRespected (0.00s)
+    coordinate_descent_test.go:189: optimization failed: failed to clamp initial weights: weights still invalid after clamping: supply_demand total 0.338 outside bounds [0.200, 0.220] for regime normal
+--- FAIL: TestCoordinateDescent_InvalidInitialWeights (0.00s)
+    coordinate_descent_test.go:226: optimization should handle invalid initial weights by clamping: failed to clamp initial weights: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+--- FAIL: TestCoordinateDescent_EarlyStopping (0.00s)
+    coordinate_descent_test.go:267: optimization failed: failed to clamp initial weights: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+--- FAIL: TestCoordinateDescent_StepSizeAdaptation (0.00s)
+    coordinate_descent_test.go:309: optimization failed: failed to clamp initial weights: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+--- FAIL: TestCoordinateDescent_GoldenRegression (0.00s)
+    coordinate_descent_test.go:368: golden regression optimization failed: failed to clamp initial weights: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+--- FAIL: TestValidateOptimizationResult (0.00s)
+    --- FAIL: TestValidateOptimizationResult/valid_result (0.00s)
+        coordinate_descent_test.go:477: unexpected error: best weights violate constraints: supply_demand total 0.375 outside bounds [0.200, 0.220] for regime normal
+    --- FAIL: TestValidateOptimizationResult/objective_worsened (0.00s)
+        coordinate_descent_test.go:481: expected error containing 'worsened objective', got 'best weights violate constraints: supply_demand total 0.375 outside bounds [0.200, 0.220] for regime normal'
+    --- FAIL: TestValidateOptimizationResult/zero_evaluations (0.00s)
+        coordinate_descent_test.go:481: expected error containing 'invalid evaluation count', got 'best weights violate constraints: supply_demand total 0.375 outside bounds [0.200, 0.220] for regime normal'
+--- FAIL: TestGetOptimizationSummary (0.00s)
+    coordinate_descent_test.go:533: expected improvement 0.05, got 0.050000
+    coordinate_descent_test.go:553: expected largest change 0.005, got 0.005000
+    coordinate_descent_test.go:569: Summary test passed: regime=normal, evals=25, improvement=0.050000, largest_change=technical_residual:0.005000
+FAIL
+coverage: 21.6% of statements
+FAIL	cryptorun/internal/tune/opt	1.965s
+	cryptorun/internal/tune/report		coverage: 0.0% of statements
+--- FAIL: TestConstraintSystem_ValidateWeights (0.00s)
+    --- FAIL: TestConstraintSystem_ValidateWeights/valid_volatile_regime_weights (0.00s)
+        constraints_test.go:159: unexpected error: supply_demand total 0.370 outside bounds [0.220, 0.280] for regime volatile
+--- FAIL: TestConstraintSystem_ClampWeights (0.00s)
+    --- FAIL: TestConstraintSystem_ClampWeights/clamp_momentum_above_bounds (0.00s)
+        constraints_test.go:241: unexpected error: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+    --- FAIL: TestConstraintSystem_ClampWeights/clamp_momentum_below_bounds (0.00s)
+        constraints_test.go:241: unexpected error: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+    --- FAIL: TestConstraintSystem_ClampWeights/clamp_technical_bounds (0.00s)
+        constraints_test.go:241: unexpected error: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+    --- FAIL: TestConstraintSystem_ClampWeights/clamp_and_renormalize (0.00s)
+        constraints_test.go:241: unexpected error: weights still invalid after clamping: supply_demand total 0.333 outside bounds [0.200, 0.220] for regime normal
+    --- FAIL: TestConstraintSystem_ClampWeights/preserve_quality_minimum (0.00s)
+        constraints_test.go:241: unexpected error: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+--- FAIL: TestConstraintSystem_CalculateSlack (0.00s)
+    constraints_test.go:289: failed to clamp weights: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+--- FAIL: TestConstraintSystem_GenerateRandomValidWeights (0.00s)
+    --- FAIL: TestConstraintSystem_GenerateRandomValidWeights/normal_regime (0.00s)
+        constraints_test.go:334: failed to generate random weights: failed to generate valid weights after 100 attempts
+    --- FAIL: TestConstraintSystem_GenerateRandomValidWeights/volatile_regime (0.00s)
+        constraints_test.go:334: failed to generate random weights: failed to generate valid weights after 100 attempts
+--- FAIL: TestConstraintSystem_AddConstraints (0.00s)
+    constraints_test.go:460: failed to clamp custom weights: weights still invalid after clamping: supply_demand total 0.455 outside bounds [0.400, 0.450] for regime custom
+--- FAIL: TestConstraintSystem_SumTo100Enforcement (0.00s)
+    --- FAIL: TestConstraintSystem_SumTo100Enforcement/case_0 (0.00s)
+        constraints_test.go:557: clamping failed: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+    --- FAIL: TestConstraintSystem_SumTo100Enforcement/case_1 (0.00s)
+        constraints_test.go:557: clamping failed: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+    --- FAIL: TestConstraintSystem_SumTo100Enforcement/case_2 (0.00s)
+        constraints_test.go:557: clamping failed: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+    --- FAIL: TestConstraintSystem_SumTo100Enforcement/case_3 (0.00s)
+        constraints_test.go:557: clamping failed: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+FAIL
+coverage: 90.0% of statements
+FAIL	cryptorun/internal/tune/weights	2.317s
+	cryptorun/internal/ui		coverage: 0.0% of statements
+FAIL	cryptorun/internal/ui/menu [build failed]
+ok  	cryptorun/internal/verify/greenwall	2.020s	coverage: 51.3% of statements
+FAIL	cryptorun/out/review/stage_20250906_133751/cryptorun [build failed]
+	cryptorun/out/review/stage_20250906_133751/internal/algo/dip		coverage: 0.0% of statements
+	cryptorun/out/review/stage_20250906_133751/internal/algo/momentum		coverage: 0.0% of statements
+	cryptorun/out/review/stage_20250906_133751/internal/api		coverage: 0.0% of statements
+FAIL	cryptorun/out/review/stage_20250906_133751/internal/application [build failed]
+	cryptorun/out/review/stage_20250906_133751/internal/application/analyst		coverage: 0.0% of statements
+	cryptorun/out/review/stage_20250906_133751/internal/application/optimization		coverage: 0.0% of statements
+	cryptorun/out/review/stage_20250906_133751/internal/application/pipeline		coverage: 0.0% of statements
+	cryptorun/out/review/stage_20250906_133751/internal/application/selftest		coverage: 0.0% of statements
+	cryptorun/out/review/stage_20250906_133751/internal/application/universe		coverage: 0.0% of statements
+	cryptorun/out/review/stage_20250906_133751/internal/atomicio		coverage: 0.0% of statements
+	cryptorun/out/review/stage_20250906_133751/internal/bench		coverage: 0.0% of statements
+	cryptorun/out/review/stage_20250906_133751/internal/domain		coverage: 0.0% of statements
+	cryptorun/out/review/stage_20250906_133751/internal/domain/pairs		coverage: 0.0% of statements
+	cryptorun/out/review/stage_20250906_133751/internal/domain/scoring		coverage: 0.0% of statements
+	cryptorun/out/review/stage_20250906_133751/internal/infrastructure/httpclient		coverage: 0.0% of statements
+	cryptorun/out/review/stage_20250906_133751/internal/infrastructure/providers		coverage: 0.0% of statements
+	cryptorun/out/review/stage_20250906_133751/internal/infrastructure/websocket		coverage: 0.0% of statements
+FAIL	cryptorun/out/review/stage_20250906_133751/internal/interfaces/http/endpoints [build failed]
+	cryptorun/out/review/stage_20250906_133751/internal/io		coverage: 0.0% of statements
+	cryptorun/out/review/stage_20250906_133751/internal/metrics		coverage: 0.0% of statements
+	cryptorun/out/review/stage_20250906_133751/internal/qa		coverage: 0.0% of statements
+	cryptorun/out/review/stage_20250906_133751/internal/scan/pipeline		coverage: 0.0% of statements
+	cryptorun/out/review/stage_20250906_133751/internal/scan/progress		coverage: 0.0% of statements
+	cryptorun/out/review/stage_20250906_133751/internal/scan/sim		coverage: 0.0% of statements
+FAIL	cryptorun/out/review/stage_20250906_133751/internal/spec [build failed]
+	cryptorun/out/review/stage_20250906_133751/internal/telemetry/metrics		coverage: 0.0% of statements
+	cryptorun/out/review/stage_20250906_133751/internal/ui		coverage: 0.0% of statements
+	cryptorun/regime		coverage: 0.0% of statements
+# cryptorun/src/application/factors
+src\application\factors\pipeline.go:185:35: momentumInputs.Timestamp undefined (type momentum.CoreInputs has no field or method Timestamp)
+# cryptorun/src/application/gates
+src\application\gates\funding_divergence.go:9:2: derivs redeclared in this block
+	src\application\gates\funding_divergence.go:8:2: other declaration of derivs
+src\application\gates\funding_divergence.go:9:2: "cryptorun/src/infrastructure/derivs" imported and not used
+src\application\gates\funding_divergence.go:15:24: undefined: derivs.ProviderManager
+src\application\gates\funding_divergence.go:54:22: undefined: derivs.ProviderManager
+	cryptorun/scripts		coverage: 0.0% of statements
+	cryptorun/signals		coverage: 0.0% of statements
+FAIL	cryptorun/src/application/factors [build failed]
+FAIL	cryptorun/src/application/gates [build failed]
+	cryptorun/src/application/momentum		coverage: 0.0% of statements
+	cryptorun/src/application/premove		coverage: 0.0% of statements
+FAIL	cryptorun/src/cmd/cryptorun [build failed]
+	cryptorun/src/domain/catalyst		coverage: 0.0% of statements
+	cryptorun/src/domain/derivs		coverage: 0.0% of statements
+	cryptorun/src/domain/momentum		coverage: 0.0% of statements
+ok  	cryptorun/src/domain/premove	1.915s	coverage: 24.7% of statements
+	cryptorun/src/domain/premove/cvd		coverage: 0.0% of statements
+	cryptorun/src/domain/premove/portfolio		coverage: 0.0% of statements
+?   	cryptorun/src/domain/premove/ports	[no test files]
+	cryptorun/src/domain/premove/proxy		coverage: 0.0% of statements
+	cryptorun/src/domain/quality		coverage: 0.0% of statements
+	cryptorun/src/infrastructure/catalyst		coverage: 0.0% of statements
+# cryptorun/tests/conformance [cryptorun/tests/conformance.test]
+tests\conformance\momentum_protection_test.go:68:6: declared and not used: i
+tests\conformance\guards_regime_test.go:4:2: "encoding/json" imported and not used
+tests\conformance\menu_coverage_test.go:5:2: "reflect" imported and not used
+tests\conformance\menu_coverage_test.go:6:2: "strings" imported and not used
+tests\conformance\microstructure_ban_test.go:4:2: "bufio" imported and not used
+	cryptorun/src/infrastructure/data		coverage: 0.0% of statements
+	cryptorun/src/infrastructure/derivs		coverage: 0.0% of statements
+	cryptorun/src/infrastructure/percentiles		coverage: 0.0% of statements
+# cryptorun/tests/empirical [cryptorun/tests/empirical.test]
+tests\empirical\gate_alignment_test.go:69:2: declared and not used: analysis4h
+tests\empirical\gate_alignment_test.go:70:2: declared and not used: analysis24h
+# cryptorun/tests/integration/premove [cryptorun/tests/integration/premove.test]
+tests\integration\premove\backtest_pit_test.go:18:21: undefined: premove.NewPITRecordLoader
+tests\integration\premove\backtest_pit_test.go:18:48: undefined: premove.PITLoaderConfig
+tests\integration\premove\backtest_pit_test.go:66:24: undefined: premove.NewOutcomeValidator
+tests\integration\premove\backtest_pit_test.go:66:52: undefined: premove.ValidationConfig
+tests\integration\premove\backtest_pit_test.go:73:21: undefined: premove.NewPITRecordLoader
+tests\integration\premove\backtest_pit_test.go:73:48: undefined: premove.PITLoaderConfig
+tests\integration\premove\backtest_pit_test.go:110:33: undefined: premove.NewTemporalConsistencyChecker
+tests\integration\premove\backtest_pit_test.go:110:71: undefined: premove.ConsistencyConfig
+tests\integration\premove\backtest_pit_test.go:117:28: undefined: premove.PITRecord
+tests\integration\premove\backtest_pit_test.go:173:32: undefined: premove.NewRegimeTransitionTracker
+tests\integration\premove\backtest_pit_test.go:173:32: too many errors
+ok  	cryptorun/src/internal/artifacts	1.762s	coverage: 77.8% of statements
+ok  	cryptorun/tests/atomicio	2.093s	coverage: [no statements]
+--- FAIL: TestBrandConsistency (0.78s)
+    branding_guard_test.go:178: Found 52 brand consistency violations:
+    branding_guard_test.go:180:   ..\..\CHANGELOG.md:2811 - Found 'CryptoEdge' in: - ✅ Brand guard fails on "CryptoEdge" outside `_codereview/**`
+    branding_guard_test.go:180:   ..\..\CLAUDE.md:153 - Found 'CryptoEdge' in: - **Forbidden**: "CryptoEdge", "Crypto Edge" (except in `_codereview/**` for historic references)
+    branding_guard_test.go:180:   ..\..\CLAUDE.md:153 - Found 'Crypto Edge' in: - **Forbidden**: "CryptoEdge", "Crypto Edge" (except in `_codereview/**` for historic references)
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:29 - Found 'CryptoEdge' in: CryptoEdge/CHANGELOG.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:30 - Found 'CryptoEdge' in: CryptoEdge/README.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:31 - Found 'CryptoEdge' in: CryptoEdge/bin/version_info.txt
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:32 - Found 'CryptoEdge' in: CryptoEdge/docs/USER_MANUAL.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:33 - Found 'CryptoEdge' in: CryptoEdge/scripts/comprehensive_test.bat
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:34 - Found 'CryptoEdge' in: CryptoEdge/scripts/quick_validation.bat
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:35 - Found 'CryptoEdge' in: CryptoEdge/tests/QA_TEST_PLAN.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:36 - Found 'CryptoEdge' in: CryptoEdge/tests/VALIDATION_CHECKLIST.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:37 - Found 'CryptoEdge' in: CryptoEdge/validation/error_prevention_protocol.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:38 - Found 'CryptoEdge' in: CryptoEdge/validation/forensic_investigation_report.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:879 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/CHANGELOG.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:880 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/README.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:881 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/bin/version_info.txt
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:882 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/docs/USER_MANUAL.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:883 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/scripts/comprehensive_test.bat
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:884 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/scripts/quick_validation.bat
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:885 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/tests/QA_TEST_PLAN.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:886 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/tests/VALIDATION_CHECKLIST.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:887 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/validation/error_prevention_protocol.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:888 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/validation/forensic_investigation_report.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:896 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/CHANGELOG.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:897 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/README.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:898 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/docs/USER_MANUAL.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:899 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/tests/QA_TEST_PLAN.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:900 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/tests/VALIDATION_CHECKLIST.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:901 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/validation/error_prevention_protocol.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:902 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/validation/forensic_investigation_report.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:29 - Found 'CryptoEdge' in: CryptoEdge/CHANGELOG.md                            |  164 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:30 - Found 'CryptoEdge' in: CryptoEdge/README.md                               |  196 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:31 - Found 'CryptoEdge' in: CryptoEdge/bin/version_info.txt                    |   78 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:32 - Found 'CryptoEdge' in: CryptoEdge/docs/USER_MANUAL.md                     |  335 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:33 - Found 'CryptoEdge' in: CryptoEdge/scripts/comprehensive_test.bat          |  358 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:34 - Found 'CryptoEdge' in: CryptoEdge/scripts/quick_validation.bat            |  199 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:35 - Found 'CryptoEdge' in: CryptoEdge/tests/QA_TEST_PLAN.md                   |  343 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:36 - Found 'CryptoEdge' in: CryptoEdge/tests/VALIDATION_CHECKLIST.md           |  254 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:37 - Found 'CryptoEdge' in: CryptoEdge/validation/error_prevention_protocol.md |  757 ---
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:879 - Found 'CryptoEdge' in: .../CodeReview_CProtocol/CryptoEdge/CHANGELOG.md   |  164 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:880 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/README.md  |  196 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:881 - Found 'CryptoEdge' in: .../CryptoEdge/bin/version_info.txt                |   78 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:882 - Found 'CryptoEdge' in: .../CryptoEdge/docs/USER_MANUAL.md                 |  335 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:883 - Found 'CryptoEdge' in: .../CryptoEdge/scripts/comprehensive_test.bat      |  358 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:884 - Found 'CryptoEdge' in: .../CryptoEdge/scripts/quick_validation.bat        |  199 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:885 - Found 'CryptoEdge' in: .../CryptoEdge/tests/QA_TEST_PLAN.md               |  343 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:886 - Found 'CryptoEdge' in: .../CryptoEdge/tests/VALIDATION_CHECKLIST.md       |  254 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:896 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/CHANGELOG.md             |  164 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:897 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/README.md                |  196 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:898 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/docs/USER_MANUAL.md      |  335 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:899 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/tests/QA_TEST_PLAN.md    |  343 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:900 - Found 'CryptoEdge' in: .../CryptoEdge/tests/VALIDATION_CHECKLIST.md       |  254 -
+    branding_guard_test.go:187: 
+        Brand consistency rules:
+    branding_guard_test.go:188:   - Only 'CryptoRun' is permitted in active documentation
+    branding_guard_test.go:189:   - 'CryptoEdge' and 'Crypto Edge' are forbidden outside _codereview/**
+    branding_guard_test.go:190:   - Historic mentions in _codereview/** are allowed but should not be linked by active docs
+FAIL
+coverage: [no statements]
+FAIL	cryptorun/tests/branding	2.758s
+FAIL	cryptorun/tests/conformance [build failed]
+# cryptorun/tests/unit/catalyst [cryptorun/tests/unit/catalyst.test]
+tests\unit\catalyst\heat_test.go:8:2: "github.com/stretchr/testify/require" imported and not used
+tests\unit\catalyst\heat_test.go:407:14: undefined: fmt
+tests\unit\catalyst\heat_test.go:428:14: undefined: fmt
+--- FAIL: TestRegimeDetector_BoundaryConditions (0.00s)
+    --- FAIL: TestRegimeDetector_BoundaryConditions/vol_just_above_high_threshold (0.00s)
+        detector_thresholds_table_test.go:224: regime detection failed: expected HIGH_VOL, got CHOPPY
+            Description: Volatility just above high threshold triggers high vol vote
+            Inputs: vol=0.610, breadth=0.500, thrust=0.000
+    --- FAIL: TestRegimeDetector_BoundaryConditions/thrust_just_below_negative_threshold (0.00s)
+        detector_thresholds_table_test.go:224: regime detection failed: expected HIGH_VOL, got TRENDING_BULL
+            Description: Thrust just below negative threshold triggers negative vote
+            Inputs: vol=0.450, breadth=0.500, thrust=-0.160
+--- FAIL: TestRegimeDetector_ExtremeValues (0.00s)
+    --- FAIL: TestRegimeDetector_ExtremeValues/extreme_high_vol (0.00s)
+        detector_thresholds_table_test.go:301: extreme value test failed: expected HIGH_VOL, got CHOPPY
+    --- FAIL: TestRegimeDetector_ExtremeValues/extreme_bear_breadth (0.00s)
+        detector_thresholds_table_test.go:301: extreme value test failed: expected HIGH_VOL, got TRENDING_BULL
+    --- FAIL: TestRegimeDetector_ExtremeValues/extreme_negative_thrust (0.00s)
+        detector_thresholds_table_test.go:301: extreme value test failed: expected HIGH_VOL, got CHOPPY
+--- FAIL: TestSocialFactor_HardCap10 (0.00s)
+    --- FAIL: TestSocialFactor_HardCap10/partial_confidence_factors (0.00s)
+        social_cap_test.go:116: expected final score 89.6, got 88.0
+        social_cap_test.go:133: expected capping=false, got capping=true (raw social=11.6)
+--- FAIL: TestWeightsSumTo100_AllRegimes (0.00s)
+    --- FAIL: TestWeightsSumTo100_AllRegimes/normal (0.00s)
+        weights_sum_100_test.go:33: valid weights for regime normal failed validation: supply_demand total 0.395 outside bounds [0.200, 0.220] for regime normal
+    --- FAIL: TestWeightsSumTo100_AllRegimes/volatile (0.00s)
+        weights_sum_100_test.go:33: valid weights for regime volatile failed validation: supply_demand total 0.400 outside bounds [0.220, 0.280] for regime volatile
+FAIL
+coverage: [no statements]
+FAIL	cryptorun/tests/conformance/regime	1.800s
+FAIL	cryptorun/tests/empirical [build failed]
+FAIL	cryptorun/tests/integration [build failed]
+# cryptorun/tests/unit/premove [cryptorun/tests/unit/premove.test]
+tests\unit\premove\alerts_test.go:435:4: unknown field MaxAlertsPerHour in struct literal of type "cryptorun/src/application/premove".FatigueConfig
+tests\unit\premove\alerts_test.go:436:4: unknown field FatigueThreshold in struct literal of type "cryptorun/src/application/premove".FatigueConfig
+tests\unit\premove\alerts_test.go:437:4: unknown field RecoveryPeriod in struct literal of type "cryptorun/src/application/premove".FatigueConfig
+tests\unit\premove\alerts_test.go:438:4: unknown field AdaptiveLimits in struct literal of type "cryptorun/src/application/premove".FatigueConfig
+tests\unit\premove\alerts_test.go:449:13: detector.RecordAlert undefined (type *"cryptorun/src/application/premove".OperatorFatigueDetector has no field or method RecordAlert)
+tests\unit\premove\alerts_test.go:452:28: detector.GetFatigueLevel undefined (type *"cryptorun/src/application/premove".OperatorFatigueDetector has no field or method GetFatigueLevel)
+tests\unit\premove\alerts_test.go:458:27: detector.GetRecommendedFrequency undefined (type *"cryptorun/src/application/premove".OperatorFatigueDetector has no field or method GetRecommendedFrequency)
+tests\unit\premove\alerts_test.go:466:4: unknown field BaseInterval in struct literal of type "cryptorun/src/application/premove".ThrottlingConfig
+tests\unit\premove\alerts_test.go:467:4: unknown field MaxInterval in struct literal of type "cryptorun/src/application/premove".ThrottlingConfig
+tests\unit\premove\alerts_test.go:468:4: unknown field BackoffFactor in struct literal of type "cryptorun/src/application/premove".ThrottlingConfig
+tests\unit\premove\alerts_test.go:468:4: too many errors
+{"level":"info","sources":2,"polling_cadence":900000,"cache_ttl":1800000,"time":"2025-09-06T23:17:23+03:00","message":"Catalyst client initialized"}
+{"level":"debug","events":2,"symbols":["BTCUSD","ETHUSD"],"time":"2025-09-06T23:17:23+03:00","message":"CoinMarketCal events fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:coinmarketcal:BTCUSD,ETHUSD","time":"2025-09-06T23:17:23+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"coinmarketcal","events":2,"time":"2025-09-06T23:17:23+03:00","message":"Fetched fresh catalyst events"}
+{"level":"debug","robots_url":"https://blog.kraken.com/robots.txt","user_agent":"CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)","time":"2025-09-06T23:17:24+03:00","message":"Checking robots.txt compliance (mock)"}
+{"level":"debug","events":2,"symbols":["BTCUSD","ETHUSD"],"time":"2025-09-06T23:17:24+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:exchange_announcements:BTCUSD,ETHUSD","time":"2025-09-06T23:17:24+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"exchange_announcements","events":2,"time":"2025-09-06T23:17:24+03:00","message":"Fetched fresh catalyst events"}
+{"level":"info","total_events":4,"unique_events":4,"symbols":["BTCUSD","ETHUSD"],"time":"2025-09-06T23:17:24+03:00","message":"Catalyst events merged from all sources"}
+{"level":"info","sources":2,"polling_cadence":900000,"cache_ttl":1000,"time":"2025-09-06T23:17:24+03:00","message":"Catalyst client initialized"}
+{"level":"debug","events":2,"symbols":["SOLUSD"],"time":"2025-09-06T23:17:24+03:00","message":"CoinMarketCal events fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:coinmarketcal:SOLUSD","time":"2025-09-06T23:17:24+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"coinmarketcal","events":2,"time":"2025-09-06T23:17:24+03:00","message":"Fetched fresh catalyst events"}
+{"level":"debug","robots_url":"https://blog.kraken.com/robots.txt","user_agent":"CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)","time":"2025-09-06T23:17:24+03:00","message":"Checking robots.txt compliance (mock)"}
+{"level":"debug","events":2,"symbols":["SOLUSD"],"time":"2025-09-06T23:17:24+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:exchange_announcements:SOLUSD","time":"2025-09-06T23:17:24+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"exchange_announcements","events":2,"time":"2025-09-06T23:17:24+03:00","message":"Fetched fresh catalyst events"}
+{"level":"info","total_events":4,"unique_events":4,"symbols":["SOLUSD"],"time":"2025-09-06T23:17:24+03:00","message":"Catalyst events merged from all sources"}
+{"level":"debug","events":2,"symbols":["SOLUSD"],"time":"2025-09-06T23:17:26+03:00","message":"CoinMarketCal events fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:coinmarketcal:SOLUSD","time":"2025-09-06T23:17:26+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"coinmarketcal","events":2,"time":"2025-09-06T23:17:26+03:00","message":"Fetched fresh catalyst events"}
+{"level":"debug","robots_url":"https://blog.kraken.com/robots.txt","user_agent":"CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)","time":"2025-09-06T23:17:26+03:00","message":"Checking robots.txt compliance (mock)"}
+{"level":"debug","events":2,"symbols":["SOLUSD"],"time":"2025-09-06T23:17:26+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:exchange_announcements:SOLUSD","time":"2025-09-06T23:17:27+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"exchange_announcements","events":2,"time":"2025-09-06T23:17:27+03:00","message":"Fetched fresh catalyst events"}
+{"level":"info","total_events":4,"unique_events":4,"symbols":["SOLUSD"],"time":"2025-09-06T23:17:27+03:00","message":"Catalyst events merged from all sources"}
+{"level":"debug","events":2,"symbols":["BTCUSD"],"time":"2025-09-06T23:17:27+03:00","message":"CoinMarketCal events fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:coinmarketcal:BTCUSD","time":"2025-09-06T23:17:27+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"coinmarketcal","events":2,"time":"2025-09-06T23:17:27+03:00","message":"Fetched fresh catalyst events"}
+{"level":"debug","robots_url":"https://blog.kraken.com/robots.txt","user_agent":"CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)","time":"2025-09-06T23:17:27+03:00","message":"Checking robots.txt compliance (mock)"}
+{"level":"debug","events":2,"symbols":["BTCUSD"],"time":"2025-09-06T23:17:27+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:exchange_announcements:BTCUSD","time":"2025-09-06T23:17:27+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"exchange_announcements","events":2,"time":"2025-09-06T23:17:27+03:00","message":"Fetched fresh catalyst events"}
+{"level":"info","total_events":4,"unique_events":4,"symbols":["BTCUSD"],"time":"2025-09-06T23:17:27+03:00","message":"Catalyst events merged from all sources"}
+{"level":"debug","events":2,"symbols":["ETHUSD"],"time":"2025-09-06T23:17:27+03:00","message":"CoinMarketCal events fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:coinmarketcal:ETHUSD","time":"2025-09-06T23:17:27+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"coinmarketcal","events":2,"time":"2025-09-06T23:17:27+03:00","message":"Fetched fresh catalyst events"}
+{"level":"debug","robots_url":"https://blog.kraken.com/robots.txt","user_agent":"CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)","time":"2025-09-06T23:17:27+03:00","message":"Checking robots.txt compliance (mock)"}
+{"level":"debug","events":2,"symbols":["ETHUSD"],"time":"2025-09-06T23:17:27+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:exchange_announcements:ETHUSD","time":"2025-09-06T23:17:27+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"exchange_announcements","events":2,"time":"2025-09-06T23:17:27+03:00","message":"Fetched fresh catalyst events"}
+{"level":"info","total_events":4,"unique_events":4,"symbols":["ETHUSD"],"time":"2025-09-06T23:17:27+03:00","message":"Catalyst events merged from all sources"}
+{"level":"debug","events":2,"symbols":["BTCUSD","ETHUSD"],"time":"2025-09-06T23:17:27+03:00","message":"CoinMarketCal events fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:coinmarketcal:BTCUSD,ETHUSD","time":"2025-09-06T23:17:27+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"coinmarketcal","events":2,"time":"2025-09-06T23:17:27+03:00","message":"Fetched fresh catalyst events"}
+{"level":"debug","robots_url":"https://blog.kraken.com/robots.txt","user_agent":"CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)","time":"2025-09-06T23:17:27+03:00","message":"Checking robots.txt compliance (mock)"}
+{"level":"debug","events":2,"symbols":["BTCUSD","ETHUSD"],"time":"2025-09-06T23:17:27+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:exchange_announcements:BTCUSD,ETHUSD","time":"2025-09-06T23:17:28+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"exchange_announcements","events":2,"time":"2025-09-06T23:17:28+03:00","message":"Fetched fresh catalyst events"}
+{"level":"info","total_events":4,"unique_events":4,"symbols":["BTCUSD","ETHUSD"],"time":"2025-09-06T23:17:28+03:00","message":"Catalyst events merged from all sources"}
+--- FAIL: TestCatalystCaching (4.46s)
+    --- FAIL: TestCatalystCaching/cache_miss_then_hit (0.45s)
+        cache_test.go:58: 
+            	Error Trace:	C:/CryptoRun/tests/integration/catalyst/cache_test.go:58
+            	Error:      	Received unexpected error:
+            	            	dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.
+            	Test:       	TestCatalystCaching/cache_miss_then_hit
+    --- FAIL: TestCatalystCaching/cache_key_uniqueness (1.06s)
+        cache_test.go:122: 
+            	Error Trace:	C:/CryptoRun/tests/integration/catalyst/cache_test.go:122
+            	Error:      	Received unexpected error:
+            	            	dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.
+            	Test:       	TestCatalystCaching/cache_key_uniqueness
+{"level":"debug","robots_url":"https://blog.kraken.com/robots.txt","user_agent":"CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)","time":"2025-09-06T23:17:28+03:00","message":"Checking robots.txt compliance (mock)"}
+{"level":"debug","events":2,"symbols":["BTCUSD"],"time":"2025-09-06T23:17:28+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"debug","robots_url":"https://blog.kraken.com/robots.txt","user_agent":"CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)","time":"2025-09-06T23:17:28+03:00","message":"Checking robots.txt compliance (mock)"}
+{"level":"debug","events":2,"symbols":["BTCUSD"],"time":"2025-09-06T23:17:28+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"debug","events":2,"symbols":["BTCUSD"],"time":"2025-09-06T23:17:28+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"info","sources":2,"polling_cadence":900000,"cache_ttl":1800000,"time":"2025-09-06T23:17:28+03:00","message":"Catalyst client initialized"}
+{"level":"debug","events":2,"symbols":["BTCUSD"],"time":"2025-09-06T23:17:28+03:00","message":"CoinMarketCal events fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:coinmarketcal:BTCUSD","time":"2025-09-06T23:17:28+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"coinmarketcal","events":2,"time":"2025-09-06T23:17:28+03:00","message":"Fetched fresh catalyst events"}
+{"level":"debug","robots_url":"https://blog.kraken.com/robots.txt","user_agent":"CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)","time":"2025-09-06T23:17:28+03:00","message":"Checking robots.txt compliance (mock)"}
+{"level":"debug","events":2,"symbols":["BTCUSD"],"time":"2025-09-06T23:17:28+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:exchange_announcements:BTCUSD","time":"2025-09-06T23:17:28+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"exchange_announcements","events":2,"time":"2025-09-06T23:17:28+03:00","message":"Fetched fresh catalyst events"}
+{"level":"info","total_events":4,"unique_events":4,"symbols":["BTCUSD"],"time":"2025-09-06T23:17:28+03:00","message":"Catalyst events merged from all sources"}
+{"level":"debug","events":2,"symbols":["BTCUSD","ETHUSD","SOLUSD"],"time":"2025-09-06T23:17:28+03:00","message":"CoinMarketCal events fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:coinmarketcal:BTCUSD,ETHUSD,SOLUSD","time":"2025-09-06T23:17:28+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"coinmarketcal","events":2,"time":"2025-09-06T23:17:28+03:00","message":"Fetched fresh catalyst events"}
+{"level":"debug","robots_url":"https://blog.kraken.com/robots.txt","user_agent":"CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)","time":"2025-09-06T23:17:28+03:00","message":"Checking robots.txt compliance (mock)"}
+{"level":"debug","events":2,"symbols":["BTCUSD","ETHUSD","SOLUSD"],"time":"2025-09-06T23:17:28+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:exchange_announcements:BTCUSD,ETHUSD,SOLUSD","time":"2025-09-06T23:17:28+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"exchange_announcements","events":2,"time":"2025-09-06T23:17:28+03:00","message":"Fetched fresh catalyst events"}
+{"level":"info","total_events":4,"unique_events":4,"symbols":["BTCUSD","ETHUSD","SOLUSD"],"time":"2025-09-06T23:17:28+03:00","message":"Catalyst events merged from all sources"}
+{"level":"info","sources":2,"polling_cadence":0,"cache_ttl":0,"time":"2025-09-06T23:17:28+03:00","message":"Catalyst client initialized"}
+--- FAIL: TestSymbolNormalization (0.00s)
+    --- FAIL: TestSymbolNormalization/Bitcoin_from_Kraken (0.00s)
+        cache_test.go:339: 
+            	Error Trace:	C:/CryptoRun/tests/integration/catalyst/cache_test.go:339
+            	Error:      	Not equal: 
+            	            	expected: "BTCUSD"
+            	            	actual  : "BTUSD"
+            	            	
+            	            	Diff:
+            	            	--- Expected
+            	            	+++ Actual
+            	            	@@ -1 +1 @@
+            	            	-BTCUSD
+            	            	+BTUSD
+            	Test:       	TestSymbolNormalization/Bitcoin_from_Kraken
+            	Messages:   	Symbol normalization failed for XXBTZUSD from kraken
+    --- FAIL: TestSymbolNormalization/Ethereum_from_Kraken (0.00s)
+        cache_test.go:339: 
+            	Error Trace:	C:/CryptoRun/tests/integration/catalyst/cache_test.go:339
+            	Error:      	Not equal: 
+            	            	expected: "ETHUSD"
+            	            	actual  : "XETHZUSD"
+            	            	
+            	            	Diff:
+            	            	--- Expected
+            	            	+++ Actual
+            	            	@@ -1 +1 @@
+            	            	-ETHUSD
+            	            	+XETHZUSD
+            	Test:       	TestSymbolNormalization/Ethereum_from_Kraken
+            	Messages:   	Symbol normalization failed for XETHZUSD from kraken
+    --- FAIL: TestSymbolNormalization/Uppercase_conversion (0.00s)
+        cache_test.go:339: 
+            	Error Trace:	C:/CryptoRun/tests/integration/catalyst/cache_test.go:339
+            	Error:      	Not equal: 
+            	            	expected: "BTCUSD"
+            	            	actual  : "btcUSD"
+            	            	
+            	            	Diff:
+            	            	--- Expected
+            	            	+++ Actual
+            	            	@@ -1 +1 @@
+            	            	-BTCUSD
+            	            	+btcUSD
+            	Test:       	TestSymbolNormalization/Uppercase_conversion
+            	Messages:   	Symbol normalization failed for btc from unknown
+{"level":"info","sources":2,"polling_cadence":900000,"cache_ttl":1800000,"time":"2025-09-06T23:17:28+03:00","message":"Catalyst client initialized"}
+{"level":"debug","events":2,"symbols":["BTCUSD"],"time":"2025-09-06T23:17:28+03:00","message":"CoinMarketCal events fetched (mock)"}
+{"level":"debug","source":"coinmarketcal","events":2,"time":"2025-09-06T23:17:28+03:00","message":"Fetched fresh catalyst events"}
+{"level":"debug","robots_url":"https://blog.kraken.com/robots.txt","user_agent":"CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)","time":"2025-09-06T23:17:28+03:00","message":"Checking robots.txt compliance (mock)"}
+{"level":"debug","events":2,"symbols":["BTCUSD"],"time":"2025-09-06T23:17:28+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"debug","source":"exchange_announcements","events":2,"time":"2025-09-06T23:17:28+03:00","message":"Fetched fresh catalyst events"}
+{"level":"info","total_events":4,"unique_events":4,"symbols":["BTCUSD"],"time":"2025-09-06T23:17:28+03:00","message":"Catalyst events merged from all sources"}
+FAIL
+coverage: [no statements]
+FAIL	cryptorun/tests/integration/catalyst	7.896s
+ok  	cryptorun/tests/integration/data	3.428s	coverage: [no statements]

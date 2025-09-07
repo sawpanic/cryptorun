@@ -1,0 +1,58 @@
+{
+  "timestamp": "2025-09-06T20:30:00Z",
+  "regime": "trending_bull",
+  "total_count": 3,
+  "requested": 3,
+  "candidates": [
+    {
+      "symbol": "BTC-USD",
+      "exchange": "kraken",
+      "score": 87.4,
+      "rank": 1,
+      "gate_status": {
+        "score_gate": true,
+        "vadr_gate": true,
+        "funding_gate": true,
+        "spread_gate": true,
+        "depth_gate": true,
+        "fatigue_gate": true,
+        "freshness_gate": true,
+        "overall_passed": true,
+        "failure_reasons": []
+      },
+      "microstructure": {
+        "spread_bps": 2.5,
+        "depth_usd": 250000,
+        "vadr": 2.8,
+        "volume_24h": 1500000000,
+        "last_price": 50000.0,
+        "bid_price": 49993.75,
+        "ask_price": 50006.25
+      },
+      "attribution": {
+        "momentum_score": 43.7,
+        "technical_score": 17.48,
+        "volume_score": 13.11,
+        "quality_score": 8.74,
+        "social_bonus": 4.37,
+        "weight_profile": "trending_bull"
+      },
+      "last_updated": "2025-09-06T20:29:30Z"
+    }
+  ],
+  "summary": {
+    "passed_all_gates": 1,
+    "avg_score": 85.8,
+    "median_score": 85.8,
+    "top_decile_threshold": 87.4,
+    "gate_pass_rates": {
+      "score": 1.0,
+      "vadr": 1.0,
+      "funding": 1.0,
+      "spread": 1.0,
+      "depth": 1.0,
+      "fatigue": 1.0,
+      "freshness": 1.0
+    }
+  }
+}

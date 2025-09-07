@@ -1,0 +1,50 @@
+# cryptorun/internal/application/bench
+internal\application\bench\spec_pnl.go:179:2: declared and not used: endTime
+internal\application\bench\spec_pnl.go:217:2: declared and not used: endTime
+internal\application\bench\topgainers.go:373:19: tgb.progressBus.Emit undefined (type *progress.ScanProgressBus has no field or method Emit)
+internal\application\bench\topgainers.go:373:33: undefined: progress.ScanProgress
+internal\application\bench\alignment.go:4:2: "encoding/json" imported and not used
+internal\application\bench\alignment.go:5:2: "fmt" imported and not used
+internal\application\bench\alignment.go:6:2: "io/ioutil" imported and not used
+internal\application\bench\alignment.go:8:2: "os" imported and not used
+internal\application\bench\alignment.go:9:2: "path/filepath" imported and not used
+internal\application\bench\alignment.go:10:2: "sort" imported and not used
+internal\application\bench\alignment.go:10:2: too many errors
+# cryptorun/internal/application
+internal\application\scan.go:337:85: not enough arguments in call to pipeline.BuildFactorSet
+	have (string, *pipeline.MomentumFactors, float64, float64, float64)
+	want (string, *pipeline.MomentumFactors, float64, float64, float64, float64)
+internal\application\scan.go:690:103: factors.Raw undefined (type pipeline.FactorSet has no field or method Raw)
+internal\application\scan.go:708:27: factors.Raw undefined (type pipeline.FactorSet has no field or method Raw)
+internal\application\scan.go:709:27: factors.Raw undefined (type pipeline.FactorSet has no field or method Raw)
+internal\application\scan.go:710:27: factors.Raw undefined (type pipeline.FactorSet has no field or method Raw)
+# cryptorun/internal/spec
+internal\spec\factor_hierarchy.go:140:3: unknown field Volatility in struct literal of type pipeline.FactorSet
+internal\spec\factor_hierarchy.go:155:3: unknown field Volatility in struct literal of type pipeline.FactorSet
+internal\spec\factor_hierarchy.go:170:3: unknown field Volatility in struct literal of type pipeline.FactorSet
+internal\spec\factor_hierarchy.go:241:4: unknown field Volatility in struct literal of type pipeline.FactorSet
+# cryptorun/internal/gates
+internal\gates\entry.go:367:76: microResult.BarCount undefined (type microstructure.EvaluationResult has no field or method BarCount)
+internal\gates\entry.go:370:15: microResult.BarCount undefined (type microstructure.EvaluationResult has no field or method BarCount)
+internal\gates\entry.go:381:18: microResult.BarCount undefined (type microstructure.EvaluationResult has no field or method BarCount)
+internal\gates\entry.go:384:18: microResult.BarCount undefined (type microstructure.EvaluationResult has no field or method BarCount)
+internal\gates\entry.go:391:28: microResult.DailyVolumeUSD undefined (type microstructure.EvaluationResult has no field or method DailyVolumeUSD)
+internal\gates\entry.go:393:72: microResult.DailyVolumeUSD undefined (type microstructure.EvaluationResult has no field or method DailyVolumeUSD)
+internal\gates\entry.go:395:38: microResult.DailyVolumeUSD undefined (type microstructure.EvaluationResult has no field or method DailyVolumeUSD)
+internal\gates\entry.go:403:17: microResult.DailyVolumeUSD undefined (type microstructure.EvaluationResult has no field or method DailyVolumeUSD)
+internal\gates\entry.go:409:62: microResult.ADX undefined (type microstructure.EvaluationResult has no field or method ADX)
+internal\gates\entry.go:409:79: microResult.Hurst undefined (type microstructure.EvaluationResult has no field or method Hurst)
+internal\gates\entry.go:409:79: too many errors
+# cryptorun/out/review/stage_20250906_133751/internal/application
+out\review\stage_20250906_133751\internal\application\scan.go:337:85: not enough arguments in call to pipeline.BuildFactorSet
+	have (string, *pipeline.MomentumFactors, float64, float64, float64)
+	want (string, *pipeline.MomentumFactors, float64, float64, float64, float64)
+out\review\stage_20250906_133751\internal\application\scan.go:690:103: factors.Raw undefined (type pipeline.FactorSet has no field or method Raw)
+out\review\stage_20250906_133751\internal\application\scan.go:708:27: factors.Raw undefined (type pipeline.FactorSet has no field or method Raw)
+out\review\stage_20250906_133751\internal\application\scan.go:709:27: factors.Raw undefined (type pipeline.FactorSet has no field or method Raw)
+out\review\stage_20250906_133751\internal\application\scan.go:710:27: factors.Raw undefined (type pipeline.FactorSet has no field or method Raw)
+# cryptorun/out/review/stage_20250906_133751/internal/spec
+out\review\stage_20250906_133751\internal\spec\factor_hierarchy.go:140:3: unknown field Volatility in struct literal of type pipeline.FactorSet
+out\review\stage_20250906_133751\internal\spec\factor_hierarchy.go:155:3: unknown field Volatility in struct literal of type pipeline.FactorSet
+out\review\stage_20250906_133751\internal\spec\factor_hierarchy.go:170:3: unknown field Volatility in struct literal of type pipeline.FactorSet
+out\review\stage_20250906_133751\internal\spec\factor_hierarchy.go:241:4: unknown field Volatility in struct literal of type pipeline.FactorSet

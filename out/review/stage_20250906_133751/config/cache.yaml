@@ -1,0 +1,8 @@
+redis:
+  addr: localhost:6379
+  db: 0
+  tls: false
+  default_ttl_seconds: 300
+  hot_ttl_seconds: 120
+  warm_ttl_seconds: 900
+  cold_ttl_seconds: 3600

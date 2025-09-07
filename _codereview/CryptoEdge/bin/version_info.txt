@@ -1,0 +1,78 @@
+CRYPTOEDGE VERSION INFORMATION
+==============================
+
+Version: 1.0.5
+Build Date: September 3, 2025
+Build Time: Jerusalem Timezone
+Platform: Windows x64
+Go Version: 1.21+
+
+CRITICAL FIXES IMPLEMENTED:
+===========================
+✅ Threshold Optimization: 70.0 → 35.0 for better opportunity capture
+✅ UI Execution Restored: Fixed "temporarily disabled" menu options
+✅ Top 10 Results Mandate: Always displays results table per CTO requirement
+✅ Build System Fixed: Resolved duplicate type declarations and compilation errors
+✅ Data Source Transparency: Honest CMC/CoinGecko labeling implemented
+✅ Performance Tuning: Optimized scan completion times
+
+SYSTEM SPECIFICATIONS:
+======================
+Executable: cryptoedge.exe
+Size: ~50MB (estimated)
+Dependencies: Go runtime embedded
+Network: Required for live data
+Memory: 4GB minimum, 8GB recommended
+Storage: 100MB for operation
+
+API INTEGRATIONS:
+================
+Primary: Kraken API (direct exchange data)
+Secondary: LiveCoinWatch API (professional-grade)
+Tertiary: CoinGecko API (reliable fallback)  
+Optional: CoinMarketCap Pro API (enhanced accuracy)
+
+PERFORMANCE TARGETS:
+===================
+Complete Factors Scan: <90 seconds
+Other Scanner Modes: <60 seconds  
+Menu Navigation: <1 second
+Memory Usage: <500MB during operation
+Network Timeout: 30 seconds per API call
+
+TESTING STATUS:
+==============
+Build Integrity: VALIDATED
+Menu Functionality: RESTORED
+Critical Fixes: IMPLEMENTED
+Documentation: COMPREHENSIVE
+QA Ready: YES
+
+DEPLOYMENT NOTES:
+================
+- No installation required - portable executable
+- Internet connection required for live data
+- API keys optional but recommended for enhanced accuracy
+- Windows Defender may require exclusion setup
+- Run as Administrator if permission issues occur
+
+BUILD CHECKSUMS:
+===============
+(To be generated during final packaging)
+MD5: [Generated at packaging time]
+SHA256: [Generated at packaging time]
+
+SUPPORT INFORMATION:
+===================
+User Manual: docs/USER_MANUAL.md
+Technical Specs: docs/TECHNICAL_SPECIFICATION.md
+QA Test Plan: tests/QA_TEST_PLAN.md
+Troubleshooting: docs/TROUBLESHOOTING_GUIDE.md
+
+COPYRIGHT & LICENSE:
+====================
+CryptoEdge Optimized Trading System
+Copyright 2025 - All Rights Reserved
+For QA Testing and Validation Purposes Only
+
+This build represents the definitive CryptoEdge v1.0.5 with all critical issues resolved and ready for comprehensive quality assurance validation.

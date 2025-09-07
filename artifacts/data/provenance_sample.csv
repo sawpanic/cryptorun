@@ -1,0 +1,40 @@
+# CryptoRun Data Layers v1.0 - Provenance Sample
+# Generated: 2025-09-07T12:00:00Z
+# Purpose: Demonstrates mixed-tier data provenance tracking with Hot/Warm/Cold sources
+#
+# Column Descriptions:
+# timestamp_utc: Data timestamp in UTC
+# venue: Exchange/provider name  
+# symbol: Trading pair symbol
+# source_tier: Data tier (hot/warm/cold)
+# freshness_ms: Age of data in milliseconds
+# original_source: Specific data source identifier
+# cache_hit: Whether data came from cache (true/false)
+# fallback_chain: Comma-separated list of fallback attempts
+# confidence_score: Data confidence (0.0-1.0)
+# latency_ms: Retrieval latency in milliseconds
+# retry_count: Number of retry attempts
+# checksum: Data integrity checksum (SHA256)
+# data_sample: Sample of actual data retrieved
+#
+timestamp_utc,venue,symbol,source_tier,freshness_ms,original_source,cache_hit,fallback_chain,confidence_score,latency_ms,retry_count,checksum,data_sample
+2025-09-07T12:00:01Z,binance,BTCUSD,hot,1250,binance_ws,false,,0.95,45,0,a1b2c3d4e5f6,"{""bid"":50000.50,""ask"":50001.25,""mid"":50000.88}"
+2025-09-07T12:00:02Z,okx,BTCUSD,hot,2100,okx_ws,false,,0.92,75,0,f6e5d4c3b2a1,"{""bid"":49999.75,""ask"":50001.00,""mid"":50000.38}"
+2025-09-07T12:00:03Z,coinbase,BTCUSD,hot,850,coinbase_ws,false,,0.98,30,0,9876543210ab,"{""bid"":50001.00,""ask"":50001.50,""mid"":50001.25}"
+2025-09-07T12:00:15Z,kraken,BTCUSD,warm,15000,kraken_rest,false,hot_failed:connection_timeout,0.85,350,1,def123456789,"{""bid"":50000.00,""ask"":50002.00,""mid"":50001.00}"
+2025-09-07T12:00:30Z,binance,BTCUSD,warm,45000,binance_rest,true,,0.88,120,0,fedcba098765,"{""bid"":50001.25,""ask"":50002.75,""mid"":50002.00}"
+2025-09-07T12:01:00Z,okx,ETHUSD,warm,8000,okx_rest,false,hot_stale:12000,0.86,280,0,555666777888,"{""bid"":3200.50,""ask"":3201.25,""mid"":3200.88}"
+2025-09-07T12:01:30Z,binance,BTCUSD,hot,3500,binance_ws,false,,0.94,55,0,abcdef123456,"{""bid"":50002.00,""ask"":50003.50,""mid"":50002.75}"
+2025-09-07T12:02:00Z,kraken,ETHUSD,cold,3600000,csv:/data/kraken/ETHUSD_2023-01-01.csv,false,hot_failed:unavailable;warm_failed:circuit_open,0.75,50,0,111222333444,"{""bid"":3195.00,""ask"":3205.00,""mid"":3200.00}"
+2025-09-07T12:02:15Z,coinbase,BTCUSD,warm,25000,coinbase_rest,true,hot_stale:15000,0.87,95,0,999888777666,"{""bid"":50003.00,""ask"":50004.00,""mid"":50003.50}"
+2025-09-07T12:02:30Z,binance,ETHUSD,hot,1800,binance_ws,false,,0.96,42,0,aabbccddee11,"{""bid"":3201.75,""ask"":3202.50,""mid"":3202.13}"
+2025-09-07T12:03:00Z,okx,BTCUSD,cold,7200000,parquet_mock:okx,false,hot_failed:connection_lost;warm_stale:75000,0.78,25,0,223344556677,"{""bid"":49950.00,""ask"":49975.00,""mid"":49962.50}"
+2025-09-07T12:03:15Z,kraken,BTCUSD,warm,18000,kraken_rest,false,,0.84,400,2,7788990011aa,"{""bid"":50004.50,""ask"":50006.00,""mid"":50005.25}"
+2025-09-07T12:03:30Z,coinbase,ETHUSD,hot,950,coinbase_ws,false,,0.97,28,0,bbccddee1122,"{""bid"":3202.25,""ask"":3203.00,""mid"":3202.63}"
+2025-09-07T12:04:00Z,binance,BTCUSD,warm,35000,binance_rest,true,,0.89,110,0,ddeeff223344,"{""bid"":50005.00,""ask"":50007.00,""mid"":50006.00}"
+2025-09-07T12:04:15Z,okx,ETHUSD,hot,2250,okx_ws,false,,0.93,68,0,ffgghhii5566,"{""bid"":3203.00,""ask"":3204.25,""mid"":3203.63}"
+2025-09-07T12:04:30Z,kraken,ETHUSD,cold,5400000,csv:/data/kraken/ETHUSD_2023-01-02.csv,true,hot_unavailable;warm_circuit_open,0.72,35,0,5566778899bb,"{""bid"":3190.00,""ask"":3210.00,""mid"":3200.00}"
+2025-09-07T12:05:00Z,coinbase,BTCUSD,hot,1500,coinbase_ws,false,,0.98,32,0,gghhiijj7788,"{""bid"":50006.50,""ask"":50008.00,""mid"":50007.25}"
+2025-09-07T12:05:15Z,binance,ETHUSD,warm,22000,binance_rest,false,hot_stale:8500,0.86,180,0,iijjkkll99aa,"{""bid"":3204.00,""ask"":3205.50,""mid"":3204.75}"
+2025-09-07T12:05:30Z,okx,BTCUSD,hot,3200,okx_ws,false,,0.91,82,0,kkllmmnn11bb,"{""bid"":50007.25,""ask"":50009.00,""mid"":50008.13}"
+2025-09-07T12:06:00Z,kraken,BTCUSD,cold,1800000,csv:/data/kraken/BTCUSD_2023-01-03.csv,false,hot_failed:timeout;warm_failed:rate_limited,0.74,45,0,mmnnoopp33cc,"{""bid"":49980.00,""ask"":50020.00,""mid"":50000.00}"

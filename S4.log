@@ -1,0 +1,44 @@
+## Summary
+
+Successfully implemented the EOD + Weekly Transparency Reports system as specified in `SCHED.REPORTS.DAILY.WEEKLY.txt`:
+
+### ✅ Components Delivered
+
+**Daily Reports (`internal/reports/daily.go`)**
+- Decile analysis with monotonicity validation
+- Exit distribution tracking (7 exit types)
+- Provider budget monitoring with health states
+- Reconciliation disagreement detection
+- Regime summary generation
+
+**Weekly Reports (`internal/reports/weekly.go`)**  
+- 7-day roll-up analysis with executive summaries
+- Heatmap data generation (score patterns, volume, regime distribution)
+- Pattern detection (momentum surges, volume anomalies, regime instability)
+- Daily report linking for comprehensive analysis
+
+**Scheduler Integration**
+- `report.daily` job (23:45 local time)  
+- `report.weekly` job (16:00 UTC Sundays)
+- Added to `config/scheduler.yaml`
+
+**Documentation & Testing**
+- Updated `docs/REPORTS.md` with comprehensive specifications
+- Added transparency log entry in `ENGINEERING_TRANSPARENCY_LOG.md` 
+- Created unit tests for decile monotonicity and exit distribution math
+
+### 📊 Artifacts Generated
+
+**Daily**: `artifacts/reports/daily/{YYYY-MM-DD}/`
+- `deciles.csv` - Score bucket performance analysis
+- `exits.csv` - Exit type distribution and success rates
+- `providers.json` - API provider budgets and health status  
+- `recon.csv` - Reconciliation disagreements and variances
+- `regime.txt` - Daily regime summary and transitions
+
+**Weekly**: `artifacts/reports/weekly/{YYYY-MM-DD}/`
+- `overview.md` - Executive summary with key metrics
+- `heatmaps.png` - Visual analysis placeholder (production would use charting library)
+- `patterns.json` - Detected market patterns and anomalies
+
+The system is now ready for automated transparency reporting with comprehensive KPI tracking and audit trails.

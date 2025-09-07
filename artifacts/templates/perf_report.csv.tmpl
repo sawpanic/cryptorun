@@ -1,0 +1,49 @@
+# CryptoRun Performance Report CSV
+# Generated: {{.GeneratedAt}}
+# Period: {{.StartDate}} to {{.EndDate}} ({{.TotalDays}} days)
+
+## Summary Metrics
+metric,value,unit,status
+total_return,{{printf "%.6f" .TotalReturn}},decimal,
+annualized_return,{{printf "%.6f" .AnnualizedReturn}},decimal,
+exposure_weighted_return,{{printf "%.6f" .ExposureWeightedReturn}},decimal,
+sharpe_ratio,{{printf "%.6f" .Sharpe}},ratio,{{if gt .Sharpe 1.0}}PASS{{else}}FAIL{{end}}
+sortino_ratio,{{printf "%.6f" .Sortino}},ratio,
+calmar_ratio,{{printf "%.6f" .Calmar}},ratio,
+max_drawdown,{{printf "%.6f" .MaxDrawdown}},decimal,{{if lt .MaxDrawdown 0.20}}PASS{{else}}FAIL{{end}}
+max_drawdown_days,{{.MaxDrawdownDays}},days,
+volatility,{{printf "%.6f" .Volatility}},decimal,
+downside_volatility,{{printf "%.6f" .DownsideVol}},decimal,
+
+## P&L Breakdown
+metric,value,currency,percentage_of_gross
+spec_pnl,{{printf "%.2f" .SpecPnL}},USD,100.00
+raw_pnl,{{printf "%.2f" .RawPnL}},USD,{{printf "%.2f" (div .RawPnL .RawPnL | times 100)}}
+net_pnl,{{printf "%.2f" .NetPnL}},USD,{{printf "%.2f" (div .NetPnL .RawPnL | times 100)}}
+total_fees,{{printf "%.2f" .TotalFees}},USD,{{printf "%.2f" (div .TotalFees .RawPnL | times 100)}}
+total_slippage,{{printf "%.2f" .TotalSlippage}},USD,{{printf "%.2f" (div .TotalSlippage .RawPnL | times 100)}}
+
+## Trade Analysis
+metric,value,unit,percentage
+total_trades,{{.TotalTrades}},count,100.00
+winning_trades,{{.WinningTrades}},count,{{printf "%.2f" (.HitRate | times 100)}}
+losing_trades,{{.LosingTrades}},count,{{printf "%.2f" (sub 1 .HitRate | times 100)}}
+hit_rate,{{printf "%.6f" .HitRate}},decimal,
+win_loss_ratio,{{printf "%.6f" .WinLossRatio}},ratio,
+profit_factor,{{printf "%.6f" .ProfitFactor}},ratio,
+average_win,{{printf "%.2f" .AvgWin}},USD,
+average_loss,{{printf "%.2f" .AvgLoss}},USD,
+
+## Configuration
+parameter,value,description
+risk_free_rate,{{printf "%.4f" .RiskFreeRate}},Annual risk-free rate for Sharpe calculation
+include_fees,{{.IncludeFees}},Whether trading fees are included in calculations
+include_slippage,{{.IncludeSlippage}},Whether slippage is included in calculations
+trading_days_per_year,{{.TradingDaysPerYear}},Days used for annualization calculations
+
+{{if .Alerts}}
+## Performance Alerts
+alert_type,message,severity
+{{range .Alerts}}{{.Type}},{{.Message}},{{.Severity}}
+{{end}}
+{{end}}

@@ -1,0 +1,80 @@
+# cryptorun/internal/application/bench
+internal\application\bench\spec_pnl.go:179:2: declared and not used: endTime
+internal\application\bench\spec_pnl.go:217:2: declared and not used: endTime
+internal\application\bench\topgainers.go:373:19: tgb.progressBus.Emit undefined (type *progress.ScanProgressBus has no field or method Emit)
+internal\application\bench\topgainers.go:373:33: undefined: progress.ScanProgress
+internal\application\bench\alignment.go:4:2: "encoding/json" imported and not used
+internal\application\bench\alignment.go:5:2: "fmt" imported and not used
+internal\application\bench\alignment.go:6:2: "io/ioutil" imported and not used
+internal\application\bench\alignment.go:8:2: "os" imported and not used
+internal\application\bench\alignment.go:9:2: "path/filepath" imported and not used
+internal\application\bench\alignment.go:10:2: "sort" imported and not used
+internal\application\bench\alignment.go:10:2: too many errors
+# cryptorun/internal/application
+internal\application\scan.go:337:85: not enough arguments in call to pipeline.BuildFactorSet
+	have (string, *pipeline.MomentumFactors, float64, float64, float64)
+	want (string, *pipeline.MomentumFactors, float64, float64, float64, float64)
+internal\application\scan.go:690:103: factors.Raw undefined (type pipeline.FactorSet has no field or method Raw)
+internal\application\scan.go:708:27: factors.Raw undefined (type pipeline.FactorSet has no field or method Raw)
+internal\application\scan.go:709:27: factors.Raw undefined (type pipeline.FactorSet has no field or method Raw)
+internal\application\scan.go:710:27: factors.Raw undefined (type pipeline.FactorSet has no field or method Raw)
+# cryptorun/internal/gates
+internal\gates\entry.go:367:76: microResult.BarCount undefined (type microstructure.EvaluationResult has no field or method BarCount)
+internal\gates\entry.go:370:15: microResult.BarCount undefined (type microstructure.EvaluationResult has no field or method BarCount)
+internal\gates\entry.go:381:18: microResult.BarCount undefined (type microstructure.EvaluationResult has no field or method BarCount)
+internal\gates\entry.go:384:18: microResult.BarCount undefined (type microstructure.EvaluationResult has no field or method BarCount)
+internal\gates\entry.go:391:28: microResult.DailyVolumeUSD undefined (type microstructure.EvaluationResult has no field or method DailyVolumeUSD)
+internal\gates\entry.go:393:72: microResult.DailyVolumeUSD undefined (type microstructure.EvaluationResult has no field or method DailyVolumeUSD)
+internal\gates\entry.go:395:38: microResult.DailyVolumeUSD undefined (type microstructure.EvaluationResult has no field or method DailyVolumeUSD)
+internal\gates\entry.go:403:17: microResult.DailyVolumeUSD undefined (type microstructure.EvaluationResult has no field or method DailyVolumeUSD)
+internal\gates\entry.go:409:62: microResult.ADX undefined (type microstructure.EvaluationResult has no field or method ADX)
+internal\gates\entry.go:409:79: microResult.Hurst undefined (type microstructure.EvaluationResult has no field or method Hurst)
+internal\gates\entry.go:409:79: too many errors
+# cryptorun/internal/spec
+internal\spec\factor_hierarchy.go:140:3: unknown field Volatility in struct literal of type pipeline.FactorSet
+internal\spec\factor_hierarchy.go:155:3: unknown field Volatility in struct literal of type pipeline.FactorSet
+internal\spec\factor_hierarchy.go:170:3: unknown field Volatility in struct literal of type pipeline.FactorSet
+internal\spec\factor_hierarchy.go:241:4: unknown field Volatility in struct literal of type pipeline.FactorSet
+# cryptorun/internal/infrastructure/websocket
+internal\infrastructure\websocket\normalizers.go:184:2: struct field Count repeats json tag "c" also at normalizers.go:173
+# cryptorun/internal/application/guards
+# [cryptorun/internal/application/guards]
+vet.exe: internal\application\guards\latefill_test.go:264:2: declared and not used: mockTime
+# cryptorun/internal/exits
+# [cryptorun/internal/exits]
+vet.exe: internal\exits\logic_test.go:18:3: unknown field HardStopPrice in struct literal of type ExitInputs
+# cryptorun/internal/gates
+# [cryptorun/internal/gates]
+vet.exe: internal\gates\entry.go:367:76: microResult.BarCount undefined (type microstructure.EvaluationResult has no field or method BarCount)
+# cryptorun/internal/social
+# [cryptorun/internal/social]
+vet.exe: internal\social\api_test.go:229:35: comp.SourceID undefined (type *SocialComponent has no field or method SourceID)
+# cryptorun/out/review/stage_20250906_133751/internal/application
+vet.exe: out\review\stage_20250906_133751\internal\application\scan.go:337:101: not enough arguments in call to pipeline.BuildFactorSet
+	have (string, *pipeline.MomentumFactors, float64, float64, float64)
+	want (string, *pipeline.MomentumFactors, float64, float64, float64, float64)
+# cryptorun/out/review/stage_20250906_133751/internal/infrastructure/websocket
+out\review\stage_20250906_133751\internal\infrastructure\websocket\normalizers.go:184:2: struct field Count repeats json tag "c" also at normalizers.go:173
+# cryptorun/out/review/stage_20250906_133751/internal/spec
+vet.exe: out\review\stage_20250906_133751\internal\spec\factor_hierarchy.go:140:3: unknown field Volatility in struct literal of type pipeline.FactorSet
+# cryptorun/tests/conformance
+# [cryptorun/tests/conformance]
+vet.exe: tests\conformance\momentum_protection_test.go:68:6: declared and not used: i
+# cryptorun/tests/empirical
+# [cryptorun/tests/empirical]
+vet.exe: tests\empirical\gate_alignment_test.go:69:2: declared and not used: analysis4h
+# cryptorun/tests/system/premove
+# [cryptorun/tests/system/premove]
+vet.exe: tests\system\premove\risk_filters_test.go:23:5: unknown field Symbol in struct literal of type microstructure.EvaluationResult
+# cryptorun/tests/integration/premove
+# [cryptorun/tests/integration/premove]
+vet.exe: tests\integration\premove\backtest_pit_test.go:18:21: undefined: premove.NewPITRecordLoader
+# cryptorun/tests/unit/exits
+# [cryptorun/tests/unit/exits]
+vet.exe: tests\unit\exits\exit_logic_test.go:20:3: unknown field HardStopPrice in struct literal of type "cryptorun/internal/exits".ExitInputs
+# cryptorun/tests/unit/catalyst
+# [cryptorun/tests/unit/catalyst]
+vet.exe: tests\unit\catalyst\heat_test.go:407:14: undefined: fmt
+# cryptorun/tests/unit/premove
+# [cryptorun/tests/unit/premove]
+vet.exe: tests\unit\premove\alerts_test.go:435:4: unknown field MaxAlertsPerHour in struct literal of type "cryptorun/src/application/premove".FatigueConfig

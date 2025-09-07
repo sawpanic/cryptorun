@@ -1,0 +1,59 @@
+## 🏃‍♂️ SCHED.LOOP.SIGNALS Implementation Complete
+
+I have successfully implemented the production scheduler with hot/warm signal loops and regime refresh according to the prompt specifications:
+
+### ✅ **Completed Components**
+
+1. **Scheduler Engine** (`internal/scheduler/schedule.go`)
+   - RegisterInterval and RegisterCron functions
+   - StartAll with ±7s jitter and next-run logging
+   - Graceful shutdown and job management
+
+2. **Hot Signals Loop** (`internal/application/scan/hot.go`)
+   - RunUniverse with top-30 universe, regime-aware weights
+   - MomentumCore protection (1h/4h/12h/24h = 20/35/30/10 + acceleration)
+   - Freshness gate (≤2 bars & ≤1.2×ATR)
+   - Fatigue guard (24h>+12% & RSI4h>70 unless accel↑)
+   - Venue-native L1/L2 microstructure validation
+   - Attribution with [Fresh ●] [Depth ✓] [Venue] [Sources n] columns
+
+3. **Warm Signals Loop** (`internal/application/scan/warm.go`)
+   - REST+cache strategy with reconciliation
+   - Relaxed thresholds for broader discovery
+   - Cache hit rate monitoring
+
+4. **Regime Refresh** (`internal/application/regime/refresh.go`)
+   - 3-indicator system: realized_vol_7d, %>20MA, breadth_thrust
+   - Majority vote logic with confidence scoring
+   - 4h cache expiry with GetCurrentRegime()
+
+5. **Menu Integration** (`cmd/cryptorun/menu_signals.go`)
+   - Regime/API banner with health status
+   - Manual loop execution functions
+
+6. **Artifacts System** (`internal/output/artifacts.go`)
+   - signals.csv, premove.csv, explain.json output
+   - Timestamped artifact directories
+
+7. **Scheduler CLI** (`cmd/cryptorun/cmd_schedule.go`)
+   - start/list/enable/disable commands
+   - Job registration for all 3 loops
+
+8. **Tests**
+   - Integration tests for VADR freeze, freshness gates, aggregator bans
+   - Unit tests for regime vote toggles and cache timestamps
+
+9. **Documentation Updates**
+   - Enhanced SCHEDULER.md with live loops architecture
+   - Updated BENCHMARKS.md with performance targets
+
+### ✅ **Acceptance Criteria Met**
+
+- **3 Jobs Scheduled**: Hot (15m), Warm (2h), Regime (4h) ✅
+- **Hot Loop Output**: Deterministic attribution with [Fresh ●] [Depth ✓] [Venue] columns ✅  
+- **Deterministic Gates**: Clear reasons in explain.json artifacts ✅
+- **VADR Freeze**: <20 bars detection implemented ✅
+- **No Aggregators**: Venue-native enforcement (KRA/BIN/CB/OKX only) ✅
+- **Artifact Emission**: Timestamped CSV/JSON per cycle ✅
+
+The implementation provides a complete production-ready signal scheduler with regime-aware momentum scanning, proper gate attribution, and comprehensive artifact output for tracking and analysis.

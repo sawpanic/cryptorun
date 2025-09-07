@@ -1,0 +1,138 @@
+./CHANGELOG.md:- **Premove Application Layer** (src/application/premove/) with empty shells and TODO blocks
+./CHANGELOG.md:- **docs/PREMOVE_TODO.md** tracking implementation rooms and acceptance criteria
+./CHANGELOG.md:- Created empty compilable shells with comprehensive TODO blocks
+./CHANGELOG.md:- **Phase -1 Mandatory**: No-stub gate now blocks deployment on any TODO/STUB/scaffold patterns
+./CHANGELOG.md:SCAFFOLD_PURGE_CORE: Eliminated all TODO/STUB/scaffold markers from core algorithm code (internal/algo/**) and scan pipelines (internal/scan/pipeline/**) without changing public behavior. Removed 3 scaffold patterns from scoring.go and fatigue.go while preserving identical functionality and test outcomes.
+./CHANGELOG.md:- **internal/application/pipeline/scoring.go**: Removed TODO comments from normalizeVolumeScore and normalizeVolatilityScore functions
+./CHANGELOG.md:- **internal/domain/fatigue.go**: Removed TODO(QA) comment while preserving fatigue guard specification
+./CHANGELOG.md:- TODO/STUB markers throughout domain logic indicating unfinished business requirements
+./CHANGELOG.md:  - Pattern detection: `panic("not implemented")`, `TODO`, `FIXME`, `STUB`, `NotImplemented`, `dummy implementation`
+./CHANGELOG.md:  - Single red FAIL: `❌ FAIL SCAFFOLDS_FOUND +hint: remove TODO/STUB/not-implemented`
+./CHANGELOG.md:- **No Scaffolds Enforcement**: Hard fail on any stub/TODO patterns in production code
+./CHANGELOG.md:  - **TODO Comments**: Placeholders for illiquidity and capping flag usage in factor metadata
+./docs/ALGO.md:Removed TODO/stub markers from core algorithm and pipeline code (internal/algo/**, internal/scan/pipeline/**) without behavior changes. All existing functionality preserved with identical test outputs.
+./docs/PREMOVE_TODO.md:# Premove Implementation TODO
+./docs/PREMOVE_TODO.md:**Status:** Empty shell with TODOs  
+./docs/PREMOVE_TODO.md:**Status:** Empty shell with TODOs  
+./docs/PREMOVE_TODO.md:**Status:** Empty shell with TODOs  
+./docs/PREMOVE_TODO.md:**Status:** Empty shell with TODOs  
+./docs/PREMOVE_TODO.md:**Next Step:** Implement test suites, then fill the TODO blocks to complete the milestones.
+./docs/QA.md:- **Patterns Blocked**: TODO, FIXME, STUB, NotImplemented, "panic(not implemented)", "dummy implementation", "return nil // TODO"
+./docs/QA.md:  - `TODO`, `FIXME`, `STUB` comments
+./docs/QA.md:  - `return nil // TODO`, `// TODO:`, `// FIXME:`
+./docs/QA.md:❌ FAIL SCAFFOLDS_FOUND +hint: remove TODO/STUB/not-implemented
+./docs/QA.md:**Solution**: Remove or implement all TODO, FIXME, STUB, and `panic("not implemented")` patterns
+./docs/QA.md:- Pattern types: TODO (24), STUB (58), FIXME (2), NotImplemented (1)
+./docs/QA.md:   - Resolve all TODO/STUB/FIXME markers
+./exchanges/coinbase/book_stub.go:// TODO: Implement Coinbase WS orderbook provider
+./exchanges/okx/book_stub.go:// TODO: Implement OKX WS orderbook provider
+./internal/microstructure/checker.go:	// TODO: Implement proper VADR calculation with historical volume data
+./internal/microstructure/proofs.go:		RequiredValue: 50.0, // TODO: Make configurable
+./internal/microstructure/proofs.go:		RequiredValue: 100000, // TODO: Make configurable
+./internal/microstructure/proofs.go:		RequiredValue: 1.75, // TODO: Make configurable
+./internal/qa/nostub_gate.go:	regexp.MustCompile(`(?i)TODO`),
+./internal/qa/nostub_gate.go:	regexp.MustCompile(`(?i)FIXME`),
+./internal/qa/nostub_gate.go:	regexp.MustCompile(`(?i)return nil\s*//\s*TODO`),
+./internal/qa/nostub_gate.go:	"TODO",
+./internal/qa/nostub_gate.go:	"FIXME",
+./internal/qa/runner.go:		result.Hint = "Remove TODO/STUB/not-implemented patterns from non-test Go files before QA execution"
+./internal/qa/runner.go:		fmt.Printf("❌ FAIL SCAFFOLDS_FOUND +hint: remove TODO/STUB/not-implemented\n")
+./internal/spec/factors.go:	// TODO(QA): real factor graph per mission.md (Momentum protected)
+./internal/spec/microstructure.go:	// TODO(QA): enforce venue-native L1/L2 (Kraken/OKX/Coinbase)
+./internal/spec/social_cap.go:	// TODO(QA): cap brand/social ≤ +10 pts AFTER residuals
+./out/bench/calibration/proposal.md:- ✅ No new stubs or TODOs introduced
+./out/review/stage_20250906_133751/CHANGELOG.md:- **Phase -1 Mandatory**: No-stub gate now blocks deployment on any TODO/STUB/scaffold patterns
+./out/review/stage_20250906_133751/CHANGELOG.md:SCAFFOLD_PURGE_CORE: Eliminated all TODO/STUB/scaffold markers from core algorithm code (internal/algo/**) and scan pipelines (internal/scan/pipeline/**) without changing public behavior. Removed 3 scaffold patterns from scoring.go and fatigue.go while preserving identical functionality and test outcomes.
+./out/review/stage_20250906_133751/CHANGELOG.md:- **internal/application/pipeline/scoring.go**: Removed TODO comments from normalizeVolumeScore and normalizeVolatilityScore functions
+./out/review/stage_20250906_133751/CHANGELOG.md:- **internal/domain/fatigue.go**: Removed TODO(QA) comment while preserving fatigue guard specification
+./out/review/stage_20250906_133751/CHANGELOG.md:- TODO/STUB markers throughout domain logic indicating unfinished business requirements
+./out/review/stage_20250906_133751/CHANGELOG.md:  - Pattern detection: `panic("not implemented")`, `TODO`, `FIXME`, `STUB`, `NotImplemented`, `dummy implementation`
+./out/review/stage_20250906_133751/CHANGELOG.md:  - Single red FAIL: `❌ FAIL SCAFFOLDS_FOUND +hint: remove TODO/STUB/not-implemented`
+./out/review/stage_20250906_133751/CHANGELOG.md:- **No Scaffolds Enforcement**: Hard fail on any stub/TODO patterns in production code
+./out/review/stage_20250906_133751/CHANGELOG.md:  - **TODO Comments**: Placeholders for illiquidity and capping flag usage in factor metadata
+./out/review/stage_20250906_133751/docs/ALGO.md:Removed TODO/stub markers from core algorithm and pipeline code (internal/algo/**, internal/scan/pipeline/**) without behavior changes. All existing functionality preserved with identical test outputs.
+./out/review/stage_20250906_133751/docs/QA.md:- **Patterns Blocked**: TODO, FIXME, STUB, NotImplemented, "panic(not implemented)", "dummy implementation", "return nil // TODO"
+./out/review/stage_20250906_133751/docs/QA.md:  - `TODO`, `FIXME`, `STUB` comments
+./out/review/stage_20250906_133751/docs/QA.md:  - `return nil // TODO`, `// TODO:`, `// FIXME:`
+./out/review/stage_20250906_133751/docs/QA.md:❌ FAIL SCAFFOLDS_FOUND +hint: remove TODO/STUB/not-implemented
+./out/review/stage_20250906_133751/docs/QA.md:**Solution**: Remove or implement all TODO, FIXME, STUB, and `panic("not implemented")` patterns
+./out/review/stage_20250906_133751/docs/QA.md:- Pattern types: TODO (24), STUB (58), FIXME (2), NotImplemented (1)
+./out/review/stage_20250906_133751/docs/QA.md:   - Resolve all TODO/STUB/FIXME markers
+./out/review/stage_20250906_133751/internal/qa/nostub_gate.go:	regexp.MustCompile(`(?i)TODO`),
+./out/review/stage_20250906_133751/internal/qa/nostub_gate.go:	regexp.MustCompile(`(?i)FIXME`),
+./out/review/stage_20250906_133751/internal/qa/nostub_gate.go:	regexp.MustCompile(`(?i)return nil\s*//\s*TODO`),
+./out/review/stage_20250906_133751/internal/qa/nostub_gate.go:	"TODO",
+./out/review/stage_20250906_133751/internal/qa/nostub_gate.go:	"FIXME",
+./out/review/stage_20250906_133751/internal/qa/runner.go:		result.Hint = "Remove TODO/STUB/not-implemented patterns from non-test Go files before QA execution"
+./out/review/stage_20250906_133751/internal/qa/runner.go:		fmt.Printf("❌ FAIL SCAFFOLDS_FOUND +hint: remove TODO/STUB/not-implemented\n")
+./out/review/stage_20250906_133751/internal/spec/factors.go:	// TODO(QA): real factor graph per mission.md (Momentum protected)
+./out/review/stage_20250906_133751/internal/spec/microstructure.go:	// TODO(QA): enforce venue-native L1/L2 (Kraken/OKX/Coinbase)
+./out/review/stage_20250906_133751/internal/spec/social_cap.go:	// TODO(QA): cap brand/social ≤ +10 pts AFTER residuals
+./out/review/stage_20250906_135049/CHANGELOG.md:- **Phase -1 Mandatory**: No-stub gate now blocks deployment on any TODO/STUB/scaffold patterns
+./out/review/stage_20250906_135049/CHANGELOG.md:SCAFFOLD_PURGE_CORE: Eliminated all TODO/STUB/scaffold markers from core algorithm code (internal/algo/**) and scan pipelines (internal/scan/pipeline/**) without changing public behavior. Removed 3 scaffold patterns from scoring.go and fatigue.go while preserving identical functionality and test outcomes.
+./out/review/stage_20250906_135049/CHANGELOG.md:- **internal/application/pipeline/scoring.go**: Removed TODO comments from normalizeVolumeScore and normalizeVolatilityScore functions
+./out/review/stage_20250906_135049/CHANGELOG.md:- **internal/domain/fatigue.go**: Removed TODO(QA) comment while preserving fatigue guard specification
+./out/review/stage_20250906_135049/CHANGELOG.md:- TODO/STUB markers throughout domain logic indicating unfinished business requirements
+./out/review/stage_20250906_135049/CHANGELOG.md:  - Pattern detection: `panic("not implemented")`, `TODO`, `FIXME`, `STUB`, `NotImplemented`, `dummy implementation`
+./out/review/stage_20250906_135049/CHANGELOG.md:  - Single red FAIL: `❌ FAIL SCAFFOLDS_FOUND +hint: remove TODO/STUB/not-implemented`
+./out/review/stage_20250906_135049/CHANGELOG.md:- **No Scaffolds Enforcement**: Hard fail on any stub/TODO patterns in production code
+./out/review/stage_20250906_135049/CHANGELOG.md:  - **TODO Comments**: Placeholders for illiquidity and capping flag usage in factor metadata
+./out/review/stage_20250906_135049/docs/ALGO.md:Removed TODO/stub markers from core algorithm and pipeline code (internal/algo/**, internal/scan/pipeline/**) without behavior changes. All existing functionality preserved with identical test outputs.
+./out/review/stage_20250906_135049/docs/QA.md:- **Patterns Blocked**: TODO, FIXME, STUB, NotImplemented, "panic(not implemented)", "dummy implementation", "return nil // TODO"
+./out/review/stage_20250906_135049/docs/QA.md:  - `TODO`, `FIXME`, `STUB` comments
+./out/review/stage_20250906_135049/docs/QA.md:  - `return nil // TODO`, `// TODO:`, `// FIXME:`
+./out/review/stage_20250906_135049/docs/QA.md:❌ FAIL SCAFFOLDS_FOUND +hint: remove TODO/STUB/not-implemented
+./out/review/stage_20250906_135049/docs/QA.md:**Solution**: Remove or implement all TODO, FIXME, STUB, and `panic("not implemented")` patterns
+./out/review/stage_20250906_135049/docs/QA.md:- Pattern types: TODO (24), STUB (58), FIXME (2), NotImplemented (1)
+./out/review/stage_20250906_135049/docs/QA.md:   - Resolve all TODO/STUB/FIXME markers
+./out/review/stage_20250906_135049/internal/qa/nostub_gate.go:	regexp.MustCompile(`(?i)TODO`),
+./out/review/stage_20250906_135049/internal/qa/nostub_gate.go:	regexp.MustCompile(`(?i)FIXME`),
+./out/review/stage_20250906_135049/internal/qa/nostub_gate.go:	regexp.MustCompile(`(?i)return nil\s*//\s*TODO`),
+./out/review/stage_20250906_135049/internal/qa/nostub_gate.go:	"TODO",
+./out/review/stage_20250906_135049/internal/qa/nostub_gate.go:	"FIXME",
+./out/review/stage_20250906_135049/internal/qa/runner.go:		result.Hint = "Remove TODO/STUB/not-implemented patterns from non-test Go files before QA execution"
+./out/review/stage_20250906_135049/internal/qa/runner.go:		fmt.Printf("❌ FAIL SCAFFOLDS_FOUND +hint: remove TODO/STUB/not-implemented\n")
+./out/review/stage_20250906_135049/internal/spec/factors.go:	// TODO(QA): real factor graph per mission.md (Momentum protected)
+./out/review/stage_20250906_135049/internal/spec/microstructure.go:	// TODO(QA): enforce venue-native L1/L2 (Kraken/OKX/Coinbase)
+./out/review/stage_20250906_135049/internal/spec/social_cap.go:	// TODO(QA): cap brand/social ≤ +10 pts AFTER residuals
+./out/review/stage_20250906_135049/tests/unit/providers_guard_test.go:	// TODO: Implement when metrics package is available
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:	// Create a fake Go file with a TODO
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:	// TODO: implement this function properly
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:	foundTODO := false
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:			foundTODO = true
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:	if !foundTODO {
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:		t.Error("TODO pattern not detected")
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:	// TODO: write actual test
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:	// Create a regular Go file with TODO
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:	// TODO: implement
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:	// Should only detect TODO in regular file, not test file
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:	// FIXME: this is a stub implementation
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:	// TODO: implement this
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:	// FIXME: broken logic
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:	return nil // TODO
+./out/review/stage_20250906_135049/tests/unit/qa_nostub_gate_test.go:	// TODO: refactor this code
+./src/application/premove/backtest.go:// TODO: Implement backtesting functionality for premove strategies
+./src/application/premove/backtest.go:	// TODO: Add fields for historical data, pattern tracking, learning metrics
+./src/application/premove/backtest.go:	// TODO: Initialize with configuration from config/premove.yaml
+./src/application/premove/backtest.go:	// TODO: Implement backtesting logic
+./src/application/premove/backtest.go:	// TODO: Implement pattern exhaustion detection
+./src/application/premove/backtest.go:	// TODO: Return backtesting performance results
+./src/cmd/cryptorun/cmd_optimize.go:// TODO: add optimize command when rootCmd is available
+./tests/unit/providers_guard_test.go:	// TODO: Implement when metrics package is available
+./tests/unit/qa_nostub_gate_test.go:	// Create a fake Go file with a TODO
+./tests/unit/qa_nostub_gate_test.go:	// TODO: implement this function properly
+./tests/unit/qa_nostub_gate_test.go:	foundTODO := false
+./tests/unit/qa_nostub_gate_test.go:			foundTODO = true
+./tests/unit/qa_nostub_gate_test.go:	if !foundTODO {
+./tests/unit/qa_nostub_gate_test.go:		t.Error("TODO pattern not detected")
+./tests/unit/qa_nostub_gate_test.go:	// TODO: write actual test
+./tests/unit/qa_nostub_gate_test.go:	// Create a regular Go file with TODO
+./tests/unit/qa_nostub_gate_test.go:	// TODO: implement
+./tests/unit/qa_nostub_gate_test.go:	// Should only detect TODO in regular file, not test file
+./tests/unit/qa_nostub_gate_test.go:	// FIXME: this is a stub implementation
+./tests/unit/qa_nostub_gate_test.go:	// TODO: implement this
+./tests/unit/qa_nostub_gate_test.go:	// FIXME: broken logic
+./tests/unit/qa_nostub_gate_test.go:	return nil // TODO
+./tests/unit/qa_nostub_gate_test.go:	// TODO: refactor this code
+./_codereview/CryptoEdge/validation/error_prevention_protocol.md:#### **3. QUIT BUGS & AUTOSELECT ELIMINATION**
+./_codereview/CryptoEdge/validation/forensic_investigation_report.md:- **TODO/FIXME Accumulation:** Multiple unaddressed technical debt markers

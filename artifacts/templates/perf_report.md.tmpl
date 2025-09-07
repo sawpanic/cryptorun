@@ -1,0 +1,81 @@
+# Performance Report
+
+**Analysis Period**: {{.StartDate}} to {{.EndDate}} ({{.TotalDays}} days)  
+**Generated**: {{.GeneratedAt}}
+
+## Executive Summary
+
+{{if gt .Sharpe 1.0}}✅{{else}}⚠️{{end}} **Sharpe Ratio**: {{printf "%.2f" .Sharpe}} {{if lt .Sharpe 1.0}}(Below target of 1.0){{end}}  
+{{if lt .MaxDrawdown 0.20}}✅{{else}}⚠️{{end}} **Max Drawdown**: {{printf "%.2f%%" (.MaxDrawdown | times 100)}} {{if gt .MaxDrawdown 0.20}}(Exceeds 20% limit){{end}}  
+{{if gt .HitRate 0.50}}✅{{else}}⚠️{{end}} **Hit Rate**: {{printf "%.2f%%" (.HitRate | times 100)}} {{if lt .HitRate 0.50}}(Below 50%){{end}}
+
+## P&L Analysis
+
+| **Metric** | **Value** | **Notes** |
+|------------|-----------|-----------|
+| **Specification P&L** | ${{printf "%.2f" .SpecPnL}} | P&L per strategy specifications |
+| **Raw P&L** | ${{printf "%.2f" .RawPnL}} | P&L before costs |
+| **Net P&L** | ${{printf "%.2f" .NetPnL}} | P&L after fees and slippage |
+| **Total Fees** | ${{printf "%.2f" .TotalFees}} | {{printf "%.2f%%" (div .TotalFees .RawPnL | times 100)}} of gross P&L |
+| **Total Slippage** | ${{printf "%.2f" .TotalSlippage}} | {{printf "%.2f%%" (div .TotalSlippage .RawPnL | times 100)}} of gross P&L |
+
+## Return Metrics
+
+| **Metric** | **Value** | **Annualized** |
+|------------|-----------|----------------|
+| **Total Return** | {{printf "%.2f%%" (.TotalReturn | times 100)}} | {{printf "%.2f%%" (.AnnualizedReturn | times 100)}} |
+| **Exposure Weighted** | {{printf "%.2f%%" (.ExposureWeightedReturn | times 100)}} | - |
+
+## Risk-Adjusted Performance
+
+| **Metric** | **Value** | **Benchmark** | **Status** |
+|------------|-----------|---------------|------------|
+| **Sharpe Ratio** | {{printf "%.2f" .Sharpe}} | 1.00+ | {{if gt .Sharpe 1.0}}✅ Pass{{else}}❌ Fail{{end}} |
+| **Sortino Ratio** | {{printf "%.2f" .Sortino}} | - | - |
+| **Calmar Ratio** | {{printf "%.2f" .Calmar}} | - | - |
+| **Max Drawdown** | {{printf "%.2f%%" (.MaxDrawdown | times 100)}} | <20% | {{if lt .MaxDrawdown 0.20}}✅ Pass{{else}}❌ Fail{{end}} |
+| **Max DD Duration** | {{.MaxDrawdownDays}} days | - | - |
+| **Volatility** | {{printf "%.2f%%" (.Volatility | times 100)}} | - | - |
+| **Downside Vol** | {{printf "%.2f%%" (.DownsideVol | times 100)}} | - | - |
+
+## Trade Analysis
+
+### Trade Statistics
+- **Total Trades**: {{.TotalTrades}}
+- **Winning Trades**: {{.WinningTrades}} ({{printf "%.1f%%" (.HitRate | times 100)}})
+- **Losing Trades**: {{.LosingTrades}} ({{printf "%.1f%%" (sub 1 .HitRate | times 100)}})
+
+### Trade Quality Metrics
+| **Metric** | **Value** | **Notes** |
+|------------|-----------|-----------|
+| **Hit Rate** | {{printf "%.2f%%" (.HitRate | times 100)}} | Percentage of winning trades |
+| **Win/Loss Ratio** | {{printf "%.2f" .WinLossRatio}} | Average win ÷ average loss |
+| **Profit Factor** | {{printf "%.2f" .ProfitFactor}} | Gross profit ÷ gross loss |
+| **Average Win** | ${{printf "%.2f" .AvgWin}} | Average winning trade P&L |
+| **Average Loss** | ${{printf "%.2f" .AvgLoss}} | Average losing trade P&L |
+
+{{if .Alerts}}
+## 🚨 Performance Alerts
+
+{{range .Alerts}}
+- **{{.Type}}**: {{.Message}}
+{{end}}
+{{end}}
+
+## Key Performance Insights
+
+### Strengths
+{{if gt .Sharpe 1.0}}- ✅ **Strong risk-adjusted returns** with Sharpe ratio of {{printf "%.2f" .Sharpe}}{{end}}
+{{if gt .HitRate 0.55}}- ✅ **High hit rate** of {{printf "%.1f%%" (.HitRate | times 100)}} indicates good trade selection{{end}}
+{{if gt .ProfitFactor 1.5}}- ✅ **Strong profit factor** of {{printf "%.2f" .ProfitFactor}} shows good risk/reward{{end}}
+
+### Areas for Improvement
+{{if lt .Sharpe 1.0}}- ⚠️ **Low Sharpe ratio** of {{printf "%.2f" .Sharpe}} suggests poor risk-adjusted returns{{end}}
+{{if gt .MaxDrawdown 0.15}}- ⚠️ **High drawdown** of {{printf "%.1f%%" (.MaxDrawdown | times 100)}} may indicate excessive risk{{end}}
+{{if lt .HitRate 0.45}}- ⚠️ **Low hit rate** of {{printf "%.1f%%" (.HitRate | times 100)}} suggests need for better entry signals{{end}}
+
+---
+
+**Report Generation**: CryptoRun v3.2.1 Performance Analytics  
+**Calculation Method**: {{if .IncludeFees}}Fees included{{else}}Fees excluded{{end}}, {{if .IncludeSlippage}}Slippage included{{else}}Slippage excluded{{end}}  
+**Risk-Free Rate**: {{printf "%.2f%%" (.RiskFreeRate | times 100)}} (used for Sharpe calculation)

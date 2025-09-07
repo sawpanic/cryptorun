@@ -1,0 +1,29 @@
+# Data Facade Circuit Breaker Configuration
+# Fault tolerance and automatic recovery
+
+circuit_breakers:
+  enabled: true
+  
+  # Global circuit breaker settings
+  global:
+    default_timeout: 60s
+    default_max_requests: 3  # Max requests in half-open state
+    default_interval: 10s    # Minimum time between state checks
+    
+# Per-venue circuit breaker configuration
+venues:
+  binance:
+    # HTTP endpoints
+    http:
+      failure_threshold: 5        # Open after 5 consecutive failures
+      success_threshold: 3        # Close after 3 consecutive successes  
+      timeout: 30s               # Stay open for 30s
+      max_requests: 5            # Max requests in half-open
+      interval: 5s               # Check interval
+      
+      # What counts as a failure
+      failure_conditions:
+        - "status >= 500"         # 5xx errors
+        - "status == 429"         # Rate limiting
+        - "timeout"               # Request timeout
+        - "connection_error"      # Network issues

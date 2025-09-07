@@ -1,0 +1,23 @@
+REDACTION REPORT
+================
+Generated: 2025-09-07T09:08:56Z
+Staging Directory: C:\CryptoRun\artifacts\handoff\20250907_120214\staging
+
+SUMMARY:
+- Total files copied: 323
+- Files with redactions: 1
+- Total redactions applied: 1
+
+REDACTION DETAILS:
+- config/cache.yaml: 1 replacement
+  * Replaced Redis connection string with [REDACTED] placeholder
+
+NOTES:
+All configuration files were processed to remove sensitive information including:
+- Database connection strings
+- API keys and secrets
+- Internal network addresses
+- Authentication tokens
+
+The redacted files maintain their structure and functionality while protecting
+sensitive deployment-specific information.

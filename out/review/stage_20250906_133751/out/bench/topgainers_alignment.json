@@ -1,0 +1,110 @@
+{
+  "timestamp": "2025-09-06T13:32:48.670136+03:00",
+  "overall_alignment": 0.6,
+  "window_alignments": {
+    "1h": {
+      "window": "1h",
+      "score": 0.6,
+      "matches": 3,
+      "total": 5,
+      "details": "Found 3 matches out of 5 top gainers"
+    },
+    "24h": {
+      "window": "24h",
+      "score": 0.6,
+      "matches": 3,
+      "total": 5,
+      "details": "Found 3 matches out of 5 top gainers"
+    }
+  },
+  "top_gainers": {
+    "1h": [
+      {
+        "id": "btc",
+        "symbol": "BTC",
+        "name": "BTC Token",
+        "price_change_percentage": "15.00"
+      },
+      {
+        "id": "eth",
+        "symbol": "ETH",
+        "name": "ETH Token",
+        "price_change_percentage": "14.20"
+      },
+      {
+        "id": "ada",
+        "symbol": "ADA",
+        "name": "ADA Token",
+        "price_change_percentage": "13.40"
+      },
+      {
+        "id": "sol",
+        "symbol": "SOL",
+        "name": "SOL Token",
+        "price_change_percentage": "12.60"
+      },
+      {
+        "id": "dot",
+        "symbol": "DOT",
+        "name": "DOT Token",
+        "price_change_percentage": "11.80"
+      }
+    ],
+    "24h": [
+      {
+        "id": "btc",
+        "symbol": "BTC",
+        "name": "BTC Token",
+        "price_change_percentage": "45.00"
+      },
+      {
+        "id": "eth",
+        "symbol": "ETH",
+        "name": "ETH Token",
+        "price_change_percentage": "42.80"
+      },
+      {
+        "id": "ada",
+        "symbol": "ADA",
+        "name": "ADA Token",
+        "price_change_percentage": "40.60"
+      },
+      {
+        "id": "sol",
+        "symbol": "SOL",
+        "name": "SOL Token",
+        "price_change_percentage": "38.40"
+      },
+      {
+        "id": "dot",
+        "symbol": "DOT",
+        "name": "DOT Token",
+        "price_change_percentage": "36.20"
+      }
+    ]
+  },
+  "scan_results": {
+    "1h": [
+      "BTC",
+      "ETH",
+      "SOL",
+      "MATIC",
+      "AVAX"
+    ],
+    "24h": [
+      "BTC",
+      "ADA",
+      "DOT",
+      "LINK",
+      "ALGO"
+    ],
+    "7d": [
+      "ETH",
+      "SOL",
+      "MATIC",
+      "UNI",
+      "ATOM"
+    ]
+  },
+  "methodology": "CryptoRun TopGainers Benchmark v3.2.1 with CoinGecko trending indices"
+}

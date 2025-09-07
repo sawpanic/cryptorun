@@ -1,0 +1,235 @@
+{
+  "analysis_timestamp": "2025-09-06T13:35:00+03:00",
+  "benchmark_timestamp": "2025-09-06T13:32:48+03:00",
+  "overall_alignment": 0.60,
+  "methodology": "Granular hit/miss analysis with gate attribution",
+  "window_analysis": {
+    "1h": {
+      "alignment_score": 0.60,
+      "total_gainers": 5,
+      "total_matches": 3,
+      "hits": [
+        {
+          "symbol": "BTC",
+          "gainer_rank": 1,
+          "scan_rank": 1,
+          "rank_diff": 0,
+          "gain_percentage": 15.00,
+          "status": "HIT",
+          "reason": "Perfect rank match - top gainer and top scan result"
+        },
+        {
+          "symbol": "ETH",
+          "gainer_rank": 2,
+          "scan_rank": 2,
+          "rank_diff": 0,
+          "gain_percentage": 14.20,
+          "status": "HIT",
+          "reason": "Perfect rank match - momentum scanner aligned"
+        },
+        {
+          "symbol": "SOL",
+          "gainer_rank": 4,
+          "scan_rank": 3,
+          "rank_diff": -1,
+          "gain_percentage": 12.60,
+          "status": "HIT",
+          "reason": "Close rank match - scanner prioritized slightly higher"
+        }
+      ],
+      "misses": [
+        {
+          "symbol": "ADA",
+          "gainer_rank": 3,
+          "gain_percentage": 13.40,
+          "status": "MISS",
+          "primary_reason": "freshness_guard",
+          "secondary_reason": "volume_gate",
+          "explanation": "Signal freshness >2 bars old, volume multiple 1.65x < 1.75x threshold",
+          "momentum_score": 2.8,
+          "guards_failed": ["freshness_guard"],
+          "gates_failed": ["volume_gate"],
+          "config_tweak": "Reduce freshness.max_bars_age to 3 OR reduce entry.volume_multiple to 1.6"
+        },
+        {
+          "symbol": "DOT",
+          "gainer_rank": 5,
+          "gain_percentage": 11.80,
+          "status": "MISS",
+          "primary_reason": "score_gate",
+          "secondary_reason": "adx_gate",
+          "explanation": "Momentum score 2.3 < 2.5 minimum, ADX 22.5 < 25.0 threshold",
+          "momentum_score": 2.3,
+          "guards_failed": [],
+          "gates_failed": ["score_gate", "adx_gate"],
+          "config_tweak": "Reduce entry.min_score to 2.0 OR reduce entry.adx_threshold to 22.0"
+        }
+      ]
+    },
+    "24h": {
+      "alignment_score": 0.60,
+      "total_gainers": 5,
+      "total_matches": 3,
+      "hits": [
+        {
+          "symbol": "BTC",
+          "gainer_rank": 1,
+          "scan_rank": 1,
+          "rank_diff": 0,
+          "gain_percentage": 45.00,
+          "status": "HIT",
+          "reason": "Perfect rank match - dominant in both lists"
+        },
+        {
+          "symbol": "ADA",
+          "gainer_rank": 3,
+          "scan_rank": 2,
+          "rank_diff": -1,
+          "gain_percentage": 40.60,
+          "status": "HIT",
+          "reason": "Strong momentum signal outranked market position"
+        },
+        {
+          "symbol": "DOT",
+          "gainer_rank": 5,
+          "scan_rank": 3,
+          "rank_diff": -2,
+          "gain_percentage": 36.20,
+          "status": "HIT",
+          "reason": "Scanner identified undervalued momentum before market"
+        }
+      ],
+      "misses": [
+        {
+          "symbol": "ETH",
+          "gainer_rank": 2,
+          "gain_percentage": 42.80,
+          "status": "MISS",
+          "primary_reason": "fatigue_guard",
+          "secondary_reason": "rsi_threshold",
+          "explanation": "24h return 18.5% > 12% threshold, RSI4h 74.2 > 70.0, no acceleration renewal",
+          "momentum_score": 4.2,
+          "guards_failed": ["fatigue_guard"],
+          "gates_failed": [],
+          "config_tweak": "Increase fatigue.return_24h_threshold to 20% OR ensure accel_renewal active"
+        },
+        {
+          "symbol": "SOL",
+          "gainer_rank": 4,
+          "gain_percentage": 38.40,
+          "status": "MISS",
+          "primary_reason": "late_fill_guard",
+          "secondary_reason": "execution_delay",
+          "explanation": "Signal arrived 45s after bar close > 30s max delay threshold",
+          "momentum_score": 3.8,
+          "guards_failed": ["late_fill_guard"],
+          "gates_failed": [],
+          "config_tweak": "Increase late_fill.max_delay_seconds to 60 (within PRD bounds)"
+        }
+      ]
+    }
+  },
+  "correlation_stats": {
+    "kendall_tau": {
+      "1h": 0.67,
+      "24h": 0.33,
+      "overall": 0.50
+    },
+    "spearman_rho": {
+      "1h": 0.80,
+      "24h": 0.40,
+      "overall": 0.60
+    }
+  },
+  "gate_breakdown": {
+    "total_misses": 4,
+    "primary_reasons": {
+      "freshness_guard": {
+        "count": 1,
+        "percentage": 25.0,
+        "description": "Signal data too stale (>2 bars age)"
+      },
+      "score_gate": {
+        "count": 1,
+        "percentage": 25.0,
+        "description": "Momentum score below minimum threshold (2.5)"
+      },
+      "fatigue_guard": {
+        "count": 1,
+        "percentage": 25.0,
+        "description": "Overextended position (24h return >12%, RSI >70)"
+      },
+      "late_fill_guard": {
+        "count": 1,
+        "percentage": 25.0,
+        "description": "Signal arrived too late (>30s delay)"
+      }
+    },
+    "secondary_reasons": {
+      "volume_gate": {
+        "count": 1,
+        "percentage": 25.0,
+        "description": "Volume surge insufficient (<1.75x multiplier)"
+      },
+      "adx_gate": {
+        "count": 1,
+        "percentage": 25.0,
+        "description": "Trend strength insufficient (<25.0 ADX)"
+      },
+      "rsi_threshold": {
+        "count": 1,
+        "percentage": 25.0,
+        "description": "RSI overbought condition (>70.0)"
+      },
+      "execution_delay": {
+        "count": 1,
+        "percentage": 25.0,
+        "description": "Execution timing constraints"
+      }
+    }
+  },
+  "regime_context": {
+    "current_regime": "trending",
+    "regime_alignment": {
+      "trending": {
+        "alignment_score": 0.60,
+        "notes": "Moderate alignment in trending regime - guards may be too restrictive"
+      }
+    },
+    "regime_impact": "Trending regime should favor momentum signals but guards filtered profitable moves"
+  },
+  "actionable_insights": {
+    "top_improvements": [
+      {
+        "change": "Increase fatigue.return_24h_threshold from 12% to 18%",
+        "impact": "Would recover ETH (42.8% gain) in 24h window",
+        "risk": "May increase false positives in overextended markets"
+      },
+      {
+        "change": "Extend late_fill.max_delay_seconds from 30s to 45s",
+        "impact": "Would recover SOL (38.4% gain) in 24h window",
+        "risk": "Slightly increased execution slippage"
+      },
+      {
+        "change": "Relax freshness.max_bars_age from 2 to 3",
+        "impact": "Would recover ADA (13.4% gain) in 1h window",
+        "risk": "May include stale signals"
+      }
+    ]
+  },
+  "performance_summary": {
+    "total_potential_gains_missed": 134.90,
+    "average_missed_gain_percentage": 33.725,
+    "strongest_missed_opportunity": {
+      "symbol": "ETH",
+      "window": "24h",
+      "gain": 42.80,
+      "reason": "fatigue_guard"
+    },
+    "config_optimization_priority": [
+      "fatigue_guard_thresholds",
+      "late_fill_timing",
+      "freshness_constraints"
+    ]
+  }
+}

@@ -1,0 +1,909 @@
+FAIL	cryptorun/internal/premove [setup failed]
+FAIL	cryptorun [build failed]
+FAIL	cryptorun/cmd/cryptorun [build failed]
+FAIL	cryptorun/cmd/test_server [build failed]
+?   	cryptorun/data	[no test files]
+?   	cryptorun/data/cache	[no test files]
+?   	cryptorun/exchanges/binance	[no test files]
+?   	cryptorun/exchanges/coinbase	[no test files]
+?   	cryptorun/exchanges/kraken	[no test files]
+?   	cryptorun/exchanges/okx	[no test files]
+?   	cryptorun/factors	[no test files]
+?   	cryptorun/infra/breakers	[no test files]
+?   	cryptorun/infra/limits	[no test files]
+?   	cryptorun/infrastructure/market	[no test files]
+?   	cryptorun/interfaces/ui/menu	[no test files]
+?   	cryptorun/internal/adapters	[no test files]
+?   	cryptorun/internal/algo/dip	[no test files]
+?   	cryptorun/internal/algo/momentum	[no test files]
+?   	cryptorun/internal/api	[no test files]
+FAIL	cryptorun/internal/application [build failed]
+?   	cryptorun/internal/application/analyst	[no test files]
+FAIL	cryptorun/internal/application/bench [build failed]
+FAIL	cryptorun/internal/application/guards [build failed]
+FAIL	cryptorun/internal/application/guards/e2e [build failed]
+FAIL	cryptorun/internal/application/guards/testkit [build failed]
+FAIL	cryptorun/internal/application/menu/e2e [build failed]
+?   	cryptorun/internal/application/metrics	[no test files]
+?   	cryptorun/internal/application/optimization	[no test files]
+FAIL	cryptorun/internal/application/pipeline [build failed]
+?   	cryptorun/internal/application/regime	[no test files]
+?   	cryptorun/internal/application/selftest	[no test files]
+?   	cryptorun/internal/application/universe	[no test files]
+FAIL	cryptorun/internal/application/verify [build failed]
+?   	cryptorun/internal/artifacts/compact	[no test files]
+?   	cryptorun/internal/artifacts/gc	[no test files]
+?   	cryptorun/internal/artifacts/manifest	[no test files]
+?   	cryptorun/internal/atomicio	[no test files]
+ok  	cryptorun/internal/backtest/smoke90	(cached)
+?   	cryptorun/internal/bench	[no test files]
+FAIL	cryptorun/internal/bench/common [build failed]
+FAIL	cryptorun/internal/bench/diagnostics [build failed]
+?   	cryptorun/internal/bench/sources	[no test files]
+?   	cryptorun/internal/config	[no test files]
+?   	cryptorun/internal/config/regime	[no test files]
+FAIL	cryptorun/internal/data/derivs [build failed]
+?   	cryptorun/internal/data/etf	[no test files]
+?   	cryptorun/internal/data/venue/binance	[no test files]
+?   	cryptorun/internal/data/venue/coinbase	[no test files]
+?   	cryptorun/internal/data/venue/okx	[no test files]
+?   	cryptorun/internal/data/venue/types	[no test files]
+ok  	cryptorun/internal/datasources	0.896s
+?   	cryptorun/internal/domain	[no test files]
+?   	cryptorun/internal/domain/factors	[no test files]
+FAIL	cryptorun/internal/domain/gates [build failed]
+FAIL	cryptorun/internal/domain/guards [build failed]
+FAIL	cryptorun/internal/domain/microstructure [build failed]
+?   	cryptorun/internal/domain/pairs	[no test files]
+?   	cryptorun/internal/domain/regime	[no test files]
+?   	cryptorun/internal/domain/scoring	[no test files]
+ok  	cryptorun/internal/exits	1.456s
+FAIL	cryptorun/internal/explain [build failed]
+FAIL	cryptorun/internal/explain/delta [build failed]
+FAIL	cryptorun/internal/gates [build failed]
+?   	cryptorun/internal/infrastructure/httpclient	[no test files]
+?   	cryptorun/internal/infrastructure/providers	[no test files]
+?   	cryptorun/internal/infrastructure/websocket	[no test files]
+?   	cryptorun/internal/interfaces/http	[no test files]
+FAIL	cryptorun/internal/interfaces/http/endpoints [build failed]
+?   	cryptorun/internal/io	[no test files]
+?   	cryptorun/internal/log	[no test files]
+?   	cryptorun/internal/metrics	[no test files]
+FAIL	cryptorun/internal/microstructure [build failed]
+--- FAIL: TestTracker_SetLimit (0.00s)
+    budget_test.go:178: Should allow when limit increased above usage: budget warning for : 83.3% used (50/60), threshold 80.0%
+--- FAIL: TestTracker_AutoReset (0.00s)
+    budget_test.go:209: Usage should be reset, got 50
+--- FAIL: TestManager_Allow (0.00s)
+    budget_test.go:249: Should warn at 80% threshold
+FAIL
+FAIL	cryptorun/internal/net/budget	0.344s
+--- FAIL: TestBreaker_Stats (0.00s)
+    circuit_test.go:219: Should be healthy with >90% success rate
+FAIL
+FAIL	cryptorun/internal/net/circuit	0.508s
+?   	cryptorun/internal/net/client	[no test files]
+ok  	cryptorun/internal/net/ratelimit	(cached)
+?   	cryptorun/internal/qa	[no test files]
+?   	cryptorun/internal/regime	[no test files]
+FAIL	cryptorun/internal/reports/regime [build failed]
+?   	cryptorun/internal/scan/pipeline	[no test files]
+?   	cryptorun/internal/scan/progress	[no test files]
+?   	cryptorun/internal/scan/sim	[no test files]
+FAIL	cryptorun/internal/score/composite [build failed]
+ok  	cryptorun/internal/scoring	0.356s
+FAIL	cryptorun/internal/social [build failed]
+FAIL	cryptorun/internal/spec [build failed]
+?   	cryptorun/internal/telemetry/latency	[no test files]
+?   	cryptorun/internal/telemetry/metrics	[no test files]
+?   	cryptorun/internal/telemetry/providers	[no test files]
+FAIL	cryptorun/internal/tune [build failed]
+ok  	cryptorun/internal/tune/data	(cached)
+--- FAIL: TestCoordinateDescent_OptimizeDeterministic (0.00s)
+    coordinate_descent_test.go:40: first optimization failed: failed to clamp initial weights: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+--- FAIL: TestCoordinateDescent_ConvergenceWithinK (0.00s)
+    coordinate_descent_test.go:94: optimization failed: failed to clamp initial weights: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+--- FAIL: TestCoordinateDescent_MonotoneNonWorsening (0.00s)
+    coordinate_descent_test.go:139: optimization failed: failed to clamp initial weights: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+--- FAIL: TestCoordinateDescent_ConstraintsRespected (0.00s)
+    coordinate_descent_test.go:189: optimization failed: failed to clamp initial weights: weights still invalid after clamping: supply_demand total 0.338 outside bounds [0.200, 0.220] for regime normal
+--- FAIL: TestCoordinateDescent_InvalidInitialWeights (0.00s)
+    coordinate_descent_test.go:226: optimization should handle invalid initial weights by clamping: failed to clamp initial weights: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+--- FAIL: TestCoordinateDescent_EarlyStopping (0.00s)
+    coordinate_descent_test.go:267: optimization failed: failed to clamp initial weights: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+--- FAIL: TestCoordinateDescent_StepSizeAdaptation (0.00s)
+    coordinate_descent_test.go:309: optimization failed: failed to clamp initial weights: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+--- FAIL: TestCoordinateDescent_GoldenRegression (0.00s)
+    coordinate_descent_test.go:368: golden regression optimization failed: failed to clamp initial weights: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+--- FAIL: TestValidateOptimizationResult (0.00s)
+    --- FAIL: TestValidateOptimizationResult/valid_result (0.00s)
+        coordinate_descent_test.go:477: unexpected error: best weights violate constraints: supply_demand total 0.375 outside bounds [0.200, 0.220] for regime normal
+    --- FAIL: TestValidateOptimizationResult/objective_worsened (0.00s)
+        coordinate_descent_test.go:481: expected error containing 'worsened objective', got 'best weights violate constraints: supply_demand total 0.375 outside bounds [0.200, 0.220] for regime normal'
+    --- FAIL: TestValidateOptimizationResult/zero_evaluations (0.00s)
+        coordinate_descent_test.go:481: expected error containing 'invalid evaluation count', got 'best weights violate constraints: supply_demand total 0.375 outside bounds [0.200, 0.220] for regime normal'
+--- FAIL: TestGetOptimizationSummary (0.00s)
+    coordinate_descent_test.go:533: expected improvement 0.05, got 0.050000
+    coordinate_descent_test.go:553: expected largest change 0.005, got 0.005000
+    coordinate_descent_test.go:569: Summary test passed: regime=normal, evals=25, improvement=0.050000, largest_change=momentum_core:0.005000
+FAIL
+FAIL	cryptorun/internal/tune/opt	0.361s
+?   	cryptorun/internal/tune/report	[no test files]
+--- FAIL: TestConstraintSystem_ValidateWeights (0.00s)
+    --- FAIL: TestConstraintSystem_ValidateWeights/valid_volatile_regime_weights (0.00s)
+        constraints_test.go:159: unexpected error: supply_demand total 0.370 outside bounds [0.220, 0.280] for regime volatile
+--- FAIL: TestConstraintSystem_ClampWeights (0.00s)
+    --- FAIL: TestConstraintSystem_ClampWeights/clamp_momentum_above_bounds (0.00s)
+        constraints_test.go:241: unexpected error: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+    --- FAIL: TestConstraintSystem_ClampWeights/clamp_momentum_below_bounds (0.00s)
+        constraints_test.go:241: unexpected error: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+    --- FAIL: TestConstraintSystem_ClampWeights/clamp_technical_bounds (0.00s)
+        constraints_test.go:241: unexpected error: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+    --- FAIL: TestConstraintSystem_ClampWeights/clamp_and_renormalize (0.00s)
+        constraints_test.go:241: unexpected error: weights still invalid after clamping: supply_demand total 0.333 outside bounds [0.200, 0.220] for regime normal
+    --- FAIL: TestConstraintSystem_ClampWeights/preserve_quality_minimum (0.00s)
+        constraints_test.go:241: unexpected error: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+--- FAIL: TestConstraintSystem_CalculateSlack (0.00s)
+    constraints_test.go:289: failed to clamp weights: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+--- FAIL: TestConstraintSystem_GenerateRandomValidWeights (0.00s)
+    --- FAIL: TestConstraintSystem_GenerateRandomValidWeights/normal_regime (0.00s)
+        constraints_test.go:334: failed to generate random weights: failed to generate valid weights after 100 attempts
+    --- FAIL: TestConstraintSystem_GenerateRandomValidWeights/volatile_regime (0.00s)
+        constraints_test.go:334: failed to generate random weights: failed to generate valid weights after 100 attempts
+--- FAIL: TestConstraintSystem_AddConstraints (0.00s)
+    constraints_test.go:460: failed to clamp custom weights: weights still invalid after clamping: supply_demand total 0.455 outside bounds [0.400, 0.450] for regime custom
+--- FAIL: TestConstraintSystem_SumTo100Enforcement (0.00s)
+    --- FAIL: TestConstraintSystem_SumTo100Enforcement/case_0 (0.00s)
+        constraints_test.go:557: clamping failed: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+    --- FAIL: TestConstraintSystem_SumTo100Enforcement/case_1 (0.00s)
+        constraints_test.go:557: clamping failed: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+    --- FAIL: TestConstraintSystem_SumTo100Enforcement/case_2 (0.00s)
+        constraints_test.go:557: clamping failed: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+    --- FAIL: TestConstraintSystem_SumTo100Enforcement/case_3 (0.00s)
+        constraints_test.go:557: clamping failed: weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+FAIL
+FAIL	cryptorun/internal/tune/weights	0.332s
+?   	cryptorun/internal/ui	[no test files]
+FAIL	cryptorun/internal/ui/menu [build failed]
+ok  	cryptorun/internal/verify/greenwall	(cached)
+FAIL	cryptorun/out/review/stage_20250906_133751/cryptorun [build failed]
+?   	cryptorun/out/review/stage_20250906_133751/internal/algo/dip	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/algo/momentum	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/api	[no test files]
+FAIL	cryptorun/out/review/stage_20250906_133751/internal/application [build failed]
+?   	cryptorun/out/review/stage_20250906_133751/internal/application/analyst	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/application/optimization	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/application/pipeline	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/application/selftest	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/application/universe	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/atomicio	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/bench	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/domain	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/domain/pairs	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/domain/scoring	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/infrastructure/httpclient	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/infrastructure/providers	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/infrastructure/websocket	[no test files]
+FAIL	cryptorun/out/review/stage_20250906_133751/internal/interfaces/http/endpoints [build failed]
+?   	cryptorun/out/review/stage_20250906_133751/internal/io	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/metrics	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/qa	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/scan/pipeline	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/scan/progress	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/scan/sim	[no test files]
+FAIL	cryptorun/out/review/stage_20250906_133751/internal/spec [build failed]
+?   	cryptorun/out/review/stage_20250906_133751/internal/telemetry/metrics	[no test files]
+?   	cryptorun/out/review/stage_20250906_133751/internal/ui	[no test files]
+?   	cryptorun/regime	[no test files]
+?   	cryptorun/scripts	[no test files]
+?   	cryptorun/signals	[no test files]
+FAIL	cryptorun/src/application/factors [build failed]
+FAIL	cryptorun/src/application/gates [build failed]
+?   	cryptorun/src/application/momentum	[no test files]
+?   	cryptorun/src/application/premove	[no test files]
+FAIL	cryptorun/src/cmd/cryptorun [build failed]
+?   	cryptorun/src/domain/catalyst	[no test files]
+?   	cryptorun/src/domain/derivs	[no test files]
+?   	cryptorun/src/domain/momentum	[no test files]
+ok  	cryptorun/src/domain/premove	1.445s
+?   	cryptorun/src/domain/premove/cvd	[no test files]
+?   	cryptorun/src/domain/premove/portfolio	[no test files]
+?   	cryptorun/src/domain/premove/ports	[no test files]
+?   	cryptorun/src/domain/premove/proxy	[no test files]
+?   	cryptorun/src/domain/quality	[no test files]
+?   	cryptorun/src/infrastructure/catalyst	[no test files]
+?   	cryptorun/src/infrastructure/data	[no test files]
+?   	cryptorun/src/infrastructure/derivs	[no test files]
+?   	cryptorun/src/infrastructure/percentiles	[no test files]
+FAIL	cryptorun/src/internal/artifacts [build failed]
+ok  	cryptorun/tests/atomicio	(cached)
+--- FAIL: TestBrandConsistency (0.39s)
+    branding_guard_test.go:178: Found 350 brand consistency violations:
+    branding_guard_test.go:180:   ..\..\CHANGELOG.md:2917 - Found 'CryptoEdge' in: - ✅ Brand guard fails on "CryptoEdge" outside `_codereview/**`
+    branding_guard_test.go:180:   ..\..\CLAUDE.md:153 - Found 'CryptoEdge' in: - **Forbidden**: "CryptoEdge", "Crypto Edge" (except in `_codereview/**` for historic references)
+    branding_guard_test.go:180:   ..\..\CLAUDE.md:153 - Found 'Crypto Edge' in: - **Forbidden**: "CryptoEdge", "Crypto Edge" (except in `_codereview/**` for historic references)
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:29 - Found 'CryptoEdge' in: CryptoEdge/CHANGELOG.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:30 - Found 'CryptoEdge' in: CryptoEdge/README.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:31 - Found 'CryptoEdge' in: CryptoEdge/bin/version_info.txt
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:32 - Found 'CryptoEdge' in: CryptoEdge/docs/USER_MANUAL.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:33 - Found 'CryptoEdge' in: CryptoEdge/scripts/comprehensive_test.bat
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:34 - Found 'CryptoEdge' in: CryptoEdge/scripts/quick_validation.bat
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:35 - Found 'CryptoEdge' in: CryptoEdge/tests/QA_TEST_PLAN.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:36 - Found 'CryptoEdge' in: CryptoEdge/tests/VALIDATION_CHECKLIST.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:37 - Found 'CryptoEdge' in: CryptoEdge/validation/error_prevention_protocol.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:38 - Found 'CryptoEdge' in: CryptoEdge/validation/forensic_investigation_report.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:879 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/CHANGELOG.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:880 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/README.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:881 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/bin/version_info.txt
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:882 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/docs/USER_MANUAL.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:883 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/scripts/comprehensive_test.bat
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:884 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/scripts/quick_validation.bat
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:885 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/tests/QA_TEST_PLAN.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:886 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/tests/VALIDATION_CHECKLIST.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:887 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/validation/error_prevention_protocol.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:888 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/validation/forensic_investigation_report.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:896 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/CHANGELOG.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:897 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/README.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:898 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/docs/USER_MANUAL.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:899 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/tests/QA_TEST_PLAN.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:900 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/tests/VALIDATION_CHECKLIST.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:901 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/validation/error_prevention_protocol.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:902 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/validation/forensic_investigation_report.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:29 - Found 'CryptoEdge' in: CryptoEdge/CHANGELOG.md                            |  164 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:30 - Found 'CryptoEdge' in: CryptoEdge/README.md                               |  196 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:31 - Found 'CryptoEdge' in: CryptoEdge/bin/version_info.txt                    |   78 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:32 - Found 'CryptoEdge' in: CryptoEdge/docs/USER_MANUAL.md                     |  335 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:33 - Found 'CryptoEdge' in: CryptoEdge/scripts/comprehensive_test.bat          |  358 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:34 - Found 'CryptoEdge' in: CryptoEdge/scripts/quick_validation.bat            |  199 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:35 - Found 'CryptoEdge' in: CryptoEdge/tests/QA_TEST_PLAN.md                   |  343 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:36 - Found 'CryptoEdge' in: CryptoEdge/tests/VALIDATION_CHECKLIST.md           |  254 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:37 - Found 'CryptoEdge' in: CryptoEdge/validation/error_prevention_protocol.md |  757 ---
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:879 - Found 'CryptoEdge' in: .../CodeReview_CProtocol/CryptoEdge/CHANGELOG.md   |  164 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:880 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/README.md  |  196 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:881 - Found 'CryptoEdge' in: .../CryptoEdge/bin/version_info.txt                |   78 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:882 - Found 'CryptoEdge' in: .../CryptoEdge/docs/USER_MANUAL.md                 |  335 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:883 - Found 'CryptoEdge' in: .../CryptoEdge/scripts/comprehensive_test.bat      |  358 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:884 - Found 'CryptoEdge' in: .../CryptoEdge/scripts/quick_validation.bat        |  199 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:885 - Found 'CryptoEdge' in: .../CryptoEdge/tests/QA_TEST_PLAN.md               |  343 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:886 - Found 'CryptoEdge' in: .../CryptoEdge/tests/VALIDATION_CHECKLIST.md       |  254 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:896 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/CHANGELOG.md             |  164 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:897 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/README.md                |  196 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:898 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/docs/USER_MANUAL.md      |  335 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:899 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/tests/QA_TEST_PLAN.md    |  343 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:900 - Found 'CryptoEdge' in: .../CryptoEdge/tests/VALIDATION_CHECKLIST.md       |  254 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:329 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CHANGELOG.md:2811 - Found 'CryptoEdge' in: - ✅ Brand guard fails on "CryptoEdge" outside `_codereview/**`
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:330 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CLAUDE.md:153 - Found 'CryptoEdge' in: - **Forbidden**: "CryptoEdge", "Crypto Edge" (except in `_codereview/**` for historic references)
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:330 - Found 'Crypto Edge' in: branding_guard_test.go:180:   ..\..\CLAUDE.md:153 - Found 'CryptoEdge' in: - **Forbidden**: "CryptoEdge", "Crypto Edge" (except in `_codereview/**` for historic references)
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:331 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CLAUDE.md:153 - Found 'Crypto Edge' in: - **Forbidden**: "CryptoEdge", "Crypto Edge" (except in `_codereview/**` for historic references)
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:331 - Found 'Crypto Edge' in: branding_guard_test.go:180:   ..\..\CLAUDE.md:153 - Found 'Crypto Edge' in: - **Forbidden**: "CryptoEdge", "Crypto Edge" (except in `_codereview/**` for historic references)
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:332 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:29 - Found 'CryptoEdge' in: CryptoEdge/CHANGELOG.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:333 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:30 - Found 'CryptoEdge' in: CryptoEdge/README.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:334 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:31 - Found 'CryptoEdge' in: CryptoEdge/bin/version_info.txt
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:335 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:32 - Found 'CryptoEdge' in: CryptoEdge/docs/USER_MANUAL.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:336 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:33 - Found 'CryptoEdge' in: CryptoEdge/scripts/comprehensive_test.bat
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:337 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:34 - Found 'CryptoEdge' in: CryptoEdge/scripts/quick_validation.bat
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:338 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:35 - Found 'CryptoEdge' in: CryptoEdge/tests/QA_TEST_PLAN.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:339 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:36 - Found 'CryptoEdge' in: CryptoEdge/tests/VALIDATION_CHECKLIST.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:340 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:37 - Found 'CryptoEdge' in: CryptoEdge/validation/error_prevention_protocol.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:341 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:38 - Found 'CryptoEdge' in: CryptoEdge/validation/forensic_investigation_report.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:342 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:879 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/CHANGELOG.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:343 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:880 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/README.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:344 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:881 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/bin/version_info.txt
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:345 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:882 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/docs/USER_MANUAL.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:346 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:883 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/scripts/comprehensive_test.bat
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:347 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:884 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/scripts/quick_validation.bat
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:348 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:885 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/tests/QA_TEST_PLAN.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:349 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:886 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/tests/VALIDATION_CHECKLIST.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:350 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:887 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/validation/error_prevention_protocol.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:351 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:888 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/validation/forensic_investigation_report.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:352 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:896 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/CHANGELOG.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:353 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:897 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/README.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:354 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:898 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/docs/USER_MANUAL.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:355 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:899 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/tests/QA_TEST_PLAN.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:356 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:900 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/tests/VALIDATION_CHECKLIST.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:357 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:901 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/validation/error_prevention_protocol.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:358 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105changed_files.txt:902 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/validation/forensic_investigation_report.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:359 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:29 - Found 'CryptoEdge' in: CryptoEdge/CHANGELOG.md                            |  164 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:360 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:30 - Found 'CryptoEdge' in: CryptoEdge/README.md                               |  196 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:361 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:31 - Found 'CryptoEdge' in: CryptoEdge/bin/version_info.txt                    |   78 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:362 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:32 - Found 'CryptoEdge' in: CryptoEdge/docs/USER_MANUAL.md                     |  335 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:363 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:33 - Found 'CryptoEdge' in: CryptoEdge/scripts/comprehensive_test.bat          |  358 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:364 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:34 - Found 'CryptoEdge' in: CryptoEdge/scripts/quick_validation.bat            |  199 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:365 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:35 - Found 'CryptoEdge' in: CryptoEdge/tests/QA_TEST_PLAN.md                   |  343 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:366 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:36 - Found 'CryptoEdge' in: CryptoEdge/tests/VALIDATION_CHECKLIST.md           |  254 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:367 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:37 - Found 'CryptoEdge' in: CryptoEdge/validation/error_prevention_protocol.md |  757 ---
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:368 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:879 - Found 'CryptoEdge' in: .../CodeReview_CProtocol/CryptoEdge/CHANGELOG.md   |  164 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:369 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:880 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/README.md  |  196 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:370 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:881 - Found 'CryptoEdge' in: .../CryptoEdge/bin/version_info.txt                |   78 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:371 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:882 - Found 'CryptoEdge' in: .../CryptoEdge/docs/USER_MANUAL.md                 |  335 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:372 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:883 - Found 'CryptoEdge' in: .../CryptoEdge/scripts/comprehensive_test.bat      |  358 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:373 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:884 - Found 'CryptoEdge' in: .../CryptoEdge/scripts/quick_validation.bat        |  199 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:374 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:885 - Found 'CryptoEdge' in: .../CryptoEdge/tests/QA_TEST_PLAN.md               |  343 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:375 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:886 - Found 'CryptoEdge' in: .../CryptoEdge/tests/VALIDATION_CHECKLIST.md       |  254 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:376 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:896 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/CHANGELOG.md             |  164 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:377 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:897 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/README.md                |  196 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:378 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:898 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/docs/USER_MANUAL.md      |  335 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:379 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:899 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/tests/QA_TEST_PLAN.md    |  343 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:380 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105diff_stat.txt:900 - Found 'CryptoEdge' in: .../CryptoEdge/tests/VALIDATION_CHECKLIST.md       |  254 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:381 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\annotations.txt:137 - Found 'CryptoEdge' in: ./_codereview/CryptoEdge/validation/error_prevention_protocol.md:#### **3. QUIT BUGS & AUTOSELECT ELIMINATION**
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:382 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\annotations.txt:138 - Found 'CryptoEdge' in: ./_codereview/CryptoEdge/validation/forensic_investigation_report.md:- **TODO/FIXME Accumulation:** Multiple unaddressed technical debt markers
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:383 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:29 - Found 'CryptoEdge' in: CryptoEdge/CHANGELOG.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:384 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:30 - Found 'CryptoEdge' in: CryptoEdge/README.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:385 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:31 - Found 'CryptoEdge' in: CryptoEdge/bin/version_info.txt
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:386 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:32 - Found 'CryptoEdge' in: CryptoEdge/docs/USER_MANUAL.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:387 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:33 - Found 'CryptoEdge' in: CryptoEdge/scripts/comprehensive_test.bat
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:388 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:34 - Found 'CryptoEdge' in: CryptoEdge/scripts/quick_validation.bat
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:389 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:35 - Found 'CryptoEdge' in: CryptoEdge/tests/QA_TEST_PLAN.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:390 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:36 - Found 'CryptoEdge' in: CryptoEdge/tests/VALIDATION_CHECKLIST.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:391 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:37 - Found 'CryptoEdge' in: CryptoEdge/validation/error_prevention_protocol.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:392 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:38 - Found 'CryptoEdge' in: CryptoEdge/validation/forensic_investigation_report.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:393 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:879 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/CHANGELOG.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:394 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:880 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/README.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:395 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:881 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/bin/version_info.txt
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:396 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:882 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/docs/USER_MANUAL.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:397 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:883 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/scripts/comprehensive_test.bat
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:398 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:884 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/scripts/quick_validation.bat
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:399 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:885 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/tests/QA_TEST_PLAN.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:400 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:886 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/tests/VALIDATION_CHECKLIST.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:401 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:887 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/validation/error_prevention_protocol.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:402 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:888 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/validation/forensic_investigation_report.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:403 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:896 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/CHANGELOG.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:404 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:897 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/README.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:405 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:898 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/docs/USER_MANUAL.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:406 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:899 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/tests/QA_TEST_PLAN.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:407 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:900 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/tests/VALIDATION_CHECKLIST.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:408 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:901 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/validation/error_prevention_protocol.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:409 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:902 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/validation/forensic_investigation_report.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:410 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:29 - Found 'CryptoEdge' in: CryptoEdge/CHANGELOG.md                            |  164 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:411 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:30 - Found 'CryptoEdge' in: CryptoEdge/README.md                               |  196 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:412 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:31 - Found 'CryptoEdge' in: CryptoEdge/bin/version_info.txt                    |   78 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:413 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:32 - Found 'CryptoEdge' in: CryptoEdge/docs/USER_MANUAL.md                     |  335 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:414 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:33 - Found 'CryptoEdge' in: CryptoEdge/scripts/comprehensive_test.bat          |  358 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:415 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:34 - Found 'CryptoEdge' in: CryptoEdge/scripts/quick_validation.bat            |  199 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:416 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:35 - Found 'CryptoEdge' in: CryptoEdge/tests/QA_TEST_PLAN.md                   |  343 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:417 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:36 - Found 'CryptoEdge' in: CryptoEdge/tests/VALIDATION_CHECKLIST.md           |  254 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:418 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:37 - Found 'CryptoEdge' in: CryptoEdge/validation/error_prevention_protocol.md |  757 ---
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:419 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:879 - Found 'CryptoEdge' in: .../CodeReview_CProtocol/CryptoEdge/CHANGELOG.md   |  164 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:420 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:880 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/README.md  |  196 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:421 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:881 - Found 'CryptoEdge' in: .../CryptoEdge/bin/version_info.txt                |   78 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:422 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:882 - Found 'CryptoEdge' in: .../CryptoEdge/docs/USER_MANUAL.md                 |  335 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:423 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:883 - Found 'CryptoEdge' in: .../CryptoEdge/scripts/comprehensive_test.bat      |  358 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:424 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:884 - Found 'CryptoEdge' in: .../CryptoEdge/scripts/quick_validation.bat        |  199 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:425 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:885 - Found 'CryptoEdge' in: .../CryptoEdge/tests/QA_TEST_PLAN.md               |  343 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:426 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:886 - Found 'CryptoEdge' in: .../CryptoEdge/tests/VALIDATION_CHECKLIST.md       |  254 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:427 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:896 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/CHANGELOG.md             |  164 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:428 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:897 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/README.md                |  196 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:429 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:898 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/docs/USER_MANUAL.md      |  335 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:430 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:899 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/tests/QA_TEST_PLAN.md    |  343 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:431 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:900 - Found 'CryptoEdge' in: .../CryptoEdge/tests/VALIDATION_CHECKLIST.md       |  254 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:432 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:324 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CHANGELOG.md:2811 - Found 'CryptoEdge' in: - ✅ Brand guard fails on "CryptoEdge" outside `_codereview/**`
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:433 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:325 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CLAUDE.md:153 - Found 'CryptoEdge' in: - **Forbidden**: "CryptoEdge", "Crypto Edge" (except in `_codereview/**` for historic references)
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:433 - Found 'Crypto Edge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:325 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CLAUDE.md:153 - Found 'CryptoEdge' in: - **Forbidden**: "CryptoEdge", "Crypto Edge" (except in `_codereview/**` for historic references)
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:434 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:325 - Found 'Crypto Edge' in: branding_guard_test.go:180:   ..\..\CLAUDE.md:153 - Found 'CryptoEdge' in: - **Forbidden**: "CryptoEdge", "Crypto Edge" (except in `_codereview/**` for historic references)
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:434 - Found 'Crypto Edge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:325 - Found 'Crypto Edge' in: branding_guard_test.go:180:   ..\..\CLAUDE.md:153 - Found 'CryptoEdge' in: - **Forbidden**: "CryptoEdge", "Crypto Edge" (except in `_codereview/**` for historic references)
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:435 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:326 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CLAUDE.md:153 - Found 'Crypto Edge' in: - **Forbidden**: "CryptoEdge", "Crypto Edge" (except in `_codereview/**` for historic references)
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:435 - Found 'Crypto Edge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:326 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CLAUDE.md:153 - Found 'Crypto Edge' in: - **Forbidden**: "CryptoEdge", "Crypto Edge" (except in `_codereview/**` for historic references)
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:436 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:326 - Found 'Crypto Edge' in: branding_guard_test.go:180:   ..\..\CLAUDE.md:153 - Found 'Crypto Edge' in: - **Forbidden**: "CryptoEdge", "Crypto Edge" (except in `_codereview/**` for historic references)
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:436 - Found 'Crypto Edge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:326 - Found 'Crypto Edge' in: branding_guard_test.go:180:   ..\..\CLAUDE.md:153 - Found 'Crypto Edge' in: - **Forbidden**: "CryptoEdge", "Crypto Edge" (except in `_codereview/**` for historic references)
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:437 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:327 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:29 - Found 'CryptoEdge' in: CryptoEdge/CHANGELOG.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:438 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:328 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:30 - Found 'CryptoEdge' in: CryptoEdge/README.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:439 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:329 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:31 - Found 'CryptoEdge' in: CryptoEdge/bin/version_info.txt
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:440 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:330 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:32 - Found 'CryptoEdge' in: CryptoEdge/docs/USER_MANUAL.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:441 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:331 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:33 - Found 'CryptoEdge' in: CryptoEdge/scripts/comprehensive_test.bat
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:442 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:332 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:34 - Found 'CryptoEdge' in: CryptoEdge/scripts/quick_validation.bat
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:443 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:333 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:35 - Found 'CryptoEdge' in: CryptoEdge/tests/QA_TEST_PLAN.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:444 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:334 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:36 - Found 'CryptoEdge' in: CryptoEdge/tests/VALIDATION_CHECKLIST.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:445 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:335 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:37 - Found 'CryptoEdge' in: CryptoEdge/validation/error_prevention_protocol.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:446 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:336 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:38 - Found 'CryptoEdge' in: CryptoEdge/validation/forensic_investigation_report.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:447 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:337 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:879 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/CHANGELOG.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:448 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:338 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:880 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/README.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:449 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:339 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:881 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/bin/version_info.txt
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:450 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:340 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:882 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/docs/USER_MANUAL.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:451 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:341 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:883 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/scripts/comprehensive_test.bat
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:452 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:342 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:884 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/scripts/quick_validation.bat
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:453 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:343 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:885 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/tests/QA_TEST_PLAN.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:454 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:344 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:886 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/tests/VALIDATION_CHECKLIST.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:455 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:345 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:887 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/validation/error_prevention_protocol.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:456 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:346 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:888 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/validation/forensic_investigation_report.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:457 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:347 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:896 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/CHANGELOG.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:458 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:348 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:897 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/README.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:459 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:349 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:898 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/docs/USER_MANUAL.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:460 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:350 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:899 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/tests/QA_TEST_PLAN.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:461 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:351 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:900 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/tests/VALIDATION_CHECKLIST.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:462 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:352 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:901 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/validation/error_prevention_protocol.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:463 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:353 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:902 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/validation/forensic_investigation_report.md
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:464 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:354 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:29 - Found 'CryptoEdge' in: CryptoEdge/CHANGELOG.md                            |  164 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:465 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:355 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:30 - Found 'CryptoEdge' in: CryptoEdge/README.md                               |  196 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:466 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:356 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:31 - Found 'CryptoEdge' in: CryptoEdge/bin/version_info.txt                    |   78 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:467 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:357 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:32 - Found 'CryptoEdge' in: CryptoEdge/docs/USER_MANUAL.md                     |  335 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:468 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:358 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:33 - Found 'CryptoEdge' in: CryptoEdge/scripts/comprehensive_test.bat          |  358 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:469 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:359 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:34 - Found 'CryptoEdge' in: CryptoEdge/scripts/quick_validation.bat            |  199 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:470 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:360 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:35 - Found 'CryptoEdge' in: CryptoEdge/tests/QA_TEST_PLAN.md                   |  343 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:471 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:361 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:36 - Found 'CryptoEdge' in: CryptoEdge/tests/VALIDATION_CHECKLIST.md           |  254 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:472 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:362 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:37 - Found 'CryptoEdge' in: CryptoEdge/validation/error_prevention_protocol.md |  757 ---
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:473 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:363 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:879 - Found 'CryptoEdge' in: .../CodeReview_CProtocol/CryptoEdge/CHANGELOG.md   |  164 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:474 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:364 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:880 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/README.md  |  196 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:475 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:365 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:881 - Found 'CryptoEdge' in: .../CryptoEdge/bin/version_info.txt                |   78 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:476 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:366 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:882 - Found 'CryptoEdge' in: .../CryptoEdge/docs/USER_MANUAL.md                 |  335 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:477 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:367 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:883 - Found 'CryptoEdge' in: .../CryptoEdge/scripts/comprehensive_test.bat      |  358 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:478 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:368 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:884 - Found 'CryptoEdge' in: .../CryptoEdge/scripts/quick_validation.bat        |  199 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:479 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:369 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:885 - Found 'CryptoEdge' in: .../CryptoEdge/tests/QA_TEST_PLAN.md               |  343 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:480 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:370 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:886 - Found 'CryptoEdge' in: .../CryptoEdge/tests/VALIDATION_CHECKLIST.md       |  254 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:481 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:371 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:896 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/CHANGELOG.md             |  164 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:482 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:372 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:897 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/README.md                |  196 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:483 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:373 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:898 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/docs/USER_MANUAL.md      |  335 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:484 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:374 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:899 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/tests/QA_TEST_PLAN.md    |  343 --
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:485 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:375 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:900 - Found 'CryptoEdge' in: .../CryptoEdge/tests/VALIDATION_CHECKLIST.md       |  254 -
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:486 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:379 - Found 'CryptoEdge' in: branding_guard_test.go:189:   - 'CryptoEdge' and 'Crypto Edge' are forbidden outside _codereview/**
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:486 - Found 'Crypto Edge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:379 - Found 'CryptoEdge' in: branding_guard_test.go:189:   - 'CryptoEdge' and 'Crypto Edge' are forbidden outside _codereview/**
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:487 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:379 - Found 'Crypto Edge' in: branding_guard_test.go:189:   - 'CryptoEdge' and 'Crypto Edge' are forbidden outside _codereview/**
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:487 - Found 'Crypto Edge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:379 - Found 'Crypto Edge' in: branding_guard_test.go:189:   - 'CryptoEdge' and 'Crypto Edge' are forbidden outside _codereview/**
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:491 - Found 'CryptoEdge' in: branding_guard_test.go:189:   - 'CryptoEdge' and 'Crypto Edge' are forbidden outside _codereview/**
+    branding_guard_test.go:180:   ..\..\CCryptoRunartifactsreview20250906_232105go_test.txt:491 - Found 'Crypto Edge' in: branding_guard_test.go:189:   - 'CryptoEdge' and 'Crypto Edge' are forbidden outside _codereview/**
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\annotations.txt:137 - Found 'CryptoEdge' in: ./_codereview/CryptoEdge/validation/error_prevention_protocol.md:#### **3. QUIT BUGS & AUTOSELECT ELIMINATION**
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\annotations.txt:138 - Found 'CryptoEdge' in: ./_codereview/CryptoEdge/validation/forensic_investigation_report.md:- **TODO/FIXME Accumulation:** Multiple unaddressed technical debt markers
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:29 - Found 'CryptoEdge' in: CryptoEdge/CHANGELOG.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:30 - Found 'CryptoEdge' in: CryptoEdge/README.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:31 - Found 'CryptoEdge' in: CryptoEdge/bin/version_info.txt
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:32 - Found 'CryptoEdge' in: CryptoEdge/docs/USER_MANUAL.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:33 - Found 'CryptoEdge' in: CryptoEdge/scripts/comprehensive_test.bat
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:34 - Found 'CryptoEdge' in: CryptoEdge/scripts/quick_validation.bat
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:35 - Found 'CryptoEdge' in: CryptoEdge/tests/QA_TEST_PLAN.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:36 - Found 'CryptoEdge' in: CryptoEdge/tests/VALIDATION_CHECKLIST.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:37 - Found 'CryptoEdge' in: CryptoEdge/validation/error_prevention_protocol.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:38 - Found 'CryptoEdge' in: CryptoEdge/validation/forensic_investigation_report.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:879 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/CHANGELOG.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:880 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/README.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:881 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/bin/version_info.txt
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:882 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/docs/USER_MANUAL.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:883 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/scripts/comprehensive_test.bat
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:884 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/scripts/quick_validation.bat
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:885 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/tests/QA_TEST_PLAN.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:886 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/tests/VALIDATION_CHECKLIST.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:887 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/validation/error_prevention_protocol.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:888 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/validation/forensic_investigation_report.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:896 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/CHANGELOG.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:897 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/README.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:898 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/docs/USER_MANUAL.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:899 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/tests/QA_TEST_PLAN.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:900 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/tests/VALIDATION_CHECKLIST.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:901 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/validation/error_prevention_protocol.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:902 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/validation/forensic_investigation_report.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:29 - Found 'CryptoEdge' in: CryptoEdge/CHANGELOG.md                            |  164 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:30 - Found 'CryptoEdge' in: CryptoEdge/README.md                               |  196 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:31 - Found 'CryptoEdge' in: CryptoEdge/bin/version_info.txt                    |   78 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:32 - Found 'CryptoEdge' in: CryptoEdge/docs/USER_MANUAL.md                     |  335 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:33 - Found 'CryptoEdge' in: CryptoEdge/scripts/comprehensive_test.bat          |  358 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:34 - Found 'CryptoEdge' in: CryptoEdge/scripts/quick_validation.bat            |  199 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:35 - Found 'CryptoEdge' in: CryptoEdge/tests/QA_TEST_PLAN.md                   |  343 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:36 - Found 'CryptoEdge' in: CryptoEdge/tests/VALIDATION_CHECKLIST.md           |  254 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:37 - Found 'CryptoEdge' in: CryptoEdge/validation/error_prevention_protocol.md |  757 ---
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:879 - Found 'CryptoEdge' in: .../CodeReview_CProtocol/CryptoEdge/CHANGELOG.md   |  164 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:880 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/README.md  |  196 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:881 - Found 'CryptoEdge' in: .../CryptoEdge/bin/version_info.txt                |   78 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:882 - Found 'CryptoEdge' in: .../CryptoEdge/docs/USER_MANUAL.md                 |  335 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:883 - Found 'CryptoEdge' in: .../CryptoEdge/scripts/comprehensive_test.bat      |  358 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:884 - Found 'CryptoEdge' in: .../CryptoEdge/scripts/quick_validation.bat        |  199 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:885 - Found 'CryptoEdge' in: .../CryptoEdge/tests/QA_TEST_PLAN.md               |  343 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:886 - Found 'CryptoEdge' in: .../CryptoEdge/tests/VALIDATION_CHECKLIST.md       |  254 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:896 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/CHANGELOG.md             |  164 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:897 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/README.md                |  196 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:898 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/docs/USER_MANUAL.md      |  335 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:899 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/tests/QA_TEST_PLAN.md    |  343 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:900 - Found 'CryptoEdge' in: .../CryptoEdge/tests/VALIDATION_CHECKLIST.md       |  254 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:324 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CHANGELOG.md:2811 - Found 'CryptoEdge' in: - ✅ Brand guard fails on "CryptoEdge" outside `_codereview/**`
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:325 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CLAUDE.md:153 - Found 'CryptoEdge' in: - **Forbidden**: "CryptoEdge", "Crypto Edge" (except in `_codereview/**` for historic references)
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:325 - Found 'Crypto Edge' in: branding_guard_test.go:180:   ..\..\CLAUDE.md:153 - Found 'CryptoEdge' in: - **Forbidden**: "CryptoEdge", "Crypto Edge" (except in `_codereview/**` for historic references)
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:326 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\CLAUDE.md:153 - Found 'Crypto Edge' in: - **Forbidden**: "CryptoEdge", "Crypto Edge" (except in `_codereview/**` for historic references)
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:326 - Found 'Crypto Edge' in: branding_guard_test.go:180:   ..\..\CLAUDE.md:153 - Found 'Crypto Edge' in: - **Forbidden**: "CryptoEdge", "Crypto Edge" (except in `_codereview/**` for historic references)
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:327 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:29 - Found 'CryptoEdge' in: CryptoEdge/CHANGELOG.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:328 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:30 - Found 'CryptoEdge' in: CryptoEdge/README.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:329 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:31 - Found 'CryptoEdge' in: CryptoEdge/bin/version_info.txt
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:330 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:32 - Found 'CryptoEdge' in: CryptoEdge/docs/USER_MANUAL.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:331 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:33 - Found 'CryptoEdge' in: CryptoEdge/scripts/comprehensive_test.bat
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:332 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:34 - Found 'CryptoEdge' in: CryptoEdge/scripts/quick_validation.bat
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:333 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:35 - Found 'CryptoEdge' in: CryptoEdge/tests/QA_TEST_PLAN.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:334 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:36 - Found 'CryptoEdge' in: CryptoEdge/tests/VALIDATION_CHECKLIST.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:335 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:37 - Found 'CryptoEdge' in: CryptoEdge/validation/error_prevention_protocol.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:336 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:38 - Found 'CryptoEdge' in: CryptoEdge/validation/forensic_investigation_report.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:337 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:879 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/CHANGELOG.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:338 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:880 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/README.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:339 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:881 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/bin/version_info.txt
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:340 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:882 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/docs/USER_MANUAL.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:341 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:883 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/scripts/comprehensive_test.bat
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:342 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:884 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/scripts/quick_validation.bat
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:343 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:885 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/tests/QA_TEST_PLAN.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:344 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:886 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/tests/VALIDATION_CHECKLIST.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:345 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:887 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/validation/error_prevention_protocol.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:346 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:888 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/validation/forensic_investigation_report.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:347 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:896 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/CHANGELOG.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:348 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:897 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/README.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:349 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:898 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/docs/USER_MANUAL.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:350 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:899 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/tests/QA_TEST_PLAN.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:351 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:900 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/tests/VALIDATION_CHECKLIST.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:352 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:901 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/validation/error_prevention_protocol.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:353 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\changed_files.txt:902 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/_docs_full/CryptoEdge/validation/forensic_investigation_report.md
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:354 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:29 - Found 'CryptoEdge' in: CryptoEdge/CHANGELOG.md                            |  164 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:355 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:30 - Found 'CryptoEdge' in: CryptoEdge/README.md                               |  196 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:356 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:31 - Found 'CryptoEdge' in: CryptoEdge/bin/version_info.txt                    |   78 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:357 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:32 - Found 'CryptoEdge' in: CryptoEdge/docs/USER_MANUAL.md                     |  335 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:358 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:33 - Found 'CryptoEdge' in: CryptoEdge/scripts/comprehensive_test.bat          |  358 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:359 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:34 - Found 'CryptoEdge' in: CryptoEdge/scripts/quick_validation.bat            |  199 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:360 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:35 - Found 'CryptoEdge' in: CryptoEdge/tests/QA_TEST_PLAN.md                   |  343 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:361 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:36 - Found 'CryptoEdge' in: CryptoEdge/tests/VALIDATION_CHECKLIST.md           |  254 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:362 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:37 - Found 'CryptoEdge' in: CryptoEdge/validation/error_prevention_protocol.md |  757 ---
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:363 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:879 - Found 'CryptoEdge' in: .../CodeReview_CProtocol/CryptoEdge/CHANGELOG.md   |  164 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:364 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:880 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/README.md  |  196 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:365 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:881 - Found 'CryptoEdge' in: .../CryptoEdge/bin/version_info.txt                |   78 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:366 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:882 - Found 'CryptoEdge' in: .../CryptoEdge/docs/USER_MANUAL.md                 |  335 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:367 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:883 - Found 'CryptoEdge' in: .../CryptoEdge/scripts/comprehensive_test.bat      |  358 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:368 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:884 - Found 'CryptoEdge' in: .../CryptoEdge/scripts/quick_validation.bat        |  199 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:369 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:885 - Found 'CryptoEdge' in: .../CryptoEdge/tests/QA_TEST_PLAN.md               |  343 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:370 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:886 - Found 'CryptoEdge' in: .../CryptoEdge/tests/VALIDATION_CHECKLIST.md       |  254 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:371 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:896 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/CHANGELOG.md             |  164 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:372 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:897 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/README.md                |  196 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:373 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:898 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/docs/USER_MANUAL.md      |  335 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:374 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:899 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/tests/QA_TEST_PLAN.md    |  343 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:375 - Found 'CryptoEdge' in: branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\diff_stat.txt:900 - Found 'CryptoEdge' in: .../CryptoEdge/tests/VALIDATION_CHECKLIST.md       |  254 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:379 - Found 'CryptoEdge' in: branding_guard_test.go:189:   - 'CryptoEdge' and 'Crypto Edge' are forbidden outside _codereview/**
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906-231335\test.txt:379 - Found 'Crypto Edge' in: branding_guard_test.go:189:   - 'CryptoEdge' and 'Crypto Edge' are forbidden outside _codereview/**
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906_232105\diff_stat.txt:29 - Found 'CryptoEdge' in: CryptoEdge/CHANGELOG.md                            |  164 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906_232105\diff_stat.txt:30 - Found 'CryptoEdge' in: CryptoEdge/README.md                               |  196 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906_232105\diff_stat.txt:31 - Found 'CryptoEdge' in: CryptoEdge/bin/version_info.txt                    |   78 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906_232105\diff_stat.txt:32 - Found 'CryptoEdge' in: CryptoEdge/docs/USER_MANUAL.md                     |  335 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906_232105\diff_stat.txt:33 - Found 'CryptoEdge' in: CryptoEdge/scripts/comprehensive_test.bat          |  358 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906_232105\diff_stat.txt:34 - Found 'CryptoEdge' in: CryptoEdge/scripts/quick_validation.bat            |  199 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906_232105\diff_stat.txt:35 - Found 'CryptoEdge' in: CryptoEdge/tests/QA_TEST_PLAN.md                   |  343 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906_232105\diff_stat.txt:36 - Found 'CryptoEdge' in: CryptoEdge/tests/VALIDATION_CHECKLIST.md           |  254 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906_232105\diff_stat.txt:37 - Found 'CryptoEdge' in: CryptoEdge/validation/error_prevention_protocol.md |  757 ---
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906_232105\diff_stat.txt:879 - Found 'CryptoEdge' in: .../CodeReview_CProtocol/CryptoEdge/CHANGELOG.md   |  164 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906_232105\diff_stat.txt:880 - Found 'CryptoEdge' in: reviews/CodeReview_CProtocol/CryptoEdge/README.md  |  196 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906_232105\diff_stat.txt:881 - Found 'CryptoEdge' in: .../CryptoEdge/bin/version_info.txt                |   78 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906_232105\diff_stat.txt:882 - Found 'CryptoEdge' in: .../CryptoEdge/docs/USER_MANUAL.md                 |  335 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906_232105\diff_stat.txt:883 - Found 'CryptoEdge' in: .../CryptoEdge/scripts/comprehensive_test.bat      |  358 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906_232105\diff_stat.txt:884 - Found 'CryptoEdge' in: .../CryptoEdge/scripts/quick_validation.bat        |  199 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906_232105\diff_stat.txt:885 - Found 'CryptoEdge' in: .../CryptoEdge/tests/QA_TEST_PLAN.md               |  343 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906_232105\diff_stat.txt:886 - Found 'CryptoEdge' in: .../CryptoEdge/tests/VALIDATION_CHECKLIST.md       |  254 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906_232105\diff_stat.txt:896 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/CHANGELOG.md             |  164 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906_232105\diff_stat.txt:897 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/README.md                |  196 -
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906_232105\diff_stat.txt:898 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/docs/USER_MANUAL.md      |  335 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906_232105\diff_stat.txt:899 - Found 'CryptoEdge' in: .../_docs_full/CryptoEdge/tests/QA_TEST_PLAN.md    |  343 --
+    branding_guard_test.go:180:   ..\..\artifacts\review\20250906_232105\diff_stat.txt:900 - Found 'CryptoEdge' in: .../CryptoEdge/tests/VALIDATION_CHECKLIST.md       |  254 -
+    branding_guard_test.go:187: 
+        Brand consistency rules:
+    branding_guard_test.go:188:   - Only 'CryptoRun' is permitted in active documentation
+    branding_guard_test.go:189:   - 'CryptoEdge' and 'Crypto Edge' are forbidden outside _codereview/**
+    branding_guard_test.go:190:   - Historic mentions in _codereview/** are allowed but should not be linked by active docs
+FAIL
+FAIL	cryptorun/tests/branding	2.002s
+FAIL	cryptorun/tests/conformance [build failed]
+--- FAIL: TestRegimeDetector_BoundaryConditions (0.00s)
+    --- FAIL: TestRegimeDetector_BoundaryConditions/vol_just_above_high_threshold (0.00s)
+        detector_thresholds_table_test.go:224: regime detection failed: expected HIGH_VOL, got CHOPPY
+            Description: Volatility just above high threshold triggers high vol vote
+            Inputs: vol=0.610, breadth=0.500, thrust=0.000
+    --- FAIL: TestRegimeDetector_BoundaryConditions/breadth_just_below_bear_threshold (0.00s)
+        detector_thresholds_table_test.go:224: regime detection failed: expected HIGH_VOL, got TRENDING_BULL
+            Description: Breadth just below bear threshold triggers bear vote
+            Inputs: vol=0.450, breadth=0.340, thrust=0.000
+--- FAIL: TestRegimeDetector_ExtremeValues (0.00s)
+    --- FAIL: TestRegimeDetector_ExtremeValues/extreme_high_vol (0.00s)
+        detector_thresholds_table_test.go:301: extreme value test failed: expected HIGH_VOL, got CHOPPY
+    --- FAIL: TestRegimeDetector_ExtremeValues/extreme_bear_breadth (0.00s)
+        detector_thresholds_table_test.go:301: extreme value test failed: expected HIGH_VOL, got CHOPPY
+--- FAIL: TestSocialFactor_HardCap10 (0.00s)
+    --- FAIL: TestSocialFactor_HardCap10/partial_confidence_factors (0.00s)
+        social_cap_test.go:116: expected final score 89.6, got 88.0
+        social_cap_test.go:133: expected capping=false, got capping=true (raw social=11.6)
+--- FAIL: TestWeightsSumTo100_AllRegimes (0.00s)
+    --- FAIL: TestWeightsSumTo100_AllRegimes/normal (0.00s)
+        weights_sum_100_test.go:33: valid weights for regime normal failed validation: supply_demand total 0.395 outside bounds [0.200, 0.220] for regime normal
+    --- FAIL: TestWeightsSumTo100_AllRegimes/volatile (0.00s)
+        weights_sum_100_test.go:33: valid weights for regime volatile failed validation: supply_demand total 0.400 outside bounds [0.220, 0.280] for regime volatile
+FAIL
+FAIL	cryptorun/tests/conformance/regime	0.370s
+FAIL	cryptorun/tests/empirical [build failed]
+FAIL	cryptorun/tests/integration [build failed]
+{"level":"info","sources":2,"polling_cadence":900000,"cache_ttl":1800000,"time":"2025-09-06T23:32:11+03:00","message":"Catalyst client initialized"}
+{"level":"debug","events":2,"symbols":["BTCUSD","ETHUSD"],"time":"2025-09-06T23:32:11+03:00","message":"CoinMarketCal events fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:coinmarketcal:BTCUSD,ETHUSD","time":"2025-09-06T23:32:12+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"coinmarketcal","events":2,"time":"2025-09-06T23:32:12+03:00","message":"Fetched fresh catalyst events"}
+{"level":"debug","robots_url":"https://blog.kraken.com/robots.txt","user_agent":"CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)","time":"2025-09-06T23:32:12+03:00","message":"Checking robots.txt compliance (mock)"}
+{"level":"debug","events":2,"symbols":["BTCUSD","ETHUSD"],"time":"2025-09-06T23:32:12+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:exchange_announcements:BTCUSD,ETHUSD","time":"2025-09-06T23:32:12+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"exchange_announcements","events":2,"time":"2025-09-06T23:32:12+03:00","message":"Fetched fresh catalyst events"}
+{"level":"info","total_events":4,"unique_events":4,"symbols":["BTCUSD","ETHUSD"],"time":"2025-09-06T23:32:12+03:00","message":"Catalyst events merged from all sources"}
+{"level":"info","sources":2,"polling_cadence":900000,"cache_ttl":1000,"time":"2025-09-06T23:32:12+03:00","message":"Catalyst client initialized"}
+{"level":"debug","events":2,"symbols":["SOLUSD"],"time":"2025-09-06T23:32:12+03:00","message":"CoinMarketCal events fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:coinmarketcal:SOLUSD","time":"2025-09-06T23:32:12+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"coinmarketcal","events":2,"time":"2025-09-06T23:32:12+03:00","message":"Fetched fresh catalyst events"}
+{"level":"debug","robots_url":"https://blog.kraken.com/robots.txt","user_agent":"CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)","time":"2025-09-06T23:32:12+03:00","message":"Checking robots.txt compliance (mock)"}
+{"level":"debug","events":2,"symbols":["SOLUSD"],"time":"2025-09-06T23:32:12+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:exchange_announcements:SOLUSD","time":"2025-09-06T23:32:12+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"exchange_announcements","events":2,"time":"2025-09-06T23:32:12+03:00","message":"Fetched fresh catalyst events"}
+{"level":"info","total_events":4,"unique_events":4,"symbols":["SOLUSD"],"time":"2025-09-06T23:32:12+03:00","message":"Catalyst events merged from all sources"}
+{"level":"debug","events":2,"symbols":["SOLUSD"],"time":"2025-09-06T23:32:14+03:00","message":"CoinMarketCal events fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:coinmarketcal:SOLUSD","time":"2025-09-06T23:32:14+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"coinmarketcal","events":2,"time":"2025-09-06T23:32:14+03:00","message":"Fetched fresh catalyst events"}
+{"level":"debug","robots_url":"https://blog.kraken.com/robots.txt","user_agent":"CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)","time":"2025-09-06T23:32:14+03:00","message":"Checking robots.txt compliance (mock)"}
+{"level":"debug","events":2,"symbols":["SOLUSD"],"time":"2025-09-06T23:32:14+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:exchange_announcements:SOLUSD","time":"2025-09-06T23:32:15+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"exchange_announcements","events":2,"time":"2025-09-06T23:32:15+03:00","message":"Fetched fresh catalyst events"}
+{"level":"info","total_events":4,"unique_events":4,"symbols":["SOLUSD"],"time":"2025-09-06T23:32:15+03:00","message":"Catalyst events merged from all sources"}
+{"level":"debug","events":2,"symbols":["BTCUSD"],"time":"2025-09-06T23:32:15+03:00","message":"CoinMarketCal events fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:coinmarketcal:BTCUSD","time":"2025-09-06T23:32:15+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"coinmarketcal","events":2,"time":"2025-09-06T23:32:15+03:00","message":"Fetched fresh catalyst events"}
+{"level":"debug","robots_url":"https://blog.kraken.com/robots.txt","user_agent":"CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)","time":"2025-09-06T23:32:15+03:00","message":"Checking robots.txt compliance (mock)"}
+{"level":"debug","events":2,"symbols":["BTCUSD"],"time":"2025-09-06T23:32:15+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:exchange_announcements:BTCUSD","time":"2025-09-06T23:32:15+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"exchange_announcements","events":2,"time":"2025-09-06T23:32:15+03:00","message":"Fetched fresh catalyst events"}
+{"level":"info","total_events":4,"unique_events":4,"symbols":["BTCUSD"],"time":"2025-09-06T23:32:15+03:00","message":"Catalyst events merged from all sources"}
+{"level":"debug","events":2,"symbols":["ETHUSD"],"time":"2025-09-06T23:32:15+03:00","message":"CoinMarketCal events fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:coinmarketcal:ETHUSD","time":"2025-09-06T23:32:15+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"coinmarketcal","events":2,"time":"2025-09-06T23:32:15+03:00","message":"Fetched fresh catalyst events"}
+{"level":"debug","robots_url":"https://blog.kraken.com/robots.txt","user_agent":"CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)","time":"2025-09-06T23:32:15+03:00","message":"Checking robots.txt compliance (mock)"}
+{"level":"debug","events":2,"symbols":["ETHUSD"],"time":"2025-09-06T23:32:15+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:exchange_announcements:ETHUSD","time":"2025-09-06T23:32:15+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"exchange_announcements","events":2,"time":"2025-09-06T23:32:15+03:00","message":"Fetched fresh catalyst events"}
+{"level":"info","total_events":4,"unique_events":4,"symbols":["ETHUSD"],"time":"2025-09-06T23:32:15+03:00","message":"Catalyst events merged from all sources"}
+{"level":"debug","events":2,"symbols":["BTCUSD","ETHUSD"],"time":"2025-09-06T23:32:15+03:00","message":"CoinMarketCal events fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:coinmarketcal:BTCUSD,ETHUSD","time":"2025-09-06T23:32:15+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"coinmarketcal","events":2,"time":"2025-09-06T23:32:15+03:00","message":"Fetched fresh catalyst events"}
+{"level":"debug","robots_url":"https://blog.kraken.com/robots.txt","user_agent":"CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)","time":"2025-09-06T23:32:15+03:00","message":"Checking robots.txt compliance (mock)"}
+{"level":"debug","events":2,"symbols":["BTCUSD","ETHUSD"],"time":"2025-09-06T23:32:15+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:exchange_announcements:BTCUSD,ETHUSD","time":"2025-09-06T23:32:16+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"exchange_announcements","events":2,"time":"2025-09-06T23:32:16+03:00","message":"Fetched fresh catalyst events"}
+{"level":"info","total_events":4,"unique_events":4,"symbols":["BTCUSD","ETHUSD"],"time":"2025-09-06T23:32:16+03:00","message":"Catalyst events merged from all sources"}
+--- FAIL: TestCatalystCaching (4.27s)
+    --- FAIL: TestCatalystCaching/cache_miss_then_hit (0.42s)
+        cache_test.go:58: 
+            	Error Trace:	C:/CryptoRun/tests/integration/catalyst/cache_test.go:58
+            	Error:      	Received unexpected error:
+            	            	dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.
+            	Test:       	TestCatalystCaching/cache_miss_then_hit
+    --- FAIL: TestCatalystCaching/cache_key_uniqueness (0.98s)
+        cache_test.go:122: 
+            	Error Trace:	C:/CryptoRun/tests/integration/catalyst/cache_test.go:122
+            	Error:      	Received unexpected error:
+            	            	dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.
+            	Test:       	TestCatalystCaching/cache_key_uniqueness
+{"level":"debug","robots_url":"https://blog.kraken.com/robots.txt","user_agent":"CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)","time":"2025-09-06T23:32:16+03:00","message":"Checking robots.txt compliance (mock)"}
+{"level":"debug","events":2,"symbols":["BTCUSD"],"time":"2025-09-06T23:32:16+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"debug","robots_url":"https://blog.kraken.com/robots.txt","user_agent":"CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)","time":"2025-09-06T23:32:16+03:00","message":"Checking robots.txt compliance (mock)"}
+{"level":"debug","events":2,"symbols":["BTCUSD"],"time":"2025-09-06T23:32:16+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"debug","events":2,"symbols":["BTCUSD"],"time":"2025-09-06T23:32:16+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"info","sources":2,"polling_cadence":900000,"cache_ttl":1800000,"time":"2025-09-06T23:32:16+03:00","message":"Catalyst client initialized"}
+{"level":"debug","events":2,"symbols":["BTCUSD"],"time":"2025-09-06T23:32:16+03:00","message":"CoinMarketCal events fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:coinmarketcal:BTCUSD","time":"2025-09-06T23:32:16+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"coinmarketcal","events":2,"time":"2025-09-06T23:32:16+03:00","message":"Fetched fresh catalyst events"}
+{"level":"debug","robots_url":"https://blog.kraken.com/robots.txt","user_agent":"CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)","time":"2025-09-06T23:32:16+03:00","message":"Checking robots.txt compliance (mock)"}
+{"level":"debug","events":2,"symbols":["BTCUSD"],"time":"2025-09-06T23:32:16+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:exchange_announcements:BTCUSD","time":"2025-09-06T23:32:16+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"exchange_announcements","events":2,"time":"2025-09-06T23:32:16+03:00","message":"Fetched fresh catalyst events"}
+{"level":"info","total_events":4,"unique_events":4,"symbols":["BTCUSD"],"time":"2025-09-06T23:32:16+03:00","message":"Catalyst events merged from all sources"}
+{"level":"debug","events":2,"symbols":["BTCUSD","ETHUSD","SOLUSD"],"time":"2025-09-06T23:32:16+03:00","message":"CoinMarketCal events fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:coinmarketcal:BTCUSD,ETHUSD,SOLUSD","time":"2025-09-06T23:32:16+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"coinmarketcal","events":2,"time":"2025-09-06T23:32:16+03:00","message":"Fetched fresh catalyst events"}
+{"level":"debug","robots_url":"https://blog.kraken.com/robots.txt","user_agent":"CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)","time":"2025-09-06T23:32:16+03:00","message":"Checking robots.txt compliance (mock)"}
+{"level":"debug","events":2,"symbols":["BTCUSD","ETHUSD","SOLUSD"],"time":"2025-09-06T23:32:16+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"warn","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it.","cache_key":"catalyst:exchange_announcements:BTCUSD,ETHUSD,SOLUSD","time":"2025-09-06T23:32:16+03:00","message":"Failed to cache catalyst events"}
+{"level":"debug","source":"exchange_announcements","events":2,"time":"2025-09-06T23:32:16+03:00","message":"Fetched fresh catalyst events"}
+{"level":"info","total_events":4,"unique_events":4,"symbols":["BTCUSD","ETHUSD","SOLUSD"],"time":"2025-09-06T23:32:16+03:00","message":"Catalyst events merged from all sources"}
+{"level":"info","sources":2,"polling_cadence":0,"cache_ttl":0,"time":"2025-09-06T23:32:16+03:00","message":"Catalyst client initialized"}
+--- FAIL: TestSymbolNormalization (0.00s)
+    --- FAIL: TestSymbolNormalization/Bitcoin_from_Kraken (0.00s)
+        cache_test.go:339: 
+            	Error Trace:	C:/CryptoRun/tests/integration/catalyst/cache_test.go:339
+            	Error:      	Not equal: 
+            	            	expected: "BTCUSD"
+            	            	actual  : "BTUSD"
+            	            	
+            	            	Diff:
+            	            	--- Expected
+            	            	+++ Actual
+            	            	@@ -1 +1 @@
+            	            	-BTCUSD
+            	            	+BTUSD
+            	Test:       	TestSymbolNormalization/Bitcoin_from_Kraken
+            	Messages:   	Symbol normalization failed for XXBTZUSD from kraken
+    --- FAIL: TestSymbolNormalization/Ethereum_from_Kraken (0.00s)
+        cache_test.go:339: 
+            	Error Trace:	C:/CryptoRun/tests/integration/catalyst/cache_test.go:339
+            	Error:      	Not equal: 
+            	            	expected: "ETHUSD"
+            	            	actual  : "XETHZUSD"
+            	            	
+            	            	Diff:
+            	            	--- Expected
+            	            	+++ Actual
+            	            	@@ -1 +1 @@
+            	            	-ETHUSD
+            	            	+XETHZUSD
+            	Test:       	TestSymbolNormalization/Ethereum_from_Kraken
+            	Messages:   	Symbol normalization failed for XETHZUSD from kraken
+    --- FAIL: TestSymbolNormalization/Uppercase_conversion (0.00s)
+        cache_test.go:339: 
+            	Error Trace:	C:/CryptoRun/tests/integration/catalyst/cache_test.go:339
+            	Error:      	Not equal: 
+            	            	expected: "BTCUSD"
+            	            	actual  : "btcUSD"
+            	            	
+            	            	Diff:
+            	            	--- Expected
+            	            	+++ Actual
+            	            	@@ -1 +1 @@
+            	            	-BTCUSD
+            	            	+btcUSD
+            	Test:       	TestSymbolNormalization/Uppercase_conversion
+            	Messages:   	Symbol normalization failed for btc from unknown
+{"level":"info","sources":2,"polling_cadence":900000,"cache_ttl":1800000,"time":"2025-09-06T23:32:16+03:00","message":"Catalyst client initialized"}
+{"level":"debug","events":2,"symbols":["BTCUSD"],"time":"2025-09-06T23:32:16+03:00","message":"CoinMarketCal events fetched (mock)"}
+{"level":"debug","source":"coinmarketcal","events":2,"time":"2025-09-06T23:32:16+03:00","message":"Fetched fresh catalyst events"}
+{"level":"debug","robots_url":"https://blog.kraken.com/robots.txt","user_agent":"CryptoRun/3.2.1 (+https://github.com/cryptorun/bot)","time":"2025-09-06T23:32:16+03:00","message":"Checking robots.txt compliance (mock)"}
+{"level":"debug","events":2,"symbols":["BTCUSD"],"time":"2025-09-06T23:32:16+03:00","message":"Exchange announcements fetched (mock)"}
+{"level":"debug","source":"exchange_announcements","events":2,"time":"2025-09-06T23:32:16+03:00","message":"Fetched fresh catalyst events"}
+{"level":"info","total_events":4,"unique_events":4,"symbols":["BTCUSD"],"time":"2025-09-06T23:32:16+03:00","message":"Catalyst events merged from all sources"}
+FAIL
+FAIL	cryptorun/tests/integration/catalyst	15.505s
+ok  	cryptorun/tests/integration/data	(cached)
+--- FAIL: TestProviderCaching_BudgetCompliance (10.04s)
+    cache_test.go:508: Provider calls (2) exceed budget-compliant maximum (1)
+    cache_test.go:512: Budget test results: 100 total calls, 2 provider calls, 98.0% cache hit rate
+FAIL
+FAIL	cryptorun/tests/integration/derivs	13.558s
+FAIL	cryptorun/tests/integration/premove [build failed]
+?   	cryptorun/tests/internal/testpaths	[no test files]
+ok  	cryptorun/tests/load	(cached)
+FAIL	cryptorun/tests/spec [build failed]
+FAIL	cryptorun/tests/unit [build failed]
+--- FAIL: TestJSONLCompactor_SchemaPreserved (0.02s)
+    compact_test.go:41: Expected compression ratio < 1.0, got 1.04
+--- FAIL: TestMarkdownCompactor_CanonicalizesHeaders (0.02s)
+    compact_test.go:265: Header 1: expected '## Compact Header', got '##Compact Header'
+--- FAIL: TestCompaction_ValidateIntegrity (0.00s)
+    compact_test.go:346: Compaction validation failed: compacted file unexpectedly large: 122 > 118
+--- FAIL: TestScanner_Integration (0.00s)
+    manifest_test.go:342: Expected 3 entries, got 0
+    manifest_test.go:346: Expected 4 files scanned, got 0
+    manifest_test.go:356: Expected 1 proofs entry, got 0
+    manifest_test.go:360: Expected 1 bench entry, got 0
+    manifest_test.go:364: Expected 1 smoke90 entry, got 0
+    manifest_test.go:379: smoke90 entry not found
+FAIL
+FAIL	cryptorun/tests/unit/artifacts	2.019s
+FAIL	cryptorun/tests/unit/catalyst [build failed]
+--- FAIL: TestFundingZ_VolumeWeightedMedian (0.01s)
+    metrics_test.go:67: Expected 3 venue contributions, got 0
+    metrics_test.go:70: Volume-weighted median: 0.001500
+    metrics_test.go:71: Z-score: 0.000
+    metrics_test.go:72: Data quality: insufficient_history
+--- FAIL: TestFundingZ_ZScoreCalculation (0.00s)
+    metrics_test.go:105: FundingZ calculation failed: insufficient venues with valid data (need ≥2, got 1)
+--- FAIL: TestVolumeWeightedMedian_Calculation (0.00s)
+    --- FAIL: TestVolumeWeightedMedian_Calculation/single_value (0.00s)
+        metrics_test.go:404: FundingZ failed: insufficient venues with valid data (need ≥2, got 1)
+FAIL
+FAIL	cryptorun/tests/unit/derivs	0.342s
+ok  	cryptorun/tests/unit/exits	3.047s
+FAIL	cryptorun/tests/unit/gates [build failed]
+FAIL	cryptorun/tests/unit/guards [build failed]
+FAIL	cryptorun/tests/unit/http [build failed]
+--- FAIL: TestComputeCore_ATRNormalization (0.00s)
+    core_test.go:151: ATR normalization should affect the result
+--- FAIL: TestComputeCore_ScoreMonotonicity (0.00s)
+    --- FAIL: TestComputeCore_ScoreMonotonicity/increase_R1h (0.00s)
+        core_test.go:289: increasing increase R1h should increase score: base=100.000000, modified=100.000000
+    --- FAIL: TestComputeCore_ScoreMonotonicity/increase_R4h (0.00s)
+        core_test.go:289: increasing increase R4h should increase score: base=100.000000, modified=100.000000
+    --- FAIL: TestComputeCore_ScoreMonotonicity/increase_R12h (0.00s)
+        core_test.go:289: increasing increase R12h should increase score: base=100.000000, modified=100.000000
+    --- FAIL: TestComputeCore_ScoreMonotonicity/increase_R24h (0.00s)
+        core_test.go:289: increasing increase R24h should increase score: base=100.000000, modified=100.000000
+--- FAIL: TestComputeCore_SevenDayCarry (0.00s)
+    core_test.go:318: with 7d carry should have higher score: with=100.000000, without=100.000000
+FAIL
+FAIL	cryptorun/tests/unit/momentum	0.347s
+FAIL	cryptorun/tests/unit/premove [build failed]
+--- FAIL: TestDetector_VotingLogic (0.00s)
+    --- FAIL: TestDetector_VotingLogic/high_vol_clear (0.00s)
+        detector_test.go:100: Expected regime high_vol, got choppy
+    --- FAIL: TestDetector_VotingLogic/boundary_conditions_vol (0.00s)
+        detector_test.go:100: Expected regime trending_bull, got choppy
+    --- FAIL: TestDetector_VotingLogic/mixed_signals (0.00s)
+        detector_test.go:100: Expected regime high_vol, got trending_bull
+--- FAIL: TestDetector_StabilityDetection (0.00s)
+    detector_test.go:160: Second detection should not be stable (recent change)
+    detector_test.go:164: Expected 1 change, got 0
+    detector_test.go:170: Expected 1 regime change, got 0
+--- FAIL: TestDetector_BoundaryConditions (0.00s)
+    --- FAIL: TestDetector_BoundaryConditions/exactly_at_threshold (0.00s)
+        detector_test.go:255: Expected realized vol vote high_vol, got low_vol
+--- FAIL: TestDetector_ErrorHandling (0.00s)
+panic: runtime error: invalid memory address or nil pointer dereference [recovered, repanicked]
+[signal 0xc0000005 code=0x0 addr=0x28 pc=0x7ff6392c2bd8]
+
+goroutine 36 [running]:
+testing.tRunner.func1.2({0x7ff6392f2260, 0x7ff63945acd0})
+	C:/Program Files/Go/src/testing/testing.go:1872 +0x239
+testing.tRunner.func1()
+	C:/Program Files/Go/src/testing/testing.go:1875 +0x35b
+panic({0x7ff6392f2260?, 0x7ff63945acd0?})
+	C:/Program Files/Go/src/runtime/panic.go:783 +0x132
+cryptorun/internal/regime.(*Detector).fetchSignals(0xc000067ee0, {0x7ff63935bd68, 0x7ff6394af760})
+	C:/CryptoRun/internal/regime/detector.go:189 +0x38
+cryptorun/internal/regime.(*Detector).DetectRegime(0xc0001b9ee0, {0x7ff63935bd68, 0x7ff6394af760})
+	C:/CryptoRun/internal/regime/detector.go:131 +0xc5
+cryptorun/tests/unit/regime.TestDetector_ErrorHandling(0xc000194540)
+	C:/CryptoRun/tests/unit/regime/detector_test.go:266 +0xb1
+testing.tRunner(0xc000194540, 0x7ff63932bf10)
+	C:/Program Files/Go/src/testing/testing.go:1934 +0xc3
+created by testing.(*T).Run in goroutine 1
+	C:/Program Files/Go/src/testing/testing.go:1997 +0x44b
+FAIL	cryptorun/tests/unit/regime	1.806s
+--- FAIL: TestConstraintSystemValidation (0.00s)
+    constraints_test.go:25: 
+        	Error Trace:	C:/CryptoRun/tests/unit/tune/constraints_test.go:25
+        	Error:      	Received unexpected error:
+        	            	supply_demand total 0.380 outside bounds [0.200, 0.220] for regime normal
+        	Test:       	TestConstraintSystemValidation
+        	Messages:   	Valid weights should pass validation
+    constraints_test.go:41: 
+        	Error Trace:	C:/CryptoRun/tests/unit/tune/constraints_test.go:41
+        	Error:      	"supply_demand total 0.450 outside bounds [0.200, 0.220] for regime normal" does not contain "sum to"
+        	Test:       	TestConstraintSystemValidation
+    constraints_test.go:50: 
+        	Error Trace:	C:/CryptoRun/tests/unit/tune/constraints_test.go:50
+        	Error:      	"supply_demand total 0.360 outside bounds [0.200, 0.220] for regime normal" does not contain "quality_residual"
+        	Test:       	TestConstraintSystemValidation
+--- FAIL: TestConstraintBounds (0.00s)
+    --- FAIL: TestConstraintBounds/boundary_values_should_be_valid (0.00s)
+        constraints_test.go:105: 
+            	Error Trace:	C:/CryptoRun/tests/unit/tune/constraints_test.go:105
+            	Error:      	Received unexpected error:
+            	            	supply_demand total 0.380 outside bounds [0.200, 0.220] for regime normal
+            	Test:       	TestConstraintBounds/boundary_values_should_be_valid
+            	Messages:   	boundary values should be valid
+    --- FAIL: TestConstraintBounds/volatile_regime_bounds_should_work (0.00s)
+        constraints_test.go:105: 
+            	Error Trace:	C:/CryptoRun/tests/unit/tune/constraints_test.go:105
+            	Error:      	Received unexpected error:
+            	            	supply_demand total 0.370 outside bounds [0.220, 0.280] for regime volatile
+            	Test:       	TestConstraintBounds/volatile_regime_bounds_should_work
+            	Messages:   	volatile regime bounds should work
+--- FAIL: TestConstraintClamping (0.00s)
+    constraints_test.go:124: 
+        	Error Trace:	C:/CryptoRun/tests/unit/tune/constraints_test.go:124
+        	Error:      	Received unexpected error:
+        	            	weights still invalid after clamping: supply_demand total 0.338 outside bounds [0.200, 0.220] for regime normal
+        	Test:       	TestConstraintClamping
+--- FAIL: TestSupplyDemandBlockConstraint (0.00s)
+    constraints_test.go:152: 
+        	Error Trace:	C:/CryptoRun/tests/unit/tune/constraints_test.go:152
+        	Error:      	Received unexpected error:
+        	            	supply_demand total 0.380 outside bounds [0.200, 0.220] for regime normal
+        	Test:       	TestSupplyDemandBlockConstraint
+        	Messages:   	Valid supply/demand block should pass
+    constraints_test.go:163: 
+        	Error Trace:	C:/CryptoRun/tests/unit/tune/constraints_test.go:163
+        	Error:      	Received unexpected error:
+        	            	supply_demand total 0.380 outside bounds [0.200, 0.220] for regime normal
+        	Test:       	TestSupplyDemandBlockConstraint
+        	Messages:   	This should actually be valid
+--- FAIL: TestRandomWeightGeneration (0.00s)
+    constraints_test.go:209: 
+        	Error Trace:	C:/CryptoRun/tests/unit/tune/constraints_test.go:209
+        	Error:      	Received unexpected error:
+        	            	failed to generate valid weights after 100 attempts
+        	Test:       	TestRandomWeightGeneration
+        	Messages:   	Random weight generation should succeed
+--- FAIL: TestEdgeCases (0.00s)
+    constraints_test.go:269: 
+        	Error Trace:	C:/CryptoRun/tests/unit/tune/constraints_test.go:269
+        	Error:      	Received unexpected error:
+        	            	weights still invalid after clamping: supply_demand total 0.330 outside bounds [0.200, 0.220] for regime normal
+        	Test:       	TestEdgeCases
+FAIL
+FAIL	cryptorun/tests/unit/tune	0.444s
+?   	cryptorun/tools/buildstamp	[no test files]
+?   	cryptorun/ui	[no test files]
+FAIL

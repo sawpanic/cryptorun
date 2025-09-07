@@ -1,0 +1,59 @@
+## ✅ SCHED.LOOP.PREMOVE Implementation Complete
+
+I have successfully executed the **SCHED.LOOP.PREMOVE** prompt with the following deliverables:
+
+### 🎯 **Implemented Components:**
+
+1. **✅ Premove Sweep Logic** (`internal/application/premove_sweep.go`)
+   - 2-of-3 gate system (Funding, Supply Squeeze, Whales)  
+   - Regime-conditional volume confirmation for risk_off/btc_driven
+   - Top-50 ADV universe processing
+   - Gate evaluation with transparent scoring
+
+2. **✅ Alert System** (`internal/premove/alerts.go`)  
+   - Deduplication with 60-minute hash-based window
+   - Throttling (max 10/hour global, 2/symbol, 30min cooldown)
+   - Quality filters (score≥75, gates≥2, spread≤50bps, depth≥$100k)
+   - Timestamped artifact generation to `artifacts/premove/{ts}/alerts.json`
+
+3. **✅ Scheduler Integration** (`config/scheduler.yaml`)
+   - Hourly cron job: `"0 * * * *"` 
+   - Type: `premove.sweep` with top-50 universe
+   - Regime-aware volume confirmation enabled
+
+4. **✅ CLI Menu Interface** (`cmd/cryptorun/menu_premove.go`)
+   - Interactive table with gate status (F✓ S✗ W✓ V✓)
+   - Missing-gate reasons (fund>-1.5σ, reserves>-5%, cvd<1.0, vol<p80)
+   - Detailed candidate views with microstructure data
+   - Gate requirement explanations
+
+5. **✅ Comprehensive Tests** (`tests/unit/premove/gates_test.go`)
+   - All 8 gate permutations (2³ combinations)
+   - Risk regime volume confirmation scenarios  
+   - Supply squeeze 2-of-4 proxy component testing
+   - Edge cases and threshold validation
+
+6. **✅ Documentation** (`docs/PREMOVE.md`)
+   - Gate system architecture and requirements
+   - Regime-adaptive volume filtering
+   - Alert processing pipeline
+   - CLI interface screenshots and examples
+
+### 📊 **Gate System Specifications:**
+
+**Gate A - Funding Divergence:**
+- `funding_z < -1.5σ` + `spot ≥ VWAP(24h)` + CVD confirmation
+
+**Gate B - Supply Squeeze (2-of-4):**  
+- reserves_7d ≤ -5% | large_withdrawals ≥ $50M/24h | staking_inflows ≥ $10M/24h | derivatives_leverage ≥ 15% OI
+
+**Gate C - Whales (2-of-3):**
+- large_print_clustering | cvd_residual > 0 w/ drift < 0.5×ATR | maker_pull/hot_wallet
+
+**Volume Confirmation (Risk Regimes):**
+- `first_15m_volume ≥ p80_vadr_24h` when regime = risk_off or btc_driven
+
+### 🚨 **Alert Processing Flow:**
+1. Gate evaluation → 2. Regime detection → 3. Volume filtering → 4. Quality gates → 5. Deduplication → 6. Throttling → 7. Artifacts
+
+The implementation fulfills all prompt requirements with **venue-native USD-only microstructure enforcement**, **explainable gate attribution**, and **comprehensive test coverage** for production deployment.

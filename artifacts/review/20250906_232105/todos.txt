@@ -1,0 +1,33 @@
+TODO/FIXME/HACK Inventory (47 total items found)
+
+=== Core Implementation TODOs ===
+exchanges\okx\book_stub.go: TODO: Implement OKX WS orderbook provider
+exchanges\coinbase\book_stub.go: TODO: Implement Coinbase WS orderbook provider
+internal\microstructure\checker.go: TODO: Implement proper VADR calculation with historical volume data
+src\application\premove\backtest.go: TODO: Implement backtesting functionality for premove strategies (6 items)
+src\cmd\cryptorun\cmd_optimize.go: TODO: add optimize command when rootCmd is available
+
+=== QA Specification TODOs ===
+internal\spec\social_cap.go: TODO(QA): cap brand/social ≤ +10 pts AFTER residuals
+internal\spec\microstructure.go: TODO(QA): enforce venue-native L1/L2 (Kraken/OKX/Coinbase)
+internal\spec\factors.go: TODO(QA): real factor graph per mission.md (Momentum protected)
+
+=== Configuration TODOs ===
+internal\microstructure\proofs.go: RequiredValue: 50.0, // TODO: Make configurable (3 items)
+src\application\premove\backtest.go: TODO: Initialize with configuration from config/premove.yaml
+
+=== Test Framework TODOs ===
+tests\unit\qa_nostub_gate_test.go: Multiple TODO items in test validation (15 items)
+tests\unit\providers_guard_test.go: TODO: Implement when metrics package is available
+
+=== QA Framework References ===
+internal\qa\nostub_gate.go: Pattern matching for TODO/FIXME detection (8 references)
+internal\qa\runner.go: TODO/STUB removal hints (2 references)
+
+=== Summary by Priority ===
+HIGH (Core Features): 11 items - Exchange providers, VADR calc, backtest system
+MEDIUM (QA Gates): 5 items - Social cap, microstructure enforcement, factor validation
+LOW (Configuration): 4 items - Make hardcoded values configurable
+TEST (Framework): 27 items - Test validation and framework patterns
+
+Total: 47 TODO/FIXME/HACK items identified

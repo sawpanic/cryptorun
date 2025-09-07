@@ -1,0 +1,50 @@
+# cryptorun/internal/application/bench
+internal\application\bench\spec_pnl.go:179:2: declared and not used: endTime
+internal\application\bench\spec_pnl.go:217:2: declared and not used: endTime
+internal\application\bench\topgainers.go:373:19: tgb.progressBus.Emit undefined (type *progress.ScanProgressBus has no field or method Emit)
+internal\application\bench\topgainers.go:373:33: undefined: progress.ScanProgress
+internal\application\bench\alignment.go:4:2: "encoding/json" imported and not used
+internal\application\bench\alignment.go:5:2: "fmt" imported and not used
+internal\application\bench\alignment.go:6:2: "io/ioutil" imported and not used
+internal\application\bench\alignment.go:8:2: "os" imported and not used
+internal\application\bench\alignment.go:9:2: "path/filepath" imported and not used
+internal\application\bench\alignment.go:10:2: "sort" imported and not used
+internal\application\bench\alignment.go:10:2: too many errors
+# cryptorun/internal/providers/adapters
+internal\providers\adapters\coingecko.go:41:27: undefined: microstructure.GuardAgainstAggregator
+internal\providers\adapters\coingecko.go:72:27: undefined: microstructure.GuardAgainstAggregator
+# cryptorun/internal/explain
+internal\explain\explainer.go:166:39: compositeScore.FinalScoreWithSocial undefined (type *composite.CompositeScore has no field or method FinalScoreWithSocial)
+internal\explain\explainer.go:212:23: cannot use compositeScore.VolumeResid (variable of struct type composite.VolumeComponents) as float64 value in map literal
+internal\explain\explainer.go:213:23: cannot use compositeScore.QualityResid (variable of struct type composite.QualityComponents) as float64 value in map literal
+internal\explain\explainer.go:214:38: compositeScore.SocialResidCapped undefined (type *composite.CompositeScore has no field or method SocialResidCapped)
+internal\explain\explainer.go:220:55: cannot convert 0.15 (untyped float constant) to type struct{Volume float64 "json:\"volume\""; DeltaOI float64 "json:\"delta_oi\""; Combined float64 "json:\"combined\""}
+internal\explain\explainer.go:221:56: cannot convert 0.15 (untyped float constant) to type struct{OIResid float64 "json:\"oi_resid\""; Reserves float64 "json:\"reserves\""; ETFTint float64 "json:\"etf_tint\""; VenueHealth float64 "json:\"venue_health\""; Combined float64 "json:\"combined\""}
+internal\explain\explainer.go:223:34: compositeScore.InternalTotal100 undefined (type *composite.CompositeScore has no field or method InternalTotal100)
+internal\explain\explainer.go:224:34: compositeScore.SocialResidCapped undefined (type *composite.CompositeScore has no field or method SocialResidCapped)
+internal\explain\explainer.go:225:34: compositeScore.FinalScoreWithSocial undefined (type *composite.CompositeScore has no field or method FinalScoreWithSocial)
+internal\explain\explainer.go:237:34: e.regimeWeights.GetWeightsForRegime undefined (type *"cryptorun/internal/config/regime".WeightsLoader has no field or method GetWeightsForRegime)
+internal\explain\explainer.go:237:34: too many errors
+# cryptorun/out/review/stage_20250906_133751/internal/spec
+out\review\stage_20250906_133751\internal\spec\factor_hierarchy.go:140:3: unknown field Volatility in struct literal of type pipeline.FactorSet
+out\review\stage_20250906_133751\internal\spec\factor_hierarchy.go:155:3: unknown field Volatility in struct literal of type pipeline.FactorSet
+out\review\stage_20250906_133751\internal\spec\factor_hierarchy.go:170:3: unknown field Volatility in struct literal of type pipeline.FactorSet
+out\review\stage_20250906_133751\internal\spec\factor_hierarchy.go:241:4: unknown field Volatility in struct literal of type pipeline.FactorSet
+# cryptorun/out/review/stage_20250906_133751/internal/application
+out\review\stage_20250906_133751\internal\application\scan.go:337:85: not enough arguments in call to pipeline.BuildFactorSet
+	have (string, *pipeline.MomentumFactors, float64, float64, float64)
+	want (string, *pipeline.MomentumFactors, float64, float64, float64, float64)
+out\review\stage_20250906_133751\internal\application\scan.go:690:103: factors.Raw undefined (type pipeline.FactorSet has no field or method Raw)
+out\review\stage_20250906_133751\internal\application\scan.go:708:27: factors.Raw undefined (type pipeline.FactorSet has no field or method Raw)
+out\review\stage_20250906_133751\internal\application\scan.go:709:27: factors.Raw undefined (type pipeline.FactorSet has no field or method Raw)
+out\review\stage_20250906_133751\internal\application\scan.go:710:27: factors.Raw undefined (type pipeline.FactorSet has no field or method Raw)
+# cryptorun/internal/explain/delta
+internal\explain\delta\runner.go:8:2: "sort" imported and not used
+internal\explain\delta\runner.go:113:22: not enough arguments in call to universe.NewBuilder
+	have ()
+	want (universe.KrakenLite)
+internal\explain\delta\runner.go:114:33: universeBuilder.LoadUniverse undefined (type *universe.Builder has no field or method LoadUniverse)
+internal\explain\delta\runner.go:141:20: scanner.GetCurrentRegime undefined (type *application.ScanPipeline has no field or method GetCurrentRegime)
+internal\explain\delta\runner.go:148:27: scanner.ExplainSymbol undefined (type *application.ScanPipeline has no field or method ExplainSymbol)
+# cryptorun/internal/interfaces/http/endpoints
+internal\interfaces\http\endpoints\explain.go:6:2: "path/filepath" imported and not used

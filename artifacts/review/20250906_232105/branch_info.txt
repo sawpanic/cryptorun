@@ -1,0 +1,4 @@
+Default Branch: main (detected)
+Current Branch: feat/data-facade-hot-warm
+Merge Base: 92e17987a1925c6a2d2a43be1b5c0eb88358fbe3
+Review Scope: Changes since merge-base
